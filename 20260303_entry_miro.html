@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4학년 코딩 교과서: 미로 탈출 대작전</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f6f8; /* 배경색 통일 */
+        }
+        
+        /* -----------------------------------------
+           [4학년 표준 템플릿 CSS 가이드]
+           1년 내내 동일한 시각적 경험을 제공합니다.
+        ----------------------------------------- */
+        
+        /* 단계별 메인 카드 */
+        .step-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 상단 아이콘 뱃지 */
+        .icon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 정보 박스 표준 양식 (상황, 과제, 힌트 등) */
+        .info-box {
+            border-radius: 16px;
+            padding: 1.25rem;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .info-box-title {
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .info-box-icon {
+            margin-right: 0.5rem;
+        }
+
+        /* 서브스텝 번호 뱃지 */
+        .sub-step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: 900;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* 엔트리 코딩 블록 스타일 */
+        .coding-block {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4px;
+            position: relative;
+        }
+        .coding-block::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 16px;
+            width: 16px;
+            height: 8px;
+            background-color: inherit;
+            border-radius: 0 0 4px 4px;
+        }
+        .block-start { background-color: #10B981; }
+        .block-move { background-color: #3B82F6; }
+        .block-loop { background-color: #8B5CF6; }
+        .block-cond { background-color: #F59E0B; }
+
+        /* 아코디언 힌트 콘텐츠 */
+        .hint-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease;
+            opacity: 0;
+            padding: 0 1rem;
+        }
+        .hint-content.show {
+            max-height: 200px;
+            opacity: 1;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800 text-lg pb-20">
+
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
+        
+        <!-- [공통 헤더] 단원명 및 학습 주제 -->
+        <header class="text-center mb-10 mt-8">
+            <span class="bg-blue-400 text-white text-base font-bold px-4 py-1.5 rounded-full mb-4 inline-block tracking-wider shadow-sm">
+                4학년
+            </span>
+            <h1 class="text-5xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight">
+                미로 탈출 대작전! 🚀
+            </h1>
+            <p class="text-xl text-gray-500 font-medium">
+                작년에 배운 코딩 마법(순차, 반복, 조건)으로 엔트리봇을 구출해주세요.
+            </p>
+        </header>
+
+        <!-- [1단계] 준비하기 -->
+        <section class="step-card border-t-8 border-orange-400">
+            <div class="absolute -top-4 -right-4 text-8xl opacity-5">⚙️</div>
+            
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="icon-badge bg-orange-100 text-orange-600">⚙️</span> 
+                1단계: 탐험 준비하기
+            </h2>
+
+            <p class="mb-5 text-gray-700 font-medium">코딩 마법을 부리기 전에 먼저 준비 운동을 해봅시다. 스스로 완료한 미션은 체크박스를 눌러주세요!</p>
+
+            <div class="space-y-3">
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50 transition shadow-sm">
+                    <input type="checkbox" class="w-6 h-6 accent-orange-500 cursor-pointer">
+                    <div class="ml-4 flex-1">
+                        <span class="font-bold text-gray-800">1. 엔트리 접속 및 로그인</span>
+                        <p class="text-base text-gray-600 mt-1">오른쪽 버튼을 눌러 엔트리에 접속하고 내 아이디로 로그인하세요.</p>
+                    </div>
+                    <a href="https://playentry.org" target="_blank" class="px-4 py-2 bg-orange-100 text-orange-700 font-bold rounded-lg hover:bg-orange-200 transition text-base ml-2 shrink-0">엔트리 열기 ↗</a>
+                </label>
+
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50 transition shadow-sm">
+                    <input type="checkbox" class="w-6 h-6 accent-orange-500 cursor-pointer">
+                    <div class="ml-4">
+                        <span class="font-bold text-gray-800">2. 작품 만들기 이동</span>
+                        <p class="text-base text-gray-600 mt-1">엔트리 상단 메뉴에서 <strong>[만들기] ➔ [작품 만들기]</strong>를 클릭하세요.</p>
+                    </div>
+                </label>
+
+                <label class="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50 transition shadow-sm">
+                    <input type="checkbox" class="w-6 h-6 accent-orange-500 cursor-pointer">
+                    <div class="ml-4">
+                        <span class="font-bold text-gray-800">3. 미로 배경 & 주인공 추가하기</span>
+                        <p class="text-base text-gray-600 mt-1">화면 중간의 <strong>[+ 오브젝트 추가하기]</strong>를 눌러 '미로' 배경과 내가 원하는 '주인공'을 추가하세요. (기존 엔트리봇은 지워주세요)</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+        <!-- [2단계] 미션 파악 -->
+        <section class="step-card border-t-8 border-blue-500">
+            <div class="absolute -top-4 -right-4 text-8xl opacity-5">🚩</div>
+            
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="icon-badge bg-blue-100 text-blue-600">🚩</span> 
+                2단계: 미션 파악하기
+            </h2>
+            
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-5/12 bg-gray-100 rounded-2xl h-56 flex items-center justify-center border-2 border-gray-200 overflow-hidden bg-white">
+                    <img src="https://happyhyeok.github.io/afterschool/miro.png" alt="복잡한 미로 이미지" class="w-full h-full object-contain p-2">
+                </div>
+                
+                <div class="w-full md:w-7/12 flex flex-col justify-center space-y-4">
+                    <div class="info-box bg-red-50 border border-red-100">
+                        <div class="info-box-title text-red-700">
+                            <span class="info-box-icon">❓</span> 현재 상황
+                        </div>
+                        <p class="text-gray-700">큰일 났어요! 엔트리봇이 복잡한 미로에 갇혀서 빠져나오지 못하고 있습니다.</p>
+                    </div>
+                    
+                    <div class="info-box bg-blue-50 border border-blue-100 shadow-inner">
+                        <div class="info-box-title text-blue-800">
+                            <span class="info-box-icon">🎯</span> 우리의 임무
+                        </div>
+                        <p class="text-gray-800 font-medium">작년에 배운 <strong>'코딩 마법 3가지(순차, 반복, 조건)'</strong>를 활용하여, 엔트리봇이 무사히 미로를 탈출할 수 있는 코드를 완성하세요!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             [3단계] 코딩 탐구 (문제 분해 적용)
+             ========================================== -->
+        <section class="step-card border-t-8 border-green-500">
+            <div class="absolute -top-4 -right-4 text-8xl opacity-5">💡</div>
+            
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="icon-badge bg-green-100 text-green-600">💡</span> 
+                3단계: 스스로 탐구하기 (문제 작게 나누기)
+            </h2>
+            <p class="mb-8 text-gray-600 bg-green-50 p-4 rounded-xl border border-green-200">
+                한 번에 미로를 끝까지 탈출하려고 하면 너무 어려워요! <strong>'큰 문제'</strong>를 해결하기 쉬운 <strong>'작은 문제 7가지'</strong>로 나누어서 순서대로 하나씩 해결해 봅시다.
+            </p>
+
+            <!-- 미션 그룹 1: 조종 방법 정하기 -->
+            <div class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-5 mb-5 shadow-sm transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-green-400"></div>
+                <h4 class="font-bold text-2xl text-gray-800 mb-4 flex items-center">
+                    <span class="sub-step-badge bg-green-100 text-green-700 text-lg">🤔</span>
+                    어떻게 움직일지 방법 정하기
+                </h4>
+                <div class="space-y-5 pl-11">
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">1.</span> 주인공이 미로를 탈출하려면 어디로 움직여야 할까?</p>
+                        <p class="text-gray-600 mt-2 bg-gray-50 p-3 rounded-lg inline-block border border-gray-100 font-medium">👉 위, 아래, 왼쪽, 오른쪽 모든 방향으로 움직여야 합니다.</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">2.</span> 주인공을 어떻게 움직여야 할까?</p>
+                        <p class="text-gray-600 mt-2 bg-gray-50 p-3 rounded-lg border border-gray-100 font-medium">
+                            <span class="text-gray-500">키보드? 마우스? 주인공 스스로?</span><br>
+                            👉 우리는 <strong>'키보드 화살표 키'</strong>로 움직이게 만들 거예요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 그룹 2: 방향키로 움직이기 -->
+            <div class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-5 mb-5 shadow-sm transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-green-400"></div>
+                <h4 class="font-bold text-2xl text-gray-800 mb-4 flex items-center">
+                    <span class="sub-step-badge bg-green-100 text-green-700 text-lg">💻</span>
+                    방향키 코딩하기
+                </h4>
+                <div class="space-y-6 pl-11">
+                    
+                    <p class="text-gray-700 text-lg">주인공을 움직이는 블록은 크게 <strong>2가지 방법</strong>이 있어요. 어떻게 다른지 확인해 볼까요?</p>
+
+                    <!-- 방법 1: 이동방향 -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                        <h5 class="font-bold text-gray-800 text-xl mb-3 flex items-center">
+                            <span class="mr-2">🧭</span> 방법 1. '이동방향'으로 움직이기
+                        </h5>
+                        <div class="flex flex-col md:flex-row gap-4 items-center">
+                            <div class="flex-1 text-gray-600">
+                                <p>주인공이 바라보는 방향(화살표)을 먼저 바꾼 다음, 그 방향으로 나아가는 방법이에요.</p>
+                                <p class="mt-2 text-sm text-gray-500">예) "오른쪽을 봐!" ➔ "10만큼 가!"</p>
+                            </div>
+                            <div class="w-full md:w-1/2 bg-white p-4 rounded-xl border border-gray-200 flex justify-center shadow-sm">
+                                <img src="https://happyhyeok.github.io/afterschool/MOVE.png" alt="" class="w-full h-auto object-contain max-h-40 md:max-h-48">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 방법 2: 좌표 -->
+                    <div class="bg-blue-50 p-5 rounded-2xl border border-blue-200 shadow-inner">
+                        <h5 class="font-bold text-blue-800 text-xl mb-3 flex items-center">
+                            <span class="mr-2">🗺️</span> 방법 2. '좌표'로 움직이기 <span class="text-sm bg-blue-600 text-white px-3 py-1 rounded-full ml-3 shadow-sm">⭐ 이번 미션 추천!</span>
+                        </h5>
+                        <div class="flex flex-col md:flex-row gap-4 items-center mb-4">
+                            <div class="flex-1 text-gray-700">
+                                <p>화면의 숨겨진 눈금자(좌표)를 이용해 <strong>바라보는 방향을 바꾸지 않고</strong> 그대로 옆으로, 위아래로 움직이는 방법이에요.</p>
+                                <p class="mt-3 bg-white p-3 rounded-lg border border-blue-100 text-base">
+                                    💡 <strong>가로(왼쪽, 오른쪽)</strong>로 움직일 때는 <strong>X 좌표</strong>,<br>
+                                    💡 <strong>세로(위, 아래)</strong>로 움직일 때는 <strong>Y 좌표</strong>를 사용해요.
+                                </p>
+                            </div>
+                            <div class="w-full md:w-1/2 flex flex-col gap-2">
+                                <div class="bg-white p-2 rounded-xl border border-gray-200 flex justify-center shadow-sm">
+                                    <img src="https://happyhyeok.github.io/afterschool/xmove.PNG" alt="" class="max-h-16 object-contain">
+                                </div>
+                                <div class="bg-white p-2 rounded-xl border border-gray-200 flex justify-center shadow-sm">
+                                    <img src="https://happyhyeok.github.io/afterschool/ymove.PNG" alt="" class="max-h-16 object-contain">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 미션 적용 (기존 3번 4번) -->
+                    <div class="mt-8 border-t-2 border-dashed border-gray-200 pt-6 space-y-5">
+                        <div>
+                            <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">3.</span> 오른쪽으로 가기</p>
+                            <p class="text-gray-600 mt-1">
+                                위에서 배운 <strong>'좌표 바꾸기'</strong> 블록을 사용해서 오른쪽 화살표 키를 눌렀을 때 주인공이 오른쪽으로 이동하게 코딩해 보세요.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">4.</span> 나머지 방향 완성하기 (X, Y 좌표 생각하기)</p>
+                            <p class="text-gray-600 mt-1 mb-3">오른쪽으로 움직이려면 X 좌표를 커지게(+) 해야 해요. 그럼 다른 방향은 어떻게 해야 할까요?</p>
+                            
+                            <!-- 4방향 좌표 가이드 그리드 -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-base">
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+                                    <span class="font-bold text-gray-800 text-lg">➡ 오른쪽</span><br>
+                                    <span class="text-blue-600 font-bold">X 좌표</span>를 <span class="text-red-500 font-bold">+</span> 만큼
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+                                    <span class="font-bold text-gray-800 text-lg">⬅ 왼쪽</span><br>
+                                    <span class="text-blue-600 font-bold">X 좌표</span>를 <span class="text-blue-500 font-bold">-</span> 만큼
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+                                    <span class="font-bold text-gray-800 text-lg">⬆ 위쪽</span><br>
+                                    <span class="text-green-600 font-bold">Y 좌표</span>를 <span class="text-red-500 font-bold">+</span> 만큼
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-center shadow-sm">
+                                    <span class="font-bold text-gray-800 text-lg">⬇ 아래쪽</span><br>
+                                    <span class="text-green-600 font-bold">Y 좌표</span>를 <span class="text-blue-500 font-bold">-</span> 만큼
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-4">위 힌트를 보고 <strong>왼쪽, 위쪽, 아래쪽 화살표 키</strong>를 눌렀을 때의 코드도 스스로 완성해 보세요!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 그룹 3: 미로 벽 통과 막기 -->
+            <div class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-5 mb-5 shadow-sm transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-green-400"></div>
+                <h4 class="font-bold text-2xl text-gray-800 mb-4 flex items-center">
+                    <span class="sub-step-badge bg-green-100 text-green-700 text-lg">🧱</span>
+                    미로 벽 통과 막기
+                </h4>
+                <div class="space-y-5 pl-11">
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">5.</span> 주인공이 미로에 부딪히면 어떻게 해야 할까요?</p>
+                        <div class="text-gray-600 mt-3 space-y-2 font-medium">
+                            <p class="bg-red-50 p-2.5 rounded-lg border border-red-100 flex items-center">1) 😭 처음 시작 위치로 돌아가게 만든다.</p>
+                            <p class="bg-yellow-50 p-2.5 rounded-lg border border-yellow-100 flex items-center">2) 🛑 벽을 뚫지 못하게 제자리에 멈추게 만든다.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">6.</span> 벽을 뚫지 못하게 하려면 어떻게 해야 할까요?</p>
+                        <p class="text-gray-600 mt-2">
+                            💡 <strong>'만약 ~라면'</strong> 조건 마법을 사용해서, 벽에 닿았을 때 반대 방향으로 아주 살짝 튕겨나가게 만들면 벽을 뚫을 수 없어요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 그룹 4: 목적지 도착 -->
+            <div class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-5 mb-8 shadow-sm transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-green-400"></div>
+                <h4 class="font-bold text-2xl text-gray-800 mb-4 flex items-center">
+                    <span class="sub-step-badge bg-green-100 text-green-700 text-lg">🏁</span>
+                    목적지에 닿았을 때
+                </h4>
+                <div class="space-y-4 pl-11">
+                    <div>
+                        <p class="font-bold text-gray-800 text-lg flex items-center"><span class="text-green-600 mr-2">7.</span> 목적지에 닿으면 어떻게 할까요?</p>
+                        <p class="text-gray-600 mt-2 mb-3">탈출에 성공했을 때 일어날 재미있는 일들을 상상해서 코딩해 보세요!</p>
+                        <div class="bg-gray-50 p-4 rounded-xl text-gray-700 text-base border border-gray-200">
+                            <strong>✨ 성공 이벤트 예시:</strong>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-600 ml-2">
+                                <li>"만세! 탈출 성공!"이라고 2초 동안 말하기</li>
+                                <li>신나는 박수 소리 재생하기</li>
+                                <li>주인공 오브젝트의 모양 바꾸기 (예: 웃는 얼굴)</li>
+                                <li>모든 코드 멈추기</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- [양식] 힌트 제공 박스 -->
+            <div class="info-box bg-gray-50 border border-gray-200">
+                <p class="font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="text-2xl mr-2">🤔</span> 코딩이 막히나요? 마법 힌트를 열어보세요!
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="toggleHint('hint1')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold text-lg rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition shadow-sm">
+                        🪄 순차 힌트
+                    </button>
+                    <button onclick="toggleHint('hint2')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold text-lg rounded-lg hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition shadow-sm">
+                        🔁 반복 힌트
+                    </button>
+                    <button onclick="toggleHint('hint3')" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold text-lg rounded-lg hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-300 transition shadow-sm">
+                        ⚖️ 조건 힌트
+                    </button>
+                </div>
+
+                <!-- 힌트 내용 양식 -->
+                <div id="hint1" class="hint-content mt-3 bg-green-50 rounded-lg text-green-900">
+                    <strong>순차:</strong> 컴퓨터는 위에서부터 '차례대로' 실행해요. 어느 방향으로 움직일지 잘 생각해서 이동 블록을 순서대로 쌓아보세요.
+                </div>
+                <div id="hint2" class="hint-content mt-3 bg-purple-50 rounded-lg text-purple-900">
+                    <strong>반복:</strong> 2단계 퀘스트에서 앞으로 가는 블록을 계속 붙였나요? [~번 반복하기] 블록을 쓰면 코드가 훨씬 짧아져요!
+                </div>
+                <div id="hint3" class="hint-content mt-3 bg-yellow-50 rounded-lg text-yellow-900">
+                    <strong>선택(조건):</strong> 3단계 퀘스트에서 벽에 닿았거나 미로를 빠져나왔다면? [만약 ~참이라면] 블록을 사용하여 특별한 규칙을 만들어보세요.
+                </div>
+            </div>
+
+            <!-- [양식] 짝꿍 찬스 -->
+            <div class="info-box bg-yellow-50 border border-yellow-200 mt-6">
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <div class="icon-badge bg-yellow-200 text-yellow-700 shrink-0">🤝</div>
+                    <div>
+                        <div class="info-box-title text-yellow-800">짝꿍 찬스!</div>
+                        <p class="text-base text-gray-700 mb-2">선생님을 부르기 전에 옆 친구에게 도움을 요청해보세요.</p>
+                        <div class="bg-white p-3 rounded-lg text-base text-gray-600">
+                            🚨 <strong>규칙:</strong> 마우스 뺏기 금지! "나는 보라색 반복 블록을 썼어"라고 말로만 힌트 주기
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [4단계] 생각 정리 -->
+        <section class="step-card border-t-8 border-purple-500">
+            <div class="absolute -top-4 -right-4 text-8xl opacity-5">💭</div>
+            
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="icon-badge bg-purple-100 text-purple-600">💭</span> 
+                4단계: 생각 보물찾기
+            </h2>
+
+            <p class="mb-6 text-gray-700">코드는 다르지만 두 친구 모두 미로를 탈출했어요! 아래 코드를 비교해볼까요?</p>
+
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
+                <!-- 비교 A -->
+                <div class="flex-1 bg-white border-2 border-gray-100 p-5 rounded-2xl text-center shadow-sm">
+                    <h4 class="font-bold text-lg mb-4 text-gray-500 bg-gray-100 py-1 rounded-full">지훈이의 코드 (순차)</h4>
+                    <div class="flex flex-col items-center scale-90 origin-top">
+                        <div class="coding-block block-start mb-2">시작하기 버튼을 클릭했을 때</div>
+                        <div class="coding-block block-move mb-2">앞으로 1만큼 이동하기</div>
+                        <div class="coding-block block-move mb-2">앞으로 1만큼 이동하기</div>
+                        <div class="coding-block block-move mb-2">앞으로 1만큼 이동하기</div>
+                        <div class="coding-block block-move mb-2">앞으로 1만큼 이동하기</div>
+                        <div class="coding-block block-move">앞으로 1만큼 이동하기</div>
+                    </div>
+                </div>
+                
+                <!-- 비교 B -->
+                <div class="flex-1 bg-white border-2 border-purple-100 p-5 rounded-2xl text-center shadow-sm relative">
+                    <div class="absolute -top-3 -right-3 text-2xl">✨</div>
+                    <h4 class="font-bold text-lg mb-4 text-purple-700 bg-purple-50 py-1 rounded-full">수아의 코드 (반복)</h4>
+                    <div class="flex flex-col items-center scale-90 origin-top">
+                        <div class="coding-block block-start mb-2">시작하기 버튼을 클릭했을 때</div>
+                        <div class="coding-block block-loop mb-2 w-48 text-left pl-4 pb-10">
+                            5 번 반복하기
+                            <div class="coding-block block-move mt-2 ml-4">앞으로 1만큼 이동하기</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script>
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            const allHints = document.querySelectorAll('.hint-content');
+            
+            allHints.forEach(hint => {
+                if(hint.id !== hintId && hint.classList.contains('show')) {
+                    hint.classList.remove('show');
+                }
+            });
+            hintElement.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>

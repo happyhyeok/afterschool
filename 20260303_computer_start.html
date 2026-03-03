@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3학년 정보: 컴퓨터와 인사하기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 3학년 전용 테마 색상 및 스타일 정의 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',    /* 따뜻한 노란색 */
+                        secondary: '#4EA8DE',  /* 밝은 파란색 */
+                        accent: '#EF476F',     /* 포인트 핑크 */
+                        success: '#06D6A0',    /* 성공 초록 */
+                        bgLight: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard"', '"Malgun Gothic"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #FFF9E6; /* 3학년 테마 기본 배경색 */
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* 3학년 교과서 공통 카드 스타일 */
+        .lesson-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 4px solid white;
+            transition: all 0.3s ease;
+        }
+        
+        .lesson-card:hover {
+            border-color: #FFD166;
+            transform: translateY(-2px);
+        }
+
+        /* 마우스 탐험 영역 이모지 애니메이션 */
+        .click-emoji {
+            position: absolute;
+            font-size: 1.5rem;
+            transform: translate(-50%, -50%);
+            animation: pop 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            50% { transform: translate(-50%, -70%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -100%) scale(1); opacity: 0; }
+        }
+
+        /* 컴퓨터 화면 켜기 애니메이션 */
+        .screen-on {
+            background: radial-gradient(circle at 50% 120%, #00b4f0, #0078d4 40%, #002868 100%);
+            transition: all 1s ease-in-out;
+        }
+        
+        /* 윈도우 바탕화면 요소 호버 효과 */
+        .desktop-element {
+            transition: all 0.2s;
+        }
+        .desktop-element:hover {
+            outline: 2px dashed rgba(255, 255, 255, 0.8);
+            outline-offset: 2px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <!-- 상단 헤더 (교과서 타이틀 영역) -->
+    <header class="bg-white/80 backdrop-blur-md border-b-4 border-primary sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary text-white p-2 rounded-xl">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">3학년 첫걸음</h1>
+            </div>
+            <div class="text-secondary font-bold bg-blue-50 px-4 py-2 rounded-full">
+                1단원. 새로운 친구, 컴퓨터
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 mt-8 space-y-8">
+        
+        <!-- 도입: 생각 열기 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="lightbulb" class="w-8 h-8 text-primary"></i>
+                <h2 class="text-2xl font-bold">생각을 열어봐요</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6">우리 주변에서 컴퓨터를 본 적 있나요? 내가 해본 것을 모두 눌러보세요!</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full" id="experience-chips">
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">📱 스마트폰 게임</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🍔 키오스크 주문</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">📺 유튜브 영상 보기</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🤖 로봇 장난감</button>
+                
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">📸 디지털 카메라</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">⌚ 스마트워치</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🎮 비디오 게임기</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🗣️ AI 스피커 대화</button>
+                
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">💻 태블릿 그림그리기</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🛒 마트 셀프계산대</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🚗 길찾기 내비게이션</button>
+                <button class="w-full p-4 rounded-2xl bg-gray-100 font-bold text-gray-600 hover:bg-primary hover:text-white transition-colors text-center shadow-sm" onclick="toggleChip(this)">🏫 학교 패드 학습</button>
+            </div>
+            <div class="mt-6 p-4 bg-blue-50 rounded-xl text-secondary font-bold text-center">
+                오늘은 교실에 있는 '진짜 컴퓨터'와 첫인사를 나눌 거예요. 안녕, 컴퓨터야! 👋
+            </div>
+        </section>
+
+        <!-- 전개: 탐구 1 - 전원 켜기 & 화면 이해하기 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="search" class="w-8 h-8 text-secondary"></i>
+                <h2 class="text-2xl font-bold">탐험 1: 컴퓨터 깨우기 & 화면 살펴보기</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6">잠자고 있는 컴퓨터를 어떻게 깨울까요? <b>전원 버튼</b>을 찾아 눌러보세요!</p>
+
+            <div class="flex flex-col md:flex-row gap-8 items-start justify-center bg-gray-50 p-8 rounded-2xl">
+                <!-- 가상 모니터 영역 -->
+                <div class="w-full md:w-2/3 flex flex-col gap-4">
+                    <div class="relative w-full aspect-video bg-gray-900 rounded-lg border-8 border-gray-800 flex items-center justify-center shadow-inner overflow-hidden" id="virtual-monitor">
+                        <p class="text-gray-600 text-sm absolute bottom-2 right-4" id="monitor-text">ZZZ...</p>
+                        
+                        <!-- 바탕화면 시뮬레이션 (초기엔 숨김) -->
+                        <div id="win-desktop" class="hidden w-full h-full flex flex-col justify-between relative cursor-default">
+                            
+                            <!-- 1. 바탕화면 배경 (클릭 영역) -->
+                            <div class="absolute inset-0 z-0 desktop-element cursor-pointer" onclick="showDesktopInfo('🖼️ 바탕화면 (Desktop)', '컴퓨터를 켜면 가장 먼저 나오는 넓은 화면이에요. 내 책상 위처럼 아이콘을 올려두고 편하게 작업할 수 있어요.')"></div>
+                            
+                            <!-- 2. 아이콘 영역 -->
+                            <div class="z-10 p-4 flex flex-col gap-4 w-20">
+                                <button class="desktop-element flex flex-col items-center justify-center gap-1 p-2 cursor-pointer" onclick="showDesktopInfo('📂 아이콘 (Icon)', '프로그램을 실행하거나 폴더를 여는 귀여운 그림 버튼이에요. 마우스로 더블 클릭(빠르게 두 번 누르기)하면 창이 열려요!')">
+                                    <i data-lucide="folder" class="w-8 h-8 text-yellow-400 fill-current"></i>
+                                    <span class="text-white text-xs drop-shadow-md font-bold">내 폴더</span>
+                                </button>
+                                <button class="desktop-element flex flex-col items-center justify-center gap-1 p-2 cursor-pointer" onclick="showDesktopInfo('🌐 인터넷 (Icon)', '프로그램을 실행하거나 폴더를 여는 귀여운 그림 버튼이에요. 마우스로 더블 클릭(빠르게 두 번 누르기)하면 인터넷 창이 열려요!')">
+                                    <i data-lucide="chrome" class="w-8 h-8 text-white"></i>
+                                    <span class="text-white text-xs drop-shadow-md font-bold">인터넷</span>
+                                </button>
+                            </div>
+
+                            <!-- 3. 작업표시줄 영역 -->
+                            <div class="z-10 h-10 bg-black/40 backdrop-blur-md flex items-center justify-center gap-4 px-2 cursor-pointer desktop-element" onclick="showDesktopInfo('🚥 작업표시줄 (Taskbar)', '화면 맨 아래에 있는 긴 줄이에요! 시작 버튼이 있고, 지금 내가 열어놓은 프로그램들이 무엇인지 한눈에 보여준답니다.')">
+                                <div class="w-6 h-6 bg-blue-500 rounded flex items-center justify-center"><i data-lucide="layout-grid" class="w-4 h-4 text-white"></i></div>
+                                <div class="w-6 h-6 bg-white/30 rounded flex items-center justify-center"><i data-lucide="folder" class="w-3 h-3 text-white"></i></div>
+                                <div class="w-6 h-6 bg-white/30 rounded flex items-center justify-center"><i data-lucide="chrome" class="w-3 h-3 text-white"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 바탕화면 설명 박스 (클릭 시 내용 표시) -->
+                    <div id="desktop-info-box" class="hidden p-5 bg-blue-100 rounded-xl border-2 border-blue-300 shadow-sm relative">
+                        <div class="absolute -top-3 left-6 w-4 h-4 bg-blue-100 border-t-2 border-l-2 border-blue-300 transform rotate-45"></div>
+                        <h3 class="font-bold text-xl text-blue-900 mb-2" id="desktop-info-title"></h3>
+                        <p class="text-blue-800 text-lg leading-relaxed font-medium" id="desktop-info-desc"></p>
+                    </div>
+                </div>
+
+                <!-- 가상 본체 및 전원 버튼 -->
+                <div class="w-32 h-48 bg-gray-800 rounded-lg border-4 border-gray-700 flex flex-col items-center py-6 shadow-xl relative flex-shrink-0">
+                    <div class="w-20 h-2 bg-gray-600 rounded mb-auto"></div>
+                    <button id="power-btn" class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-500 hover:bg-gray-500 active:scale-95 transition-all focus:outline-none focus:ring-4 focus:ring-primary">
+                        <i data-lucide="power" class="w-6 h-6 text-red-400" id="power-icon"></i>
+                    </button>
+                    <p class="text-gray-400 text-xs mt-2">전원 버튼</p>
+                </div>
+            </div>
+            
+            <!-- 최초 전원 켰을 때 안내 메시지 -->
+            <div id="power-feedback" class="hidden mt-6 p-4 bg-yellow-50 rounded-xl border-2 border-primary text-center">
+                <p class="text-lg font-bold text-gray-800">
+                    ✨ 우와! 컴퓨터가 잠에서 깨어났어요!<br>
+                    <span class="text-blue-600">아이콘, 바탕화면(배경), 맨 아랫줄(작업표시줄)</span>을 각각 클릭해서 어떤 역할을 하는지 알아보세요!
+                </p>
+            </div>
+        </section>
+
+        <!-- 전개: 탐구 2 - 바른 자세 -->
+        <section class="lesson-card bg-blue-50/50 border-secondary">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="user-check" class="w-8 h-8 text-secondary"></i>
+                <h2 class="text-2xl font-bold">탐험 2: 몸이 좋아하는 자세 찾기</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6">어떤 자세로 앉아야 내 몸도 안 아프고 컴퓨터도 좋아할까요? <b>나쁜 습관 12가지를 모두 찾아서 클릭하여 고쳐주세요!</b></p>
+            
+            <div class="w-full mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-6">
+                
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">얼굴이 너무 가까워요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">👀</span>
+                        <span class="font-bold text-success text-sm leading-tight">50cm 거리를<br>유지해요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">허리가 구부정해요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">🪑</span>
+                        <span class="font-bold text-success text-sm leading-tight">등받이에<br>기대어 앉아요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">다리를 꼬고 앉아요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">👣</span>
+                        <span class="font-bold text-success text-sm leading-tight">두 발은<br>바닥에 놓아요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">방이 너무 어두워요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">💡</span>
+                        <span class="font-bold text-success text-sm leading-tight">방 불을<br>밝게 켜요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">쉬지 않고 계속 해요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">⏰</span>
+                        <span class="font-bold text-success text-sm leading-tight">50분마다<br>꼭 쉬어요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">키보드를 쾅쾅 쳐요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">⌨️</span>
+                        <span class="font-bold text-success text-sm leading-tight">키보드는 살살<br>부드럽게 쳐요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">손목이 꺾여 있어요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">🖱️</span>
+                        <span class="font-bold text-success text-sm leading-tight">마우스 손목을<br>일직선으로!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">모니터가 너무 높아요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">🖥️</span>
+                        <span class="font-bold text-success text-sm leading-tight">모니터를<br>눈높이에 맞춰요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">발이 허공에 떠요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">💺</span>
+                        <span class="font-bold text-success text-sm leading-tight">발 받침대를<br>사용해요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">엎드려서 노트북 해요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">💻</span>
+                        <span class="font-bold text-success text-sm leading-tight">책상에 앉아<br>바르게 써요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">간식 먹으며 컴퓨터 해요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">🍩</span>
+                        <span class="font-bold text-success text-sm leading-tight">다 먹고 손을 씻고<br>시작해요!</span>
+                    </div>
+                </button>
+
+                <button class="posture-btn group flex flex-col items-center justify-center p-3 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all h-32 text-center" onclick="checkPosture(this)">
+                    <div class="bad-state flex flex-col items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-7 h-7 text-accent group-hover:scale-110 transition"></i>
+                        <span class="font-bold text-gray-700 text-sm">눈을 깜빡이지 않아요!</span>
+                    </div>
+                    <div class="good-state hidden flex-col items-center gap-1">
+                        <span class="text-3xl">😌</span>
+                        <span class="font-bold text-success text-sm leading-tight">눈을 자주<br>깜빡여줘요!</span>
+                    </div>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- 전개: 탐구 3 - 마우스 탐색 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="mouse" class="w-8 h-8 text-accent"></i>
+                <h2 class="text-2xl font-bold">탐험 3: 마우스와 인사하기</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6">
+                마우스는 컴퓨터 세상에서 내 <b>'손'</b> 역할을 해요! 화면에 있는 물건을 정확하게 가리키고, 잡고, 옮기기 위해서 연습이 꼭 필요하답니다.
+            </p>
+            
+            <!-- 좌(설명) - 우(실습) 4줄로 이어지는 2x4 그리드 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                
+                <!-- 1. 왼쪽 버튼 (클릭) -->
+                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 flex flex-col justify-center">
+                    <h3 class="font-bold text-accent text-xl mb-2">👆 왼쪽 버튼 (클릭)</h3>
+                    <p class="text-gray-600 break-keep">물건을 선택하거나 누를 때 '딸깍' 하고 한 번 눌러요. 가장 많이 쓰는 손가락이에요!</p>
+                </div>
+                <div id="click-box" class="h-40 bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:bg-blue-100 transition-colors">
+                    <p class="text-blue-600 font-bold mb-2 pointer-events-none select-none z-10 text-lg">1. 클릭 연습 (딸깍!)</p>
+                    <p class="text-sm text-gray-500 pointer-events-none select-none z-10">빈 곳을 클릭해서 별을 띄워보세요!</p>
+                </div>
+
+                <!-- 2. 더블클릭 -->
+                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 flex flex-col justify-center">
+                    <h3 class="font-bold text-accent text-xl mb-2">✌️ 더블클릭</h3>
+                    <p class="text-gray-600 break-keep">빠르게 두 번 '따닥!' 누르면 닫혀있던 프로그램이나 창이 열려요.</p>
+                </div>
+                <div id="dblclick-box" class="h-40 bg-green-50 border-2 border-dashed border-green-300 rounded-2xl flex flex-col items-center justify-center relative cursor-pointer hover:bg-green-100 transition-colors">
+                    <p class="text-green-600 font-bold mb-2 pointer-events-none select-none text-lg">2. 더블클릭 연습 (따닥!)</p>
+                    <div id="treasure-chest" class="text-5xl mt-2 select-none transition-transform hover:scale-110 pointer-events-none">📦</div>
+                    <p id="dblclick-hint" class="text-sm text-gray-500 mt-3 select-none pointer-events-none text-center px-2">상자를 빠르게 두 번 눌러 열어보세요!</p>
+                </div>
+
+                <!-- 3. 드래그 앤 드롭 -->
+                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 flex flex-col justify-center">
+                    <h3 class="font-bold text-accent text-xl mb-2">🖐️ 드래그 앤 드롭</h3>
+                    <p class="text-gray-600 break-keep">버튼을 꾹 누른 채로 움직이면 물건을 집어서 원하는 곳으로 옮길 수 있어요.</p>
+                </div>
+                <div id="drag-box" class="h-40 bg-yellow-50 border-2 border-dashed border-yellow-300 rounded-2xl flex flex-col items-center justify-center relative p-4">
+                    <p class="text-yellow-600 font-bold select-none text-lg text-center">3. 드래그 앤 드롭 연습</p>
+                    <div class="flex w-full justify-around items-center mt-4">
+                        <div id="draggable-item" draggable="true" class="text-5xl cursor-grab active:cursor-grabbing hover:scale-110 transition-transform" title="나를 꾹 누른 채로 움직여요!">🍎</div>
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-gray-400 pointer-events-none hidden md:block"></i>
+                        <div id="drop-zone" class="w-16 h-16 bg-white border-2 border-yellow-400 rounded-xl flex items-center justify-center text-3xl shadow-inner transition-colors">🧺</div>
+                    </div>
+                    <p id="drag-hint" class="text-sm text-gray-500 mt-2 select-none text-center">사과를 꾹 누른 채 바구니에 담아요!</p>
+                </div>
+
+                <!-- 4. 오른쪽 버튼 클릭 (우클릭) -->
+                <div class="bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 flex flex-col justify-center">
+                    <h3 class="font-bold text-accent text-xl mb-2">👆 오른쪽 버튼 클릭 (우클릭)</h3>
+                    <p class="text-gray-600 break-keep">오른쪽 버튼을 누르면 숨겨져 있던 '마법 메뉴'가 나타나요!</p>
+                </div>
+                <div id="rightclick-box" class="h-40 bg-purple-50 border-2 border-dashed border-purple-300 rounded-2xl flex flex-col items-center justify-center relative cursor-context-menu hover:bg-purple-100 transition-colors">
+                    <p class="text-purple-600 font-bold mb-2 pointer-events-none select-none text-lg">4. 우클릭 연습</p>
+                    <div id="rightclick-target" class="w-16 h-16 bg-purple-200 rounded-full flex items-center justify-center text-3xl shadow-sm mb-2 hover:bg-purple-300 transition-colors pointer-events-none">❓</div>
+                    <p id="rightclick-hint" class="text-sm text-gray-500 select-none pointer-events-none text-center px-2">물음표를 마우스 오른쪽 버튼으로 눌러보세요!</p>
+                </div>
+
+            </div>
+
+            <div class="text-center">
+                <a href="https://happyhyeok.github.io/window/1_game.html" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-transform hover:scale-105 shadow-md">
+                    <i data-lucide="gamepad-2" class="w-6 h-6"></i> 신나는 마우스 연습 게임 하러 가기!
+                </a>
+            </div>
+        </section>
+
+        <!-- 전개: 탐구 4 - 키보드와 친해지기 (타자 연습의 필요성) -->
+        <section class="lesson-card bg-yellow-50/50 border-primary">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="keyboard" class="w-8 h-8 text-primary"></i>
+                <h2 class="text-2xl font-bold">탐험 4: 귀찮은 타자 연습은 왜 할까?</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6">마우스를 클릭해서 아래 입력칸을 누른 다음, 키보드로 <b>"컴퓨터야 반가워"</b> 라고 똑같이 쳐보세요!</p>
+
+            <div class="flex flex-col items-center gap-6 bg-white p-8 rounded-2xl shadow-sm border-2 border-gray-200">
+                
+                <div class="text-3xl font-black text-gray-800 tracking-widest bg-gray-100 px-8 py-3 rounded-xl shadow-inner border border-gray-200">
+                    컴퓨터야 반가워
+                </div>
+                
+                <!-- placeholder 텍스트 색상 연하게, 폰트 얇고 작게 변경 -->
+                <input type="text" id="typing-input" class="w-full max-w-lg p-5 text-center text-2xl font-bold rounded-xl border-4 border-gray-300 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none transition-all placeholder:text-gray-300 placeholder:text-lg placeholder:font-normal" placeholder="여기를 클릭하고 따라 쳐보세요!">
+                
+                <!-- 피드백 메시지 영역 -->
+                <div id="typing-feedback" class="w-full mt-2 min-h-[6rem] flex items-center justify-center">
+                    <p class="text-lg text-gray-500 font-medium text-center">
+                        키보드에서 자음과 모음을 하나하나 찾아보며 천천히 쳐도 괜찮아요! 👀
+                    </p>
+                </div>
+
+                <!-- 한컴타자연습 링크 추가 -->
+                <div class="w-full mt-4 text-center border-t-2 border-dashed border-gray-200 pt-8">
+                    <p class="text-lg text-gray-700 font-bold mb-4">내 생각대로 마법처럼 빠르게 글씨를 쓰고 싶다면?</p>
+                    <a href="https://tt.hancomtaja.com/ko" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white text-xl font-bold rounded-full hover:bg-yellow-500 transition-transform hover:scale-105 shadow-md">
+                        <i data-lucide="keyboard" class="w-6 h-6"></i> 한컴타자연습 하러 가기!
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // 아이콘 초기화
+        lucide.createIcons();
+
+        // [도입] 경험 칩 토글
+        function toggleChip(btn) {
+            btn.classList.toggle('bg-primary');
+            btn.classList.toggle('text-white');
+            btn.classList.toggle('bg-gray-100');
+            btn.classList.toggle('text-gray-600');
+            btn.style.transform = "scale(0.95)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+        }
+
+        // [탐험 1] 컴퓨터 전원 및 바탕화면 상호작용
+        let isPowerOn = false;
+        document.getElementById('power-btn').addEventListener('click', () => {
+            if(!isPowerOn) {
+                isPowerOn = true;
+                document.getElementById('power-icon').classList.replace('text-red-400', 'text-green-400');
+                document.getElementById('virtual-monitor').classList.add('screen-on');
+                document.getElementById('monitor-text').style.display = 'none';
+                
+                setTimeout(() => {
+                    document.getElementById('win-desktop').classList.remove('hidden');
+                    document.getElementById('power-feedback').classList.remove('hidden');
+                }, 800);
+            }
+        });
+
+        // 바탕화면 요소 클릭 시 정보 표시 함수
+        function showDesktopInfo(title, desc) {
+            // 이벤트 버블링 방지 (바탕화면 클릭과 아이콘 클릭 분리)
+            if (event) event.stopPropagation();
+
+            const infoBox = document.getElementById('desktop-info-box');
+            document.getElementById('desktop-info-title').textContent = title;
+            document.getElementById('desktop-info-desc').textContent = desc;
+            
+            infoBox.classList.remove('hidden');
+            
+            // 애니메이션 재시작을 위한 트릭
+            infoBox.classList.remove('animate-pulse');
+            void infoBox.offsetWidth; 
+            infoBox.classList.add('animate-pulse');
+        }
+
+        // [탐험 2] 바른 자세 카드 뒤집기
+        function checkPosture(btn) {
+            if(btn.classList.contains('bg-success/10')) return;
+
+            btn.classList.replace('bg-gray-100', 'bg-success/10');
+            btn.classList.replace('hover:bg-gray-200', 'hover:bg-success/20');
+            btn.classList.replace('border-transparent', 'border-success/40');
+            
+            const badState = btn.querySelector('.bad-state');
+            const goodState = btn.querySelector('.good-state');
+            
+            if (badState && goodState) {
+                badState.classList.add('hidden');
+                badState.classList.remove('flex');
+                
+                goodState.classList.remove('hidden');
+                goodState.classList.add('flex');
+            }
+
+            btn.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // [탐험 3] 마우스 실습 1. 클릭 (딸깍!)
+        const clickBox = document.getElementById('click-box');
+        const emojis = ['🌟', '✨', '🎈', '🎨', '🚀', '💡', '🎵'];
+        clickBox.addEventListener('click', (e) => {
+            const rect = clickBox.getBoundingClientRect();
+            const emojiElement = document.createElement('div');
+            emojiElement.className = 'click-emoji';
+            emojiElement.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emojiElement.style.left = `${e.clientX - rect.left}px`;
+            emojiElement.style.top = `${e.clientY - rect.top}px`;
+            clickBox.appendChild(emojiElement);
+            setTimeout(() => emojiElement.remove(), 500);
+        });
+
+        // [탐험 3] 마우스 실습 2. 더블클릭 (따닥!)
+        const dblclickBox = document.getElementById('dblclick-box');
+        const chest = document.getElementById('treasure-chest');
+        const dblclickHint = document.getElementById('dblclick-hint');
+        
+        dblclickBox.addEventListener('dblclick', () => {
+            chest.textContent = '💎';
+            chest.classList.add('animate-bounce');
+            dblclickHint.textContent = '참 잘했어요! 보석을 찾았네요!';
+            dblclickHint.classList.replace('text-gray-500', 'text-green-600');
+            dblclickHint.classList.add('font-bold');
+        });
+
+        // [탐험 3] 마우스 실습 3. 드래그 앤 드롭
+        const draggableItem = document.getElementById('draggable-item');
+        const dropZone = document.getElementById('drop-zone');
+        const dragHint = document.getElementById('drag-hint');
+
+        draggableItem.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', 'apple');
+            setTimeout(() => draggableItem.classList.add('opacity-50'), 0);
+        });
+        
+        draggableItem.addEventListener('dragend', () => {
+            draggableItem.classList.remove('opacity-50');
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault(); // 드롭 허용을 위해 필수
+            dropZone.classList.replace('bg-white', 'bg-yellow-100');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.replace('bg-yellow-100', 'bg-white');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const data = e.dataTransfer.getData('text/plain');
+            if(data === 'apple') {
+                dropZone.textContent = '🍎🧺';
+                draggableItem.style.display = 'none';
+                dropZone.classList.replace('bg-yellow-100', 'bg-yellow-200');
+                dropZone.classList.add('animate-bounce');
+                
+                dragHint.textContent = '성공! 사과를 담았어요!';
+                dragHint.classList.replace('text-gray-500', 'text-yellow-600');
+                dragHint.classList.add('font-bold');
+            }
+        });
+
+        // [탐험 3] 마우스 실습 4. 오른쪽 클릭 (우클릭)
+        const rightclickBox = document.getElementById('rightclick-box');
+        const rightclickTarget = document.getElementById('rightclick-target');
+        const rightclickHint = document.getElementById('rightclick-hint');
+        
+        rightclickBox.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); // 브라우저 기본 우클릭 메뉴 뜨는 것 방지
+            rightclickTarget.textContent = '🎉';
+            rightclickTarget.classList.replace('bg-purple-200', 'bg-purple-400');
+            rightclickTarget.classList.add('animate-spin');
+            rightclickTarget.classList.replace('rounded-full', 'rounded-xl'); // 모양 변화
+            
+            rightclickHint.textContent = '우클릭 성공! 마법이 일어났어요!';
+            rightclickHint.classList.replace('text-gray-500', 'text-purple-600');
+            rightclickHint.classList.add('font-bold');
+        });
+
+        // [탐험 4] 타자 연습 이벤트 리스너
+        const typingInput = document.getElementById('typing-input');
+        const targetText = "컴퓨터야 반가워";
+        
+        typingInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            
+            // 입력값이 정확히 일치할 때
+            if (val === targetText) {
+                // 성공 UI 적용
+                typingInput.classList.replace('border-gray-300', 'border-success');
+                typingInput.classList.replace('focus:border-primary', 'focus:border-success');
+                typingInput.classList.replace('focus:ring-primary/20', 'focus:ring-success/20');
+                typingInput.disabled = true; // 완료 시 더 이상 입력하지 못하도록 막음
+                
+                // 깨달음 피드백 텍스트 표시
+                const feedbackBox = document.getElementById('typing-feedback');
+                feedbackBox.innerHTML = `
+                    <div class="w-full text-left bg-yellow-100/50 p-5 rounded-xl border-2 border-primary animate-fade-in-up">
+                        <p class="text-xl font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                            <i data-lucide="party-popper" class="w-6 h-6 text-accent"></i> 🎉 참 잘했어요!
+                        </p>
+                        <p class="text-gray-800 font-medium leading-relaxed text-lg">
+                            혹시 키보드에서 글자를 찾느라 눈이 바쁘게 움직였나요?<br>
+                            지금은 시간이 걸리지만, 꾸준히 <b>타자 연습을 하면 손가락이 글자 자리를 기억해요!</b><br>
+                            나중에는 모니터만 보고도 내 생각대로 마법처럼 빠르게 글씨를 쓸 수 있답니다.<br>
+                            이것이 바로 우리가 열심히 타자 연습을 해야 하는 이유예요!
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons(); // 동적으로 추가된 아이콘 렌더링
+            }
+        });
+
+    </script>
+</body>
+</html>
