@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5학년 코딩 교과서 | 리스트와 함수</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* 5학년 공통 스타일 가이드 */
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'GmarketSansMedium', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.8;
+            margin: 0;
+            padding-bottom: 50px;
+            font-size: 1.35rem; /* 전체 글씨 크기 대폭 상향 */
+        }
+
+        .grade-5-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* [5학년] 독립 아이콘 뱃지 */
+        .grade-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+            margin-bottom: 35px;
+            margin-top: 10px;
+            border: 3px solid white;
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, var(--primary-color), #818cf8);
+            color: white;
+            padding: 60px 20px;
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 45px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .lesson-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-left: 12px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-title {
+            font-size: 2.1rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 800;
+        }
+
+        .step-green { border-left-color: var(--secondary-color); }
+        .step-green .step-title { color: var(--secondary-color); }
+        .step-orange { border-left-color: var(--accent-color); }
+        .step-orange .step-title { color: var(--accent-color); }
+        .step-purple { border-left-color: #a855f7; }
+        .step-purple .step-title { color: #a855f7; }
+
+        /* Q&A 섹션 */
+        .detective-qa {
+            background: #fff7ed;
+            border: 3px solid #fdba74;
+            padding: 30px;
+            border-radius: 25px;
+            margin: 30px 0;
+        }
+        .qa-answer { 
+            display: none; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 2px solid #fed7aa; 
+            color: #4338ca; 
+            font-weight: bold;
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+
+        /* 힌트 이미지 토글 */
+        .btn-block-view {
+            background: #f1f5f9; color: #475569; padding: 10px 20px; border-radius: 12px;
+            font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer;
+            border: 2px solid #cbd5e1; display: inline-flex; align-items: center; gap: 10px;
+        }
+        .entry-block-img { display: none; margin-top: 20px; border: 3px solid #e2e8f0; border-radius: 15px; padding: 15px; background: #f8fafc; max-width: 100%; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 미션 리스트 */
+        .mission-item { display: flex; gap: 25px; padding: 35px; border-radius: 25px; background: #f9fafb; margin-bottom: 25px; border: 2px solid #e5e7eb; }
+        .mission-label { background: #4f46e5; color: white; padding: 6px 18px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; display: inline-block; margin-bottom: 15px; }
+        .label-prep { background: #64748b; }
+        .checkbox-large { width: 40px; height: 40px; cursor: pointer; accent-color: #a855f7; margin-top: 8px; flex-shrink: 0; }
+
+        .btn-action { background-color: var(--primary-color); color: white; padding: 15px 40px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 1.4rem; }
+        
+        /* 설명 박스 스타일 */
+        .reason-box {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 1.15rem;
+            color: #0369a1;
+            line-height: 1.6;
+        }
+        
+        .thought-bubble {
+            cursor: pointer; background: #fdf2f2; border: 3px dashed #f87171; padding: 30px; border-radius: 30px; text-align: center; transition: all 0.3s ease;
+        }
+
+        .word-set-btn { transition: all 0.2s; font-size: 1.1rem !important; }
+    </style>
+</head>
+<body>
+
+<div id="toast" style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; display: none; z-index: 1000;">단어가 복사되었습니다! 📋</div>
+
+<div class="grade-5-container">
+    <!-- 상단 뱃지 -->
+    <div class="grade-badge">
+        <i class="fas fa-graduation-cap"></i> 5학년
+    </div>
+
+    <header class="lesson-header">
+        <p class="text-xl font-bold mb-3">소프트웨어 교육 과정</p>
+        <h1>🖥️ 나만의 타자 게임 만들기 가이드</h1>
+        <p class="mt-6 opacity-90 text-2xl">코딩을 왜 하는지 원리를 알면 더 재미있어요!</p>
+    </header>
+
+    <!-- 1단계: 체험 -->
+    <section class="step-card">
+        <div class="step-title"><i class="fas fa-play-circle text-indigo-500"></i> 1단계: 먼저 플레이해 봐요</div>
+        <div class="bg-slate-900 h-80 rounded-3xl mb-8 relative overflow-hidden flex items-center justify-center" id="gameArea">
+            <div id="startScreen"><button class="btn-action shadow-lg" onclick="startGame()">게임 시작하기!</button></div>
+        </div>
+        <div class="flex gap-6 mb-10">
+            <input type="text" id="gameInput" placeholder="단어 입력..." disabled class="w-full p-5 border-3 rounded-2xl text-2xl">
+            <div id="scoreDisplay" class="bg-gray-100 px-8 py-4 rounded-2xl font-black text-3xl flex items-center shadow-inner whitespace-nowrap border-2 border-gray-200">점수: 0</div>
+        </div>
+
+        <div class="thought-bubble" id="thoughtTrigger" onclick="revealExplanation()">
+            <p class="text-red-600 font-extrabold text-2xl"><i class="fas fa-question-circle mr-3"></i> 컴퓨터는 이 단어들을 어떻게 다 기억하고 있을까요? (클릭!)</p>
+        </div>
+
+        <!-- 이미지 참조(image_466377.png) 줄바꿈 반영 -->
+        <div class="explanation-box mt-8 p-10 bg-blue-50 rounded-[40px] border-4 border-blue-100" id="explanationBox" style="display:none;">
+            <h4 class="font-bold text-blue-800 mb-6 text-2xl"><i class="fas fa-microchip mr-3"></i> 컴퓨터의 기억 비법</h4>
+            <div class="text-blue-900 leading-relaxed mb-8 text-xl">
+                컴퓨터는 정보를 저장하기 위해 <span class="font-bold">‘메모리’</span>라는 아주 넓은 창고 공간을 사용해요. <br>
+                정보가 하나뿐일 때는 <span class="font-bold text-red-600">‘변수’</span>라는 상자에 담아두면 되지만,<br>
+                방금 본 단어들처럼 정보가 아주 많을 때는 수십 개의 상자를 만드는 게 너무 힘들겠죠?
+            </div>
+            <div class="border-t-2 border-blue-200 pt-8">
+                <div class="text-blue-900 leading-relaxed font-bold mb-6 text-xl">
+                    그래서 컴퓨터 과학자들은 수많은 상자를 하나로 합친 특별한 주머니를 만들었어요. <br>
+                    그 비밀의 도구를 <span class="text-indigo-600 text-3xl font-black underline">2단계</span>에서 만나볼까요? 👇
+                </div>
+            </div>
+            <button class="mt-4 w-full bg-blue-500 text-white py-5 rounded-2xl font-bold text-2xl shadow-md hover:bg-blue-600" onclick="scrollToStep2()">2단계 분석하러 가기</button>
+        </div>
+    </section>
+
+    <!-- 2단계: 분석 -->
+    <section class="step-card step-green" id="step2">
+        <div class="step-title"><i class="fas fa-brain text-emerald-500"></i> 2단계: 게임의 비밀 찾기</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-6">
+            <div class="bg-gray-50 p-8 rounded-3xl border-3 border-gray-100 flex flex-col">
+                <button class="btn-action bg-red-500 text-lg mb-6 py-4" onclick="simulateVariables()">방법 A: 변수 여러 개 만들기</button>
+                <div id="variablePreview" class="bg-white border-2 p-6 rounded-2xl min-h-[200px] flex items-center justify-center text-gray-400 italic text-lg mb-6 text-left">버튼 클릭!</div>
+                <div class="p-6 bg-red-50 rounded-2xl text-lg border-2 border-red-100 flex-1 text-left">
+                    <strong class="text-red-700 text-2xl mb-2 block">📦 변수(Variable)</strong>
+                    정보를 <span class="underline font-bold text-red-600">딱 하나</span>만 담는 상자예요.
+                    <button class="btn-block-view" onclick="toggleBlock('varImg')"><i class="fas fa-eye"></i> 관련 명령 블록 보기</button>
+                    <img id="varImg" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/5G_1_01.PNG" alt="변수 블록">
+                </div>
+            </div>
+            <div class="bg-gray-50 p-8 rounded-3xl border-3 border-gray-100 flex flex-col">
+                <button class="btn-action bg-emerald-500 text-lg mb-6 py-4" onclick="simulateList()">방법 B: 리스트 한 개 만들기</button>
+                <div id="listPreview" class="bg-white border-2 p-6 rounded-2xl min-h-[200px] flex items-center justify-center text-gray-400 italic text-lg mb-6 text-left">버튼 클릭!</div>
+                <div class="p-6 bg-emerald-50 rounded-2xl text-lg border-2 border-emerald-100 flex-1 text-left">
+                    <strong class="text-emerald-700 text-2xl mb-2 block">🗄️ 리스트(List)</strong>
+                    여러 칸이 있는 <span class="underline font-bold text-emerald-600">서랍장</span> 같아요.
+                    <button class="btn-block-view" onclick="toggleBlock('listImg')"><i class="fas fa-eye"></i> 관련 명령 블록 보기</button>
+                    <img id="listImg" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/5G_1_02.PNG" alt="리스트 블록">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 보너스: 단어 세트 -->
+    <section class="step-card step-orange">
+        <div class="step-title"><i class="fas fa-lightbulb text-amber-500"></i> 보너스: 단어 아이디어 뱅크</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <button class="word-set-btn p-4 bg-gray-100 rounded-2xl font-bold text-lg border-2 border-gray-200" onclick="showWordSet('pdf', this)">📄 PDF 단어</button>
+            <button class="word-set-btn p-4 bg-gray-100 rounded-2xl font-bold text-lg border-2 border-gray-200" onclick="showWordSet('fruit', this)">🍎 과일 세트</button>
+            <button class="word-set-btn p-4 bg-gray-100 rounded-2xl font-bold text-lg border-2 border-gray-200" onclick="showWordSet('computer', this)">💻 컴퓨터 세트</button>
+            <button class="word-set-btn p-4 bg-gray-100 rounded-2xl font-bold text-lg border-2 border-gray-200" onclick="showWordSet('city', this)">🏙️ 국내 도시</button>
+        </div>
+        <div id="wordDisplayArea" class="hidden">
+            <div class="bg-amber-50 p-8 rounded-3xl border-3 border-amber-200 flex items-center justify-between gap-6">
+                <p id="wordListText" class="text-2xl font-black text-amber-900 leading-relaxed"></p>
+                <button class="bg-amber-500 text-white px-6 py-3 rounded-xl font-bold text-xl shadow-md whitespace-nowrap" onclick="copyWords()">복사하기</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3단계: 엔트리 실습 미션 -->
+    <section class="step-card step-purple">
+        <div class="step-title"><i class="fas fa-tasks text-purple-500"></i> 3단계: 엔트리 실습 미션 도전!</div>
+        
+        <div class="space-y-10">
+            <!-- 준비 -->
+            <div class="mission-item border-l-[15px] border-gray-400">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label label-prep">준비</span>
+                    <p class="font-bold text-3xl">엔트리 접속 및 로그인</p>
+                    <p class="text-xl text-gray-600 mt-3">엔트리에 접속해서 로그인한 후, <b>[작품 만들기]</b>에 접속하세요.</p>
+                    <div class="reason-box"><i class="fas fa-info-circle"></i> <b>왜 하나요?</b> 로그인을 해야 내가 만든 소중한 작품을 저장하고 친구들에게 자랑할 수 있어요!</div>
+                </div>
+            </div>
+
+            <!-- 미션 1 -->
+            <div class="mission-item border-l-[15px] border-indigo-400">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label">미션 1</span>
+                    <p class="font-bold text-3xl">기본 오브젝트 세팅</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="bg-white p-5 rounded-2xl border-2 border-slate-200"><span class="font-black text-indigo-600 text-xl">배경 / 진행자 / 글상자 / 폭탄</span></div>
+                    </div>
+                    <div class="reason-box"><i class="fas fa-info-circle"></i> <b>왜 하나요?</b> 연극을 하려면 무대와 배우가 필요하듯, 게임에도 무대가 되는 배경과 역할을 수행할 오브젝트가 필요합니다.</div>
+                </div>
+            </div>
+
+            <!-- 미션 2 -->
+            <div class="mission-item border-l-[15px] border-emerald-400">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label">미션 2</span>
+                    <p class="font-bold text-3xl text-emerald-700">단어 복제본 만들기와 랜덤 글쓰기</p>
+                    <div class="text-xl text-gray-700 mt-5 bg-white p-6 rounded-2xl border-2 border-emerald-200">
+                        <ol class="list-decimal ml-8 space-y-3">
+                            <li>일정한 간격(4초)마다 <b>[자신의 복제본 만들기]</b>를 하세요.</li>
+                            <li><b>[복제본이 생성되었을 때]</b> 위치를 정하고 <b>[리스트의 무작위 번째 항목]</b>을 글쓰기 하세요.</li>
+                        </ol>
+                    </div>
+                    <div class="reason-box"><i class="fas fa-info-circle"></i> <b>왜 하나요?</b> 하늘에서 단어 하나만 달랑 떨어지면 재미없겠죠? '복제본'을 쓰면 하나의 글상자로 수많은 단어를 계속 찍어낼 수 있어요.</div>
+                    <button class="btn-block-view mt-6 bg-white" onclick="toggleBlock('hintImg2')"><i class="fas fa-puzzle-piece"></i> 글쓰기 힌트 보기</button>
+                    <img id="hintImg2" class="entry-block-img border-emerald-300" src="https://happyhyeok.github.io/afterschool/5G_1_04.PNG" alt="힌트">
+                </div>
+            </div>
+
+            <!-- 코딩 탐정 미션 -->
+            <div class="detective-qa">
+                <div class="qa-question"><i class="fas fa-user-secret text-3xl"></i><span class="font-bold text-2xl">잠깐! 글상자 하나만 쓰면 단어가 <b>동시에 여러 개</b> 떨어지게 할 수 있을까요?</span></div>
+                <button class="btn-action bg-orange-500 text-xl py-3 mb-4 mt-4" onclick="revealAnswer('ans1')">정답 확인하기</button>
+                <div id="ans1" class="qa-answer text-2xl leading-relaxed">
+                    💡 아니요! <span class="text-indigo-600">‘자신의 복제본 만들기’</span> 기능을 사용하면<br> 
+                    붕어빵 틀(글상자) 하나로 붕어빵(단어들)을<br> 
+                    계속 찍어낼 수 있답니다!
+                </div>
+            </div>
+
+            <!-- 미션 3 -->
+            <div class="mission-item border-l-[15px] border-blue-400">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label">미션 3</span>
+                    <p class="font-bold text-3xl text-blue-700">'낙하하는 단어' 함수 정의하기</p>
+                    <div class="text-xl text-gray-700 mt-5 bg-white p-6 rounded-2xl border-2 border-blue-200">
+                        <ol class="list-decimal ml-8 space-y-3">
+                            <li>함수 이름을 <span class="font-bold text-purple-700">'낙하하는 단어'</span>로 정하세요.</li>
+                            <li><b>[아래쪽 벽에 닿았는가? 까지 반복하기]</b> 안에 <b>[y좌표 바꾸기]</b>를 넣으세요.</li>
+                        </ol>
+                    </div>
+                    <div class="reason-box"><i class="fas fa-info-circle"></i> <b>왜 하나요?</b> 복제본이 생길 때마다 복잡한 '떨어지기' 코드를 복사해서 붙이는 건 너무 힘들어요. '함수' 상자에 담아두면 이름만 불러서 바로 쓸 수 있어 코드가 깔끔해집니다.</div>
+                    <button class="btn-block-view mt-6 bg-white" onclick="toggleBlock('hintImg3')"><i class="fas fa-puzzle-piece"></i> 함수 정의 힌트 보기</button>
+                    <img id="hintImg3" class="entry-block-img border-indigo-300" src="https://happyhyeok.github.io/afterschool/5G_1_03.PNG" alt="힌트">
+                </div>
+            </div>
+
+            <!-- 변수 탐정 미션 -->
+            <div class="detective-qa">
+                <div class="qa-question"><i class="fas fa-calculator text-3xl"></i><span class="font-bold text-2xl">정답을 맞힐 때마다 점수를 올려야 해요. 왜 <span class="text-red-600">‘점수 변수’</span>가 필요할까요?</span></div>
+                <button class="btn-action bg-orange-500 text-xl py-3 mb-4 mt-4" onclick="revealAnswer('ans2')">정답 확인하기</button>
+                <div id="ans2" class="qa-answer text-2xl leading-relaxed">
+                    💡 단어 복제본들은 정답을 맞히면 사라져버려요!<br> 
+                    복제본이 사라져도 내가 얻은 점수를 컴퓨터가 <span class="text-indigo-600">따로 저장해서 기억</span>하려면<br> 
+                    ‘점수’라는 이름의 상자(변수)가 꼭 필요합니다.
+                </div>
+            </div>
+
+            <!-- 미션 4 -->
+            <div class="mission-item border-l-[15px] border-blue-600">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label">미션 4</span>
+                    <p class="font-bold text-3xl text-blue-800">사용자 입력창과 정답 체크</p>
+                    
+                    <div class="text-xl text-gray-700 mt-6 space-y-6">
+                        <div class="bg-indigo-50 p-6 rounded-2xl border-2 border-indigo-200">
+                            <p class="font-bold text-indigo-800 mb-3 text-2xl">👤 1. 게임 진행자 (입력창 만들기):</p>
+                            <p><b>[계속 반복하기]</b>를 사용하여 <b>[안녕! 을(를) 묻고 대답 기다리기]</b> 블록을 넣으세요. (질문 내용은 지워주세요)</p>
+                            <div class="reason-box bg-white border-indigo-200 text-indigo-600 text-lg">
+                                <i class="fas fa-keyboard"></i> <b>왜 하나요?</b> '묻고 기다리기' 블록을 써야만<br>
+                                화면 아래에 이용자가 타자를 칠 수 있는 <b>'입력 공간'</b>이 생기기 때문이에요!
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-200">
+                            <p class="font-bold text-emerald-800 mb-3 text-2xl">📄 2. 글상자 (정답 확인하기):</p>
+                            <p>미션 3에서 만든 <b>함수 반복문 안</b>에 [만일 <b>글상자 자신 의 내용 = 대답</b> 이라면] 블록을 추가하여 점수를 올리고 복제본을 삭제하세요.</p>
+                            <div class="reason-box bg-white border-emerald-200 text-emerald-600 text-lg">
+                                <i class="fas fa-check-double"></i> <b>왜 하나요?</b> 컴퓨터가 이용자가 입력한 타자(대답)와<br>
+                                화면의 단어가 똑같은지 매 순간 검사하게 하기 위해서예요.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 5 -->
+            <div class="mission-item border-l-[15px] border-orange-400">
+                <input type="checkbox" class="checkbox-large">
+                <div class="flex-1">
+                    <span class="mission-label">미션 5</span>
+                    <p class="font-bold text-3xl text-orange-700">속도 조절로 난이도 올리기</p>
+                    <ul class="text-xl text-gray-600 mt-5 list-disc ml-10 space-y-3">
+                        <li>y좌표를 바꾸는 숫자를 '속도' 변수로 바꾸고, 점수가 올라가면 속도값을 더 크게 조절하세요.</li>
+                    </ul>
+                    <div class="reason-box"><i class="fas fa-info-circle"></i> <b>왜 하나요?</b> 게임이 계속 똑같은 속도면 지루하겠죠? 실력이 늘어날수록 단어가 더 빨리 떨어지게 해서 긴장감을 더해주는 과정입니다.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4단계: 정리 -->
+    <section class="step-card">
+        <div class="step-title"><i class="fas fa-check-double text-indigo-500"></i> 4단계: 핵심 콕콕 정리</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="p-8 bg-indigo-50 rounded-3xl border-2 border-indigo-100"><p class="text-sm font-bold mb-2">데이터 주머니</p><p class="font-black text-indigo-700 text-3xl">리스트</p></div>
+            <div class="p-8 bg-indigo-50 rounded-3xl border-2 border-indigo-100"><p class="text-sm font-bold mb-2">정리 상자</p><p class="font-black text-indigo-700 text-3xl">함수</p></div>
+            <div class="p-8 bg-indigo-50 rounded-3xl border-2 border-indigo-100"><p class="text-sm font-bold mb-2">기억하는 상자</p><p class="font-black text-indigo-700 text-3xl">변수</p></div>
+        </div>
+    </section>
+</div>
+
+<script>
+    let currentWords = ["사과", "바나나", "컴퓨터", "엔트리", "리스트", "함수", "코딩", "초콜릿", "학교", "운동장"];
+    let score = 0;
+    let gameActive = false;
+    const gameArea = document.getElementById('gameArea');
+    const gameInput = document.getElementById('gameInput');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+
+    function revealExplanation() {
+        document.getElementById('explanationBox').style.display = 'block';
+        document.getElementById('thoughtTrigger').innerHTML = '<i class="fas fa-check-circle mr-3"></i> 비법을 찾았습니다!';
+        document.getElementById('thoughtTrigger').style.opacity = '0.6';
+    }
+
+    function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+    function scrollToStep2() { document.getElementById('step2').scrollIntoView({ behavior: 'smooth' }); }
+    function toggleBlock(id) {
+        const img = document.getElementById(id);
+        img.style.display = (img.style.display === 'block') ? 'none' : 'block';
+    }
+
+    const wordSets = {
+        pdf: ["눈곱", "널빤지", "날갯짓", "바늘", "꼴불견", "강낭콩", "무궁화", "소프트웨어", "단출하다", "해질녘"],
+        fruit: ["사과", "바나나", "포도", "수박", "딸기", "참외", "멜론", "키위", "망고", "복숭아"],
+        computer: ["마우스", "키보드", "모니터", "본체", "프린터", "인터넷", "스피커", "카메라", "폴더", "파일"],
+        city: ["서울", "부산", "대구", "인천", "광주", "대전", "울산", "수원", "창원", "제주"]
+    };
+
+    function showWordSet(type, btn) {
+        document.querySelectorAll('.word-set-btn').forEach(b => {
+            b.classList.remove('bg-indigo-500', 'text-white');
+            b.classList.add('bg-gray-100', 'text-black');
+        });
+        btn.classList.remove('bg-gray-100', 'text-black');
+        btn.classList.add('bg-indigo-500', 'text-white');
+        document.getElementById('wordDisplayArea').classList.remove('hidden');
+        document.getElementById('wordListText').innerText = wordSets[type].join(", ");
+        document.getElementById('wordListText').dataset.currentSet = wordSets[type].join(", ");
+        currentWords = wordSets[type];
+    }
+
+    function copyWords() {
+        const text = document.getElementById('wordListText').dataset.currentSet;
+        if(!text) return;
+        const tempInput = document.createElement("textarea");
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    function simulateVariables() {
+        const preview = document.getElementById('variablePreview');
+        preview.innerHTML = '';
+        currentWords.forEach((w, i) => {
+            const block = document.createElement('span');
+            block.className = 'bg-red-100 border border-red-300 text-red-700 text-xs px-2 py-0.5 my-0.5 rounded block w-full text-left';
+            block.innerText = `단어${i+1} = "${w}"`;
+            preview.appendChild(block);
+        });
+        preview.className = "bg-white border-2 p-6 rounded-2xl min-h-[200px] overflow-y-auto block animate-fadeIn";
+    }
+
+    function simulateList() {
+        const preview = document.getElementById('listPreview');
+        preview.innerHTML = `<div class="bg-green-100 border-3 border-green-500 text-green-800 p-6 rounded-2xl w-full text-left"><div class="text-lg font-bold">단어_리스트 = [</div><div class="pl-6 text-base text-gray-600">${currentWords.map(w => `"${w}"`).join(',<br>')}</div><div class="text-lg font-bold">]</div></div>`;
+        preview.className = "bg-white border-2 p-6 rounded-2xl min-h-[200px] flex items-center justify-center animate-fadeIn";
+    }
+
+    function startGame() {
+        document.getElementById('startScreen').style.display = 'none';
+        gameInput.disabled = false;
+        gameInput.focus();
+        gameActive = true;
+        score = 0;
+        updateScore();
+        spawnWord();
+    }
+
+    function spawnWord() {
+        if (!gameActive) return;
+        const word = currentWords[Math.floor(Math.random() * currentWords.length)];
+        const wordElement = document.createElement('div');
+        wordElement.className = 'falling-word shadow-md px-4 py-2 bg-white/20 rounded-full text-white font-bold absolute whitespace-nowrap text-xl';
+        wordElement.innerText = word;
+        wordElement.style.left = Math.random() * (gameArea.clientWidth - 150) + 'px';
+        wordElement.style.top = '0px';
+        gameArea.appendChild(wordElement);
+        fall(wordElement);
+        setTimeout(spawnWord, 2000);
+    }
+
+    function fall(el) {
+        let top = 0;
+        const interval = setInterval(() => {
+            if (!gameActive) { clearInterval(interval); el.remove(); return; }
+            top += 2;
+            el.style.top = top + 'px';
+            if (top > gameArea.clientHeight - 50) { clearInterval(interval); el.remove(); }
+        }, 40);
+        el.dataset.intervalId = interval;
+    }
+
+    gameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const val = gameInput.value.trim();
+            document.querySelectorAll('.falling-word').forEach(w => {
+                if (w.innerText === val) {
+                    clearInterval(w.dataset.intervalId);
+                    w.remove();
+                    score += 10;
+                    updateScore();
+                }
+            });
+            gameInput.value = '';
+        }
+    });
+
+    function updateScore() { scoreDisplay.innerText = `점수: ${score}`; }
+</script>
+
+</body>
+</html>
