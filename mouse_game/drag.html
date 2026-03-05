@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>드래그 마법</title>
+    <style>
+        body { font-family: 'Nanum Gothic', sans-serif; background-color: #f0f8ff; display: flex; flex-direction: column; align-items: center; overflow: hidden; margin: 0; user-select: none; }
+        #home-btn { position: fixed; top: 20px; left: 20px; padding: 10px 20px; font-size: 18px; cursor: pointer; border-radius: 10px; background: #4a90e2; color: white; border: none; z-index: 100; }
+        #game-container { width: 800px; height: 500px; background-color: white; border: 5px solid #4a90e2; border-radius: 20px; position: relative; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .level-info { font-size: 24px; font-weight: bold; color: #333; margin-top: 60px; }
+        .item { font-size: 50px; position: absolute; cursor: grab; z-index: 10; }
+        .target { width: 150px; height: 150px; border: 4px dashed #ff6b6b; border-radius: 20px; position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #fff5f5; }
+        #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; display: none; z-index: 100; border: 3px solid #4a90e2; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        button.next-btn { padding: 10px 20px; font-size: 20px; background-color: #4a90e2; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <button id="home-btn" onclick="location.href='index.html'">🏠 대문으로</button>
+    <div class="level-info" id="level-display">3단계: 드래그 마법</div>
+    <p>마우스 왼쪽 버튼을 꾹 누른 채로 옮기세요!</p>
+
+    <div id="game-container"></div>
+
+    <div id="message">
+        <h2 id="msg-text">참 잘했어요! 👏</h2>
+        <button class="next-btn" onclick="nextLevel()">다음 단계</button>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        const container = document.getElementById('game-container');
+        const levelDisplay = document.getElementById('level-display');
+        const messageBox = document.getElementById('message');
+        
+        const levels = [
+            { title: "1단계: 보석을 상자에 넣어요! 💎", items: ['💎'], target: '📦', count: 1 },
+            { title: "2단계: 배고픈 원숭이에게 바나나를! 🍌", items: ['🍌', '🍌', '🍌'], target: '🐒', count: 3 },
+            { title: "3단계: 바다 쓰레기를 치워요! 🌊", items: ['🥤', '🥡', '🍼', '🔋'], target: '🗑️', count: 4 },
+            { title: "4단계: 동물 친구들을 집으로! 🏠", items: ['🐶', '🐱', '🐭', '🐰', '🦊'], target: '🏠', count: 5 },
+            { title: "5단계: 우주 정거장 수리하기! 🚀", items: ['🔧', '⚙️', '🔨', '🔩', '🔋', '🔌'], target: '🚀', count: 6 }
+        ];
+
+        function initLevel(lv) {
+            container.innerHTML = '';
+            messageBox.style.display = 'none';
+            const data = levels[lv - 1];
+            levelDisplay.innerText = data.title;
+
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.style.right = '50px';
+            target.style.top = '175px';
+            target.innerHTML = `<div style="font-size:60px">${data.target}</div>`;
+            container.appendChild(target);
+
+            let itemsReached = 0;
+            data.items.forEach((emoji, index) => {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerText = emoji;
+                item.style.left = '50px';
+                item.style.top = (50 + (index * 70)) + 'px';
+                
+                makeDraggable(item, target, () => {
+                    itemsReached++;
+                    item.style.visibility = 'hidden';
+                    if (itemsReached === data.count) { messageBox.style.display = 'block'; }
+                });
+                container.appendChild(item);
+            });
+        }
+
+        function makeDraggable(elmnt, target, onReach) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elmnt.onmousedown = (e) => {
+                e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = () => {
+                    document.onmouseup = null; document.onmousemove = null;
+                    const r1 = elmnt.getBoundingClientRect(); const r2 = target.getBoundingClientRect();
+                    if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) onReach();
+                };
+                document.onmousemove = (e) => {
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX; pos4 = e.clientY;
+                    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                };
+            };
+        }
+
+        function nextLevel() {
+            if (currentLevel < 5) { currentLevel++; initLevel(currentLevel); } 
+            else { location.href='index.html'; }
+        }
+        initLevel(1);
+    </script>
+</body>
+</html>
