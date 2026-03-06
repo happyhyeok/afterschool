@@ -40,6 +40,43 @@
             padding: 24px;
         }
 
+        /* 시뮬레이션 캔버스 스타일 */
+        #gameCanvas {
+            background-color: #808080;
+            border: 4px solid #333;
+            border-radius: 12px;
+            width: 100%;
+            height: auto;
+            max-width: 480px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .status-bubble {
+            position: absolute;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            border: 2px solid #4f46e5;
+            font-weight: bold;
+            display: none;
+            pointer-events: none;
+            z-index: 50;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .status-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent transparent;
+        }
+
         .hint-box {
             display: none;
             background: #fefce8;
@@ -172,6 +209,33 @@
         </div>
     </div>
 
+    <!-- NEW: 작품 미리보기 시뮬레이션 Section -->
+    <div class="step-card border-l-8 border-indigo-500">
+        <div class="step-header"><span>📺</span> 작품 작동 미리보기</div>
+        <div class="content-body bg-slate-50">
+            <p class="text-sm text-slate-600 mb-4 text-center italic">"우리가 오늘 만들 완성 작품의 모습이에요. 아래 시작 버튼을 눌러보세요!"</p>
+            
+            <div class="relative w-full overflow-hidden mb-6">
+                <canvas id="gameCanvas" width="480" height="360"></canvas>
+                <!-- Speech Bubble -->
+                <div id="speechBubble" class="status-bubble">사고!!</div>
+            </div>
+
+            <div class="flex justify-center gap-3">
+                <button id="startBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition-all active:scale-95">
+                    시뮬레이션 시작
+                </button>
+                <button id="resetBtn" class="bg-slate-400 hover:bg-slate-500 text-white px-6 py-2 rounded-lg font-bold shadow-md transition-all active:scale-95">
+                    처음으로
+                </button>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <span id="gameStatus" class="text-sm font-bold text-indigo-600">준비 완료</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Step 1 -->
     <div class="step-card">
         <div class="step-header"><span>1</span> 오브젝트와 시작 위치</div>
@@ -300,11 +364,149 @@
     </section>
 
     <script>
+        // --- UI 함수 ---
         function toggleHint(id) {
             const hint = document.getElementById(id);
             hint.style.display = (hint.style.display === 'block') ? 'none' : 'block';
         }
 
+        function toggleQuizHint(idx) {
+            const hint = document.getElementById(`q-hint-${idx}`);
+            hint.style.display = (hint.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // --- 시뮬레이션 로직 (PDF 분석 기반) ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const speechBubble = document.getElementById('speechBubble');
+        const gameStatus = document.getElementById('gameStatus');
+
+        let isRunning = false;
+        let animationId;
+
+        // 엔트리봇 객체
+        const entrybot = {
+            x: 240, y: 320, targetY: 40, speed: 2, 
+            alive: true, success: false
+        };
+
+        // 자동차 객체 (설계서: 속도 4, 튕기기 포함)
+        const cars = [
+            { x: 100, y: 150, speed: 4, color: '#facc15' }, // 자동차 1 (노랑)
+            { x: 380, y: 230, speed: -4, color: '#ef4444' } // 자동차 2 (빨강)
+        ];
+
+        function drawBackground() {
+            // 도로
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(0, 80, 480, 200);
+            // 차선
+            ctx.setLineDash([20, 20]);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 180); ctx.lineTo(480, 180);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // 건너편 & 시작점 (초록 잔디)
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(0, 0, 480, 80);
+            ctx.fillRect(0, 280, 480, 80);
+        }
+
+        function drawEntrybot() {
+            ctx.save();
+            ctx.translate(entrybot.x, entrybot.y);
+            // 몸통
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath(); ctx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2); ctx.fill();
+            // 머리
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(0, -15, 12, 0, Math.PI * 2); ctx.fill();
+            // 눈
+            ctx.fillStyle = 'black';
+            ctx.fillRect(-5, -18, 3, 3); ctx.fillRect(2, -18, 3, 3);
+            ctx.restore();
+        }
+
+        function drawCar(car) {
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x - 30, car.y - 15, 60, 30);
+            ctx.fillStyle = 'black'; // 바퀴
+            ctx.fillRect(car.x - 25, car.y + 10, 10, 5); ctx.fillRect(car.x + 15, car.y + 10, 10, 5);
+        }
+
+        function showSpeech(text, x, y) {
+            const rect = canvas.getBoundingClientRect();
+            speechBubble.innerText = text;
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = (x / 480 * rect.width) + 'px';
+            speechBubble.style.top = (y / 360 * rect.height - 40) + 'px';
+        }
+
+        function updateSimulation() {
+            if (!isRunning) return;
+
+            // 자동차 이동 (화면 끝에 닿으면 튕기기 로직)
+            cars.forEach(car => {
+                car.x += car.speed;
+                if (car.x > 460 || car.x < 20) car.speed *= -1;
+
+                // 충돌 감지 (쿵 신호 로직)
+                if (entrybot.alive && !entrybot.success) {
+                    if (Math.abs(entrybot.x - car.x) < 40 && Math.abs(entrybot.y - car.y) < 30) {
+                        entrybot.alive = false;
+                        gameStatus.innerText = "💥 사고 발생 (쿵 신호)";
+                        showSpeech("사고!!", entrybot.x, entrybot.y);
+                    }
+                }
+            });
+
+            // 엔트리봇 이동 (건너편 닿을 때까지 반복)
+            if (entrybot.alive && !entrybot.success) {
+                entrybot.y -= entrybot.speed;
+                if (entrybot.y <= entrybot.targetY) {
+                    entrybot.success = true;
+                    gameStatus.innerText = "🎉 길 건너기 성공!";
+                    showSpeech("길건너기 성공!", entrybot.x, entrybot.y);
+                }
+            }
+
+            // 그리기
+            ctx.clearRect(0, 0, 480, 360);
+            drawBackground();
+            drawEntrybot();
+            cars.forEach(drawCar);
+
+            animationId = requestAnimationFrame(updateSimulation);
+        }
+
+        function resetSimulation() {
+            cancelAnimationFrame(animationId);
+            isRunning = false;
+            entrybot.y = 320;
+            entrybot.alive = true;
+            entrybot.success = false;
+            cars[0].x = 100; cars[1].x = 380;
+            speechBubble.style.display = 'none';
+            gameStatus.innerText = "준비 완료";
+            ctx.clearRect(0, 0, 480, 360);
+            drawBackground();
+            drawEntrybot();
+            cars.forEach(drawCar);
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (isRunning) return;
+            resetSimulation();
+            isRunning = true;
+            gameStatus.innerText = "게임 실행 중...";
+            updateSimulation();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', resetSimulation);
+
+        // --- 퀴즈 데이터 ---
         const quizzes = [
             {
                 q: "1. 주인공 알고리즘에서 '계속 반복하기' 블록 안에 조건을 넣는 이유는 무엇인가요?",
@@ -353,14 +555,13 @@
                     <p class="font-bold mb-4 text-gray-800 text-xl"><span class="text-indigo-600 mr-2">Q${qIdx+1}.</span>${quiz.q}</p>
                     <div class="options-wrapper">${optionsHtml}</div>
                     <button class="text-sm text-indigo-500 font-semibold mt-4 flex items-center gap-1" onclick="toggleQuizHint(${qIdx})">
-                        🔍 힌트 보기
+                        🔍 원리 힌트 보기
                     </button>
                     <div id="q-hint-${qIdx}" class="quiz-hint-text">💡 ${quiz.hint}</div>
                 `;
                 container.appendChild(qDiv);
             });
 
-            // Add click events
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const qIdx = parseInt(this.getAttribute('data-q'));
@@ -370,30 +571,26 @@
             });
         }
 
-        function toggleQuizHint(idx) {
-            const hint = document.getElementById(`q-hint-${idx}`);
-            hint.style.display = (hint.style.display === 'block') ? 'none' : 'block';
-        }
-
         function checkIndividualAnswer(btn, qIdx, oIdx) {
             const isCorrect = oIdx === quizzes[qIdx].correct;
             const parent = btn.closest('.options-wrapper');
             const allOptions = parent.querySelectorAll('.quiz-option');
 
             if (isCorrect) {
-                // If correct, mark it and disable others
                 btn.classList.add('correct');
                 btn.innerHTML = "✅ " + quizzes[qIdx].a[oIdx] + " (정답입니다!)";
                 allOptions.forEach(opt => opt.disabled = true);
             } else {
-                // If wrong, just mark this one as wrong
                 btn.classList.add('wrong');
                 btn.innerHTML = "❌ " + quizzes[qIdx].a[oIdx] + " (다시 생각해보세요)";
-                btn.disabled = true; // Only disable this wrong option
+                btn.disabled = true;
             }
         }
 
-        window.onload = loadQuiz;
+        window.onload = () => {
+            resetSimulation();
+            loadQuiz();
+        };
     </script>
 </body>
 </html>
