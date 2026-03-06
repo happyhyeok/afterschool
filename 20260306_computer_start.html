@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1회차: 안녕, 컴퓨터! 마우스 탐험대</title>
+    
+    <!-- 테일윈드 설정 추가 (버튼 색상 복구) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            word-break: keep-all;
+        }
+        h1, h2, h3, .gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+            border: 6px solid white;
+        }
+        .nav-btn {
+            transition: all 0.3s;
+            font-size: 1.2rem;
+        }
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #855d00;
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
+
+        /* 1단계 생각열기 버튼(칩) 스타일 */
+        .experience-chip {
+            transition: all 0.2s;
+        }
+        .experience-chip:hover {
+            background-color: #fef3c7;
+        }
+        .experience-chip.active {
+            background-color: var(--primary) !important;
+            color: #713f12 !important; /* 클릭 시 잘 보이는 진한 갈색 */
+            border-color: #d97706 !important; /* 주황색 테두리 */
+        }
+
+        .click-emoji {
+            position: absolute;
+            font-size: 2.5rem;
+            transform: translate(-50%, -50%);
+            animation: pop 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1.5); opacity: 0; }
+        }
+
+        /* 텍스트 부드러운 애니메이션 (카드 밖으로 안 나가게) */
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-bounce-gentle {
+            animation: bounce-gentle 1.5s infinite ease-in-out;
+        }
+
+        /* 자세 카드 스타일 (테일윈드 fixed 충돌 해결) */
+        .posture-card {
+            height: 14rem;
+            position: relative;
+            display: block;
+            width: 100%;
+            border-radius: 1.5rem;
+            border-width: 4px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .posture-card.is-resolved {
+            background-color: #ecfdf5 !important;
+            border-color: #34d399 !important;
+        }
+
+        /* 다음 단계 이동 버튼 스타일 */
+        .next-step-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: white;
+            color: #374151;
+            padding: 1.25rem 2.5rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 4px solid #e5e7eb;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .next-step-link:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- 헤더 -->
+    <header class="bg-white border-b-8 border-primary p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary p-3 rounded-2xl shadow-inner">
+                    <i data-lucide="monitor" class="w-10 h-10 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">1회차: 안녕, 컴퓨터!</h1>
+                    <p class="text-lg md:text-xl text-yellow-600 font-bold">마우스와 키보드 탐험대</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex gap-2">
+                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 생각열기</button>
+                <button onclick="showStep(2)" class="nav-btn bg-white border-4 border-secondary px-4 py-2 rounded-full font-bold">2. 바른자세</button>
+                <button onclick="showStep(3)" class="nav-btn bg-white border-4 border-success px-4 py-2 rounded-full font-bold">3. 마우스잡기</button>
+                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-accent px-4 py-2 rounded-full font-bold">4. 클릭연습</button>
+                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-purple-400 px-4 py-2 rounded-full font-bold">5. 타자연습</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-5xl p-6 mt-4">
+
+        <!-- 1단계: 생각 열기 -->
+        <section id="step1" class="step-content active space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="lightbulb" class="w-12 h-12 text-primary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">컴퓨터는 어디에 있을까요?</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    우리 주변에는 다양한 모양의 컴퓨터가 숨어있어요.<br>
+                    <span class="text-secondary font-extrabold">내가 직접 보거나 사용해 본 것</span>을 모두 눌러보세요!
+                </p>
+                
+                <!-- 칩 스타일 변경: .experience-chip 클래스 추가 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="experience-chips">
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">📱 스마트폰</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🍔 키오스크</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">📺 유튜브 TV</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🤖 로봇청소기</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🏫 학교 태블릿</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🎮 게임기</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">⌚ 스마트워치</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🗣️ AI 스피커</button>
+                    <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">📸 디지털카메라</button>
+                </div>
+
+                <div class="mt-10 p-8 bg-blue-50 rounded-3xl border-4 border-dashed border-blue-200 text-center">
+                    <p class="text-3xl font-bold text-blue-700 leading-tight mb-8">
+                        "와! 정말 많죠? 오늘은 이 중에서도 책상 위에 있는 <br>
+                        <span class="text-accent underline underline-offset-8 font-black">진짜 컴퓨터</span>와 친해져 볼 거예요!"
+                    </p>
+                    
+                    <button onclick="showStep(2)" class="next-step-link">
+                        컴퓨터를 사용할 때 지켜야 할 일 알아보기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2단계: 바른 자세 -->
+        <section id="step2" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="user-check" class="w-12 h-12 text-secondary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">몸이 건강해지는 바른 자세</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    컴퓨터를 오래 해도 몸이 아프지 않으려면 약속이 필요해요.<br>
+                    <span class="text-accent font-bold">나쁜 자세를 클릭해서</span> 바르게 고쳐주세요! (6개를 찾아보세요)
+                </p>
+
+                <!-- 그리드 충돌 해결을 위한 구조 변경 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">😫</div>
+                            <p class="text-xl font-bold text-gray-800">얼굴을 모니터에<br>너무 가까이 대요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">👀 50cm 거리를<br>유지해요!</p>
+                        </div>
+                    </button>
+                    
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🥨</div>
+                            <p class="text-xl font-bold text-gray-800">허리를 구부정하게<br>굽히고 앉아요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">🪑 등받이에 등을<br>꼭 붙여요!</p>
+                        </div>
+                    </button>
+
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🦵</div>
+                            <p class="text-xl font-bold text-gray-800">다리를 꼬고<br>앉아 있어요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">👣 두 발을 바닥에<br>나란히!</p>
+                        </div>
+                    </button>
+
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🔨</div>
+                            <p class="text-xl font-bold text-gray-800">키보드를 쾅쾅<br>세게 쳐요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">⌨️ 키보드는 살살<br>부드럽게!</p>
+                        </div>
+                    </button>
+
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">😵</div>
+                            <p class="text-xl font-bold text-gray-800">쉬지 않고<br>계속 컴퓨터를 해요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">⏰ 50분마다 꼭<br>쉬어요!</p>
+                        </div>
+                    </button>
+
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🌑</div>
+                            <p class="text-xl font-bold text-gray-800">어두운 곳에서<br>화면만 봐요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">💡 방 불을 밝게<br>켜요!</p>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="text-center p-8 bg-gray-50 rounded-3xl border-4 border-dashed border-gray-200">
+                    <button onclick="showStep(3)" class="next-step-link">
+                        마우스 잡는 방법 배우러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3단계: 마우스 파지법 -->
+        <section id="step3" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="mouse-pointer-2" class="w-12 h-12 text-success"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">마우스는 어떻게 잡을까요?</h2>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-12 mb-12">
+                    <div class="relative bg-gray-50 p-10 rounded-full border-8 border-white shadow-inner">
+                        <svg width="240" height="340" viewBox="0 0 200 300" class="drop-shadow-xl">
+                            <rect x="10" y="10" width="180" height="280" rx="90" fill="#e2e8f0" stroke="#94a3b8" stroke-width="8"/>
+                            <line x1="100" y1="10" x2="100" y2="120" stroke="#94a3b8" stroke-width="8"/>
+                            <line x1="10" y1="120" x2="190" y2="120" stroke="#94a3b8" stroke-width="8"/>
+                            <rect id="index-sticker" x="25" y="30" width="65" height="75" rx="15" fill="#EF476F" class="animate-pulse" />
+                            <text x="32" y="75" fill="white" font-weight="bold" font-size="16">검지</text>
+                            <rect x="110" y="30" width="65" height="75" rx="15" fill="#4EA8DE" opacity="0.6" />
+                            <text x="120" y="75" fill="white" font-weight="bold" font-size="16">중지</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="space-y-6 text-left">
+                        <div class="p-8 bg-pink-50 rounded-3xl border-l-8 border-accent">
+                            <p class="text-3xl font-black text-accent mb-3">⭐ 제일 중요한 손가락!</p>
+                            <p class="text-2xl text-gray-700 leading-relaxed">빨간 스티커가 붙은 <strong>왼쪽 버튼</strong> 위에 <br><span class="bg-yellow-200 px-2">두 번째 손가락(검지)</span>을 올려요.</p>
+                        </div>
+                        <div class="p-8 bg-blue-50 rounded-3xl border-l-8 border-secondary">
+                            <p class="text-2xl text-gray-700 leading-relaxed">나머지 손가락으로는 마우스를 <br><strong>달걀 쥐듯이 살포시</strong> 감싸주세요.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 추가된 마우스 기능 설명 영역 -->
+                <div class="mt-8 border-t-4 border-dashed border-gray-200 pt-10 mb-12">
+                    <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">✨ 마우스가 할 수 있는 세 가지 마법!</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- 1. 클릭 -->
+                        <div class="bg-white border-4 border-red-200 p-6 rounded-3xl shadow-sm text-center hover:scale-105 transition-transform">
+                            <svg width="120" height="140" viewBox="0 -30 100 170" class="mx-auto mb-2">
+                                <defs>
+                                    <clipPath id="mouse-clip-1">
+                                        <rect x="10" y="20" width="80" height="110" rx="35" />
+                                    </clipPath>
+                                </defs>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="white" stroke="#94a3b8" stroke-width="6"/>
+                                <g clip-path="url(#mouse-clip-1)">
+                                    <rect x="10" y="20" width="40" height="45" fill="#EF476F" opacity="0.8"/>
+                                </g>
+                                <line x1="50" y1="20" x2="50" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <line x1="10" y1="65" x2="90" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="none" stroke="#94a3b8" stroke-width="6"/>
+                                <text x="30" y="0" font-size="28" font-family="'Gaegu', cursive" font-weight="bold" fill="#EF476F" text-anchor="middle" class="animate-bounce-gentle" style="animation-duration: 2s;">딸깍!</text>
+                            </svg>
+                            <h4 class="text-3xl font-black text-accent mb-2">클릭</h4>
+                            <p class="text-xl text-red-500 font-bold mb-4 bg-red-50 py-2 rounded-xl">왼쪽 버튼 딸깍!</p>
+                            <p class="text-xl text-gray-700 leading-relaxed">
+                                물건을 <strong class="text-gray-900">선택</strong>하거나<br>버튼을 누를 때 써요.
+                            </p>
+                        </div>
+
+                        <!-- 2. 더블클릭 -->
+                        <div class="bg-white border-4 border-green-200 p-6 rounded-3xl shadow-sm text-center hover:scale-105 transition-transform">
+                            <svg width="120" height="140" viewBox="0 -30 100 170" class="mx-auto mb-2">
+                                <defs>
+                                    <clipPath id="mouse-clip-2">
+                                        <rect x="10" y="20" width="80" height="110" rx="35" />
+                                    </clipPath>
+                                </defs>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="white" stroke="#94a3b8" stroke-width="6"/>
+                                <g clip-path="url(#mouse-clip-2)">
+                                    <rect x="10" y="20" width="40" height="45" fill="#06D6A0" opacity="0.8"/>
+                                </g>
+                                <line x1="50" y1="20" x2="50" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <line x1="10" y1="65" x2="90" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="none" stroke="#94a3b8" stroke-width="6"/>
+                                <text x="30" y="0" font-size="28" font-family="'Gaegu', cursive" font-weight="bold" fill="#06D6A0" text-anchor="middle" class="animate-bounce-gentle" style="animation-duration: 0.8s;">따닥!</text>
+                            </svg>
+                            <h4 class="text-3xl font-black text-success mb-2">더블클릭</h4>
+                            <p class="text-xl text-green-600 font-bold mb-4 bg-green-50 py-2 rounded-xl">왼쪽 버튼 따닥!</p>
+                            <p class="text-xl text-gray-700 leading-relaxed">
+                                폴더를 <strong class="text-gray-900">열거나</strong><br>프로그램을 켤 때 써요.
+                            </p>
+                        </div>
+
+                        <!-- 3. 우클릭 -->
+                        <div class="bg-white border-4 border-secondary/50 p-6 rounded-3xl shadow-sm text-center hover:scale-105 transition-transform">
+                            <svg width="120" height="140" viewBox="0 -30 100 170" class="mx-auto mb-2">
+                                <defs>
+                                    <clipPath id="mouse-clip-3">
+                                        <rect x="10" y="20" width="80" height="110" rx="35" />
+                                    </clipPath>
+                                </defs>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="white" stroke="#94a3b8" stroke-width="6"/>
+                                <g clip-path="url(#mouse-clip-3)">
+                                    <rect x="50" y="20" width="40" height="45" fill="#4EA8DE" opacity="0.8"/>
+                                </g>
+                                <line x1="50" y1="20" x2="50" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <line x1="10" y1="65" x2="90" y2="65" stroke="#94a3b8" stroke-width="5"/>
+                                <rect x="10" y="20" width="80" height="110" rx="35" fill="none" stroke="#94a3b8" stroke-width="6"/>
+                                <text x="70" y="0" font-size="28" font-family="'Gaegu', cursive" font-weight="bold" fill="#4EA8DE" text-anchor="middle" class="animate-bounce-gentle" style="animation-duration: 2s;">딸깍!</text>
+                            </svg>
+                            <h4 class="text-3xl font-black text-secondary mb-2">우클릭</h4>
+                            <p class="text-xl text-blue-500 font-bold mb-4 bg-blue-50 py-2 rounded-xl">오른쪽 버튼 딸깍!</p>
+                            <p class="text-xl text-gray-700 leading-relaxed">
+                                숨겨진 <strong class="text-gray-900">마법 메뉴</strong>를<br>불러낼 때 써요.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="text-center p-8 bg-gray-50 rounded-3xl border-4 border-dashed border-gray-200">
+                    <button onclick="showStep(4)" class="next-step-link">
+                        신나는 클릭 연습 하러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4단계: 클릭 연습 및 게임 -->
+        <section id="step4" class="step-content space-y-8">
+            <div class="lesson-card bg-gradient-to-br from-white to-red-50">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="rocket" class="w-12 h-12 text-accent"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">클릭으로 우주선 발사!</h2>
+                </div>
+                <p class="text-2xl text-gray-700 mb-8">
+                    마우스 왼쪽 버튼을 <span class="font-black text-accent text-3xl italic">딸깍!</span> 한 번만 눌러보세요.<br>
+                    우주선 5개를 모두 우주로 보내주세요!
+                </p>
+
+                <div id="game-zone" class="relative h-[400px] bg-indigo-950 rounded-3xl border-8 border-indigo-900 overflow-hidden cursor-crosshair shadow-2xl">
+                    <div id="rocket-container" class="w-full h-full relative">
+                        <!-- 우주선들이 동적으로 생성됨 -->
+                    </div>
+                    <div class="absolute bottom-6 right-8 bg-white/20 backdrop-blur-md px-6 py-2 rounded-full">
+                        <p class="text-white text-2xl font-bold">남은 우주선: <span id="rocket-count">5</span>개</p>
+                    </div>
+                </div>
+
+                <div class="mt-10 p-10 bg-success/10 border-4 border-dashed border-success rounded-3xl text-center">
+                    <h3 class="text-3xl font-bold text-success mb-6">🎮 더 재미있게 연습해볼까요?</h3>
+                    <p class="text-xl text-gray-600 mb-8">선생님이 준비한 특별한 마우스 연습 게임이에요!</p>
+                    <div class="flex flex-col md:flex-row justify-center gap-6">
+                        <!-- 버튼 텍스트가 잘 보이도록 bg-success(초록색) 테일윈드 설정 복구 완료됨 -->
+                        <a href="https://happyhyeok.github.io/afterschool/mouse_game/index.html" target="_blank" class="inline-flex items-center justify-center gap-3 bg-success text-white text-2xl font-black px-10 py-5 rounded-full hover:scale-105 transition-transform shadow-xl">
+                            <i data-lucide="gamepad-2" class="w-8 h-8"></i> 마우스 게임 시작!
+                        </a>
+                        <button onclick="showStep(5)" class="next-step-link border-success bg-white text-success hover:bg-green-50 shadow-md">
+                            타자연습 하러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5단계: 타자 연습 -->
+        <section id="step5" class="step-content space-y-8">
+            <div class="lesson-card border-purple-200">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="keyboard" class="w-12 h-12 text-purple-500"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">키보드와 친해져요</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    컴퓨터에게 내 이름을 알려줄까요? <br>
+                    입력칸을 <strong>클릭</strong>한 다음, 아래 문장을 똑같이 쳐보세요!
+                </p>
+
+                <div class="bg-gray-50 p-10 rounded-3xl border-4 border-gray-100 shadow-inner flex flex-col items-center gap-8 mb-10">
+                    <div class="text-3xl md:text-4xl font-black text-purple-700 tracking-widest bg-white px-10 py-5 rounded-2xl shadow-sm border-2 border-purple-100">
+                        컴퓨터야 반가워
+                    </div>
+                    
+                    <input type="text" id="typing-input" 
+                        class="w-full max-w-2xl p-6 text-center text-2xl md:text-3xl font-bold rounded-2xl border-4 border-gray-300 focus:border-purple-500 focus:ring-8 focus:ring-purple-100 focus:outline-none transition-all placeholder:text-gray-300" 
+                        placeholder="여기를 누르고 따라 쳐보세요!">
+                    
+                    <div id="typing-feedback" class="w-full min-h-[120px] flex items-center justify-center">
+                        <p class="text-2xl text-gray-400 font-medium text-center">
+                            한 글자씩 천천히 찾아보세요. 👀<br>
+                            지울 때는 <span class="bg-gray-200 px-3 py-1 rounded-lg text-gray-700 font-bold">Backspace</span> 키를 눌러요!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="text-center pt-10 border-t-4 border-dashed border-gray-100 bg-purple-50 rounded-3xl p-8">
+                    <p class="text-2xl font-bold text-gray-700 mb-6">매일매일 연습하면 마법처럼 빨라져요!</p>
+                    <a href="https://tt.hancomtaja.com/ko" target="_blank" class="next-step-link border-purple-400 bg-purple-500 text-white hover:bg-purple-600 hover:border-purple-600 shadow-xl">
+                        한컴타자연습 바로가기 <i data-lucide="external-link" class="w-8 h-8"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 하단 내비게이션 (모바일용) -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentStep = 1;
+
+        function showStep(n) {
+            currentStep = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+            });
+            document.getElementById('step' + n).classList.add('active');
+            
+            if(n === 4) initRocketGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 생각열기 클릭 문제 해결 (CSS 클래스 토글)
+        function toggleChip(btn) {
+            btn.classList.toggle('active');
+            btn.style.transform = "scale(0.95)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+        }
+
+        // 바른자세 엉킴 문제 해결 (클래스 이름 is-resolved 로 변경)
+        function fixPosture(btn) {
+            if(btn.classList.contains('is-resolved')) return;
+            btn.classList.add('is-resolved');
+            
+            // 앱솔루트 요소의 투명도만 조절하여 레이아웃 흔들림 원천 차단
+            btn.querySelector('.bad-state').style.opacity = '0';
+            btn.querySelector('.good-state').style.opacity = '1';
+            
+            const rect = btn.getBoundingClientRect();
+            createEmoji(rect.left + rect.width/2, rect.top + rect.height/2, '✅');
+        }
+
+        function createEmoji(x, y, char) {
+            const emoji = document.createElement('div');
+            emoji.className = 'click-emoji';
+            emoji.innerText = char;
+            emoji.style.left = x + (window.scrollX || 0) + 'px';
+            emoji.style.top = y + (window.scrollY || 0) + 'px';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 600);
+        }
+
+        let rocketsLeft = 5;
+        function initRocketGame() {
+            const container = document.getElementById('rocket-container');
+            container.innerHTML = '';
+            rocketsLeft = 5;
+            document.getElementById('rocket-count').innerText = rocketsLeft;
+
+            for(let i=0; i<5; i++) {
+                const rocket = document.createElement('div');
+                rocket.className = 'absolute text-7xl cursor-pointer transition-all hover:scale-125 select-none';
+                rocket.innerText = '🚀';
+                rocket.style.left = (12 + i*19) + '%';
+                rocket.style.bottom = '10%';
+                rocket.onclick = function(e) {
+                    if(this.dataset.launched) return;
+                    this.dataset.launched = "true";
+                    this.style.transform = 'translateY(-600px) rotate(-15deg)';
+                    this.style.opacity = '0';
+                    rocketsLeft--;
+                    document.getElementById('rocket-count').innerText = rocketsLeft;
+                    createEmoji(e.clientX, e.clientY, '💥');
+                    
+                    if(rocketsLeft === 0) {
+                        setTimeout(() => {
+                            container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-white animate-bounce">
+                                <p class="text-8xl mb-6">👑</p>
+                                <p class="text-5xl font-black">클릭 대장님 탄생!</p>
+                            </div>`;
+                        }, 800);
+                    }
+                };
+                container.appendChild(rocket);
+            }
+        }
+
+        const typingInput = document.getElementById('typing-input');
+        const targetText = "컴퓨터야 반가워";
+        
+        typingInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val === targetText) {
+                typingInput.classList.replace('border-gray-300', 'border-success');
+                typingInput.classList.add('bg-green-50');
+                typingInput.disabled = true;
+                
+                const feedbackBox = document.getElementById('typing-feedback');
+                feedbackBox.innerHTML = `
+                    <div class="w-full text-center bg-yellow-100 p-8 rounded-3xl border-4 border-primary animate-bounce shadow-lg">
+                        <p class="text-3xl font-black text-yellow-800 mb-2">🎉 우와! 완벽해요!</p>
+                        <p class="text-xl text-gray-700 font-bold leading-relaxed">
+                            손가락이 글자 자리를 기억하면 <br> 
+                            나중에는 보지 않고도 마법처럼 글을 쓸 수 있어요!
+                        </p>
+                    </div>
+                `;
+            }
+        });
+
+        function nextStep() { return Math.min(currentStep + 1, 5); }
+        function prevStep() { return Math.max(currentStep - 1, 1); }
+    </script>
+</body>
+</html>
