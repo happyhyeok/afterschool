@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1회차: 안녕, 컴퓨터! 마우스 탐험대</title>
     
-    <!-- 테일윈드 설정 추가 (버튼 색상 복구) -->
+    <!-- 테일윈드 설정 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -63,7 +63,6 @@
             border-color: #f59e0b;
         }
 
-        /* 1단계 생각열기 버튼(칩) 스타일 */
         .experience-chip {
             transition: all 0.2s;
         }
@@ -72,8 +71,8 @@
         }
         .experience-chip.active {
             background-color: var(--primary) !important;
-            color: #713f12 !important; /* 클릭 시 잘 보이는 진한 갈색 */
-            border-color: #d97706 !important; /* 주황색 테두리 */
+            color: #713f12 !important;
+            border-color: #d97706 !important;
         }
 
         .click-emoji {
@@ -89,7 +88,6 @@
             100% { transform: translate(-50%, -120%) scale(1.5); opacity: 0; }
         }
 
-        /* 텍스트 부드러운 애니메이션 (카드 밖으로 안 나가게) */
         @keyframes bounce-gentle {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-6px); }
@@ -98,7 +96,6 @@
             animation: bounce-gentle 1.5s infinite ease-in-out;
         }
 
-        /* 자세 카드 스타일 (테일윈드 fixed 충돌 해결) */
         .posture-card {
             height: 14rem;
             position: relative;
@@ -115,7 +112,6 @@
             border-color: #34d399 !important;
         }
 
-        /* 다음 단계 이동 버튼 스타일 */
         .next-step-link {
             display: inline-flex;
             align-items: center;
@@ -177,7 +173,6 @@
                     <span class="text-secondary font-extrabold">내가 직접 보거나 사용해 본 것</span>을 모두 눌러보세요!
                 </p>
                 
-                <!-- 칩 스타일 변경: .experience-chip 클래스 추가 -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="experience-chips">
                     <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">📱 스마트폰</button>
                     <button onclick="toggleChip(this)" class="experience-chip p-6 rounded-3xl bg-gray-100 text-2xl font-bold text-gray-600 border-4 border-transparent shadow-sm h-32 flex items-center justify-center">🍔 키오스크</button>
@@ -215,7 +210,6 @@
                     <span class="text-accent font-bold">나쁜 자세를 클릭해서</span> 바르게 고쳐주세요! (6개를 찾아보세요)
                 </p>
 
-                <!-- 그리드 충돌 해결을 위한 구조 변경 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                     <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
                         <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
@@ -324,7 +318,6 @@
                     </div>
                 </div>
 
-                <!-- 추가된 마우스 기능 설명 영역 -->
                 <div class="mt-8 border-t-4 border-dashed border-gray-200 pt-10 mb-12">
                     <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">✨ 마우스가 할 수 있는 세 가지 마법!</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -437,42 +430,41 @@
                     <h3 class="text-3xl font-bold text-success mb-6">🎮 더 재미있게 연습해볼까요?</h3>
                     <p class="text-xl text-gray-600 mb-8">선생님이 준비한 특별한 마우스 연습 게임이에요!</p>
                     <div class="flex flex-col md:flex-row justify-center gap-6">
-                        <!-- 버튼 텍스트가 잘 보이도록 bg-success(초록색) 테일윈드 설정 복구 완료됨 -->
                         <a href="https://happyhyeok.github.io/afterschool/mouse_game/index.html" target="_blank" class="inline-flex items-center justify-center gap-3 bg-success text-white text-2xl font-black px-10 py-5 rounded-full hover:scale-105 transition-transform shadow-xl">
                             <i data-lucide="gamepad-2" class="w-8 h-8"></i> 마우스 게임 시작!
                         </a>
                         <button onclick="showStep(5)" class="next-step-link border-success bg-white text-success hover:bg-green-50 shadow-md">
-                            타자연습 하러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                            내 이름 알려주러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 5단계: 타자 연습 -->
+        <!-- 5단계: 타자 연습 (내 이름 입력하기) -->
         <section id="step5" class="step-content space-y-8">
             <div class="lesson-card border-purple-200">
                 <div class="flex items-center gap-4 mb-6">
                     <i data-lucide="keyboard" class="w-12 h-12 text-purple-500"></i>
-                    <h2 class="text-4xl font-bold text-gray-800">키보드와 친해져요</h2>
+                    <h2 class="text-4xl font-bold text-gray-800">내 이름 알려주기</h2>
                 </div>
                 <p class="text-2xl text-gray-700 leading-relaxed mb-8">
                     컴퓨터에게 내 이름을 알려줄까요? <br>
-                    입력칸을 <strong>클릭</strong>한 다음, 아래 문장을 똑같이 쳐보세요!
+                    입력칸을 <strong>클릭</strong>한 다음, <strong>내 이름 세 글자</strong>를 천천히 찾아 쳐보세요!
                 </p>
 
                 <div class="bg-gray-50 p-10 rounded-3xl border-4 border-gray-100 shadow-inner flex flex-col items-center gap-8 mb-10">
                     <div class="text-3xl md:text-4xl font-black text-purple-700 tracking-widest bg-white px-10 py-5 rounded-2xl shadow-sm border-2 border-purple-100">
-                        컴퓨터야 반가워
+                        내 이름 세 글자
                     </div>
                     
-                    <input type="text" id="typing-input" 
+                    <input type="text" id="typing-input" autocomplete="off"
                         class="w-full max-w-2xl p-6 text-center text-2xl md:text-3xl font-bold rounded-2xl border-4 border-gray-300 focus:border-purple-500 focus:ring-8 focus:ring-purple-100 focus:outline-none transition-all placeholder:text-gray-300" 
-                        placeholder="여기를 누르고 따라 쳐보세요!">
+                        placeholder="여기를 누르고 내 이름을 쳐보세요!">
                     
                     <div id="typing-feedback" class="w-full min-h-[120px] flex items-center justify-center">
                         <p class="text-2xl text-gray-400 font-medium text-center">
-                            한 글자씩 천천히 찾아보세요. 👀<br>
+                            키보드에서 내 이름 글자를 하나씩 찾아보세요. 👀<br>
                             지울 때는 <span class="bg-gray-200 px-3 py-1 rounded-lg text-gray-700 font-bold">Backspace</span> 키를 눌러요!
                         </p>
                     </div>
@@ -511,19 +503,16 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 생각열기 클릭 문제 해결 (CSS 클래스 토글)
         function toggleChip(btn) {
             btn.classList.toggle('active');
             btn.style.transform = "scale(0.95)";
             setTimeout(() => btn.style.transform = "scale(1)", 150);
         }
 
-        // 바른자세 엉킴 문제 해결 (클래스 이름 is-resolved 로 변경)
         function fixPosture(btn) {
             if(btn.classList.contains('is-resolved')) return;
             btn.classList.add('is-resolved');
             
-            // 앱솔루트 요소의 투명도만 조절하여 레이아웃 흔들림 원천 차단
             btn.querySelector('.bad-state').style.opacity = '0';
             btn.querySelector('.good-state').style.opacity = '1';
             
@@ -576,25 +565,37 @@
             }
         }
 
+        // 이름 타자 연습 스크립트
         const typingInput = document.getElementById('typing-input');
-        const targetText = "컴퓨터야 반가워";
         
         typingInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val === targetText) {
-                typingInput.classList.replace('border-gray-300', 'border-success');
-                typingInput.classList.add('bg-green-50');
-                typingInput.disabled = true;
+            const val = e.target.value.trim();
+            const feedbackBox = document.getElementById('typing-feedback');
+
+            // 3글자 이상 입력되었을 때 즉각적인 칭찬 피드백 제공
+            if (val.length >= 3) {
+                typingInput.classList.remove('border-gray-300', 'focus:border-purple-500', 'focus:ring-purple-100');
+                typingInput.classList.add('border-success', 'bg-green-50', 'focus:border-success', 'focus:ring-green-100');
                 
-                const feedbackBox = document.getElementById('typing-feedback');
                 feedbackBox.innerHTML = `
                     <div class="w-full text-center bg-yellow-100 p-8 rounded-3xl border-4 border-primary animate-bounce shadow-lg">
-                        <p class="text-3xl font-black text-yellow-800 mb-2">🎉 우와! 완벽해요!</p>
+                        <p class="text-3xl font-black text-yellow-800 mb-2">🎉 우와! 안녕, ${val} 친구!</p>
                         <p class="text-xl text-gray-700 font-bold leading-relaxed">
-                            손가락이 글자 자리를 기억하면 <br> 
-                            나중에는 보지 않고도 마법처럼 글을 쓸 수 있어요!
+                            컴퓨터가 내 이름을 기억했어요! <br> 
+                            손가락이 글자 자리를 기억하면 마법처럼 빨리 쓸 수 있어요!
                         </p>
                     </div>
+                `;
+            } else {
+                // 3글자 미만일 때는 기본 상태 및 안내 문구 유지
+                typingInput.classList.add('border-gray-300', 'focus:border-purple-500', 'focus:ring-purple-100');
+                typingInput.classList.remove('border-success', 'bg-green-50', 'focus:border-success', 'focus:ring-green-100');
+                
+                feedbackBox.innerHTML = `
+                    <p class="text-2xl text-gray-400 font-medium text-center">
+                        키보드에서 내 이름 글자를 하나씩 찾아보세요. 👀<br>
+                        지울 때는 <span class="bg-gray-200 px-3 py-1 rounded-lg text-gray-700 font-bold">Backspace</span> 키를 눌러요!
+                    </p>
                 `;
             }
         });
