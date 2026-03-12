@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 탐험대: 마법의 조작 훈련</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f0f9ff;
+            user-select: none;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 커스텀 애니메이션 */
+        @keyframes pop {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            to { transform: scale(0) translateY(-50px); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            50% { transform: translateX(10px) rotate(5deg); }
+            75% { transform: translateX(-10px) rotate(-5deg); }
+        }
+        @keyframes floatText {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        /* 메달 튀어오르는 높이를 줄인 맞춤형 애니메이션 */
+        @keyframes bounceSmall {
+            0%, 100% { transform: translateY(-12%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+            50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+        }
+        .animate-bounce-small {
+            animation: bounceSmall 1s infinite;
+        }
+
+        /* 게임 오브젝트 클래스 */
+        .pop-in { animation: pop 0.3s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.5s ease-out forwards; pointer-events: none; }
+        .shake-err { animation: shake 0.4s ease-in-out; }
+        
+        /* 스테이지 1: 데이터 아이콘 */
+        .data-item {
+            position: absolute;
+            cursor: pointer;
+            font-size: 3rem;
+            transition: transform 0.1s;
+        }
+        .data-item:active { transform: scale(0.8); }
+
+        /* 스테이지 2: 고장난 기기 */
+        .broken-device {
+            position: absolute;
+            font-size: 4rem;
+            cursor: pointer;
+            filter: grayscale(100%) sepia(50%) hue-rotate(-50deg) saturate(300%);
+            /* 움직임 속도 수정: 2~3초 간격에 맞추어 2.5초로 변경 */
+            transition: left 2.5s ease-in-out, top 2.5s ease-in-out; 
+        }
+        .fixed-device {
+            filter: none;
+            animation: pop 0.5s ease-out;
+        }
+
+        /* 스테이지 3: 드래그 앤 드롭 */
+        .drag-card {
+            position: absolute;
+            cursor: grab;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .drag-card:active { cursor: grabbing; transform: scale(1.05); }
+        .drop-zone {
+            transition: all 0.3s;
+        }
+        .drop-zone.hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+
+        /* UI 요소 */
+        #game-board {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 80px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .floating-score {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            pointer-events: none;
+            animation: floatText 1s ease-out forwards;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <!-- 상단 상태바 -->
+    <div class="w-full max-w-6xl flex justify-between items-center mb-4 px-6 py-3 bg-white rounded-2xl shadow-md border-4 border-blue-400">
+        <div class="text-3xl font-bold text-gray-700">🏆 점수: <span id="score-display" class="text-blue-500">0</span></div>
+        <div class="text-3xl font-bold text-gray-700">⏳ 남은 시간: <span id="time-display" class="text-red-500">05:00</span></div>
+        <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-xl text-xl font-bold transition-colors">다시 시작</button>
+    </div>
+
+    <!-- 메인 게임 보드 -->
+    <div id="game-board" class="max-w-6xl border-4 border-blue-200">
+        
+        <!-- 대기 화면 -->
+        <div id="screen-start" class="absolute inset-0 flex flex-col items-center justify-center bg-blue-50 z-50">
+            <h1 class="text-6xl font-bold text-blue-600 mb-6">마법의 조작 훈련!</h1>
+            <p class="text-3xl text-gray-600 mb-8 text-center leading-relaxed">
+                제한시간 5분!<br>클릭, 더블클릭, 드래그로 AI 탐험대 마스터가 되어보세요.
+            </p>
+            <button onclick="startGame()" class="bg-yellow-400 hover:bg-yellow-500 hover:scale-110 transform transition-all text-white text-4xl font-bold py-4 px-12 rounded-full shadow-lg">
+                게임 시작!
+            </button>
+        </div>
+
+        <!-- 스테이지 1: 클릭 -->
+        <div id="stage-1" class="absolute inset-0 hidden bg-indigo-50">
+            <div class="absolute top-6 left-0 w-full text-center pointer-events-none z-10">
+                <h2 class="text-5xl font-bold text-indigo-700 mb-2">1단계: 똑똑한 데이터 모으기 (클릭!)</h2>
+                <p class="text-3xl text-gray-700 font-bold bg-white/50 inline-block px-4 py-1 rounded-2xl">데이터(💾, 📊, 🖼️, 📝, 🎵)를 클릭하고, 함정(🦠, 👾, 💣)은 피하세요!</p>
+            </div>
+            <div id="s1-container" class="absolute inset-0"></div>
+        </div>
+
+        <!-- 스테이지 2: 더블클릭 -->
+        <div id="stage-2" class="absolute inset-0 hidden bg-green-50">
+            <div class="absolute top-6 left-0 w-full text-center pointer-events-none z-10">
+                <h2 class="text-5xl font-bold text-green-700 mb-2">2단계: 고장난 AI 기기 고치기 (더블클릭!)</h2>
+                <p class="text-3xl text-gray-700 font-bold bg-white/50 inline-block px-4 py-1 rounded-2xl">천천히 도망다니는 기기(🧹, 🧊, 🚗)를 정확히 두 번 클릭해서 고쳐주세요!</p>
+            </div>
+            <div id="s2-container" class="absolute inset-0"></div>
+        </div>
+
+        <!-- 스테이지 3: 드래그 앤 드롭 -->
+        <div id="stage-3" class="absolute inset-0 hidden bg-orange-50">
+            <div class="absolute top-6 left-0 w-full text-center pointer-events-none z-10">
+                <h2 class="text-5xl font-bold text-orange-700 mb-2">3단계: 슈퍼파워 분류하기 (드래그!)</h2>
+                <p class="text-3xl text-gray-700 font-bold bg-white/50 inline-block px-4 py-1 rounded-2xl">알맞은 상자로 카드를 꾹 눌러서 옮겨주세요!</p>
+            </div>
+            
+            <div class="absolute inset-0 flex justify-between items-center px-10 pt-16 pointer-events-none">
+                <!-- AI 상자 -->
+                <div id="box-ai" class="drop-zone w-64 h-80 bg-blue-100 border-8 border-blue-400 rounded-3xl flex flex-col items-center justify-center pointer-events-auto">
+                    <div class="text-7xl mb-4">🤖</div>
+                    <div class="text-3xl font-bold text-blue-700">AI의 강점</div>
+                </div>
+                <!-- 사람 상자 -->
+                <div id="box-human" class="drop-zone w-64 h-80 bg-orange-100 border-8 border-orange-400 rounded-3xl flex flex-col items-center justify-center pointer-events-auto">
+                    <div class="text-7xl mb-4">❤️</div>
+                    <div class="text-3xl font-bold text-orange-700">사람의 강점</div>
+                </div>
+            </div>
+            <!-- 카드 나타나는 곳 -->
+            <div id="s3-card-spawn" class="absolute inset-0 pointer-events-none"></div>
+        </div>
+
+        <!-- 게임 종료 화면 -->
+        <div id="screen-end" class="absolute inset-0 hidden flex flex-col items-center justify-center bg-yellow-50 z-50">
+            <h1 id="end-title" class="text-6xl font-bold text-blue-600 mb-6">탐험 완료!</h1>
+            <p class="text-4xl text-gray-700 mb-4">최종 점수: <span id="final-score" class="text-red-500 font-bold text-6xl">0</span>점</p>
+            <div id="end-medal" class="text-[8rem] mb-8 animate-bounce-small">🏅</div>
+            <button onclick="location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white text-3xl font-bold py-4 px-12 rounded-full shadow-lg">
+                다시 도전하기
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // 전역 상태 변수
+        let score = 0;
+        let timeLeft = 300; // 5분
+        let gameInterval;
+        let currentStage = 0;
+        
+        // 유틸리티 함수
+        const updateScore = (points) => {
+            score += points;
+            document.getElementById('score-display').innerText = score;
+            const board = document.getElementById('game-board');
+            if(points < 0) {
+                board.classList.add('shake-err', 'border-red-500');
+                setTimeout(() => board.classList.remove('shake-err', 'border-red-500'), 400);
+            }
+        };
+
+        const showFloatingText = (text, x, y, colorClass) => {
+            const el = document.createElement('div');
+            el.className = `floating-score ${colorClass}`;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            el.innerText = text;
+            document.getElementById('game-board').appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        };
+
+        const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        };
+
+        // 게임 흐름 제어
+        function startGame() {
+            document.getElementById('screen-start').classList.add('hidden');
+            score = 0; updateScore(0);
+            timeLeft = 300;
+            
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-display').innerText = formatTime(timeLeft);
+                if (timeLeft <= 0) endGame("시간 초과!");
+            }, 1000);
+
+            startStage1();
+        }
+
+        function endGame(msg = "탐험 완료!") {
+            clearInterval(gameInterval);
+            s1_intervals.forEach(clearInterval);
+            s2_intervals.forEach(clearInterval);
+            
+            document.querySelectorAll('.absolute.inset-0').forEach(el => el.classList.add('hidden'));
+            document.getElementById('screen-end').classList.remove('hidden');
+            document.getElementById('screen-end').classList.add('flex');
+            document.getElementById('end-title').innerText = msg;
+            document.getElementById('final-score').innerText = score;
+            
+            const medal = document.getElementById('end-medal');
+            if(score > 200) medal.innerText = '🏆';
+            else if(score > 100) medal.innerText = '🥇';
+            else medal.innerText = '🥈';
+        }
+
+        // ==========================================
+        // 1단계: 클릭 (데이터 모으기)
+        // ==========================================
+        let s1_intervals = [];
+        let s1_dataCaught = 0;
+        let s1_target = 15;
+        let s1_speed = 2000; // 초기 생성 속도를 2초로 늦춤 (기존 1500)
+
+        function startStage1() {
+            currentStage = 1;
+            document.getElementById('stage-1').classList.remove('hidden');
+            spawnDataLoop();
+        }
+
+        function spawnDataLoop() {
+            s1_intervals.push(setInterval(() => {
+                const container = document.getElementById('s1-container');
+                const isVirus = Math.random() < 0.2;
+                // 데이터 5종류, 바이러스 3종류로 확장
+                const emojis = isVirus ? ['🦠', '👾', '💣'] : ['💾', '📊', '🖼️', '📝', '🎵'];
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const el = document.createElement('div');
+                el.className = 'data-item pop-in';
+                el.innerText = emoji;
+                
+                const size = Math.max(2, 4 - (s1_dataCaught * 0.1));
+                el.style.fontSize = `${size}rem`;
+                
+                const boardRect = container.getBoundingClientRect();
+                const maxLeft = boardRect.width - 80;
+                const maxTop = boardRect.height - 80;
+                el.style.left = `${Math.random() * maxLeft}px`;
+                el.style.top = `${Math.random() * maxTop}px`;
+
+                el.onmousedown = (e) => {
+                    if(el.classList.contains('fade-out')) return;
+                    if(isVirus) {
+                        updateScore(-5);
+                        showFloatingText("-5", e.clientX, e.clientY, "text-red-500");
+                    } else {
+                        updateScore(10);
+                        s1_dataCaught++;
+                        showFloatingText("+10", e.clientX, e.clientY, "text-blue-500");
+                        
+                        // 최고 난이도 제한 (더블클릭 난이도에 맞추어 최소 1초까지만 빨라지게 수정)
+                        if (s1_dataCaught % 3 === 0 && s1_speed > 1000) {
+                            s1_intervals.forEach(clearInterval);
+                            s1_speed -= 200;
+                            spawnDataLoop();
+                        }
+                    }
+                    el.classList.add('fade-out');
+                    setTimeout(() => el.remove(), 500);
+                    
+                    if(s1_dataCaught >= s1_target) {
+                        finishStage1();
+                    }
+                };
+
+                container.appendChild(el);
+                
+                setTimeout(() => {
+                    if(!el.classList.contains('fade-out')) {
+                        el.classList.add('fade-out');
+                        setTimeout(() => el.remove(), 500);
+                    }
+                }, s1_speed * 1.5);
+
+            }, s1_speed));
+        }
+
+        function finishStage1() {
+            s1_intervals.forEach(clearInterval);
+            document.getElementById('s1-container').innerHTML = '';
+            document.getElementById('stage-1').classList.add('hidden');
+            startStage2();
+        }
+
+        // ==========================================
+        // 2단계: 더블클릭 (고장난 기기)
+        // ==========================================
+        let s2_intervals = [];
+        let s2_fixed = 0;
+        const s2_target = 8;
+        const s2_devices = ['🧹', '🧊', '🚗', '📢'];
+
+        function startStage2() {
+            currentStage = 2;
+            document.getElementById('stage-2').classList.remove('hidden');
+            
+            const container = document.getElementById('s2-container');
+            const boardRect = container.getBoundingClientRect();
+
+            for(let i=0; i<s2_target; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'broken-device pop-in';
+                    el.innerText = s2_devices[i % s2_devices.length];
+                    el.style.left = `${Math.random() * (boardRect.width - 100)}px`;
+                    el.style.top = `${Math.random() * (boardRect.height - 100)}px`;
+                    
+                    // 무작위 이동 (간격 수정: 2~3초)
+                    const moveInt = setInterval(() => {
+                        if(el.classList.contains('fixed-device')) return;
+                        el.style.left = `${Math.random() * (boardRect.width - 100)}px`;
+                        el.style.top = `${Math.random() * (boardRect.height - 100)}px`;
+                    }, 2000 + Math.random() * 1000); 
+                    s2_intervals.push(moveInt);
+
+                    el.ondblclick = (e) => {
+                        if(el.classList.contains('fixed-device')) return;
+                        el.classList.remove('broken-device');
+                        el.classList.add('fixed-device');
+                        updateScore(20);
+                        s2_fixed++;
+                        showFloatingText("수리완료! +20", e.clientX, e.clientY, "text-green-500");
+                        
+                        setTimeout(() => {
+                            el.classList.add('fade-out');
+                            setTimeout(() => el.remove(), 500);
+                        }, 500);
+
+                        if(s2_fixed >= s2_target) {
+                            setTimeout(finishStage2, 1000);
+                        }
+                    };
+                    container.appendChild(el);
+                }, i * 1500);
+            }
+        }
+
+        function finishStage2() {
+            s2_intervals.forEach(clearInterval);
+            document.getElementById('s2-container').innerHTML = '';
+            document.getElementById('stage-2').classList.add('hidden');
+            startStage3();
+        }
+
+        // ==========================================
+        // 3단계: 드래그 앤 드롭 (슈퍼파워 분류)
+        // ==========================================
+        const s3_cards = [
+            { text: "복잡한 계산 빨리하기", type: "ai" },
+            { text: "슬픈 친구 위로하기", type: "human" },
+            { text: "정보 엄청 많이 기억하기", type: "ai" },
+            { text: "새로운 아이디어 떠올리기", type: "human" },
+            { text: "지치지 않고 일 반복하기", type: "ai" },
+            { text: "무엇이 옳은지 판단하기", type: "human" }
+        ];
+        let s3_currentIndex = 0;
+        let activeCard = null;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let s3_combo = 0;
+
+        function startStage3() {
+            currentStage = 3;
+            document.getElementById('stage-3').classList.remove('hidden');
+            s3_cards.sort(() => Math.random() - 0.5);
+            spawnNextCard();
+        }
+
+        function spawnNextCard() {
+            if(s3_currentIndex >= s3_cards.length) {
+                endGame("모든 탐험을 완벽하게 마쳤습니다!");
+                return;
+            }
+
+            const data = s3_cards[s3_currentIndex];
+            const container = document.getElementById('s3-card-spawn');
+            
+            activeCard = document.createElement('div');
+            activeCard.className = 'drag-card bg-white border-4 border-gray-300 rounded-2xl p-6 text-2xl font-bold text-gray-800 text-center w-64 pointer-events-auto pop-in';
+            activeCard.innerText = data.text;
+            activeCard.dataset.type = data.type;
+            
+            const boardRect = document.getElementById('game-board').getBoundingClientRect();
+            const startX = (boardRect.width / 2) - 128;
+            const startY = (boardRect.height / 2) - 50;
+            
+            activeCard.style.left = `${startX}px`;
+            activeCard.style.top = `${startY}px`;
+            
+            activeCard.onmousedown = (e) => {
+                isDragging = true;
+                const rect = activeCard.getBoundingClientRect();
+                const boardRect = document.getElementById('game-board').getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                activeCard.style.transition = 'none'; 
+            };
+
+            document.onmousemove = (e) => {
+                if(!isDragging || !activeCard) return;
+                const boardRect = document.getElementById('game-board').getBoundingClientRect();
+                
+                let newX = e.clientX - boardRect.left - dragOffset.x;
+                let newY = e.clientY - boardRect.top - dragOffset.y;
+                
+                activeCard.style.left = `${newX}px`;
+                activeCard.style.top = `${newY}px`;
+            };
+
+            document.onmouseup = (e) => {
+                if(!isDragging || !activeCard) return;
+                isDragging = false;
+                activeCard.style.transition = 'all 0.3s ease'; 
+                checkDrop(data.type, startX, startY);
+            };
+
+            container.appendChild(activeCard);
+        }
+
+        function checkDrop(correctType, startX, startY) {
+            const cardRect = activeCard.getBoundingClientRect();
+            const boxAI = document.getElementById('box-ai').getBoundingClientRect();
+            const boxHuman = document.getElementById('box-human').getBoundingClientRect();
+            
+            const centerX = cardRect.left + cardRect.width/2;
+            const centerY = cardRect.top + cardRect.height/2;
+            
+            const inAI = (centerX > boxAI.left && centerX < boxAI.right && centerY > boxAI.top && centerY < boxAI.bottom);
+            const inHuman = (centerX > boxHuman.left && centerX < boxHuman.right && centerY > boxHuman.top && centerY < boxHuman.bottom);
+
+            let droppedType = null;
+            if(inAI) droppedType = 'ai';
+            else if(inHuman) droppedType = 'human';
+
+            if(droppedType) {
+                if(droppedType === correctType) {
+                    s3_combo++;
+                    const bonus = s3_combo > 1 ? (s3_combo * 5) : 0;
+                    updateScore(30 + bonus);
+                    showFloatingText(`정답! +${30+bonus}`, centerX, centerY, "text-orange-500");
+                    
+                    activeCard.classList.add('fade-out');
+                    let oldCard = activeCard;
+                    setTimeout(() => oldCard.remove(), 500);
+                    
+                    s3_currentIndex++;
+                    activeCard = null;
+                    setTimeout(spawnNextCard, 600);
+                } else {
+                    s3_combo = 0;
+                    updateScore(-10);
+                    showFloatingText("앗, 다시 생각해봐요! -10", centerX, centerY, "text-red-500");
+                    activeCard.style.left = `${startX}px`;
+                    activeCard.style.top = `${startY}px`;
+                }
+            } else {
+                activeCard.style.left = `${startX}px`;
+                activeCard.style.top = `${startY}px`;
+            }
+        }
+    </script>
+</body>
+</html>
