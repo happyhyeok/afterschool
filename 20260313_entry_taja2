@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정선 여량초 코딩: AI 체인지메이커</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #059669; /* 정선의 산뜻한 자연색 (초록계열) */
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-color: #f0fdf4;
+            --card-bg: #ffffff;
+            --text-main: #064e3b;
+        }
+
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+
+        body {
+            font-family: 'GmarketSansMedium', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7; margin: 0; padding-bottom: 100px;
+            font-size: 1.25rem;
+        }
+
+        .grade-container { width: 95%; max-width: 1000px; margin: 0 auto; padding: 10px; }
+        
+        .lesson-header {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white; padding: 40px 20px; border-radius: 30px;
+            text-align: center; margin-bottom: 40px; margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.2);
+        }
+        .lesson-header h1 { font-size: 2.2rem; word-break: keep-all; margin-top: 10px; }
+
+        .step-card {
+            background: var(--card-bg); border-radius: 25px; padding: 25px;
+            margin-bottom: 35px; border-left: 12px solid var(--primary-color);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-title { font-size: 1.7rem; color: var(--primary-color); font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+
+        .mission-item { display: flex; flex-direction: column; gap: 10px; padding: 25px; border-radius: 25px; background: #f9fafb; margin-bottom: 25px; border: 2px solid #e5e7eb; position: relative; }
+        .mission-header-row { display: flex; align-items: flex-start; gap: 15px; }
+        .mission-content { flex: 1; text-align: left; }
+        
+        .mission-label-text { font-size: 1.4rem; font-weight: 800; color: #334155; margin-bottom: 5px; }
+        .target-info { font-size: 1.1rem; color: #475569; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1; }
+        .target-label { color: #059669; font-weight: bold; }
+
+        .checkbox-large { width: 40px; height: 40px; cursor: pointer; accent-color: var(--primary-color); flex-shrink: 0; margin-top: 5px; }
+        .reason-box { background: #f0fdf4; border: 2px solid #bcf0da; padding: 18px; border-radius: 15px; font-size: 1.05rem; color: #065f46; line-height: 1.6; text-align: left; }
+        
+        .entry-block-img { display: none; margin-top: 15px; border: 3px solid #e2e8f0; border-radius: 15px; padding: 15px; background: white; max-width: 100%; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .falling-word { position: absolute; white-space: nowrap; transition: none; z-index: 10; pointer-events: none; }
+        .btn-action { background-color: var(--primary-color); color: white; padding: 12px 30px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.2rem; border: none; }
+        .btn-action:hover { background-color: #047857; }
+
+        .copy-chip { background: #fff; border: 2px solid #ddd; padding: 8px 15px; border-radius: 12px; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .copy-chip:hover { border-color: var(--primary-color); background: #f0fdf4; }
+        
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 50px; display: none; z-index: 1000; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .prep-step { display: flex; align-items: center; gap: 10px; background: #fffbeb; border: 2px dashed #f59e0b; padding: 15px; border-radius: 20px; font-weight: bold; color: #b45309; }
+
+        /* 퀴즈 스타일 */
+        .quiz-option { cursor: pointer; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; transition: all 0.2s; background: white; text-align: left; margin-top: 10px; font-size: 1.1rem; }
+        .quiz-option:hover { border-color: var(--primary-color); background: #ecfdf5; }
+        .quiz-feedback { margin-top: 15px; padding: 15px; border-radius: 15px; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="grade-container text-left">
+    <header class="lesson-header">
+        <p class="text-xl font-bold mb-2">아우라지가 흐르는 정선 여량초 코딩 교실</p>
+        <h1>🏔️ 정선 명소 타자 게임 만들기</h1>
+        <p class="mt-4 opacity-90 text-xl text-center">리스트와 복제본을 활용해 정선의 명소를 맞춰봅시다!</p>
+    </header>
+
+    <section class="step-card border-l-amber-500">
+        <div class="step-title text-amber-600"><i class="fas fa-rocket"></i> 시작 전 준비하기</div>
+        <div class="flex flex-wrap items-center justify-center gap-4 py-4">
+            <div class="prep-step">
+                <span class="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                <span>엔트리 접속</span>
+            </div>
+            <i class="fas fa-chevron-right text-amber-300 hidden md:block"></i>
+            <div class="prep-step">
+                <span class="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                <span>로그인</span>
+            </div>
+            <i class="fas fa-chevron-right text-amber-300 hidden md:block"></i>
+            <div class="prep-step">
+                <span class="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                <span>작품 만들기</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="step-card">
+        <div class="step-title"><i class="fas fa-play-circle text-emerald-600"></i> 1단계: 우리 지역 명소 데이터 담기</div>
+        <div class="bg-slate-900 h-64 md:h-80 rounded-3xl mb-6 relative overflow-hidden flex items-center justify-center text-white text-xl" id="gameArea">
+            <button id="startGameBtn" class="btn-action shadow-lg" onclick="startGame()">정선 타자 게임 체험하기</button>
+        </div>
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <input type="text" id="gameInput" placeholder="단어를 입력하고 Enter!" disabled class="flex-1 p-4 border-3 rounded-2xl text-xl bg-white outline-none focus:border-emerald-500">
+            <div id="scoreDisplay" class="bg-gray-100 px-6 py-3 rounded-2xl font-black text-2xl flex items-center justify-center border-2 border-gray-200">점수: 0</div>
+        </div>
+        
+        <div class="p-6 bg-emerald-50 rounded-[35px] border-4 border-emerald-100 text-left">
+             <h4 class="font-bold text-emerald-800 mb-2 text-xl"><i class="fas fa-microchip mr-2"></i> 핵심 개념: 리스트(List)</h4>
+             <p class="text-emerald-900 leading-relaxed text-lg">
+                아우라지, 레일바이크, 화암동굴... 정선의 많은 명소들을 하나하나 따로 관리하면 힘들겠죠? <br>
+                여러 개의 소중한 정보를 한 줄로 묶어 보관하는 <span class="text-emerald-600 font-black">‘리스트’</span> 주머니를 사용해 봅시다.
+            </p>
+        </div>
+    </section>
+
+    <section class="step-card border-l-emerald-500">
+        <div class="step-title text-emerald-600"><i class="fas fa-tasks"></i> 2단계: 엔트리 실습 도전!</div>
+        
+        <div class="space-y-8">
+            <!-- 미션 0 -->
+            <div class="mission-item border-l-[15px] border-slate-400">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 0. 여량초 주변 배경과 오브젝트 준비</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 오브젝트 추가</span> - 배경, 단어(글상자), 안내자(엔트리봇 등)를 준비해요.</div>
+                        <div class="reason-box">
+                            1. <b>[배경]</b>에서 정선의 아름다운 자연과 어울리는 숲이나 들판 배경을 선택하세요. <br>
+                            2. <b>[글상자]</b> 탭에서 내용은 비워두고 추가하세요. (여기에 정선 명소가 나타날 거예요!) <br>
+                            3. 문제를 내줄 <b>안내자</b> 오브젝트를 하나 추가하세요.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 1 -->
+            <div class="mission-item border-l-[15px] border-emerald-400">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 1. 정선 명소 리스트 만들기</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 속성 탭</span> - '정선명소' 리스트와 '점수' 변수를 생성해요.</div>
+                        <div class="reason-box">
+                            1. <b>[리스트 추가]</b>: '정선명소' 리스트를 만들고 아래 버튼을 눌러 우리 지역 단어들을 복사해 넣으세요.<br>
+                            2. <b>[변수 추가]</b>: <b>'점수'</b> 변수를 추가하여 성공할 때마다 점수가 올라가게 합니다.
+                        </div>
+                        <div class="mt-6">
+                            <button class="copy-chip" onclick="copyWords('아우라지,레일바이크,화암동굴,정선아리랑,민둥산,가리왕산,병방치,정선오일장,여량초등학교,주례마을', '정선 명소')">
+                                <i class="fas fa-copy text-emerald-500"></i>
+                                <span>정선 단어 리스트 복사</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 2 -->
+            <div class="mission-item border-l-[15px] border-emerald-500">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 2. 무한 복제본 생성 알고리즘</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 글상자</span> - 단어들이 계속 나타나도록 복제본을 만들어요.</div>
+                        <div class="reason-box">
+                            - 시작하기 버튼을 클릭했을 때 <br>
+                            - 계속 반복하기 [ 2초 기다리기, 자신의 복제본 만들기 ]
+                            <div class="mt-4">
+                                <button class="text-emerald-600 font-bold underline text-base" onclick="toggleBlock('hint1')">블록 힌트 보기</button>
+                                <img id="hint1" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/0309_56_01.PNG">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 3 -->
+            <div class="mission-item border-l-[15px] border-blue-400">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 3. 복제본: 랜덤 정선 단어 설정</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 글상자</span> - 복제본이 정선명소 중 하나를 무작위로 선택해요.</div>
+                        <div class="reason-box">
+                            - 복제본이 처음 생성되었을 때 <br>
+                            - x좌표를 (-200 ~ 200) 사이의 무작위 위치로 이동 <br>
+                            - 글상자 내용을 [정선명소 리스트의 (1 ~ 리스트 항목 수) 무작위 수]번째 항목으로 바꾸기
+                            <div class="mt-4">
+                                <button class="text-emerald-600 font-bold underline text-base" onclick="toggleBlock('hint2')">블록 힌트 보기</button>
+                                <img id="hint2" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/0309_56_02.PNG">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 4 -->
+            <div class="mission-item border-l-[15px] border-amber-400">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 4. 복제본: 중력 낙하 로직</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 글상자</span> - 단어가 위에서 아래로 천천히 떨어지게 해요.</div>
+                        <div class="reason-box">
+                            - y좌표가 바닥(-150)보다 클 때까지 반복하기 <br>
+                            - [ y좌표를 -3만큼 바꾸기 ] <br>
+                            - 바닥에 닿으면 [ 이 복제본 삭제하기 ]
+                            <div class="mt-4">
+                                <button class="text-emerald-600 font-bold underline text-base" onclick="toggleBlock('hint3')">블록 힌트 보기</button>
+                                <img id="hint3" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/0309_56_03.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 5 -->
+            <div class="mission-item border-l-[15px] border-emerald-300">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 5. 안내자: 입력 창 띄우기</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 안내자</span> - 우리가 타자를 칠 수 있게 계속 물어봐요.</div>
+                        <div class="reason-box">
+                            - 시작하기 버튼을 클릭했을 때 <br>
+                            - 계속 반복하기 [ "정선의 명소는?" 라고 묻고 대답 기다리기 ]
+                            <div class="mt-4">
+                                <button class="text-emerald-600 font-bold underline text-base" onclick="toggleBlock('hint4')">블록 힌트 보기</button>
+                                <img id="hint4" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/0309_56_04.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 6 -->
+            <div class="mission-item border-l-[15px] border-red-400">
+                <div class="mission-header-row">
+                    <input type="checkbox" class="checkbox-large">
+                    <div class="mission-content">
+                        <div class="mission-label-text">미션 6. 복제본: 정답 판정 및 득점</div>
+                        <div class="target-info"><span class="target-label">코딩 오브젝트 : 글상자</span> - 내가 입력한 글자와 단어가 같으면 점수를 줘요.</div>
+                        <div class="reason-box">
+                            - 미션 4의 낙하 반복문 안에 다음 조건문을 넣으세요: <br>
+                            - 만일 [ 대답 = 자신의 글상자 내용 ] 이라면 <br>
+                            - [ '점수'에 10만큼 더하기 ] <br>
+                            - [ 이 복제본 삭제하기 ]
+                            <div class="mt-4">
+                                <button class="text-emerald-600 font-bold underline text-base" onclick="toggleBlock('hint5')">블록 힌트 보기</button>
+                                <img id="hint5" class="entry-block-img" src="https://happyhyeok.github.io/afterschool/0309_56_05.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="step-card border-l-green-500 bg-green-50">
+        <div class="step-title text-green-600"><i class="fas fa-calendar-alt"></i> 다음 시간 예고</div>
+        <div class="text-lg text-green-900">
+            <p class="mb-2">정선 타자 게임을 더 업그레이드해 볼까요?</p>
+            <ul class="list-disc list-inside space-y-1 font-bold">
+                <li>게임 오버 기능: 아우라지 강물(바닥)에 단어가 너무 많이 빠지면 종료!</li>
+                <li>레벨 시스템: 점수가 오를수록 단어가 떨어지는 속도 빠르게 하기</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="step-card border-l-red-500">
+        <div class="step-title text-red-600"><i class="fas fa-edit"></i> 오늘 배운 내용 퀴즈</div>
+        <div id="quizContainer" class="space-y-10">
+            <!-- 퀴즈 1 -->
+            <div class="quiz-item">
+                <p class="font-bold text-xl mb-4">1. '아우라지', '레일바이크' 등 여러 데이터를 한 줄로 묶어 관리하는 기능은?</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="quiz-option" onclick="checkQuiz(1, 1, '변수는 하나의 값만 기억할 수 있어요.')">① 변수</div>
+                    <div class="quiz-option" onclick="checkQuiz(1, 2, '정답! 여러 개의 목록을 관리할 때는 리스트가 최고예요.')">② 리스트</div>
+                    <div class="quiz-option" onclick="checkQuiz(1, 3, '신호는 오브젝트끼리 대화할 때 써요.')">③ 신호</div>
+                    <div class="quiz-option" onclick="checkQuiz(1, 4, '복제본은 똑같은 물체를 찍어내는 기능이에요.')">④ 복제본</div>
+                </div>
+                <div id="feedback1" class="quiz-feedback"></div>
+            </div>
+
+            <!-- 퀴즈 2 -->
+            <div class="quiz-item">
+                <p class="font-bold text-xl mb-4">2. 단어가 위에서 아래로 떨어지게 하려면 무엇을 바꿔야 하나요?</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="quiz-option" onclick="checkQuiz(2, 1, 'X좌표는 옆으로 움직일 때 사용해요.')">① x좌표 바꾸기</div>
+                    <div class="quiz-option" onclick="checkQuiz(2, 2, '정답! 위아래 움직임은 y좌표를 조절해야 해요.')">② y좌표 바꾸기</div>
+                    <div class="quiz-option" onclick="checkQuiz(2, 3, '크기는 단어의 덩치만 커지게 해요.')">③ 크기 바꾸기</div>
+                    <div class="quiz-option" onclick="checkQuiz(2, 4, '투명도는 보였다 안 보였다 하게 해요.')">④ 투명도 바꾸기</div>
+                </div>
+                <div id="feedback2" class="quiz-feedback"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center text-gray-500 text-sm mt-10">
+        본 자료는 정선 여량초등학교 SW 교육을 위해 제작되었습니다. 정선의 아름다움을 코딩으로 표현해 보세요!
+    </footer>
+</div>
+
+<div id="toast" class="toast"></div>
+<textarea id="tempTextArea" style="position: absolute; left: -9999px; top: 0;"></textarea>
+
+<script>
+    let gameActive = false;
+    let gameScore = 0;
+    let gameInterval = null;
+    // 정선 명소 리스트로 업데이트
+    const jeongseonWords = ["아우라지", "레일바이크", "화암동굴", "민둥산", "가리왕산", "병방치", "정선오일장", "여량초", "정선아리랑", "주례마을", "벅스랜드", "타임캡슐공원"];
+
+    function startGame() {
+        const gameArea = document.getElementById('gameArea');
+        const gameInput = document.getElementById('gameInput');
+        gameArea.innerHTML = "";
+        gameActive = true;
+        gameScore = 0;
+        document.getElementById('scoreDisplay').innerText = `점수: 0`;
+        gameInput.disabled = false;
+        gameInput.value = "";
+        gameInput.focus();
+        
+        if(gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(spawnWord, 2000);
+        spawnWord();
+    }
+
+    function spawnWord() {
+        if (!gameActive) return;
+        const gameArea = document.getElementById('gameArea');
+        const word = jeongseonWords[Math.floor(Math.random() * jeongseonWords.length)];
+        const wordEl = document.createElement('div');
+        wordEl.className = "falling-word bg-white text-emerald-700 px-4 py-2 rounded-xl font-bold shadow-lg text-lg border-2 border-emerald-200";
+        wordEl.innerText = word;
+        
+        const maxX = gameArea.clientWidth - 150;
+        wordEl.style.left = Math.max(10, Math.random() * maxX) + "px";
+        wordEl.style.top = "0px";
+        gameArea.appendChild(wordEl);
+        
+        let top = 0;
+        const fallInterval = setInterval(() => {
+            if (!gameActive) { clearInterval(fallInterval); wordEl.remove(); return; }
+            top += 2.5; 
+            wordEl.style.top = top + "px";
+            if (top > gameArea.clientHeight - 50) {
+                clearInterval(fallInterval);
+                wordEl.remove();
+            }
+        }, 50);
+        wordEl.dataset.fallId = fallInterval;
+    }
+
+    document.getElementById('gameInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const val = e.target.value.trim();
+            document.querySelectorAll('.falling-word').forEach(w => {
+                if (w.innerText === val) {
+                    clearInterval(w.dataset.fallId);
+                    w.remove();
+                    gameScore += 10;
+                    document.getElementById('scoreDisplay').innerText = `점수: ${gameScore}`;
+                }
+            });
+            e.target.value = "";
+        }
+    });
+
+    function toggleBlock(id) {
+        const img = document.getElementById(id);
+        img.style.display = (img.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function copyWords(text, name) {
+        const tempTextArea = document.getElementById('tempTextArea');
+        tempTextArea.value = text;
+        tempTextArea.select();
+        try {
+            document.execCommand('copy');
+            showToast(`✅ ${name} 리스트가 복사되었습니다!`);
+        } catch (err) {
+            showToast('❌ 복사에 실패했습니다.');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    function checkQuiz(qNum, choice, hintText) {
+        const feedback = document.getElementById(`feedback${qNum}`);
+        const correctAnswers = [2, 2];
+        feedback.style.display = "block";
+        
+        if (choice === correctAnswers[qNum - 1]) {
+            feedback.innerText = "⭐ " + hintText;
+            feedback.className = "quiz-feedback bg-emerald-100 text-emerald-700";
+        } else {
+            feedback.innerText = "💡 힌트: " + hintText;
+            feedback.className = "quiz-feedback bg-red-50 text-red-600 border border-red-100";
+        }
+    }
+</script>
+</body>
+</html>
