@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2회차: 마우스 마스터와 폴더 요정</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            word-break: keep-all;
+        }
+        h1, h2, h3, .gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+            border: 6px solid white;
+        }
+        .nav-btn {
+            transition: all 0.3s;
+            font-size: 1.2rem;
+        }
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #855d00;
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
+
+        .posture-card {
+            height: 14rem;
+            position: relative;
+            display: block;
+            width: 100%;
+            border-radius: 1.5rem;
+            border-width: 4px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .posture-card.is-resolved {
+            background-color: #ecfdf5 !important;
+            border-color: #34d399 !important;
+        }
+
+        .next-step-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: white;
+            color: #374151;
+            padding: 1.25rem 2.5rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 4px solid #e5e7eb;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .next-step-link:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+
+        /* 미션 요소 */
+        .drag-item {
+            cursor: grab;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        .drag-item:active { cursor: grabbing; }
+        .drop-zone {
+            transition: all 0.3s;
+            border: 4px dashed #cbd5e1;
+        }
+        .drop-zone.over {
+            background-color: #f1f5f9;
+            border-color: var(--secondary);
+            transform: scale(1.02);
+        }
+
+        .click-emoji {
+            position: absolute;
+            font-size: 2.5rem;
+            transform: translate(-50%, -50%);
+            animation: pop 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1.5); opacity: 0; }
+        }
+
+        /* 윈도우 애니메이션 보강 */
+        #mini-window {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #mini-window.is-minimized {
+            transform: translate(-40%, 250px) scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- 헤더 -->
+    <header class="bg-white border-b-8 border-primary p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-secondary p-3 rounded-2xl shadow-inner">
+                    <i data-lucide="mouse-pointer-2" class="w-10 h-10 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">2회차: 마우스 마스터!</h1>
+                    <p class="text-lg md:text-xl text-blue-600 font-bold">따닥! 지익~ 마법을 배워요</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex gap-2">
+                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 복습하기</button>
+                <button onclick="showStep(2)" class="nav-btn bg-white border-4 border-accent px-4 py-2 rounded-full font-bold">2. 따닥! 더블클릭</button>
+                <button onclick="showStep(3)" class="nav-btn bg-white border-4 border-secondary px-4 py-2 rounded-full font-bold">3. 지익~ 드래그</button>
+                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-success px-4 py-2 rounded-full font-bold">4. 창 제어하기</button>
+                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-purple-400 px-4 py-2 rounded-full font-bold">5. 오늘의 미션</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-5xl p-6 mt-4">
+
+        <!-- 1단계: 복습하기 -->
+        <section id="step1" class="step-content active space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="refresh-cw" class="w-12 h-12 text-primary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">지난 시간 복습: 바른 자세</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    컴퓨터 대장이 되기 위한 기본! <br>
+                    <span class="text-accent font-bold">나쁜 자세를 클릭해서</span> 바르게 고쳐주세요.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🦵</div>
+                            <p class="text-xl font-bold text-gray-800">다리를 꼬거나<br>장난을 쳐요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">🤝 두 무릎을<br>나란히 모아요!</p>
+                        </div>
+                    </button>
+                    
+                    <button onclick="fixPosture(this)" class="posture-card bg-red-50 border-red-200 hover:scale-105 active:scale-95">
+                        <div class="bad-state absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+                            <div class="text-5xl mb-4">🥨</div>
+                            <p class="text-xl font-bold text-gray-800">허리를 구부정하게<br>굽히고 앉아요</p>
+                        </div>
+                        <div class="good-state absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                            <div class="text-5xl mb-3">✨</div>
+                            <p class="text-2xl font-black text-success leading-tight">🪑 등받이에 등을<br>꼭 붙여요!</p>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="mt-8 p-8 bg-yellow-50 rounded-3xl border-4 border-dashed border-primary text-center">
+                    <button onclick="showStep(2)" class="next-step-link">
+                        새로운 마법 '따닥!' 배우러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2단계: 더블 클릭 -->
+        <section id="step2" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="zap" class="w-12 h-12 text-accent"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">따닥! 더블 클릭 마법</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    왼쪽 버튼을 <span class="text-accent font-black italic">빠르게 두 번</span> 누르는 것을 '더블 클릭'이라고 해요.<br>
+                    잠겨있는 보물상자를 <strong>따닥!</strong> 눌러서 열어보세요!
+                </p>
+
+                <div class="flex justify-center py-10">
+                    <div id="treasure-box" onclick="handleChestClick(event)" class="cursor-pointer transition-transform hover:scale-110 active:scale-95 text-[120px] select-none">
+                        📦
+                    </div>
+                </div>
+                
+                <div id="chest-msg" class="text-center h-12 text-2xl font-bold text-gray-400">
+                    상자를 빠르게 두 번 눌러보세요!
+                </div>
+
+                <div class="mt-12 p-8 bg-red-50 rounded-3xl border-4 border-red-100">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">💡 선생님의 꿀팁!</h3>
+                    <p class="text-xl text-gray-700">
+                        너무 천천히 누르면 상자가 열리지 않아요. <br>
+                        발로 땅을 <strong>"따닥!"</strong> 구르는 박자에 맞춰서 손가락을 움직여 보세요!
+                    </p>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button onclick="showStep(3)" class="next-step-link">
+                        물건을 옮기는 '드래그' 배우기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3단계: 드래그 앤 드롭 -->
+        <section id="step3" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="move" class="w-12 h-12 text-secondary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">지익~ 드래그로 이사하기</h2>
+                </div>
+                <p class="text-2xl text-gray-700 mb-8">
+                    버튼을 <span class="text-secondary font-black">꾹 누른 채로</span> 마우스를 움직여보세요. <br>
+                    흩어진 아이콘들을 <strong>폴더 안으로</strong> 이사시켜 줄까요?
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 p-8 rounded-3xl border-4 border-slate-200 min-h-[400px]">
+                    <div id="icon-source" class="grid grid-cols-3 gap-4 content-start">
+                        <div draggable="true" ondragstart="drag(event)" id="item1" class="drag-item text-6xl p-4 bg-white rounded-2xl shadow-sm border-2 border-white flex items-center justify-center">🎨</div>
+                        <div draggable="true" ondragstart="drag(event)" id="item2" class="drag-item text-6xl p-4 bg-white rounded-2xl shadow-sm border-2 border-white flex items-center justify-center">🎮</div>
+                        <div draggable="true" ondragstart="drag(event)" id="item3" class="drag-item text-6xl p-4 bg-white rounded-2xl shadow-sm border-2 border-white flex items-center justify-center">📂</div>
+                        <div draggable="true" ondragstart="drag(event)" id="item4" class="drag-item text-6xl p-4 bg-white rounded-2xl shadow-sm border-2 border-white flex items-center justify-center">🎬</div>
+                        <div draggable="true" ondragstart="drag(event)" id="item5" class="drag-item text-6xl p-4 bg-white rounded-2xl shadow-sm border-2 border-white flex items-center justify-center">🎵</div>
+                    </div>
+
+                    <div id="folder-target" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"
+                         class="drop-zone flex flex-col items-center justify-center rounded-3xl bg-white shadow-inner relative overflow-hidden">
+                        <div class="text-[100px] mb-4">📂</div>
+                        <p class="text-2xl font-black text-slate-400">여기로 끌어다 놓으세요!</p>
+                        <div id="drop-count" class="absolute top-4 right-4 bg-secondary text-white px-4 py-2 rounded-full font-bold">0 / 5</div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button onclick="showStep(4)" class="next-step-link border-secondary text-secondary">
+                        창 제어 버튼 배우기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4단계: 창 제어하기 -->
+        <section id="step4" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="layout" class="w-12 h-12 text-success"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">창 버튼의 비밀</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    컴퓨터 화면 오른쪽 위에 있는 세 가지 버튼을 배워봐요. <br>
+                    <strong>최소화(—)</strong> 버튼을 누르면 창이 어디로 숨는지 잘 보세요!
+                </p>
+
+                <!-- 바탕화면 시뮬레이터 영역 -->
+                <div id="desktop-area" class="relative w-full h-[500px] bg-sky-200 rounded-3xl border-8 border-slate-300 overflow-hidden shadow-inner flex flex-col items-center justify-center p-4">
+                    <!-- 배경 장식 (구름) -->
+                    <div class="absolute top-10 left-10 text-white/50 text-6xl select-none">☁️</div>
+                    <div class="absolute top-20 right-20 text-white/50 text-8xl select-none">☁️</div>
+                    
+                    <!-- 나의 컴퓨터 창 -->
+                    <div id="mini-window" class="absolute z-10 w-full max-w-lg border-4 border-slate-800 rounded-t-xl overflow-hidden shadow-2xl bg-white origin-bottom-left">
+                        <div class="bg-slate-800 p-4 flex justify-between items-center select-none">
+                            <div class="text-white font-bold ml-2 flex items-center gap-2">
+                                <i data-lucide="monitor" class="w-4 h-4"></i> 나의 컴퓨터 창
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="windowAction('min')" class="w-8 h-8 bg-gray-500 rounded flex items-center justify-center text-white hover:bg-gray-400 font-bold">—</button>
+                                <button onclick="windowAction('max')" class="w-8 h-8 bg-gray-500 rounded flex items-center justify-center text-white hover:bg-gray-400 font-bold">ㅁ</button>
+                                <button onclick="windowAction('close')" class="w-8 h-8 bg-red-500 rounded flex items-center justify-center text-white hover:bg-red-600 font-bold">X</button>
+                            </div>
+                        </div>
+                        <div class="bg-white h-56 flex flex-col items-center justify-center p-8 text-center" id="window-body">
+                            <div id="window-icon" class="text-6xl mb-4">💻</div>
+                            <p id="window-text" class="text-2xl font-bold text-gray-600 italic">"버튼을 눌러보세요!"</p>
+                        </div>
+                    </div>
+
+                    <!-- 작업표시줄 -->
+                    <div id="taskbar" class="absolute bottom-0 left-0 w-full h-14 bg-slate-800/90 backdrop-blur flex items-center px-4 gap-2 z-20">
+                        <div class="bg-blue-600 p-2 rounded-lg text-white font-black text-sm px-4 mr-2 shadow-lg select-none">시작</div>
+                        
+                        <button id="taskbar-btn" onclick="windowAction('restore')" class="hidden bg-slate-600 hover:bg-slate-500 text-white text-sm px-4 py-2 rounded-md border border-slate-500 flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-md">
+                            <span class="text-lg">💻</span> 나의 컴퓨터 창
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div class="p-6 bg-gray-100 rounded-2xl border-4 border-gray-200">
+                        <p class="text-xl font-black text-gray-700 mb-2">— (최소화)</p>
+                        <p class="text-lg text-gray-600">창을 아래 <span class="text-blue-600 font-bold">작업표시줄</span>로 <br>잠시 숨겨둘 때 써요.</p>
+                    </div>
+                    <div class="p-6 bg-blue-50 rounded-2xl border-4 border-blue-200">
+                        <p class="text-xl font-black text-blue-700 mb-2">ㅁ (최대화)</p>
+                        <p class="text-lg text-gray-600">창을 화면 가득 <br><strong>크게 키울 때</strong> 써요.</p>
+                    </div>
+                    <div class="p-6 bg-red-50 rounded-2xl border-4 border-red-200">
+                        <p class="text-xl font-black text-red-700 mb-2">X (닫기)</p>
+                        <p class="text-lg text-gray-600">공부를 다 하고 <br><strong>종료할 때</strong> 써요.</p>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button onclick="showStep(5)" class="next-step-link border-success text-success">
+                        오늘의 최종 미션 확인하기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5단계: 오늘의 미션 -->
+        <section id="step5" class="step-content space-y-8">
+            <div class="lesson-card border-purple-200">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="crown" class="w-12 h-12 text-purple-500"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">오늘의 마우스 대장 미션!</h2>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-purple-100 rounded-3xl shadow-sm">
+                        <div class="bg-purple-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">1</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">바탕화면 폴더 열기</h4>
+                            <p class="text-xl text-gray-600 mb-3">바탕화면에 있는 폴더를 <span class="text-accent font-bold">따닥!</span> 더블 클릭해서 열어보세요.</p>
+                            <div class="bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-200 text-lg text-yellow-800 leading-relaxed">
+                                <span class="font-black">📂 폴더가 뭐예요?</span><br>
+                                컴퓨터 속의 <span class="bg-yellow-200 px-1 font-bold">'상자'</span>나 <span class="bg-yellow-200 px-1 font-bold">'가방'</span> 같아요! <br>
+                                내가 만든 그림이나 파일을 잃어버리지 않게 한곳에 모아두는 곳이에요.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-purple-100 rounded-3xl shadow-sm">
+                        <div class="bg-purple-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">2</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">그림판에서 얼굴 그리기</h4>
+                            <p class="text-xl text-gray-600 mb-3">그림판을 켜고, 마우스 드래그를 이용해 <span class="text-secondary font-bold">내 얼굴</span>을 멋지게 그려보세요.</p>
+                            <!-- 그림판 설명 추가 -->
+                            <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 text-lg text-blue-800 leading-relaxed">
+                                <span class="font-black">🎨 그림판이 뭐예요?</span><br>
+                                컴퓨터 안에 있는 마법의 <span class="bg-blue-100 px-1 font-bold">'스케치북'</span>이에요! <br>
+                                연필 대신 마우스를 움직여서 예쁜 그림도 그리고 색칠도 할 수 있답니다.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-purple-100 rounded-3xl shadow-sm">
+                        <div class="bg-purple-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">3</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">타자 연습 (자리 연습)</h4>
+                            <p class="text-xl text-gray-600">한컴타자연습의 <span class="text-success font-bold text-2xl">기본자리, 왼손윗자리, 왼손아랫자리</span>를 도전해보세요!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 p-10 bg-purple-50 rounded-3xl border-4 border-dashed border-purple-200 text-center">
+                    <p class="text-2xl font-bold text-purple-800 mb-8">모든 미션을 완료하면 선생님이 칭찬 스티커를 줄게요! 🎁</p>
+                    <div class="flex flex-col md:flex-row justify-center gap-4">
+                        <a href="https://tt.hancomtaja.com/ko" target="_blank" class="next-step-link border-purple-400 bg-purple-500 text-white hover:bg-purple-600 shadow-xl">
+                            한컴타자연습 시작! <i data-lucide="external-link" class="w-8 h-8"></i>
+                        </a>
+                        <button onclick="location.reload()" class="next-step-link bg-white text-gray-500 border-gray-200 font-bold">
+                             처음부터 다시 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 하단 내비게이션 (모바일용) -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentStep = 1;
+
+        function showStep(n) {
+            currentStep = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+            });
+            document.getElementById('step' + n).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function fixPosture(btn) {
+            if(btn.classList.contains('is-resolved')) return;
+            btn.classList.add('is-resolved');
+            btn.querySelector('.bad-state').style.opacity = '0';
+            btn.querySelector('.good-state').style.opacity = '1';
+            createEmoji(btn.getBoundingClientRect().left + 50, btn.getBoundingClientRect().top + 50, '✅');
+        }
+
+        function createEmoji(x, y, char) {
+            const emoji = document.createElement('div');
+            emoji.className = 'click-emoji';
+            emoji.innerText = char;
+            emoji.style.left = x + (window.scrollX || 0) + 'px';
+            emoji.style.top = y + (window.scrollY || 0) + 'px';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 600);
+        }
+
+        let lastClickTime = 0;
+        function handleChestClick(e) {
+            const currentTime = new Date().getTime();
+            const timeDiff = currentTime - lastClickTime;
+            
+            if (timeDiff < 400 && timeDiff > 0) {
+                const chest = document.getElementById('treasure-box');
+                const msg = document.getElementById('chest-msg');
+                chest.innerText = '🔓';
+                chest.classList.add('animate-bounce');
+                msg.innerText = "🎉 대단해요! 보물상자가 열렸어요!";
+                msg.classList.replace('text-gray-400', 'text-success');
+                createEmoji(e.clientX, e.clientY, '✨');
+                setTimeout(() => { chest.innerText = '💎'; chest.classList.remove('animate-bounce'); }, 1000);
+            } else {
+                createEmoji(e.clientX, e.clientY, '🖱️');
+            }
+            lastClickTime = currentTime;
+        }
+
+        let droppedItems = 0;
+        function allowDrop(ev) { ev.preventDefault(); document.getElementById('folder-target').classList.add('over'); }
+        function dragLeave(ev) { document.getElementById('folder-target').classList.remove('over'); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const target = document.getElementById('folder-target');
+            target.classList.remove('over');
+            const data = ev.dataTransfer.getData("text");
+            const item = document.getElementById(data);
+            if (item && item.parentNode !== target) {
+                item.style.display = 'none';
+                droppedItems++;
+                document.getElementById('drop-count').innerText = `${droppedItems} / 5`;
+                createEmoji(ev.clientX, ev.clientY, '📥');
+                if (droppedItems === 5) {
+                    target.innerHTML = `<div class="text-[100px] animate-pulse">🎁</div><p class="text-2xl font-black text-secondary">이사 완료! 최고예요!</p>`;
+                }
+            }
+        }
+
+        function windowAction(action) {
+            const win = document.getElementById('mini-window');
+            const body = document.getElementById('window-body');
+            const text = document.getElementById('window-text');
+            const icon = document.getElementById('window-icon');
+            const taskbarBtn = document.getElementById('taskbar-btn');
+
+            if (action === 'min') {
+                win.classList.add('is-minimized');
+                text.innerText = "작업표시줄로 숨었어요! (최소화)";
+                setTimeout(() => {
+                    taskbarBtn.classList.remove('hidden');
+                    taskbarBtn.classList.add('flex');
+                }, 300);
+            } else if (action === 'restore') {
+                win.classList.remove('is-minimized');
+                taskbarBtn.classList.add('hidden');
+                taskbarBtn.classList.remove('flex');
+                text.innerText = "다시 나타났어요! (복구)";
+            } else if (action === 'max') {
+                win.classList.toggle('max-w-full');
+                win.classList.toggle('max-w-lg');
+                win.classList.toggle('h-[440px]');
+                text.innerText = "화면 가득 커졌어요! (최대화)";
+            } else if (action === 'close') {
+                body.classList.add('bg-slate-200');
+                text.innerText = "공부 끝! 창을 닫습니다. (종료)";
+                icon.innerText = '🏠';
+                setTimeout(() => {
+                    body.classList.remove('bg-slate-200');
+                    text.innerText = "버튼을 다시 눌러보세요!";
+                    icon.innerText = '💻';
+                }, 2000);
+            }
+        }
+
+        function nextStep() { return Math.min(currentStep + 1, 5); }
+        function prevStep() { return Math.max(currentStep - 1, 1); }
+    </script>
+</body>
+</html>
