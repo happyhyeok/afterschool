@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마우스 마법사 학교 - 나만의 컴퓨터 만들기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f0f9ff;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        .wizard-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .chest-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        .window-pop {
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .hidden { display: none; }
+        .drop-zone-active {
+            transform: scale(1.05);
+            border-color: #fbbf24;
+            background-color: rgba(251, 191, 36, 0.1);
+        }
+        .computer-part {
+            transition: all 0.5s ease;
+        }
+        .shake-wrong {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-6">
+
+    <!-- 시작 화면 -->
+    <div id="screen-start" class="mt-10 max-w-4xl w-full bg-white rounded-3xl shadow-2xl p-12 text-center border-8 border-yellow-400">
+        <h1 class="text-7xl font-bold text-indigo-600 mb-8">✨ 마우스 마법사 학교 ✨</h1>
+        <div class="mb-8"><span class="text-9xl">🧙‍♂️</span></div>
+        <p class="text-4xl text-gray-700 mb-10 leading-relaxed">
+            안녕! 오늘은 마우스 마법으로 <br>
+        <span class="font-bold text-indigo-500 text-5xl">나만의 마법 컴퓨터</span>를 직접 만들어 볼 거야!<br>
+        준비됐니?
+    </p>
+    <button onclick="showScreen('screen-concept')" class="bg-indigo-500 hover:bg-indigo-600 text-white text-5xl px-16 py-6 rounded-full transition-transform active:scale-95 shadow-lg">
+        컴퓨터 부품 찾으러 가기!
+    </button>
+</div>
+
+<!-- 0단계: 개념 이해하기 -->
+<div id="screen-concept" class="hidden w-full max-w-7xl bg-white rounded-3xl shadow-2xl p-12 text-center border-8 border-indigo-400 min-h-[85vh] flex flex-col items-center">
+    <h2 class="text-6xl font-bold text-indigo-600 mb-6">마법을 배우기 전, 이것만은 꼭! 💡</h2>
+    <p class="text-3xl text-gray-600 mb-10">궁금한 카드를 <span class="bg-yellow-200 px-2 rounded font-bold">마우스로 클릭</span>해서 비밀을 확인해 보세요.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-12 flex-grow">
+        <!-- Card 1 -->
+        <div id="concept-card-1" class="w-full bg-gray-100 rounded-3xl p-8 cursor-pointer border-4 border-gray-300 transition-all hover:scale-105 shadow-md flex items-center justify-center" onclick="revealConcept(1, 'border-indigo-400')">
+            <div class="concept-front text-5xl font-bold py-16 text-gray-500">🤔 컴퓨터란?<br><br><span class="text-3xl">(클릭)</span></div>
+            <div class="concept-back hidden w-full">
+                <div class="text-[8rem] mb-6">💻</div>
+                <h3 class="text-5xl font-bold text-indigo-600 mb-4">컴퓨터</h3>
+                <p class="text-3xl text-gray-700 leading-relaxed">정보를 계산하고 처리해주는<br>아주 똑똑한 마법 상자예요!</p>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div id="concept-card-2" class="w-full bg-gray-100 rounded-3xl p-8 cursor-pointer border-4 border-gray-300 transition-all hover:scale-105 shadow-md flex items-center justify-center" onclick="revealConcept(2, 'border-blue-400')">
+            <div class="concept-front text-5xl font-bold py-16 text-gray-500">🤔 하드웨어란?<br><br><span class="text-3xl">(클릭)</span></div>
+            <div class="concept-back hidden w-full">
+                <div class="text-[8rem] mb-6">⌨️</div>
+                <h3 class="text-5xl font-bold text-blue-600 mb-4">하드웨어</h3>
+                <p class="text-3xl text-gray-700 leading-relaxed">모니터, 마우스처럼<br><span class="font-bold text-blue-500">손으로 만질 수 있는</span><br>기계 부품이에요!</p>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div id="concept-card-3" class="w-full bg-gray-100 rounded-3xl p-8 cursor-pointer border-4 border-gray-300 transition-all hover:scale-105 shadow-md flex items-center justify-center" onclick="revealConcept(3, 'border-green-400')">
+            <div class="concept-front text-5xl font-bold py-16 text-gray-500">🤔 소프트웨어란?<br><br><span class="text-3xl">(클릭)</span></div>
+            <div class="concept-back hidden w-full">
+                <div class="text-[8rem] mb-6">🎮</div>
+                <h3 class="text-5xl font-bold text-green-600 mb-4">소프트웨어</h3>
+                <p class="text-3xl text-gray-700 leading-relaxed">게임, 그림판처럼<br>컴퓨터 안에서 움직이는<br><span class="font-bold text-green-500">보이지 않는 프로그램</span>이에요!</p>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-next-step1" onclick="showScreen('screen-doubleclick')" class="hidden bg-indigo-500 hover:bg-indigo-600 text-white text-5xl px-16 py-6 rounded-full transition-transform active:scale-95 shadow-lg mt-auto">
+        마법 준비 완료! 비밀 상자 열러 가기 🚀
+    </button>
+</div>
+
+<!-- 1단계: 더블클릭 (부품 및 프로그램 발견) -->
+    <div id="screen-doubleclick" class="hidden w-full max-w-7xl wizard-bg rounded-3xl shadow-2xl p-10 text-white min-h-[85vh] flex flex-col">
+        <div class="flex justify-between items-end mb-6 border-b border-white/20 pb-8">
+            <div>
+                <h2 class="text-5xl font-bold mb-6">Step 1: 비밀 상자 열기 🎁</h2>
+                <p class="text-2xl text-yellow-200 mb-6">상자를 <span class="bg-yellow-400 text-indigo-900 px-3 py-1 rounded font-bold">톡톡!</span> 빠르게 두 번 눌러서 부품을 꺼내세요.</p>
+                <div class="flex gap-4 text-2xl font-bold mt-2">
+                    <span class="bg-blue-500 border-2 border-white px-5 py-2 rounded-full shadow-md">🟦 파란 상자 = 기계(하드웨어)</span>
+                    <span class="bg-green-500 border-2 border-white px-5 py-2 rounded-full shadow-md">🟩 초록 상자 = 프로그램(소프트웨어)</span>
+                </div>
+            </div>
+            <div class="text-4xl bg-white/20 px-8 py-5 rounded-full whitespace-nowrap">상자 : <span id="chest-count" class="font-bold text-yellow-300">12</span> / 12</div>
+        </div>
+        
+        <!-- 3열 그리드 적용 및 중앙 정렬 -->
+        <div class="grid grid-cols-3 gap-10 max-w-5xl mx-auto w-full flex-grow content-start py-8" id="icon-grid"></div>
+
+        <div id="msg-box" class="h-16 text-center text-4xl font-bold text-yellow-300 mt-4"></div>
+
+        <!-- 윈도우 모달 -->
+        <div id="window-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-100 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden window-pop border-4 border-gray-400">
+                <div class="bg-indigo-700 p-3 flex justify-between items-center">
+                    <span id="window-title" class="text-white font-bold ml-4 text-2xl">탐색기.exe</span>
+                    <button onclick="closeWindow()" class="bg-red-500 hover:bg-red-600 text-white w-12 h-12 flex items-center justify-center rounded-lg font-bold text-2xl">X</button>
+                </div>
+                <div class="p-10 bg-white text-center">
+                    <div id="item-type" class="inline-block px-5 py-2 rounded-full text-xl font-bold mb-6"></div>
+                    <div id="window-emoji" class="text-[10rem] mb-6 flex justify-center items-center leading-none"></div>
+                    <h3 id="window-name" class="text-5xl font-bold text-gray-800 mb-4"></h3>
+                    <p id="window-desc" class="text-3xl text-gray-600 break-keep"></p>
+                    <button onclick="closeWindow()" class="mt-10 bg-indigo-500 text-white px-10 py-4 rounded-full text-3xl font-bold hover:bg-indigo-600 transition-colors">마법 주머니에 넣기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2단계: 드래그 1 (하드웨어 조립) -->
+    <div id="screen-drag-hw" class="hidden max-w-7xl w-full bg-blue-50 rounded-3xl shadow-2xl p-10 border-8 border-blue-200 min-h-[85vh]">
+        <div class="text-center mb-10">
+            <h2 class="text-6xl font-bold text-blue-600">Step 2: 컴퓨터 몸(하드웨어) 만들기 🏗️</h2>
+            <p class="text-3xl text-gray-600 mt-4">마우스로 부품을 끌어서 책상 위로 옮겨주세요!</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-10 items-center justify-between">
+            <!-- 부품 창고 -->
+            <div id="hw-source" class="w-full md:w-1/3 bg-white rounded-2xl p-8 border-4 border-dashed border-blue-300 min-h-[500px] flex flex-wrap content-start justify-center gap-6">
+                <!-- HW items will be here -->
+            </div>
+
+            <!-- 조립 구역 -->
+            <div id="hw-target" ondrop="dropHW(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"
+                 class="w-full md:w-2/3 h-[600px] bg-white rounded-3xl relative border-4 border-blue-100 shadow-inner overflow-hidden transition-all">
+                <div class="absolute bottom-6 right-6 text-blue-200 text-4xl font-bold italic">MY DESK</div>
+                
+                <!-- Assembly slots (visual feedback) -->
+                <div id="assembly-area" class="w-full h-full relative">
+                    <!-- Parts appear here after dropping -->
+                    <div id="place-4" class="absolute hidden" style="bottom: 10%; right: 10%; font-size: 10rem;">
+                        <div class="inline-flex w-[1em] h-[1em] bg-gray-800 border-[0.08em] border-gray-400 rounded-[0.1em] items-center justify-center relative shadow-inner">
+                            <div class="absolute inset-[0.12em] border-[0.04em] border-dashed border-gray-500 rounded-[0.05em]"></div>
+                            <span class="text-white text-[0.25em] font-bold font-sans tracking-widest">CPU</span>
+                        </div>
+                    </div>
+                    <div id="place-1" class="absolute hidden" style="top: 15%; left: 25%; font-size: 14rem;">🖥️</div>
+                    <div id="place-2" class="absolute hidden" style="bottom: 15%; left: 25%; font-size: 8rem;">⌨️</div>
+                    <div id="place-3" class="absolute hidden" style="bottom: 15%; left: 75%; font-size: 6rem;">🖱️</div>
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="hw-empty-msg" class="absolute inset-0 flex items-center justify-center text-gray-300 pointer-events-none">
+                    <p class="text-4xl font-bold">여기로 부품을 드래그하세요!</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 text-center text-4xl font-bold text-blue-800">조립한 부품: <span id="hw-count">0</span> / 4</div>
+    </div>
+
+    <!-- 3단계: 드래그 2 (소프트웨어 설치) -->
+    <div id="screen-drag-sw" class="hidden max-w-7xl w-full bg-green-50 rounded-3xl shadow-2xl p-10 border-8 border-green-200 min-h-[85vh]">
+        <div class="text-center mb-10">
+            <h2 class="text-6xl font-bold text-green-600">Step 3: 마법 프로그램(소프트웨어) 넣기 🪄</h2>
+            <p class="text-3xl text-gray-600 mt-4">조립된 컴퓨터 화면으로 프로그램을 드래그해서 설치하세요!</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-10 items-center justify-between">
+            <!-- 프로그램 창고 -->
+            <div id="sw-source" class="w-full md:w-1/3 bg-white rounded-2xl p-8 border-4 border-dashed border-green-300 min-h-[500px] flex flex-wrap content-start justify-center gap-6">
+                <!-- SW items will be here -->
+            </div>
+
+            <!-- 완성된 컴퓨터 구역 -->
+            <div id="sw-target" ondrop="dropSW(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"
+                 class="w-full md:w-2/3 h-[600px] relative flex items-center justify-center transition-all">
+                
+                <!-- Complete HW visual -->
+                <div class="relative scale-125 mt-10">
+                    <div class="text-[16rem] relative leading-none">
+                        🖥️
+                        <!-- Inside Monitor Screen -->
+                        <div id="monitor-screen" class="absolute top-[18%] left-[12%] w-[76%] h-[48%] bg-black rounded-sm flex flex-wrap p-3 overflow-hidden content-start gap-3">
+                            <!-- Software icons will appear here -->
+                        </div>
+                    </div>
+                    <div class="text-8xl absolute -bottom-16 left-0">⌨️</div>
+                    <div class="text-6xl absolute -bottom-12 right-0">🖱️</div>
+                    <div class="text-8xl absolute -right-32 bottom-0">
+                        <div class="inline-flex w-[1em] h-[1em] bg-gray-800 border-[0.08em] border-gray-400 rounded-[0.1em] items-center justify-center relative shadow-inner">
+                            <div class="absolute inset-[0.12em] border-[0.04em] border-dashed border-gray-500 rounded-[0.05em]"></div>
+                            <span class="text-white text-[0.25em] font-bold font-sans tracking-widest">CPU</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 px-6 py-3 rounded-full font-bold animate-pulse shadow-lg text-2xl">
+                화면 안으로 쏙! 넣어주세요
+            </div>
+        </div>
+    </div>
+    <div class="mt-16 text-center text-4xl font-bold text-green-800">설치한 프로그램: <span id="sw-count">0</span> / 4</div>
+</div>
+
+<!-- 4단계: 마무리 퀴즈 -->
+<div id="screen-quiz" class="hidden w-full max-w-5xl bg-yellow-50 rounded-3xl shadow-2xl p-12 text-center border-8 border-yellow-400 min-h-[85vh] flex flex-col items-center justify-center">
+    <h2 class="text-6xl font-bold text-yellow-600 mb-4">마무리 초성 퀴즈! 📝</h2>
+    <p class="text-3xl text-gray-600 mb-10">하드웨어와 소프트웨어를 잘 기억하고 있는지 확인해 볼까요?</p>
+    
+    <div class="bg-white w-full rounded-3xl shadow-lg p-10 border-4 border-yellow-200 relative">
+        <div id="quiz-num" class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-yellow-900 px-6 py-2 rounded-full text-2xl font-bold">문제 1 / 7</div>
+        
+        <p id="quiz-q" class="text-5xl font-bold text-gray-800 mb-8 mt-6 break-keep leading-tight"></p>
+        
+        <div class="bg-gray-100 rounded-2xl p-8 mb-8 inline-block min-w-[50%] border-2 border-gray-200 shadow-inner">
+            <span class="text-3xl text-gray-500 font-bold block mb-2">힌트 (초성)</span>
+            <span id="quiz-chosung" class="text-7xl font-bold text-indigo-600 tracking-widest"></span>
+        </div>
+        
+        <div>
+            <input type="text" id="quiz-input" placeholder="정답을 입력하세요" class="text-center text-5xl p-6 border-4 border-indigo-300 rounded-2xl w-full max-w-lg mb-6 focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-300 shadow-inner" onkeypress="if(event.key === 'Enter') checkQuiz()">
+        </div>
+        
+        <div id="quiz-msg" class="h-16 text-4xl font-bold mb-6 flex items-center justify-center"></div>
+        
+        <button onclick="checkQuiz()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-4xl px-16 py-5 rounded-full shadow-lg active:scale-95 transition-all w-full max-w-lg">정답 확인!</button>
+    </div>
+</div>
+
+<!-- 최종 화면 -->
+    <div id="screen-success" class="hidden max-w-4xl w-full bg-white rounded-3xl shadow-2xl p-16 text-center border-8 border-indigo-400">
+        <h2 class="text-8xl font-bold text-indigo-600 mb-10">마법 완성! 🎉</h2>
+        <div class="flex justify-center mb-10 space-x-6">
+            <div class="text-[10rem]">✨</div>
+            <div class="text-[10rem]">🖥️</div>
+            <div class="text-[10rem]">✨</div>
+        </div>
+        <p class="text-5xl font-bold text-gray-800 mb-6">당신은 이제 최고의 마우스 마술사!</p>
+        <p class="text-3xl text-gray-600 mb-12 leading-relaxed">
+            컴퓨터의 몸(하드웨어)과 마음(소프트웨어)을<br>
+            모두 이해하고 완성했어요. 정말 대단해요!
+        </p>
+        <button onclick="location.reload()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-4xl px-16 py-6 rounded-full shadow-xl active:scale-95 transition-all">처음부터 다시 만들기</button>
+    </div>
+
+    <script>
+        // CPU 칩을 그려내는 CSS 기반 HTML 코드 
+        const cpuHtmlStr = `<div class="inline-flex w-[1em] h-[1em] bg-gray-800 border-[0.08em] border-gray-400 rounded-[0.1em] items-center justify-center relative shadow-inner"><div class="absolute inset-[0.12em] border-[0.04em] border-dashed border-gray-500 rounded-[0.05em]"></div><span class="text-white text-[0.25em] font-bold font-sans tracking-widest">CPU</span></div>`;
+
+        const computerItems = [
+            { id: 'hw1', name: "모니터", emoji: "🖥️", type: "하드웨어", desc: "컴퓨터의 내용을 눈으로 보여주는 얼굴이에요!", color: "blue" },
+            { id: 'hw2', name: "키보드", emoji: "⌨️", type: "하드웨어", desc: "컴퓨터에게 글자를 써서 명령을 내려요.", color: "blue" },
+            { id: 'hw3', name: "마우스", emoji: "🖱️", type: "하드웨어", desc: "손처럼 화면의 화살표를 움직이는 장치예요.", color: "blue" },
+            { id: 'hw4', name: "본체(CPU)", emoji: cpuHtmlStr, type: "하드웨어", desc: "컴퓨터의 똑똑한 두뇌인 컴퓨터 칩이에요! 모든 생각을 담당해요.", color: "blue" },
+            { id: 'sw1', name: "그림판", emoji: "🎨", type: "소프트웨어", desc: "컴퓨터에서 그림을 그릴 수 있는 프로그램이에요.", color: "green" },
+            { id: 'sw2', name: "인터넷", emoji: "🌐", type: "소프트웨어", desc: "전 세계의 정보를 찾아볼 수 있는 창문이에요.", color: "green" },
+            { id: 'sw3', name: "게임", emoji: "🎮", type: "소프트웨어", desc: "즐겁게 놀 수 있도록 만들어진 프로그램이에요.", color: "green" },
+            { id: 'sw4', name: "계산기", emoji: "➕", type: "소프트웨어", desc: "어려운 수학 문제를 척척 풀어주는 도구예요.", color: "green" },
+            // 추가 더블클릭 훈련용 (배경지식)
+            { id: 'bg1', name: "스피커", emoji: "🔊", type: "하드웨어", desc: "소리를 들려주는 귀 같은 장치예요.", color: "blue" },
+            { id: 'bg2', name: "프린터", emoji: "🖨️", type: "하드웨어", desc: "종이에 그림을 뽑아주는 장치예요.", color: "blue" },
+            { id: 'bg3', name: "음악 앱", emoji: "🎵", type: "소프트웨어", desc: "노래를 들을 수 있게 해줘요.", color: "green" },
+            { id: 'bg4', name: "사진첩", emoji: "📸", type: "소프트웨어", desc: "사진을 모아 보는 프로그램이에요.", color: "green" }
+        ];
+
+        let chestsOpened = 0;
+    let hwAssembled = 0;
+    let swInstalled = 0;
+
+    function showScreen(screenId) {
+        ['screen-start', 'screen-concept', 'screen-doubleclick', 'screen-drag-hw', 'screen-drag-sw', 'screen-quiz', 'screen-success'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(screenId).classList.remove('hidden');
+        if(screenId === 'screen-concept') initConcept();
+        if(screenId === 'screen-doubleclick') initStep1();
+        if(screenId === 'screen-drag-hw') initStep2();
+        if(screenId === 'screen-drag-sw') initStep3();
+        if(screenId === 'screen-quiz') initQuiz();
+    }
+
+    /* --- Step 1: Double Click --- */
+        function initStep1() {
+            const grid = document.getElementById('icon-grid');
+            grid.innerHTML = '';
+            computerItems.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = "text-center transition-all";
+                div.id = `chest-${item.id}`;
+                
+                // 하드웨어는 파란상자, 소프트웨어는 초록상자로 색깔 구분
+                const isHardware = item.type === "하드웨어";
+                const bgColor = isHardware ? 'bg-blue-400 hover:bg-blue-500' : 'bg-green-400 hover:bg-green-500';
+
+                div.innerHTML = `
+                    <div class="w-full aspect-square max-w-[14rem] mx-auto ${bgColor} rounded-3xl flex items-center justify-center mb-4 transition-transform hover:scale-105 shadow-xl border-4 border-white/50 cursor-pointer" onclick="shakeItem(this)" ondblclick="openChest('${item.id}')">
+                        <div class="text-7xl md:text-[6rem]">🎁</div>
+                    </div>
+                    <div class="text-4xl font-bold opacity-90">상자 ${idx + 1}</div>
+                `;
+                grid.appendChild(div);
+            });
+            updateCount();
+        }
+
+        function shakeItem(el) {
+            el.classList.add('chest-shake');
+            document.getElementById('msg-box').innerText = "앗! 한 번만 누르면 안 열려요! 톡톡! 두 번!";
+            setTimeout(() => el.classList.remove('chest-shake'), 400);
+        }
+
+        function openChest(id) {
+            const item = computerItems.find(i => i.id === id);
+            const container = document.getElementById(`chest-${id}`);
+            if(container.classList.contains('opened')) return;
+
+            document.getElementById('window-title').innerText = `${item.name}.exe`;
+            document.getElementById('window-emoji').innerHTML = item.emoji;
+            document.getElementById('window-name').innerText = item.name;
+            document.getElementById('window-desc').innerText = item.desc;
+            
+            const typeBadge = document.getElementById('item-type');
+            typeBadge.innerText = item.type;
+            typeBadge.className = `inline-block px-5 py-2 rounded-full text-2xl font-bold mb-6 ${item.type === '하드웨어' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`;
+
+            document.getElementById('window-modal').classList.remove('hidden');
+            
+            const isHardware = item.type === "하드웨어";
+            container.classList.add('opened');
+            // 열린 상태도 색상에 맞춰 어둡게 변경
+            container.innerHTML = `
+                <div class="w-full aspect-square max-w-[14rem] mx-auto ${isHardware ? 'bg-blue-900' : 'bg-green-900'} rounded-3xl flex items-center justify-center mb-4 shadow-inner border-4 border-black/30">
+                    <div class="text-7xl md:text-[6rem] opacity-30 grayscale">📂</div>
+                </div>
+                <div class="text-3xl font-bold opacity-50 text-white">${item.name}</div>
+            `;
+            
+            chestsOpened++;
+            updateCount();
+            document.getElementById('msg-box').innerText = "훌륭해요! 부품을 찾았습니다!";
+        }
+
+        function closeWindow() {
+            document.getElementById('window-modal').classList.add('hidden');
+            if (chestsOpened === computerItems.length) {
+                setTimeout(() => showScreen('screen-drag-hw'), 500);
+            }
+        }
+
+        function updateCount() {
+            document.getElementById('chest-count').innerText = chestsOpened;
+        }
+
+        /* --- Step 2: Drag Hardware --- */
+        function initStep2() {
+            const hwSource = document.getElementById('hw-source');
+            hwSource.innerHTML = '';
+            const hwItems = computerItems.filter(i => i.id.startsWith('hw'));
+            
+            hwItems.forEach(item => {
+                const div = document.createElement('div');
+                div.id = `drag-${item.id}`;
+                div.draggable = true;
+                div.ondragstart = (e) => e.dataTransfer.setData("text", e.target.id);
+                div.className = "cursor-move text-7xl bg-blue-100 p-6 rounded-3xl shadow-md hover:bg-white transition-colors flex items-center justify-center w-32 h-32";
+                div.innerHTML = item.emoji;
+                hwSource.appendChild(div);
+            });
+        }
+
+        function dropHW(ev) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text").replace('drag-', '');
+            const targetEl = document.getElementById(`place-${id.replace('hw', '')}`);
+            const dragEl = document.getElementById(`drag-${id}`);
+            
+            if (targetEl && targetEl.classList.contains('hidden')) {
+                targetEl.classList.remove('hidden');
+                targetEl.classList.add('animate-bounce');
+                dragEl.style.visibility = 'hidden';
+                hwAssembled++;
+                document.getElementById('hw-count').innerText = hwAssembled;
+                document.getElementById('hw-empty-msg').classList.add('hidden');
+
+                if (hwAssembled === 4) {
+                    setTimeout(() => showScreen('screen-drag-sw'), 1500);
+                }
+            }
+            dragLeave(ev);
+        }
+
+        /* --- Step 3: Drag Software --- */
+        function initStep3() {
+            const swSource = document.getElementById('sw-source');
+            swSource.innerHTML = '';
+            const swItems = computerItems.filter(i => i.id.startsWith('sw'));
+            
+            swItems.forEach(item => {
+                const div = document.createElement('div');
+                div.id = `drag-${item.id}`;
+                div.draggable = true;
+                div.ondragstart = (e) => e.dataTransfer.setData("text", e.target.id);
+                div.className = "cursor-move text-7xl bg-green-100 p-6 rounded-3xl shadow-md hover:bg-white transition-colors flex items-center justify-center w-32 h-32";
+                div.innerHTML = item.emoji;
+                swSource.appendChild(div);
+            });
+        }
+
+        function dropSW(ev) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text");
+            const dragEl = document.getElementById(id);
+            const item = computerItems.find(i => i.id === id.replace('drag-', ''));
+            
+            if (item && item.type === "소프트웨어") {
+                const icon = document.createElement('div');
+                icon.className = "text-4xl bg-indigo-500 rounded-lg p-2 animate-pulse";
+                icon.innerHTML = item.emoji;
+                document.getElementById('monitor-screen').appendChild(icon);
+                
+                dragEl.style.visibility = 'hidden';
+            swInstalled++;
+            document.getElementById('sw-count').innerText = swInstalled;
+
+            if (swInstalled === 4) {
+                setTimeout(() => showScreen('screen-quiz'), 1500);
+            }
+        }
+        dragLeave(ev);
+    }
+
+    /* --- Common Drag Events --- */
+    function allowDrop(ev) { ev.preventDefault(); }
+    function dragEnter(ev) { ev.currentTarget.classList.add('drop-zone-active'); }
+    function dragLeave(ev) { ev.currentTarget.classList.remove('drop-zone-active'); }
+
+    /* --- Concept Events --- */
+    let conceptsRevealed = 0;
+    function initConcept() {
+        conceptsRevealed = 0;
+        document.getElementById('btn-next-step1').classList.add('hidden');
+        [1, 2, 3].forEach(id => {
+            const el = document.getElementById(`concept-card-${id}`);
+            el.classList.remove('bg-white', 'border-indigo-400', 'border-blue-400', 'border-green-400');
+            el.classList.add('bg-gray-100', 'border-gray-300');
+            el.classList.remove('revealed');
+            el.querySelector('.concept-front').classList.remove('hidden');
+            el.querySelector('.concept-back').classList.add('hidden');
+            el.querySelector('.concept-back').classList.remove('window-pop');
+        });
+    }
+
+    function revealConcept(id, borderColorClass) {
+        const el = document.getElementById(`concept-card-${id}`);
+        if (!el.classList.contains('revealed')) {
+            el.classList.add('revealed', 'bg-white', borderColorClass);
+            el.classList.remove('bg-gray-100', 'border-gray-300');
+            
+            el.querySelector('.concept-front').classList.add('hidden');
+            el.querySelector('.concept-back').classList.remove('hidden');
+            el.querySelector('.concept-back').classList.add('window-pop');
+
+            conceptsRevealed++;
+            if (conceptsRevealed === 3) {
+                document.getElementById('btn-next-step1').classList.remove('hidden');
+            }
+        }
+    }
+
+    /* --- Quiz Events --- */
+    const quizData = [
+        { q: "손으로 만질 수 있는 컴퓨터의 기계 부품은?", chosung: "ㅎㄷㅇㅇ", a: "하드웨어" },
+        { q: "컴퓨터 안에서 움직이는 보이지 않는 프로그램은?", chosung: "ㅅㅍㅌㅇㅇ", a: "소프트웨어" },
+        { q: "컴퓨터의 얼굴! 화면을 보여주는 부품은?", chosung: "ㅁㄴㅌ", a: "모니터" },
+        { q: "글자를 타닥타닥 쳐서 컴퓨터에게 명령을 내리는 부품은?", chosung: "ㅋㅂㄷ", a: "키보드" },
+        { q: "화살표를 휙휙 움직이게 해주는 생쥐 모양 부품은?", chosung: "ㅁㅇㅅ", a: "마우스" },
+        { q: "전 세계의 정보를 찾아볼 수 있는 창문 같은 프로그램은?", chosung: "ㅇㅌㄴ", a: "인터넷" },
+        { q: "컴퓨터에서 그림을 그릴 수 있는 프로그램은?", chosung: "ㄱㄹㅍ", a: "그림판" }
+    ];
+    let currentQuizIndex = 0;
+
+    function initQuiz() {
+        currentQuizIndex = 0;
+        showQuiz();
+    }
+
+    function showQuiz() {
+        const quiz = quizData[currentQuizIndex];
+        document.getElementById('quiz-num').innerText = `문제 ${currentQuizIndex + 1} / ${quizData.length}`;
+        document.getElementById('quiz-q').innerText = quiz.q;
+        document.getElementById('quiz-chosung').innerText = quiz.chosung;
+        document.getElementById('quiz-input').value = "";
+        document.getElementById('quiz-msg').innerText = "";
+        document.getElementById('quiz-input').focus();
+    }
+
+    function checkQuiz() {
+        const input = document.getElementById('quiz-input').value.replace(/\s+/g, ''); // 공백 무시
+        const quiz = quizData[currentQuizIndex];
+        
+        if (input === quiz.a) {
+            document.getElementById('quiz-msg').innerHTML = "<span class='text-green-500'>정답입니다! 🎉</span>";
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex >= quizData.length) {
+                    showScreen('screen-success');
+                } else {
+                    showQuiz();
+                }
+            }, 1500);
+        } else {
+            const inputEl = document.getElementById('quiz-input');
+            inputEl.classList.add('shake-wrong');
+            document.getElementById('quiz-msg').innerHTML = "<span class='text-red-500'>다시 생각해 볼까요? 🤔</span>";
+            setTimeout(() => {
+                inputEl.classList.remove('shake-wrong');
+                document.getElementById('quiz-msg').innerHTML = "";
+                inputEl.focus();
+            }, 1000);
+        }
+    }
+
+</script>
+</body>
+</html>
