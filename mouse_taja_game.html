@@ -3,123 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>타자 & 마우스 용사</title>
+<title>타자 & 마우스 용사 (어린이용)</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
-    :root { --bg: #fdf6e3; --pri: #ff9a9e; --txt: #333; --jbg: rgba(200,230,255,0.9); --jbd: #8ab6d6; }
+    :root { 
+        --bg: #fdf6e3; 
+        --pri: #ff9a9e; 
+        --txt: #333; 
+        --jbg: rgba(200,230,255,0.9); 
+        --jbd: #8ab6d6; 
+        /* 노란색 큰 마우스 커서 정의 */
+        --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFEB3B' stroke='%23000' stroke-width='1.5' d='M5.5 3.21V20.8c0 .45.54.67.85.35l4.83-4.83 3.06 7.44c.12.29.46.42.75.3l2.23-.91c.29-.12.42-.46.3-.75l-3.04-7.4 6.64-.1c.32 0 .48-.39.25-.62L6.12 2.96a.25.25 0 0 0-.44.17l-.18.08z'/%3E%3C/svg%3E"), auto;
+    }
     * { box-sizing: border-box; user-select: none; font-family: 'Jua', sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--txt); overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    body { 
+        margin: 0; 
+        background: var(--bg); 
+        color: var(--txt); 
+        overflow: hidden; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        cursor: var(--cursor);
+    }
     #app { width: 100%; max-width: 900px; height: 100vh; display: flex; flex-direction: column; position: relative; background: linear-gradient(to bottom, #e0c3fc, #8ec5fc); box-shadow: 0 0 20px rgba(0,0,0,0.2); }
     #head { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(255,255,255,0.9); font-size: 24px; border-bottom: 4px solid var(--pri); z-index: 10; }
     .stat { background: var(--pri); color: #fff; padding: 8px 18px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    #play { flex: 1; position: relative; overflow: hidden; }
-    .mon { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px; margin: -50px; cursor: pointer; touch-action: none; }
-    .mon .emo { font-size: 60px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); animation: float 2s infinite ease-in-out alternate; }
-    .mon .wrd { background: #fff; padding: 5px 12px; border-radius: 15px; font-size: 24px; font-weight: bold; margin-top: 5px; border: 3px solid #ddd; pointer-events: none; display: none; }
+    #play { flex: 1; position: relative; overflow: hidden; cursor: var(--cursor); }
+    
+    .mon { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px; margin: -50px; cursor: var(--cursor); touch-action: none; }
+    .mon .emo { font-size: 70px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); animation: float 2s infinite ease-in-out alternate; }
+    .mon .wrd { background: #ffff00; color: #000; padding: 8px 15px; border-radius: 15px; font-size: 32px; font-weight: bold; margin-top: 5px; border: 4px solid #ff9800; pointer-events: none; display: none; box-shadow: 0 4px 0 #e68a00; }
     .mon.show .wrd { display: block; }
-    #jail { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 300px; height: 120px; background: var(--jbg); border: 5px dashed var(--jbd); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #4a80a8; opacity: 0; pointer-events: none; transition: opacity 0.5s; z-index: 5; }
-    #jail.act { opacity: 1; }
-    #inp-box { height: 90px; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; border-top: 4px solid var(--pri); z-index: 10; }
-    #typ-inp { width: 100%; max-width: 600px; font-size: 32px; padding: 10px 20px; border: 4px solid var(--pri); border-radius: 40px; text-align: center; outline: none; display: none; }
+
+    #jail { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 350px; height: 150px; background: var(--jbg); border: 8px dashed var(--jbd); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #4a80a8; opacity: 0; pointer-events: none; transition: all 0.5s; z-index: 5; text-align: center; line-height: 1.3; }
+    #jail.act { opacity: 1; background: rgba(255, 255, 255, 0.8); border-color: #ff5722; color: #ff5722; animation: pulse 1s infinite; }
+    
+    #inp-box { height: 100px; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; border-top: 4px solid var(--pri); z-index: 10; }
+    #typ-inp { width: 100%; max-width: 500px; font-size: 40px; padding: 10px 20px; border: 5px solid var(--pri); border-radius: 50px; text-align: center; outline: none; display: none; }
     #typ-inp.err { animation: shake 0.3s; border-color: #f44336; background: #ffebee; }
-    #ms-ind { font-size: 30px; color: var(--pri); font-weight: bold; }
+    #ms-ind { font-size: 30px; color: #e91e63; font-weight: bold; }
+
     .ovl { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; color: #fff; text-align: center; }
-    .ovl-bx { background: #fff; color: var(--txt); padding: 40px; border-radius: 30px; max-width: 600px; width: 90%; }
-    .ovl h1 { color: var(--pri); font-size: 46px; margin: 0 0 20px 0; }
-    .inst { text-align: left; background: #f9f9f9; padding: 20px; border-radius: 15px; margin: 20px 0; font-size: 20px; line-height: 1.4; }
-    .btn { background: var(--pri); color: #fff; border: none; padding: 15px 50px; font-size: 32px; border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #d9787c; margin-top: 20px; }
+    .ovl-bx { background: #fff; color: var(--txt); padding: 40px; border-radius: 40px; max-width: 650px; width: 90%; border: 10px solid var(--pri); }
+    .ovl h1 { color: var(--pri); font-size: 54px; margin: 0 0 20px 0; }
+    .inst { text-align: left; background: #fffde7; padding: 20px; border-radius: 20px; margin: 20px 0; font-size: 22px; line-height: 1.6; border: 2px solid #ffe082; }
+    .btn { background: #ff5252; color: #fff; border: none; padding: 15px 60px; font-size: 36px; border-radius: 50px; cursor: var(--cursor); box-shadow: 0 8px 0 #d32f2f; margin-top: 20px; }
     .btn:active { transform: translateY(6px); box-shadow: none; }
+    
+    .praise { position: absolute; font-size: 40px; font-weight: bold; color: #ffeb3b; text-shadow: 2px 2px 0 #000; pointer-events: none; animation: popUp 0.8s ease-out forwards; z-index: 2000; }
+
     .hide { display: none !important; }
-    .ptc { position: absolute; border-radius: 50%; animation: expl 0.6s ease-out forwards; pointer-events: none; }
-    @keyframes float { from { transform: translateY(0px); } to { transform: translateY(-15px); } }
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-    @keyframes expl { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+    .ptc { position: absolute; border-radius: 50%; animation: expl 0.7s ease-out forwards; pointer-events: none; }
+    
+    @keyframes float { from { transform: translateY(0px); } to { transform: translateY(-20px); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-15px); } 75% { transform: translateX(15px); } }
+    @keyframes expl { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
     @keyframes flash { 0%, 100% { background: var(--bg); } 50% { background: #ffcdd2; } }
+    @keyframes popUp { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 50% { opacity: 1; transform: translateY(-50px) scale(1.2); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+    @keyframes pulse { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } 100% { transform: translateX(-50%) scale(1); } }
 </style>
 </head>
 <body>
 
 <div id="app">
     <div id="head">
-        <span class="stat" id="rd-txt">라운드: 1</span>
+        <span class="stat" id="rd-txt">단계: 1</span>
         <span class="stat" id="sc-txt">점수: 0</span>
-        <span class="stat" id="lv-txt">생명: ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</span>
+        <span class="stat" id="lv-txt">생명: ❤️❤️❤️❤️❤️</span>
     </div>
     <div id="play">
-        <div id="jail">🦇 감옥 (여기로 드래그!)</div>
+        <div id="jail">📦 여기에 넣으세요!<br>(드래그)</div>
     </div>
     <div id="inp-box">
-        <input type="text" id="typ-inp" autocomplete="off" placeholder="단어를 입력하고 엔터를 누르세요!" />
-        <div id="ms-ind">마우스를 사용하는 라운드입니다! 🖱️</div>
+        <input type="text" id="typ-inp" autocomplete="off" placeholder="글자를 치고 엔터를 누르세요!" />
+        <div id="ms-ind">마우스를 사용하세요! 🖱️</div>
     </div>
 
     <!-- 시작 화면 -->
     <div id="st-scr" class="ovl">
         <div class="ovl-bx">
-            <h1>타자 & 마우스 용사</h1>
+            <h1>재미있는 타자 놀이</h1>
             <div class="inst">
-                🖱️ <b>홀수 라운드 (마우스):</b><br>
-                1라운드: 👾 일반 괴물 <strong>[한 번 클릭]</strong><br>
-                3라운드: 🛡️ 방패 괴물 <strong>[두 번 클릭]</strong><br>
-                5라운드: 🦇 박쥐 <strong>[감옥으로 드래그]</strong><br><br>
-                ⌨️ <b>짝수 라운드 (키보드):</b><br>
-                괴물 아래의 단어를 입력하고 <strong>[엔터]</strong>를 누르세요!
+                🖱️ <b>마우스 단계:</b><br>
+                - 👾 일반 괴물: <strong>한 번 클릭!</strong><br>
+                - 🛡️ 방패 괴물: <strong>두 번 클릭!</strong><br>
+                - 🦇 박쥐: <strong>박스 안으로 끌어오기!</strong><br><br>
+                ⌨️ <b>키보드 단계:</b><br>
+                - 글자를 보고 똑같이 입력하고 <strong>[엔터]</strong>!<br>
+                - <b>쌍자음(ㄲ, ㄸ...)</b>과 <b>기호(., ;)</b>도 조심하세요!
             </div>
-            <p style="color: #d32f2f; font-size: 18px; font-weight: bold;">※ 괴물이 바닥에 닿으면 생명(❤️)이 줄어들어요!</p>
-            <button class="btn" onclick="startG()">게임 시작하기</button>
+            <button class="btn" onclick="startG()">시작하기!</button>
         </div>
     </div>
 
-    <!-- 라운드 전환 화면 -->
+    <!-- 단계 전환 화면 -->
     <div id="tr-scr" class="ovl hide">
         <div class="ovl-bx">
-            <h1 id="tr-tit">1라운드 클리어!</h1>
-            <p id="tr-msg" style="font-size: 32px; font-weight: bold; color: #d32f2f;">마우스 준비!</p>
-            <button class="btn" onclick="nextR()">다음 라운드 시작</button>
+            <h1 id="tr-tit">참 잘했어요!</h1>
+            <p id="tr-msg" style="font-size: 36px; font-weight: bold; color: #ff5722;">준비하세요!</p>
+            <button class="btn" onclick="nextR()">다음 단계로!</button>
         </div>
     </div>
 
     <!-- 게임 오버 화면 -->
     <div id="go-scr" class="ovl hide">
         <div class="ovl-bx">
-            <h1>게임 종료!</h1>
-            <p id="fn-sc" style="font-size: 32px; font-weight: bold;">최종 점수: 0점</p>
-            <p id="fn-rd" style="font-size: 28px;">도달한 라운드: 1라운드</p>
-            <button class="btn" onclick="location.reload()">다시 하기</button>
+            <h1>와! 대단해요!</h1>
+            <p id="fn-sc" style="font-size: 40px; font-weight: bold;">최종 점수: 0점</p>
+            <p id="fn-rd" style="font-size: 32px;">도달한 단계: 1단계</p>
+            <button class="btn" onclick="location.reload()">다시 놀기</button>
         </div>
     </div>
 </div>
 
 <script>
-const W1 =[
+// 낱글자에 쌍자음 및 기호 추가
+const W1 = [
     '가','나','다','라','마','바','사','아','자','차','카','타','파','하',
     '거','너','더','러','머','버','서','어','저','처','커','터','퍼','허',
     '고','노','도','로','모','보','소','오','조','초','코','토','포','호',
     '구','누','두','루','무','부','수','우','주','추','쿠','투','푸','후',
-    '산','강','별','달','해','꽃','새','불','물','돌','숲','길','꿈','집'
+    '기','니','디','리','미','비','시','이','지','치','키','티','피','히',
+    // 쌍자음 낱글자 추가
+    '까','따','빠','싸','짜','껴','뗘','뼈','쎠','쪄',
+    '꼬','또','뽀','쏘','쪼','꾸','뚜','뿌','쑤','쭈',
+    // 문장 부호 추가
+    ',', '.', ';'
 ];
 
-const W2 =[
-    '학교','우유','사과','바다','강릉','코딩','친구','포도','여름','겨울','가족','행복','마우스','키보드',
-    '우주','지구','태양','달빛','바람','구름','하늘','나무','호수','연필','지우개','공책','가방','의자',
-    '책상','시계','안경','모자','바지','양말','신발','운동','건강','사랑','희망','미래','음악','미술',
-    '체육','과학','수학','영어','국어','역사','피아노','기타','자전거','자동차','기차','비행기'
-];
-
-const W3 =[
-    '옥계초등학교','강릉 안목해변','인공지능','마우스 연습','키보드 타자','즐거운 컴퓨터','우리반 친구들','재미있는 게임',
-    '푸른 하늘과 바다','아름다운 우리나라','행복한 우리 가족','신나는 여름방학','따뜻한 겨울방학','맛있는 점심시간',
-    '도서관에서 책 읽기','운동장에서 뛰어놀기','자전거 타고 한바퀴','컴퓨터 프로그래밍','스크래치 코딩','파이썬 배우기',
-    '로봇 조립하기','유튜브 크리에이터','멋진 우주 비행사','세계 여행 떠나기','맛있는 피자와 치킨','밤하늘의 반짝이는 별'
-];
-
-let state = 'start', rd = 1, sc = 0, lv = 10, kills = 0;
-let mons =[], lastTime = 0, spwn = 0, rafId;
+let state = 'start', rd = 1, sc = 0, lv = 5, kills = 0;
+let mons = [], lastTime = 0, spwn = 0, rafId;
 let isDrag = false, dragObj = null, oX = 0, oY = 0;
 let audioCtx;
 
+const PRAISES = ["최고!", "성공!", "천재!", "멋져요!", "대단해!", "우와!", "퍼펙트!"];
+
 function initAudio() {
-    // 브라우저의 오디오 권한을 활성화
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
 
@@ -132,44 +153,29 @@ function playSound(type) {
     
     let now = audioCtx.currentTime;
     
-    if (type === 'click') { // 클릭 성공 (짧고 경쾌한 팝 소리)
+    if (type === 'click' || type === 'type_ok') { 
         osc.type = 'sine';
         osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
         gainNode.gain.setValueAtTime(0.5, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-        osc.start(now); osc.stop(now + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
     } 
-    else if (type === 'dblclick') { // 더블클릭 성공 (전자오락기 띠링 소리)
+    else if (type === 'dblclick' || type === 'drag') { 
         osc.type = 'square';
-        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.setValueAtTime(500, now);
+        osc.frequency.setValueAtTime(1000, now + 0.05);
+        osc.frequency.setValueAtTime(1500, now + 0.1);
         gainNode.gain.setValueAtTime(0.3, now);
-        gainNode.gain.setValueAtTime(0, now + 0.05);
-        gainNode.gain.setValueAtTime(0.3, now + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-        osc.start(now); osc.stop(now + 0.2);
-    } 
-    else if (type === 'drag') { // 드래그 성공 (스르륵 올라가는 소리)
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, now);
-        osc.frequency.linearRampToValueAtTime(900, now + 0.2);
-        gainNode.gain.setValueAtTime(0.5, now);
-        gainNode.gain.linearRampToValueAtTime(0.01, now + 0.2);
-        osc.start(now); osc.stop(now + 0.2);
-    }
-    else if (type === 'type_ok') { // 타자 성공 (맑고 높은 알림음)
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1200, now);
-        gainNode.gain.setValueAtTime(0.5, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-        osc.start(now); osc.stop(now + 0.2);
-    }
-    else if (type === 'type_err') { // 타자 실패 (낮은 경고음 삑!)
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        gainNode.gain.setValueAtTime(0.5, now);
         gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
         osc.start(now); osc.stop(now + 0.3);
+    } 
+    else if (type === 'type_err') { 
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, now);
+        gainNode.gain.setValueAtTime(0.4, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
     }
 }
 
@@ -181,39 +187,35 @@ const app = document.getElementById('app');
 
 function getConf(r) {
     let isMs = (r % 2 !== 0);
-    let spd = 0.04 + (r * 0.005);
-    let rate = Math.max(1000, 2500 - (r * 150));
-    let t = '', w =[], e = '👾';
+    let spd = 0.03 + (r * 0.003); 
+    let rate = Math.max(1500, 3000 - (r * 100)); 
+    let t = '', w = W1, e = '👾';
 
     if (isMs) {
         if (r === 1) { t = 's'; e = '👾'; }
-        else if (r === 3) { t = 'd'; e = '🛡️👾'; }
+        else if (r === 3) { t = 'd'; e = '🛡️'; }
         else if (r === 5) { t = 'dr'; e = '🦇'; }
         else {
-            const types = [['s','👾'], ['d','🛡️👾'],['dr','🦇']];
+            const types = [['s','👾'], ['d','🛡️'],['dr','🦇']];
             let pick = types[Math.floor(Math.random() * 3)];
             t = pick[0]; e = pick[1];
         }
     } else {
-        t = 'typ'; e = '👾';
-        if (r === 2) w = W1;
-        else if (r === 4) w = W2;
-        else if (r === 6) w = W3;
-        else w = [...W2, ...W3];
+        t = 'typ'; e = '⭐'; 
     }
     return { isMs, spd, rate, t, w, e };
 }
 
 function updUI() {
-    document.getElementById('rd-txt').innerText = `라운드: ${rd}`;
+    document.getElementById('rd-txt').innerText = `단계: ${rd}`;
     document.getElementById('sc-txt').innerText = `점수: ${sc}`;
     document.getElementById('lv-txt').innerText = `생명: ${'❤️'.repeat(Math.max(0, lv))}`;
 }
 
 function startG() {
-    initAudio(); // 게임 시작 시 오디오 컨텍스트 켜기
+    initAudio();
     document.getElementById('st-scr').classList.add('hide');
-    rd = 1; sc = 0; lv = 10;
+    rd = 1; sc = 0; lv = 5;
     updUI(); prep();
 }
 
@@ -225,7 +227,7 @@ function nextR() {
 
 function prep() {
     kills = 0;
-    mons.forEach(m => m.el.remove()); mons =[];
+    mons.forEach(m => m.el.remove()); mons = [];
     let c = getConf(rd);
 
     if (rd >= 5 && c.isMs) jail.classList.add('act');
@@ -281,8 +283,8 @@ function spawn(c) {
     }
 
     el.innerHTML = `<div class="emo">${emo}</div><div class="wrd">${word}</div>`;
-    let x = Math.random() * (play.clientWidth - 160) + 30;
-    let y = -100;
+    let x = Math.random() * (play.clientWidth - 180) + 40;
+    let y = -120;
 
     el.style.left = x + 'px'; el.style.top = y + 'px';
     play.appendChild(el);
@@ -300,15 +302,21 @@ function ptDwn(m, e) {
     if (state !== 'play') return;
     let now = Date.now();
     if (m.t === 's') { 
-        playSound('click'); // 클릭 사운드
+        playSound('click');
         kill(m); 
     }
     else if (m.t === 'd') {
         if (now - m.lc < 500) { 
-            playSound('dblclick'); // 더블클릭 사운드
+            playSound('dblclick');
             kill(m); 
         }
-        else { m.el.style.animation = 'none'; void m.el.offsetWidth; m.el.style.animation = 'shake 0.3s'; }
+        else { 
+            m.el.style.animation = 'none'; 
+            void m.el.offsetWidth; 
+            m.el.style.animation = 'shake 0.3s'; 
+            m.el.querySelector('.emo').style.transform = 'scale(1.2)';
+            setTimeout(()=> m.el.querySelector('.emo').style.transform = '', 200);
+        }
         m.lc = now;
     }
     else if (m.t === 'dr') {
@@ -318,6 +326,7 @@ function ptDwn(m, e) {
         oX = (e.clientX || e.pageX) - r.left;
         oY = (e.clientY || e.pageY) - r.top;
         m.el.style.zIndex = 1000;
+        m.el.style.opacity = "0.8";
     }
 }
 
@@ -330,6 +339,16 @@ function ptMv(e) {
     dragObj.y = cy - r.top - oY;
     dragObj.el.style.left = dragObj.x + 'px';
     dragObj.el.style.top = dragObj.y + 'px';
+    
+    let dr = dragObj.el.getBoundingClientRect();
+    let jr = jail.getBoundingClientRect();
+    if (dr.right > jr.left && dr.left < jr.right && dr.bottom > jr.top && dr.top < jr.bottom) {
+        jail.style.borderColor = "#4caf50";
+        jail.style.background = "#e8f5e9";
+    } else {
+        jail.style.borderColor = "";
+        jail.style.background = "";
+    }
 }
 
 function ptUp(e) {
@@ -337,10 +356,15 @@ function ptUp(e) {
     let r = dragObj.el.getBoundingClientRect();
     let j = jail.getBoundingClientRect();
     if (r.right > j.left && r.left < j.right && r.bottom > j.top && r.top < j.bottom) {
-        playSound('drag'); // 드래그 사운드
+        playSound('drag');
         kill(dragObj);
     }
-    else dragObj.el.style.zIndex = '';
+    else {
+        dragObj.el.style.zIndex = '';
+        dragObj.el.style.opacity = "1";
+    }
+    jail.style.borderColor = "";
+    jail.style.background = "";
     isDrag = false; dragObj = null;
 }
 
@@ -358,12 +382,12 @@ inp.addEventListener('keydown', (e) => {
         mons.forEach(m => { if (m.w === txt && m.y > maxY) { match = m; maxY = m.y; } });
 
         if (match) { 
-            playSound('type_ok'); // 타자 성공 사운드
+            playSound('type_ok');
             kill(match); 
             inp.value = ''; 
         }
         else { 
-            playSound('type_err'); // 타자 실패 사운드
+            playSound('type_err');
             inp.classList.add('err'); 
             setTimeout(() => inp.classList.remove('err'), 300); 
         }
@@ -375,7 +399,9 @@ document.addEventListener('click', () => {
 });
 
 function kill(m) {
-    ptc(m.x, m.y); remM(m);
+    showPraise(m.x, m.y);
+    ptc(m.x, m.y); 
+    remM(m);
     sc += 10; kills++; updUI(); chkClr();
 }
 
@@ -384,17 +410,27 @@ function remM(m) {
     mons = mons.filter(x => x !== m);
 }
 
+function showPraise(x, y) {
+    const p = document.createElement('div');
+    p.className = 'praise';
+    p.innerText = PRAISES[Math.floor(Math.random() * PRAISES.length)];
+    p.style.left = (x + 50) + 'px';
+    p.style.top = (y + 20) + 'px';
+    play.appendChild(p);
+    setTimeout(() => p.remove(), 800);
+}
+
 function ptc(x, y) {
-    let colors =['#ff9a9e', '#fecfef', '#a1c4fd', '#c2e9fb', '#ffeb3b'];
-    for (let i = 0; i < 8; i++) {
+    let colors = ['#ff9a9e', '#fecfef', '#a1c4fd', '#ffeb3b', '#00e676', '#ff5722'];
+    for (let i = 0; i < 15; i++) {
         let p = document.createElement('div');
         p.className = 'ptc';
         p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.width = '20px'; p.style.height = '20px';
-        p.style.left = (x + 50 + (Math.random() * 60 - 30)) + 'px';
-        p.style.top = (y + 50 + (Math.random() * 60 - 30)) + 'px';
+        p.style.width = '25px'; p.style.height = '25px';
+        p.style.left = (x + 50 + (Math.random() * 80 - 40)) + 'px';
+        p.style.top = (y + 50 + (Math.random() * 80 - 40)) + 'px';
         play.appendChild(p);
-        setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 600);
+        setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 700);
     }
 }
 
@@ -406,28 +442,26 @@ function lose() {
 }
 
 function chkClr() {
-    if (kills >= 10) {
+    if (kills >= 8) {
         state = 'transition';
         cancelAnimationFrame(rafId);
-        mons.forEach(m => m.el.remove()); mons =[]; // 배열 초기화 마저 작성
+        mons.forEach(m => m.el.remove()); mons = [];
         
-        // 라운드 클리어 시 화면 처리
-        document.getElementById('tr-tit').innerText = `${rd}라운드 클리어!`;
+        document.getElementById('tr-tit').innerText = `${rd}단계 클리어! 정말 멋져요!`;
         let nextIsMs = ((rd + 1) % 2 !== 0);
         document.getElementById('tr-msg').innerText = nextIsMs ? '마우스 준비! 🖱️' : '키보드 준비! ⌨️';
         document.getElementById('tr-scr').classList.remove('hide');
     }
 }
 
-// 생명이 0이 되었을 때 호출되는 게임 오버 함수 (누락되어 있었음)
 function over() {
     state = 'gameover';
     cancelAnimationFrame(rafId);
     mons.forEach(m => m.el.remove()); 
-    mons =[];
+    mons = [];
     
     document.getElementById('fn-sc').innerText = `최종 점수: ${sc}점`;
-    document.getElementById('fn-rd').innerText = `도달한 라운드: ${rd}라운드`;
+    document.getElementById('fn-rd').innerText = `도달한 단계: ${rd}단계`;
     document.getElementById('go-scr').classList.remove('hide');
 }
 </script>
