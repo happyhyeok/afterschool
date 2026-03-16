@@ -111,9 +111,19 @@
     <div id="go-scr" class="ovl hide">
         <div class="ovl-bx">
             <h1>와! 대단해요!</h1>
-            <p id="fn-sc" style="font-size: 40px; font-weight: bold;">최종 점수: 0점</p>
-            <p id="fn-rd" style="font-size: 32px;">도달한 단계: 1단계</p>
-            <button class="btn" onclick="location.reload()">다시 놀기</button>
+            <p id="fn-sc" style="font-size: 40px; font-weight: bold; margin: 10px 0;">최종 점수: 0점</p>
+            <p id="fn-rd" style="font-size: 32px; margin: 10px 0;">도달한 단계: 1단계</p>
+            
+            <!-- 🏆 랭킹 입력 및 표시 영역 추가 -->
+            <div style="background: #fff9c4; padding: 20px; border-radius: 20px; margin: 20px 0; border: 3px dashed #ff9800;">
+                <input type="text" id="p-name" placeholder="이름을 적어주세요!" style="font-size: 24px; padding: 10px; width: 60%; border-radius: 10px; border: 2px solid #ff9800; text-align: center;">
+                <button id="rank-btn" style="font-size: 24px; padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 10px; cursor: pointer; margin-left: 10px; font-family: 'Jua';">점수 등록</button>
+                <div id="rank-list" style="margin-top: 15px; font-size: 24px; text-align: left; color: #333;">
+                    <!-- 랭킹이 여기에 나옵니다 -->
+                </div>
+            </div>
+
+            <button class="btn" onclick="location.reload()" style="margin-top: 0;">다시 놀기</button>
         </div>
     </div>
 </div>
@@ -458,12 +468,111 @@ function over() {
     state = 'gameover';
     cancelAnimationFrame(rafId);
     mons.forEach(m => m.el.remove()); 
-    mons = [];
+    mons =[];
     
     document.getElementById('fn-sc').innerText = `최종 점수: ${sc}점`;
     document.getElementById('fn-rd').innerText = `도달한 단계: ${rd}단계`;
+
+    // 랭킹 UI 초기화
+    document.getElementById('p-name').style.display = 'inline-block';
+    document.getElementById('p-name').value = '';
+    const rankBtn = document.getElementById('rank-btn');
+    rankBtn.style.display = 'inline-block';
+    rankBtn.disabled = false;
+    rankBtn.innerText = '점수 등록';
+    
+    // 버튼 클릭 시 현재 점수(sc)를 파이어베이스로 전송하도록 설정
+    rankBtn.onclick = () => window.submitScore(sc);
+
     document.getElementById('go-scr').classList.remove('hide');
+    
+    // 랭킹 리스트 불러오기 (파이어베이스 연결)
+    if(window.loadRanking) window.loadRanking();
 }
 </script>
+<!-- 🔥 Firebase 랭킹 시스템 연동 스크립트 -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  
+    // ⚠️ 1단계에서 복사한 본인의 firebaseConfig 값으로 덮어씌우세요!
+    const firebaseConfig = {
+  apiKey: "AIzaSyB4D9eWjft0yjjJdAULfvjwY4ML3kopuug",
+  authDomain: "mousetajagame.firebaseapp.com",
+  databaseURL: "https://mousetajagame-default-rtdb.firebaseio.com",
+  projectId: "mousetajagame",
+  storageBucket: "mousetajagame.firebasestorage.app",
+  messagingSenderId: "744370379721",
+  appId: "1:744370379721:web:99c1a90a3dfb545229e618"
+};
+  
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+  
+    // 전역 함수로 등록하여 기존 게임 코드에서 사용할 수 있게 함
+    window.submitScore = async function(score) {
+      const nameInput = document.getElementById('p-name');
+      const name = nameInput.value.trim();
+      const btn = document.getElementById('rank-btn');
+  
+      if (!name) {
+        alert('이름을 입력해주세요!');
+        return;
+      }
+  
+      btn.disabled = true;
+      btn.innerText = "저장 중...⏳";
+  
+      try {
+        // 'rankings' 라는 컬렉션(폴더)에 데이터 추가
+        await addDoc(collection(db, "rankings"), {
+          name: name,
+          score: score,
+          date: new Date().toISOString()
+        });
+        alert('점수가 등록되었습니다! 🎉');
+        nameInput.style.display = 'none';
+        btn.style.display = 'none';
+        window.loadRanking(); // 랭킹 새로고침
+      } catch (e) {
+        console.error("점수 저장 실패: ", e);
+        alert('저장 중 오류가 발생했습니다.');
+        btn.disabled = false;
+        btn.innerText = "점수 등록";
+      }
+    };
+  
+    // 랭킹 불러오기 함수
+    window.loadRanking = async function() {
+      const rankList = document.getElementById('rank-list');
+      rankList.innerHTML = "랭킹을 불러오는 중...⏳";
+  
+      try {
+        // 점수(score) 내림차순(desc)으로 상위 5명만 가져오기
+        const q = query(collection(db, "rankings"), orderBy("score", "desc"), limit(5));
+        const querySnapshot = await getDocs(q);
+  
+        let html = "<h3 style='margin: 0 0 10px 0; color: #ff5722;'>🏆 명예의 전당 (Top 5) 🏆</h3>";
+        let rank = 1;
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          let medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "🔸";
+          html += `<div style="margin-bottom: 5px;">${medal} ${rank}등: <strong>${data.name}</strong> (${data.score}점)</div>`;
+          rank++;
+        });
+        
+        if(rank === 1) {
+          html += "<div>아직 등록된 점수가 없어요! 첫 번째 용사가 되어주세요!</div>";
+        }
+  
+        rankList.innerHTML = html;
+      } catch (e) {
+        console.error("랭킹 불러오기 실패: ", e);
+        rankList.innerHTML = "랭킹을 불러올 수 없습니다. 😢";
+      }
+    };
+  </script>
 </body>
 </html>
