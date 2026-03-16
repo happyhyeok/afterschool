@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3학년 정보: 마우스와 키보드 달인 되기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',    /* 따뜻한 노란색 */
+                        secondary: '#4EA8DE',  /* 밝은 파란색 */
+                        accent: '#EF476F',     /* 포인트 핑크 */
+                        success: '#06D6A0',    /* 성공 초록 */
+                        bgLight: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard"', '"Malgun Gothic"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 4px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-card:hover {
+            border-color: #FFD166;
+            transform: translateY(-2px);
+        }
+
+        /* 분류 아이템 스타일 */
+        .sort-item {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .sort-item:hover {
+            transform: scale(1.05);
+        }
+        .sort-item.is-hardware {
+            background-color: #FFF1F2;
+            border: 3px solid #EF476F;
+            color: #EF476F;
+        }
+        .sort-item.is-software {
+            background-color: #F0F9FF;
+            border: 3px solid #4EA8DE;
+            color: #4EA8DE;
+        }
+
+        /* 키보드 자판 스타일 */
+        .key {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f3f4f6;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.1s;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .key.correct {
+            background: #06D6A0;
+            color: white;
+            border-color: #059669;
+            transform: scale(0.9);
+        }
+
+        /* 손가락 위치 가이드 색상 */
+        .finger-left-pinky { border-bottom: 4px solid #EF476F; }
+        .finger-left-ring { border-bottom: 4px solid #FFD166; }
+        .finger-left-middle { border-bottom: 4px solid #06D6A0; }
+        .finger-left-index { border-bottom: 4px solid #4EA8DE; }
+        
+        /* 마우스 실습용 먼지 제거 애니메이션 */
+        .dust {
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .dust.cleaned {
+            opacity: 0;
+            transform: scale(0.5) rotate(20deg);
+            pointer-events: none;
+        }
+
+        /* 새로운 글자 등장 효과 */
+        @keyframes pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-in {
+            animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* 오답 효과 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+
+        /* 초성 힌트 스타일 */
+        .initial-hint {
+            color: #E2E8F0; /* 아주 희미한 회색 */
+            letter-spacing: 0.5rem;
+            font-weight: 900;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <!-- 상단 헤더 -->
+    <header class="bg-white/80 backdrop-blur-md border-b-4 border-primary sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary text-white p-2 rounded-xl">
+                    <i data-lucide="mouse-pointer-2" class="w-6 h-6"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">3학년 첫걸음</h1>
+            </div>
+            <div class="text-secondary font-bold bg-blue-50 px-4 py-2 rounded-full">
+                2차시. 마우스와 키보드 달인
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 mt-8 space-y-8">
+        
+        <!-- 도입: 하드웨어와 소프트웨어 설명 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="cpu" class="w-8 h-8 text-primary"></i>
+                <h2 class="text-2xl font-bold">생각 열기: 컴퓨터는 무엇으로 움직일까?</h2>
+            </div>
+            
+            <!-- 비유 설명 영역 -->
+            <div class="mb-8 p-6 bg-yellow-50 rounded-3xl border-2 border-primary/30 text-center">
+                <p class="text-xl font-bold text-gray-800 mb-4 leading-relaxed">
+                    컴퓨터는 <span class="text-accent">몸(하드웨어)</span>과 <span class="text-secondary">마음(소프트웨어)</span>이<br>하나로 합쳐져야 일할 수 있어요!
+                </p>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 mt-6">
+                    <div class="flex flex-col items-center gap-2 bg-white p-4 rounded-2xl shadow-sm border-2 border-pink-100 w-full md:w-40 transition-transform hover:scale-105">
+                        <i data-lucide="monitor" class="w-10 h-10 text-accent"></i>
+                        <span class="font-black text-accent">하드웨어</span>
+                        <span class="text-sm text-gray-500 font-bold">딱딱한 몸</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-300">+</div>
+                    <div class="flex flex-col items-center gap-2 bg-white p-4 rounded-2xl shadow-sm border-2 border-blue-100 w-full md:w-40 transition-transform hover:scale-105">
+                        <i data-lucide="brain" class="w-10 h-10 text-secondary"></i>
+                        <span class="font-black text-secondary">소프트웨어</span>
+                        <span class="text-sm text-gray-500 font-bold">똑똑한 마음</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-300">=</div>
+                    <div class="flex flex-col items-center gap-2 bg-primary text-white p-4 rounded-2xl shadow-md w-full md:w-40 animate-pulse">
+                        <i data-lucide="smile" class="w-10 h-10"></i>
+                        <span class="font-black">일하는 컴퓨터</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 분류 실습 영역 -->
+            <p class="text-lg text-gray-600 mb-6 font-bold text-center">👇 아래 아이템들을 클릭해서 알맞은 바구니에 담아주세요!</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="p-6 bg-pink-50 rounded-3xl border-4 border-pink-200 min-h-[120px] relative">
+                    <div class="absolute -top-4 left-6 bg-accent text-white px-4 py-1 rounded-full font-bold shadow-md">몸 (하드웨어)</div>
+                    <div id="hardware-list" class="flex flex-wrap gap-2 mt-4"></div>
+                    <p id="hw-empty" class="text-pink-300 font-bold mt-4 text-center italic">하드웨어를 찾아 클릭!</p>
+                </div>
+                <div class="p-6 bg-blue-50 rounded-3xl border-4 border-blue-200 min-h-[120px] relative">
+                    <div class="absolute -top-4 left-6 bg-secondary text-white px-4 py-1 rounded-full font-bold shadow-md">마음 (소프트웨어)</div>
+                    <div id="software-list" class="flex flex-wrap gap-2 mt-4"></div>
+                    <p id="sw-empty" class="text-blue-300 font-bold mt-4 text-center italic">소프트웨어를 찾아 클릭!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-6 bg-gray-50 rounded-2xl" id="sort-pool">
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'HW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🖱️</div>
+                    <span class="font-bold text-sm">마우스</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'SW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">📺</div>
+                    <span class="font-bold text-sm">유튜브</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'HW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🖥️</div>
+                    <span class="font-bold text-sm">모니터</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'SW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🎨</div>
+                    <span class="font-bold text-sm">그림판</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'HW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">📦</div>
+                    <span class="font-bold text-sm">본체</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'SW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🪟</div>
+                    <span class="font-bold text-sm">윈도우</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'HW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">⌨️</div>
+                    <span class="font-bold text-sm">키보드</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'SW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🎮</div>
+                    <span class="font-bold text-sm">게임</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'HW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🔊</div>
+                    <span class="font-bold text-sm">스피커</span>
+                </div>
+                <div class="sort-item bg-white p-3 rounded-2xl shadow-sm border-2 border-gray-100 flex flex-col items-center gap-2" onclick="sortItem(this, 'SW')">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🌐</div>
+                    <span class="font-bold text-sm">인터넷</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 탐험 1: 마우스 실습 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="mouse" class="w-8 h-8 text-secondary"></i>
+                <h2 class="text-2xl font-bold">탐험 1: 마우스로 화면을 깨끗하게!</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6 font-medium">모니터에 먼지가 쌓였어요! 마우스로 **먼지를 클릭**해서 모두 치워주세요. (남은 먼지: <span id="dust-count" class="font-bold text-accent">12</span>개)</p>
+            
+            <div class="relative w-full aspect-video bg-blue-900 rounded-3xl border-8 border-gray-800 shadow-2xl overflow-hidden cursor-crosshair mb-6" id="cleaning-zone">
+                <div class="absolute inset-0 grid grid-cols-4 grid-rows-3 p-8 gap-4" id="dust-container"></div>
+                <div id="cleaning-success" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center text-white text-center p-6 animate-in fade-in zoom-in">
+                    <div class="w-20 h-20 bg-success rounded-full flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-12 h-12"></i></div>
+                    <h3 class="text-3xl font-bold mb-2">청소 끝! 대단해요!</h3>
+                    <p class="text-xl opacity-90 font-medium">이제 마우스 클릭 실력이 아주 좋아졌어요!</p>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-6 rounded-2xl border-2 border-primary text-center">
+                <p class="font-bold text-gray-800 mb-4">✨ 더 신나게 마우스를 연습하고 싶다면?</p>
+                <a href="https://happyhyeok.github.io/window/1_game.html" target="_blank" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-full hover:bg-yellow-500 transition-all hover:scale-105 shadow-md">
+                    <i data-lucide="gamepad-2"></i> 1차시 마우스 게임 하러 가기
+                </a>
+            </div>
+        </section>
+
+        <!-- 탐험 2: 키보드 기본 자리 -->
+        <section class="lesson-card bg-blue-50/50 border-secondary">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="keyboard" class="w-8 h-8 text-secondary"></i>
+                <h2 class="text-2xl font-bold">탐험 2: 내 손가락은 어디에?</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6 font-medium">키보드를 안 보고 치려면 **'기본 자리'**를 아는 것이 가장 중요해요. 내 손가락을 어디에 두어야 할까요?</p>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm space-y-8">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="flex gap-2">
+                        <div class="key finger-left-pinky" id="key-A">ㅁ(A)</div>
+                        <div class="key finger-left-ring" id="key-S">ㄴ(S)</div>
+                        <div class="key finger-left-middle" id="key-D">ㅇ(D)</div>
+                        <div class="key finger-left-index" id="key-F">ㄹ(F)</div>
+                        <div class="w-12"></div>
+                        <div class="key finger-left-index" id="key-J">ㅓ(J)</div>
+                        <div class="key finger-left-middle" id="key-K">ㅏ(K)</div>
+                        <div class="key finger-left-ring" id="key-L">ㅣ(L)</div>
+                        <div class="key finger-left-pinky" id="key-SEMICOLON">;(;)</div>
+                    </div>
+                    <div class="flex gap-4 mt-2">
+                        <div class="flex items-center gap-2 bg-pink-50 px-3 py-1 rounded-full text-xs font-bold text-accent">● 새끼</div>
+                        <div class="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full text-xs font-bold text-primary">● 약지</div>
+                        <div class="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full text-xs font-bold text-success">● 중지</div>
+                        <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full text-xs font-bold text-secondary">● 검지</div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-yellow-50 rounded-xl border-2 border-primary text-center">
+                    <p class="font-bold text-gray-700">💡 꿀팁! 키보드 <span class="text-accent underline">ㄹ(F)</span>와 <span class="text-accent underline">ㅓ(J)</span> 자판을 손가락으로 만져보세요.</p>
+                    <p class="text-sm text-gray-600 mt-1 font-medium">작은 돌기가 느껴지는 곳이 바로 검지 손가락의 집이에요!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 탐험 3: 키보드 게임 -->
+        <section class="lesson-card">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="zap" class="w-8 h-8 text-accent"></i>
+                <h2 class="text-2xl font-bold">탐험 3: 자판을 찾아라!</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-6 font-medium">화면에 나오는 글자를 키보드에서 찾아 눌러보세요. 올바른 손가락을 써야 해요!</p>
+            
+            <div class="bg-gray-50 p-8 rounded-3xl border-4 border-dashed border-gray-200 flex flex-col items-center overflow-hidden">
+                <div class="h-40 flex items-center justify-center">
+                    <div id="game-target" class="text-8xl font-black text-secondary">ㄹ(F)</div>
+                </div>
+                <div id="game-hint" class="text-xl font-bold text-gray-500 mb-8 font-medium">왼손 검지로 눌러주세요!</div>
+                
+                <div class="w-full max-w-md bg-white p-4 rounded-2xl shadow-inner flex items-center justify-between mb-8">
+                    <div class="text-center flex-1">
+                        <p class="text-sm text-gray-400">맞춘 개수</p>
+                        <p id="score" class="text-3xl font-bold text-success">0</p>
+                    </div>
+                    <div class="w-px h-12 bg-gray-200"></div>
+                    <div class="text-center flex-1">
+                        <p class="text-sm text-gray-400">남은 시간</p>
+                        <p id="timer" class="text-3xl font-bold text-accent">30</p>
+                    </div>
+                </div>
+                
+                <button id="start-game" class="px-10 py-4 bg-accent text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-all hover:scale-105 shadow-lg">
+                    게임 시작하기!
+                </button>
+            </div>
+        </section>
+
+        <!-- 확인 학습: 초성 퀴즈 -->
+        <section class="lesson-card bg-success/5 border-success overflow-hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="award" class="w-8 h-8 text-success"></i>
+                <h2 class="text-2xl font-bold">확인 학습: 초성 퀴즈 대결!</h2>
+            </div>
+            <p class="text-lg text-gray-600 mb-8 font-medium">오늘 배운 내용을 잘 기억하고 있나요? 문제 설명을 읽고 정답을 맞춰보세요!</p>
+            
+            <div class="grid grid-cols-1 gap-6" id="quiz-container">
+                <!-- 퀴즈 1 -->
+                <div class="relative group p-6 bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-6 transition-all hover:border-success/30 overflow-hidden">
+                    <div class="flex-1 space-y-2 text-center md:text-left min-w-0">
+                        <div class="flex items-center justify-center md:justify-start gap-2">
+                            <span class="bg-success text-white w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">1</span>
+                            <h3 class="text-xl font-extrabold text-gray-800 truncate">컴퓨터의 딱딱한 몸</h3>
+                        </div>
+                        <p class="initial-hint text-2xl md:pl-9">ㅎㄷㅇㅇ</p>
+                    </div>
+                    <div class="w-full md:w-64 flex-shrink-0 flex gap-2">
+                        <input type="text" placeholder="정답 입력" class="quiz-input flex-1 min-w-0 p-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-success focus:outline-none transition-all text-center font-bold text-lg" data-answer="하드웨어">
+                        <div class="quiz-feedback hidden text-success flex items-center justify-center animate-bounce flex-shrink-0"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                    </div>
+                </div>
+
+                <!-- 퀴즈 2 -->
+                <div class="relative group p-6 bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-6 transition-all hover:border-success/30 overflow-hidden">
+                    <div class="flex-1 space-y-2 text-center md:text-left min-w-0">
+                        <div class="flex items-center justify-center md:justify-start gap-2">
+                            <span class="bg-success text-white w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">2</span>
+                            <h3 class="text-xl font-extrabold text-gray-800 truncate">컴퓨터의 똑똑한 마음</h3>
+                        </div>
+                        <p class="initial-hint text-2xl md:pl-9">ㅅㅍㅌㅇㅇ</p>
+                    </div>
+                    <div class="w-full md:w-64 flex-shrink-0 flex gap-2">
+                        <input type="text" placeholder="정답 입력" class="quiz-input flex-1 min-w-0 p-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-success focus:outline-none transition-all text-center font-bold text-lg" data-answer="소프트웨어">
+                        <div class="quiz-feedback hidden text-success flex items-center justify-center animate-bounce flex-shrink-0"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                    </div>
+                </div>
+
+                <!-- 퀴즈 3 -->
+                <div class="relative group p-6 bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-6 transition-all hover:border-success/30 overflow-hidden">
+                    <div class="flex-1 space-y-2 text-center md:text-left min-w-0">
+                        <div class="flex items-center justify-center md:justify-start gap-2">
+                            <span class="bg-success text-white w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">3</span>
+                            <h3 class="text-xl font-extrabold text-gray-800 truncate">화면 속 내 손가락 역할</h3>
+                        </div>
+                        <p class="initial-hint text-2xl md:pl-9">ㅁㅇㅅ</p>
+                    </div>
+                    <div class="w-full md:w-64 flex-shrink-0 flex gap-2">
+                        <input type="text" placeholder="정답 입력" class="quiz-input flex-1 min-w-0 p-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-success focus:outline-none transition-all text-center font-bold text-lg" data-answer="마우스">
+                        <div class="quiz-feedback hidden text-success flex items-center justify-center animate-bounce flex-shrink-0"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                    </div>
+                </div>
+
+                <!-- 퀴즈 4 -->
+                <div class="relative group p-6 bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-6 transition-all hover:border-success/30 overflow-hidden">
+                    <div class="flex-1 space-y-2 text-center md:text-left min-w-0">
+                        <div class="flex items-center justify-center md:justify-start gap-2">
+                            <span class="bg-success text-white w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">4</span>
+                            <h3 class="text-xl font-extrabold text-gray-800 truncate">글자를 입력하는 하드웨어</h3>
+                        </div>
+                        <p class="initial-hint text-2xl md:pl-9">ㅋㅂㄷ</p>
+                    </div>
+                    <div class="w-full md:w-64 flex-shrink-0 flex gap-2">
+                        <input type="text" placeholder="정답 입력" class="quiz-input flex-1 min-w-0 p-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-success focus:outline-none transition-all text-center font-bold text-lg" data-answer="키보드">
+                        <div class="quiz-feedback hidden text-success flex items-center justify-center animate-bounce flex-shrink-0"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                    </div>
+                </div>
+
+                <!-- 퀴즈 5 (변경) -->
+                <div class="relative group p-6 bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-6 transition-all hover:border-success/30 overflow-hidden">
+                    <div class="flex-1 space-y-2 text-center md:text-left min-w-0">
+                        <div class="flex items-center justify-center md:justify-start gap-2">
+                            <span class="bg-success text-white w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">5</span>
+                            <h3 class="text-xl font-extrabold text-gray-800 truncate">글씨를 마법처럼 빠르게!</h3>
+                        </div>
+                        <p class="initial-hint text-2xl md:pl-9">ㅌㅈㅇㅅ</p>
+                    </div>
+                    <div class="w-full md:w-64 flex-shrink-0 flex gap-2">
+                        <input type="text" placeholder="정답 입력" class="quiz-input flex-1 min-w-0 p-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-success focus:outline-none transition-all text-center font-bold text-lg" data-answer="타자연습">
+                        <div class="quiz-feedback hidden text-success flex items-center justify-center animate-bounce flex-shrink-0"><i data-lucide="check-circle" class="w-8 h-8"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz-success-msg" class="hidden mt-12 p-8 bg-success text-white rounded-3xl text-center animate-pop-in shadow-xl">
+                <h3 class="text-3xl font-black mb-2">🏅 축하합니다! 달인 등극! 🏅</h3>
+                <p class="text-xl opacity-90 font-bold">모든 퀴즈를 맞혔어요. 여러분은 이제 컴퓨터와 베스트 프렌드예요!</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // [도입] 하드웨어/소프트웨어 분류
+        function sortItem(el, type) {
+            if (el.classList.contains('sorted')) return;
+            const hwList = document.getElementById('hardware-list');
+            const swList = document.getElementById('software-list');
+            const hwEmpty = document.getElementById('hw-empty');
+            const swEmpty = document.getElementById('sw-empty');
+            el.classList.add('sorted', 'pointer-events-none', 'scale-90', 'opacity-80');
+            const badge = document.createElement('div');
+            badge.className = `px-3 py-1 rounded-full font-bold text-xs animate-pop-in ${type === 'HW' ? 'bg-accent text-white' : 'bg-secondary text-white'}`;
+            badge.textContent = el.querySelector('span').textContent;
+            if (type === 'HW') {
+                hwList.appendChild(badge); hwEmpty.classList.add('hidden'); el.classList.add('is-hardware');
+            } else {
+                swList.appendChild(badge); swEmpty.classList.add('hidden'); el.classList.add('is-software');
+            }
+        }
+
+        // [탐험 1] 먼지 제거
+        const dustContainer = document.getElementById('dust-container');
+        const dustCountDisplay = document.getElementById('dust-count');
+        const cleaningSuccess = document.getElementById('cleaning-success');
+        let remainingDust = 12;
+        function initDust() {
+            dustContainer.innerHTML = '';
+            for(let i = 0; i < 12; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'dust flex items-center justify-center text-4xl cursor-pointer select-none hover:scale-110';
+                dust.textContent = ['☁️', '💨', '🕸️', '🧹'][Math.floor(Math.random()*4)];
+                dust.style.transform = `rotate(${Math.random() * 360}deg)`;
+                dust.onclick = (e) => {
+                    if(!dust.classList.contains('cleaned')) {
+                        dust.classList.add('cleaned'); remainingDust--;
+                        dustCountDisplay.textContent = remainingDust;
+                        createPopEffect(e.clientX, e.clientY);
+                        if(remainingDust === 0) setTimeout(() => cleaningSuccess.classList.remove('hidden'), 500);
+                    }
+                };
+                dustContainer.appendChild(dust);
+            }
+        }
+        function createPopEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'fixed text-xl pointer-events-none z-50';
+            effect.style.left = x + 'px'; effect.style.top = y + 'px'; effect.textContent = '✨';
+            document.body.appendChild(effect);
+            effect.animate([{ opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }, { opacity: 0, transform: 'translate(-50%, -150%) scale(2)' }], { duration: 500 });
+            setTimeout(() => effect.remove(), 500);
+        }
+
+        // [탐험 3] 키보드 게임
+        const gameTarget = document.getElementById('game-target');
+        const gameHint = document.getElementById('game-hint');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('start-game');
+        const keyData = [
+            { key: 'F', lang: 'ㄹ', hint: '왼손 검지', fingerId: 'key-F' },
+            { key: 'D', lang: 'ㅇ', hint: '왼손 중지', fingerId: 'key-D' },
+            { key: 'S', lang: 'ㄴ', hint: '왼손 약지', fingerId: 'key-S' },
+            { key: 'A', lang: 'ㅁ', hint: '왼손 새끼', fingerId: 'key-A' },
+            { key: 'J', lang: 'ㅓ', hint: '오른손 검지', fingerId: 'key-J' },
+            { key: 'K', lang: 'ㅏ', hint: '오른손 중지', fingerId: 'key-K' },
+            { key: 'L', lang: 'ㅣ', hint: '오른손 약지', fingerId: 'key-L' },
+            { key: ';', lang: ';', hint: '오른손 새끼', fingerId: 'key-SEMICOLON' }
+        ];
+        let score = 0, timeLeft = 30, isPlaying = false, currentTargetIndex = 0, timerId = null;
+        function nextTarget() {
+            document.querySelectorAll('.key').forEach(k => k.classList.remove('correct'));
+            currentTargetIndex = Math.floor(Math.random() * keyData.length);
+            const data = keyData[currentTargetIndex];
+            gameTarget.classList.remove('animate-pop-in'); void gameTarget.offsetWidth; 
+            gameTarget.classList.add('animate-pop-in');
+            gameTarget.textContent = `${data.lang}(${data.key})`;
+            gameHint.textContent = `${data.hint}로 눌러주세요!`;
+        }
+        startBtn.onclick = () => {
+            if(isPlaying) return; isPlaying = true; score = 0; timeLeft = 30;
+            scoreDisplay.textContent = score; timerDisplay.textContent = timeLeft;
+            startBtn.classList.add('opacity-0', 'pointer-events-none'); nextTarget();
+            timerId = setInterval(() => {
+                timeLeft--; timerDisplay.textContent = timeLeft;
+                if(timeLeft <= 0) endGame();
+            }, 1000);
+        };
+        function endGame() {
+            isPlaying = false; clearInterval(timerId); gameTarget.textContent = '끝!';
+            gameHint.textContent = `참 잘했어요! ${score}점이에요!`;
+            startBtn.classList.remove('opacity-0', 'pointer-events-none');
+            startBtn.textContent = '다시 도전하기!';
+        }
+        window.onkeydown = (e) => {
+            if(!isPlaying) return;
+            const pressedKey = e.key.toUpperCase(); const target = keyData[currentTargetIndex];
+            const keyElement = document.getElementById(target.fingerId);
+            if(pressedKey === target.key || (target.key === ';' && e.key === ';')) {
+                score++; scoreDisplay.textContent = score;
+                if(keyElement) { keyElement.classList.add('correct'); setTimeout(() => keyElement.classList.remove('correct'), 200); }
+                nextTarget();
+            } else {
+                gameTarget.classList.add('animate-shake'); setTimeout(() => gameTarget.classList.remove('animate-shake'), 400);
+            }
+        };
+
+        // [확인 학습] 퀴즈 시스템
+        const quizInputs = document.querySelectorAll('.quiz-input');
+        const successMsg = document.getElementById('quiz-success-msg');
+        
+        quizInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const answer = input.getAttribute('data-answer');
+                const val = e.target.value.trim();
+                const feedback = input.nextElementSibling;
+                const hintEl = input.closest('.relative').querySelector('.initial-hint');
+
+                if (val === answer) {
+                    input.classList.remove('bg-gray-50');
+                    input.classList.add('bg-success/10', 'border-success', 'text-success');
+                    input.disabled = true;
+                    feedback.classList.remove('hidden');
+                    if (hintEl) hintEl.classList.add('opacity-20'); 
+                    checkAllQuiz();
+                }
+            });
+        });
+
+        function checkAllQuiz() {
+            const allSolved = Array.from(quizInputs).every(input => input.disabled === true);
+            if (allSolved) {
+                successMsg.classList.remove('hidden');
+                successMsg.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        initDust();
+    </script>
+</body>
+</html>
