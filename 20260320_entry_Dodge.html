@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엔트리 코딩 교실 - 우주 보석 수집가</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f0f4f8;
+            font-size: 1.1rem;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-header {
+            background: #6366f1;
+            color: white;
+            padding: 18px 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+        }
+
+        .content-body {
+            padding: 28px;
+        }
+
+        #gameCanvas {
+            background-color: #0f172a;
+            border: 4px solid #334155;
+            border-radius: 12px;
+            width: 100%;
+            height: auto;
+            max-width: 480px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .status-bubble {
+            position: absolute;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #6366f1;
+            font-weight: bold;
+            display: none;
+            pointer-events: none;
+            z-index: 50;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .hint-box {
+            display: none;
+            background: #fffbeb;
+            border: 2px dashed #fbbf24;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .hint-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 12px 0;
+            border: 1px solid #cbd5e1;
+            background: white;
+        }
+
+        .btn-hint {
+            background: #f8fafc;
+            color: #475569;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-hint:hover { background: #f1f5f9; border-color: #94a3b8; }
+
+        .code-block {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 14px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin: 16px 0;
+            white-space: pre-wrap;
+            border-left: 6px solid #818cf8;
+        }
+
+        .pseudo-num { color: #fbbf24; font-weight: bold; margin-right: 4px; }
+        
+        /* 퀴즈 디자인 개선 */
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 16px 20px;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .quiz-option:hover {
+            border-color: #6366f1;
+            background-color: #f5f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #4338ca;
+        }
+
+        .quiz-option.correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+        }
+
+        .quiz-option.wrong {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+            opacity: 0.8;
+        }
+
+        .quiz-option:disabled {
+            cursor: default;
+            transform: none;
+        }
+
+        .option-index {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #64748b;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .quiz-option:hover .option-index {
+            background: #e0e7ff;
+            color: #6366f1;
+        }
+
+        .quiz-option.correct .option-index {
+            background: #22c55e;
+            color: white;
+        }
+
+        .quiz-option.wrong .option-index {
+            background: #ef4444;
+            color: white;
+        }
+
+        h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; }
+        h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem; }
+        h3 { font-size: 1.2rem; font-weight: 800; color: #1e293b; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        
+        .algo-item { margin-bottom: 1.5rem; }
+        .algo-title { font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px; }
+        .algo-desc { font-size: 1rem; color: #4b5563; margin-left: 28px; }
+    </style>
+</head>
+<body class="p-6 max-w-3xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-12 text-center pt-8">
+        <div class="inline-block bg-indigo-600 text-white px-5 py-1.5 rounded-full text-sm font-bold mb-4 shadow-lg">코딩 중급 프로젝트</div>
+        <h1>🚀 우주 보석 수집가</h1>
+        <p class="text-gray-600 mt-3 font-medium text-lg">복제본과 변수, 신호를 활용한 액션 게임 만들기</p>
+    </header>
+
+    <!-- Project Simulation -->
+    <div class="step-card border-l-8 border-indigo-500">
+        <div class="step-header"><span>🎮</span> 완성 작품 미리보기</div>
+        <div class="content-body bg-slate-50">
+            <div class="relative w-full overflow-hidden mb-6">
+                <canvas id="gameCanvas" width="480" height="360"></canvas>
+                <div id="speechBubble" class="status-bubble">사고!!</div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button id="startBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95">
+                    게임 시작
+                </button>
+                <button id="resetBtn" class="bg-slate-400 hover:bg-slate-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95">
+                    다시 하기
+                </button>
+            </div>
+            
+            <div class="mt-6 grid grid-cols-2 gap-4 text-center">
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 block uppercase font-bold">Score</span>
+                    <span id="scoreVal" class="text-2xl font-black text-indigo-600">0</span>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 block uppercase font-bold">Time</span>
+                    <span id="timeVal" class="text-2xl font-black text-rose-500">30</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Algorithm Theory -->
+    <div class="step-card">
+        <div class="step-header"><span>1</span> 핵심 알고리즘 설명</div>
+        <div class="content-body">
+            <img src="https://happyhyeok.github.io/afterschool/0320_456_00.png" alt="핵심 알고리즘 요약" class="w-full rounded-xl mb-6 shadow-sm border border-slate-100">
+
+            <div class="algo-item">
+                <div class="algo-title">📍 좌표와 이동</div>
+                <div class="algo-desc">
+                    • <b>x좌표 :</b> 가로 좌표. 오른쪽 갈수록 커지고, 왼쪽으로 갈수록 작아져요.<br>
+                    • <b>y좌표 :</b> 세로 좌표. 위로 갈수록 커지고, 아래로 갈수록 작아져요.<br>
+                    • <b>~ 위치로 이동하기 :</b> 지정된 위치로 순간이동해요.<br>
+                    • <b>~ 만큼 바꾸기 :</b> 현재 위치에서 지정한 숫자만큼 좌표를 더하거나 빼서 움직임을 만들어요.
+                </div>
+            </div>
+
+            <div class="algo-item">
+                <div class="algo-title">⚡ 복제본과 신호</div>
+                <div class="algo-desc">
+                    • <b>복제본 :</b> 하나의 오브젝트로 여러 개가 나타나는 효과를 만들고 싶을 때 사용해요.<br>
+                    • <b>신호 :</b> 오브젝트끼리 서로 소식을 주고받을 때 사용해요. (예: 게임 끝!, 2단계 시작!)
+                </div>
+            </div>
+
+            <div class="algo-item">
+                <div class="algo-title">📦 변수(Variable)란?</div>
+                <div class="algo-desc">
+                    변수는 데이터를 담는 <b>'이름표가 붙은 상자'</b>와 같아요.<br>
+                    게임 중 언제든지 변할 수 있는 값(점수, 남은 시간 등)을 상자에 저장해두고 필요할 때 꺼내 쓰거나 내용을 바꿀 수 있습니다.
+                    
+                    <div class="mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-around text-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-4xl mb-1">📦</span>
+                            <span class="text-xs font-extrabold text-indigo-600 bg-white px-2 py-0.5 rounded border border-indigo-200 shadow-sm">점수 변수</span>
+                        </div>
+                        <div class="text-2xl animate-pulse text-indigo-400">⬅️</div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-4xl mb-1">💎</span>
+                            <span class="text-xs font-medium text-slate-500">데이터(보석)</span>
+                        </div>
+                        <div class="h-10 border-l border-indigo-200 mx-2"></div>
+                        <div class="flex flex-col items-center">
+                            <div class="text-2xl font-black text-indigo-600 bg-white w-10 h-10 flex items-center justify-center rounded-full border-2 border-indigo-600 shadow-inner">1</div>
+                            <span class="text-xs font-medium text-slate-500 mt-1">저장된 값</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="algo-item">
+                <div class="algo-title">📊 변수 관리</div>
+                <div class="algo-desc">
+                    • <b>~로 정하기 :</b> 값을 완전히 교체해요. (예: 시간 30으로 초기화)<br>
+                    • <b>~ 만큼 더하기 :</b> 변수에 들어 있는 값에 더할 때 사용해요. (예: 점수 + 1)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Objects -->
+    <div class="step-card">
+        <div class="step-header"><span>2</span> 작품 구성 및 오브젝트 목록</div>
+        <div class="content-body">
+            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3">
+                        <span class="text-2xl">🚀</span>
+                        <div>
+                            <p class="font-bold text-slate-800">우주선 (주인공)</p>
+                            <p class="text-sm text-slate-500">키보드 화살표로 조종하며 보석을 먹고 운석을 피합니다.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-2xl">💎</span>
+                        <div>
+                            <p class="font-bold text-slate-800">보석 (아이템)</p>
+                            <p class="text-sm text-slate-500">하늘에서 떨어지며, 우주선에 닿으면 점수가 올라갑니다.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-2xl">🌑</span>
+                        <div>
+                            <p class="font-bold text-slate-800">운석 (장애물)</p>
+                            <p class="text-sm text-slate-500">하늘에서 떨어지며, 우주선에 닿으면 게임이 종료됩니다.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-2xl">🌌</span>
+                        <div>
+                            <p class="font-bold text-slate-800">배경 (우주)</p>
+                            <p class="text-sm text-slate-500">게임의 무대이며, 점수에 따라 모양이 바뀝니다.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="text-2xl">💬</span>
+                        <div>
+                            <p class="font-bold text-slate-800">글상자 (알림)</p>
+                            <p class="text-sm text-slate-500">게임 시작, 스테이지 안내, 결과 메시지를 표시합니다.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Box/Text -->
+    <div class="step-card">
+        <div class="step-header"><span>3</span> [글상자] 알고리즘(1) 게임 시작 알리기</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">게임이 시작될 때 사용자에게 안내 메시지를 보여줍니다.</p>
+            <div class="code-block"><b>[글상자 오브젝트]</b>
+<span class="pseudo-num">①</span> 시작하기 버튼을 클릭했을 때
+<span class="pseudo-num">②</span> <b>글상자 내용</b>을 [3초 뒤에 게임이 시작됩니다!]로 바꾸기
+<span class="pseudo-num">③</span> <b>3초</b> 기다리기
+<span class="pseudo-num">④</span> <b>글상자 내용</b>을 [보석을 모으세요!]로 바꾸기
+<span class="pseudo-num">⑤</span> <b>1초</b> 기다리기 후 <b>모양 숨기기</b></div>
+            
+            <button class="btn-hint" onclick="toggleHint('hint_box')">💡 글상자 시작 안내 블록 보기</button>
+            <div id="hint_box" class="hint-box">
+                <img src="https://happyhyeok.github.io/afterschool/0320_456_04.png" alt="글상자 코드" class="hint-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Spaceship -->
+    <div class="step-card">
+        <div class="step-header"><span>4</span> [우주선] 조종 알고리즘</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">좌우 화살표 키를 이용해 우주선을 움직여요.</p>
+            <div class="code-block"><b>[우주선 오브젝트]</b>
+<span class="pseudo-num">①</span> 시작하기 버튼을 클릭했을 때
+<span class="pseudo-num">②</span> <b>계속 반복해서</b>
+  └ 만일 <b>왼쪽 화살표</b> 키를 눌렀다면 -> x 좌표를 <b>-5</b>만큼 바꾸기
+  └ 만일 <b>오른쪽 화살표</b> 키를 눌렀다면 -> x 좌표를 <b>5</b>만큼 바꾸기</div>
+            
+            <button class="btn-hint" onclick="toggleHint('hint_ship')">💡 우주선 조종 블록 보기</button>
+            <div id="hint_ship" class="hint-box">
+                <img src="https://happyhyeok.github.io/afterschool/0320_456_01.png" alt="우주선 조종 코드" class="hint-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Jewels -->
+    <div class="step-card">
+        <div class="step-header"><span>5</span> [보석] 복제 및 점수 획득</div>
+        <div class="content-body">
+            <h3 class="font-bold text-indigo-700 mb-2">5-1. 보석이 하늘에서 떨어져요.</h3>
+            <div class="code-block"><b>[보석 오브젝트]</b>
+<span class="pseudo-num">①</span> 시작하기 버튼 클릭 시: <b>숨기기</b>
+<span class="pseudo-num">②</span> 무한 반복: <b>2초 기다리기</b> 후 <b>자신의 복제본 만들기</b>
+<span class="pseudo-num">③</span> 복제본 생성 시: x [무작위], y [150] 위치 이동 후 <b>보이기</b>
+<span class="pseudo-num">④</span> 무한 반복: <b>y 좌표를 -3만큼 바꾸기</b></div>
+
+            <h3 class="font-bold text-indigo-700 mb-2 mt-8">5-2. 우주선이 보석을 먹으면 점수가 올라가요.</h3>
+            <div class="code-block"><b>[보석 복제본 코드 안]</b>
+<span class="pseudo-num">①</span> 만일 <b>우주선</b>에 닿았는가?
+  └ <b>점수</b> 변수에 <b>1</b>만큼 더하기
+  └ <b>이 복제본 삭제하기</b></div>
+            
+            <button class="btn-hint" onclick="toggleHint('hint_jewel')">💡 보석 생성 및 점수 블록 보기</button>
+            <div id="hint_jewel" class="hint-box">
+                <img src="https://happyhyeok.github.io/afterschool/0320_456_02.png" alt="보석 코드" class="hint-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Meteor -->
+    <div class="step-card">
+        <div class="step-header"><span>6</span> [운석] 장애물 알고리즘</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">운석이 하늘에서 떨어지며 우주선과 충돌하면 게임이 끝납니다.</p>
+            <div class="code-block"><b>[운석 오브젝트]</b>
+<span class="pseudo-num">①</span> 보석과 유사하게 복제본 생성 (속도는 더 빠르게!)
+<span class="pseudo-num">②</span> 만일 <b>우주선</b>에 닿았는가?
+  └ <b>신호 [게임 종료]</b> 보내기</div>
+            
+            <button class="btn-hint" onclick="toggleHint('hint_meteor')">💡 장애물(운석) 블록 보기</button>
+            <div id="hint_meteor" class="hint-box">
+                <img src="https://happyhyeok.github.io/afterschool/0320_456_03.png" alt="운석 코드" class="hint-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <section class="mt-16 mb-24">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-extrabold text-gray-800">✍️ 학습 확인 퀴즈</h2>
+            <p class="text-slate-500 mt-2">오늘 배운 내용을 문제를 풀며 정리해 봅시다!</p>
+        </div>
+        <div id="quiz-container"></div>
+    </section>
+
+    <script>
+        // --- Simulation Logic ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('scoreVal');
+        const timeEl = document.getElementById('timeVal');
+        const speechBubble = document.getElementById('speechBubble');
+
+        let score = 0;
+        let timeLeft = 30;
+        let isRunning = false;
+        let animationId;
+        let timerId;
+
+        const spaceship = { x: 240, y: 310, w: 40, h: 40 };
+        let items = [];
+        let keys = {};
+
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function createItem(type) {
+            return {
+                x: Math.random() * 400 + 40,
+                y: -20,
+                type: type,
+                speed: type === 'gem' ? 2.5 : 4,
+                size: type === 'gem' ? 12 : 18
+            };
+        }
+
+        function drawSpaceship() {
+            ctx.fillStyle = '#6366f1';
+            ctx.beginPath();
+            ctx.moveTo(spaceship.x, spaceship.y - 20);
+            ctx.lineTo(spaceship.x - 20, spaceship.y + 20);
+            ctx.lineTo(spaceship.x + 20, spaceship.y + 20);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#bae6fd';
+            ctx.beginPath(); ctx.arc(spaceship.x, spaceship.y + 5, 5, 0, Math.PI*2); ctx.fill();
+        }
+
+        function drawItem(item) {
+            if (item.type === 'gem') {
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                for(let i=0; i<5; i++) {
+                    ctx.lineTo(item.x + Math.cos(i*72*Math.PI/180)*item.size, item.y + Math.sin(i*72*Math.PI/180)*item.size);
+                    ctx.lineTo(item.x + Math.cos((i*72+36)*Math.PI/180)*item.size/2, item.y + Math.sin((i*72+36)*Math.PI/180)*item.size/2);
+                }
+                ctx.closePath(); ctx.fill();
+            } else {
+                ctx.fillStyle = '#94a3b8';
+                ctx.beginPath(); ctx.arc(item.x, item.y, item.size, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#475569';
+                ctx.beginPath(); ctx.arc(item.x-5, item.y-5, 3, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function update() {
+            if (!isRunning) return;
+            if (keys['ArrowLeft'] && spaceship.x > 30) spaceship.x -= 6;
+            if (keys['ArrowRight'] && spaceship.x < 450) spaceship.x += 6;
+
+            if (Math.random() < 0.035) items.push(createItem('gem'));
+            if (Math.random() < 0.02) items.push(createItem('meteor'));
+
+            for (let i = items.length - 1; i >= 0; i--) {
+                const it = items[i];
+                it.y += it.speed;
+                const dist = Math.sqrt((spaceship.x - it.x)**2 + (spaceship.y - it.y)**2);
+                if (dist < 30) {
+                    if (it.type === 'gem') {
+                        score++; scoreEl.innerText = score; items.splice(i, 1);
+                    } else {
+                        gameOver("운석 충돌!");
+                    }
+                } else if (it.y > 380) { items.splice(i, 1); }
+            }
+
+            ctx.clearRect(0, 0, 480, 360);
+            ctx.fillStyle = 'white';
+            for(let i=0; i<15; i++) ctx.fillRect(Math.random()*480, Math.random()*360, 1.5, 1.5);
+            drawSpaceship();
+            items.forEach(drawItem);
+            animationId = requestAnimationFrame(update);
+        }
+
+        function gameOver(msg) {
+            isRunning = false;
+            clearInterval(timerId);
+            cancelAnimationFrame(animationId);
+            showSpeech(msg, spaceship.x, spaceship.y);
+        }
+
+        function showSpeech(text, x, y) {
+            const rect = canvas.getBoundingClientRect();
+            speechBubble.innerText = text;
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = (x / 480 * rect.width) + 'px';
+            speechBubble.style.top = (y / 360 * rect.height - 40) + 'px';
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (isRunning) return;
+            score = 0; scoreEl.innerText = 0;
+            timeLeft = 30; timeEl.innerText = 30;
+            items = []; spaceship.x = 240;
+            isRunning = true;
+            speechBubble.style.display = 'none';
+            timerId = setInterval(() => {
+                timeLeft--; timeEl.innerText = timeLeft;
+                if (timeLeft <= 0) gameOver("시간 종료!");
+            }, 1000);
+            update();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => { location.reload(); });
+
+        // --- Quiz ---
+        const quizzes = [
+            {
+                q: "우주선을 순간이동이 아닌 '부드러운 움직임'으로 제어할 때 사용하는 블록은?",
+                a: ["~ 위치로 이동하기", "~ 만큼 바꾸기", "말하기", "복제본 만들기"],
+                correct: 1,
+                hint: "현재 위치에서 조금씩 숫자를 더하거나 빼야 움직임이 보여요."
+            },
+            {
+                q: "하나의 보석 오브젝트로 여러 개의 보석이 떨어지게 만드는 기능은?",
+                a: ["변수", "복제본", "신호", "리스트"],
+                correct: 1,
+                hint: "원본은 숨기고 똑같은 복사본을 계속 만들어내요."
+            },
+            {
+                q: "코딩에서 '변수'의 개념을 가장 잘 설명한 것은 무엇인가요?",
+                a: ["오브젝트의 크기를 정하는 규칙", "정보를 담아두는 이름표가 붙은 상자", "화면을 무작위로 이동하는 기능", "배경 이미지를 불러오는 도구"],
+                correct: 1,
+                hint: "데이터를 저장하고 나중에 다시 사용하기 위한 가상의 공간을 떠올려보세요."
+            },
+            {
+                q: "현재 점수가 10점일 때, 보석을 먹어 점수를 11점으로 바꾸고 싶다면 어떤 블록을 써야 할까요?",
+                a: ["점수를 1로 정하기", "점수를 11만큼 더하기", "점수를 1만큼 더하기", "점수를 0으로 정하기"],
+                correct: 2,
+                hint: "기존 값에 새로운 숫자를 보태는(더하는) 동작이 필요합니다."
+            },
+            {
+                q: "운석에 충돌했을 때 게임이 멈추도록 다른 모든 오브젝트들에게 알려주는 기능은?",
+                a: ["복제본", "변수", "신호", "기다리기"],
+                correct: 2,
+                hint: "오브젝트 간에 약속된 소식을 주고받을 때 무엇을 보내야 할까요?"
+            }
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            quizzes.forEach((quiz, qIdx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mb-10 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm';
+                
+                let optionsHtml = quiz.a.map((opt, oIdx) => `
+                    <button class="quiz-option" data-q="${qIdx}" data-o="${oIdx}">
+                        <span class="option-index">${oIdx + 1}</span>
+                        <span class="option-text">${opt}</span>
+                    </button>
+                `).join('');
+
+                qDiv.innerHTML = `
+                    <p class="font-bold mb-6 text-gray-800 text-xl flex items-start">
+                        <span class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 text-sm">Q${qIdx+1}</span>
+                        <span>${quiz.q}</span>
+                    </p>
+                    <div class="options-wrapper">${optionsHtml}</div>
+                    <div id="q-hint-${qIdx}" class="hidden mt-4 p-4 bg-indigo-50 text-indigo-700 rounded-xl text-sm border border-indigo-100">
+                        💡 <b>원리 설명:</b> ${quiz.hint}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const qIdx = parseInt(this.getAttribute('data-q'));
+                    const oIdx = parseInt(this.getAttribute('data-o'));
+                    const correctIdx = quizzes[qIdx].correct;
+                    const options = this.closest('.options-wrapper').querySelectorAll('.quiz-option');
+                    
+                    if (oIdx === correctIdx) {
+                        this.classList.add('correct');
+                        const textSpan = this.querySelector('.option-text');
+                        if (!textSpan.innerText.includes("(정답!)")) textSpan.innerText += " (정답!)";
+                        options.forEach(b => b.disabled = true);
+                        document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden');
+                    } else {
+                        this.classList.add('wrong');
+                        this.disabled = true;
+                        document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        function toggleHint(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>
