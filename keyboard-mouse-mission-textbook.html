@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>키보드와 마우스로 미션 해결!</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #6366F1;
+    --secondary: #F97316;
+    --success: #22C55E;
+    --warning: #FBBF24;
+    --danger: #F43F5E;
+    --bg: #FFF8F0;
+    --card: #FFFFFF;
+    --text: #1E1B4B;
+    --muted: #7C3AED;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.9;
+  }
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #F97316 100%);
+    color: white;
+    padding: 32px 20px 24px;
+    text-align: center;
+  }
+  .hero-icon { font-size: 64px; margin-bottom: 8px; display: block; animation: float 2.5s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .hero h1 { font-size: clamp(24px, 5vw, 36px); font-weight: 800; margin-bottom: 6px; }
+  .hero .meta { font-size: 15px; opacity: 0.9; }
+  /* PROGRESS BAR */
+  .progress-wrap { background: rgba(255,255,255,0.25); border-radius: 10px; height: 14px; margin: 16px auto 0; max-width: 500px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #FBBF24, #F97316); transition: width 0.5s; }
+  .progress-label { text-align: center; font-size: 13px; margin-top: 4px; color: rgba(255,255,255,0.9); }
+  /* MAIN CONTAINER */
+  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.10);
+    border-top: 5px solid var(--primary);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(99,102,241,0.18); }
+  .card.orange { border-top-color: var(--secondary); }
+  .card.green  { border-top-color: var(--success); }
+  .card.yellow { border-top-color: var(--warning); }
+  .card.pink   { border-top-color: var(--danger); }
+  .card-title { font-size: 26px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  /* GOAL LIST */
+  .goal-list { list-style: none; }
+  .goal-list li { padding: 8px 0 8px 32px; position: relative; font-size: 20px; border-bottom: 1px dashed #e8e5ff; }
+  .goal-list li:last-child { border-bottom: none; }
+  .goal-list li::before { content: attr(data-icon); position: absolute; left: 0; font-size: 20px; }
+  /* CONCEPT CARDS */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+  .concept-item { background: #F5F3FF; border-radius: 16px; padding: 20px; text-align: center; }
+  .concept-item .icon { font-size: 48px; margin-bottom: 10px; display: block; }
+  .concept-item h3 { font-size: 21px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  .concept-item p { font-size: 18px; color: #4B5563; }
+  /* MOUSE ANIMATION */
+  .mouse-demo { background: #E8F5E9; border-radius: 16px; padding: 20px; margin-top: 16px; text-align: center; position: relative; overflow: hidden; min-height: 140px; }
+  .mouse-svg-wrap { display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; }
+  .arrow-anim { display: flex; align-items: center; gap: 8px; font-size: 28px; }
+  .arrow-anim span { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:0.3;transform:scale(0.85)} 50%{opacity:1;transform:scale(1.15)} }
+  /* ===== PUZZLE ACTIVITY ===== */
+  #puzzle-area {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-width: 360px;
+    margin: 20px auto 0;
+  }
+  .puzzle-slot {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 3px dashed #c4b5fd;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    background: #F5F3FF;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .slot-label { font-size: 15px; font-weight: 700; color: #7C3AED; line-height: 1.2; text-align: center; margin-top: 2px; }
+  .puzzle-slot.over { background: #ddd6fe; border-color: var(--primary); }
+  .puzzle-slot.correct { background: #d1fae5; border-color: var(--success); border-style: solid; }
+  .piece-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 18px auto 0;
+    max-width: 360px;
+    min-height: 60px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 12px;
+    border: 2px solid #e9d5ff;
+  }
+  .puzzle-piece {
+    width: 66px;
+    height: 66px;
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 3px 10px rgba(99,102,241,0.25);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .puzzle-piece:hover { transform: scale(1.1); box-shadow: 0 6px 18px rgba(99,102,241,0.35); }
+  .puzzle-piece:active { cursor: grabbing; transform: scale(1.05); }
+  .puzzle-piece.placed { opacity: 0.4; pointer-events: none; }
+  .puzzle-msg { text-align: center; margin-top: 14px; font-size: 20px; font-weight: 700; min-height: 28px; }
+  #puzzle-reset { margin: 12px auto 0; display: block; }
+  /* ===== MAZE ACTIVITY ===== */
+  #maze-canvas-wrap { display: flex; justify-content: center; margin: 16px 0; }
+  #maze-canvas { border: 3px solid var(--primary); border-radius: 12px; background: #fff; display: block; }
+  .maze-controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .maze-key-hint { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .key-badge { background: #1E1B4B; color: white; border-radius: 8px; padding: 4px 10px; font-size: 18px; font-weight: 700; min-width: 38px; text-align: center; box-shadow: 0 3px 0 #0d0b2e; }
+  .maze-msg { text-align: center; font-size: 20px; font-weight: 700; color: var(--primary); margin-top: 10px; min-height: 28px; }
+  /* BUTTONS */
+  .btn {
+    padding: 12px 26px;
+    border: none;
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s, filter 0.1s;
+  }
+  .btn:hover { transform: scale(1.05); filter: brightness(1.08); }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-secondary { background: var(--secondary); color: white; }
+  .btn-success { background: var(--success); color: white; }
+  /* QUIZ */
+  .quiz-q { font-size: 21px; font-weight: 700; margin-bottom: 14px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 2.5px solid #e9d5ff;
+    background: #F5F3FF;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  }
+  .quiz-opt:hover:not(:disabled) { background: #ede9fe; border-color: var(--primary); transform: translateX(4px); }
+  .quiz-opt.correct { background: #d1fae5; border-color: var(--success); color: #065f46; }
+  .quiz-opt.wrong   { background: #ffe4e6; border-color: var(--danger); color: #9f1239; }
+  .quiz-feedback { margin-top: 14px; padding: 14px 16px; border-radius: 12px; font-size: 16px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.good { background: #d1fae5; color: #065f46; }
+  .quiz-feedback.bad  { background: #ffe4e6; color: #9f1239; }
+  .quiz-star { color: var(--warning); font-size: 22px; }
+  .quiz-nav { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .score-display { text-align: center; font-size: 36px; font-weight: 800; color: var(--primary); padding: 20px 0 10px; }
+  .score-display .lbl { font-size: 18px; color: var(--muted); display: block; }
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li { padding: 10px 0; border-bottom: 1px dashed #e8e5ff; display: flex; align-items: center; gap: 14px; font-size: 20px; }
+  .checklist li:last-child { border-bottom: none; }
+  .check-btn { background: none; border: 2.5px solid #c4b5fd; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; flex-shrink: 0; transition: background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; }
+  .check-btn.done { background: var(--success); border-color: var(--success); color: white; }
+  /* SHORT ANSWER */
+  .sa-item { background: #F5F3FF; border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; border-left: 5px solid var(--primary); }
+  .sa-item .sa-q { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .sa-input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .sa-input {
+    flex: 1; min-width: 160px;
+    padding: 10px 16px;
+    border: 2.5px solid #c4b5fd;
+    border-radius: 12px;
+    font-size: 20px;
+    font-family: inherit;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .sa-input:focus { border-color: var(--primary); }
+  .sa-input.correct-input { border-color: var(--success); background: #d1fae5; }
+  .sa-input.wrong-input  { border-color: var(--danger);  background: #ffe4e6; }
+  .sa-submit { padding: 10px 22px; border: none; border-radius: 50px; background: var(--primary); color: white; font-size: 18px; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.1s, filter 0.1s; white-space: nowrap; }
+  .sa-submit:hover { transform: scale(1.05); filter: brightness(1.1); }
+  .sa-submit:disabled { background: #c4b5fd; cursor: default; transform: none; }
+  .sa-feedback { margin-top: 10px; font-size: 18px; font-weight: 700; min-height: 26px; }
+  .sa-feedback.good { color: #065f46; }
+  .sa-feedback.bad  { color: #9f1239; }
+  .sa-hint-btn { background: none; border: 2px solid var(--warning); border-radius: 50px; padding: 6px 14px; font-size: 16px; font-weight: 700; color: #92400E; cursor: pointer; font-family: inherit; }
+  .sa-hint-btn:hover { background: #FEF9C3; }
+  /* CONFETTI */
+  .confetti-piece { position: fixed; width: 10px; height: 14px; border-radius: 3px; opacity: 0; pointer-events: none; z-index: 9999; animation: confettiFall 1.2s ease-out forwards; }
+  @keyframes confettiFall {
+    0%   { opacity:1; transform: translateY(0) rotate(0deg); }
+    100% { opacity:0; transform: translateY(400px) rotate(720deg); }
+  }
+  /* SPEECH BUBBLE */
+  .bubble { position: relative; background: #F5F3FF; border: 2px solid #c4b5fd; border-radius: 18px; padding: 14px 18px; margin: 16px 0; font-size: 16px; }
+  .bubble::before { content:'🤖'; position: absolute; left: -20px; top: -8px; font-size: 32px; }
+  /* COMPLETION */
+  #completion-banner { display: none; text-align: center; padding: 30px; background: linear-gradient(135deg,#d1fae5,#a7f3d0); border-radius: 20px; margin-top: 20px; }
+  #completion-banner h2 { font-size: 28px; color: #065f46; margin-bottom: 8px; }
+  /* SUMMARY BOX */
+  .summary-box { background: #F5F3FF; border-radius: 14px; padding: 18px 20px; margin-top: 14px; }
+  .summary-box h4 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .summary-box ul { list-style: none; }
+  .summary-box ul li { padding: 4px 0 4px 22px; position: relative; font-size: 16px; }
+  .summary-box ul li::before { content: '✅'; position: absolute; left: 0; font-size: 14px; }
+  /* RESPONSIVE */
+  @media(max-width:500px) {
+    .card { padding: 20px 14px; }
+    #maze-canvas { width: 300px; height: 300px; }
+  }
+  /* PRINT */
+  @media print {
+    .btn, .maze-key-hint, .maze-controls { display: none; }
+    body { background: white; font-size: 14px; }
+    .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon">🖱️⌨️</span>
+  <h1>키보드와 마우스로 미션 해결!</h1>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">⭐ 0 / 6 완료</div>
+</header>
+
+<main>
+
+  <!-- 1. 학습 목표 -->
+  <section class="card" id="sec-goal">
+    <div class="card-title">🎯 오늘 배울 것들이에요!</div>
+    <ul class="goal-list">
+      <li data-icon="🖱️">마우스로 드래그 앤 드롭을 해서 퍼즐을 완성할 수 있어요.</li>
+      <li data-icon="⌨️">키보드 방향키(↑↓←→)로 캐릭터를 움직여 미로를 탈출할 수 있어요.</li>
+      <li data-icon="🧠">마우스와 키보드를 상황에 맞게 골라서 사용할 수 있어요.</li>
+    </ul>
+  </section>
+
+  <!-- 2. 개념 설명 -->
+  <section class="card orange" id="sec-concept">
+    <div class="card-title">💡 마우스와 키보드가 뭐예요?</div>
+    <div class="bubble">
+      컴퓨터에게 명령을 내리는 도구가 바로 마우스와 키보드예요!<br>
+      마우스는 화면을 <strong>클릭하거나 끌어다 놓을</strong> 때, 키보드는 <strong>글자를 입력하거나 방향키로 움직일</strong> 때 사용해요.
+    </div>
+    <div class="concept-grid">
+      <div class="concept-item">
+        <span class="icon">🖱️</span>
+        <h3>마우스</h3>
+        <p>클릭, 더블클릭, 드래그 앤 드롭으로 화면을 조작해요.</p>
+      </div>
+      <div class="concept-item">
+        <span class="icon">⌨️</span>
+        <h3>키보드</h3>
+        <p>글자 입력, 방향키 이동, 특수 기능을 담당해요.</p>
+      </div>
+      <div class="concept-item">
+        <span class="icon">🎮</span>
+        <h3>드래그 앤 드롭</h3>
+        <p>마우스로 <strong>꾹 누른 채</strong> 끌어서 원하는 곳에 놓는 것이에요.</p>
+      </div>
+    </div>
+
+    <div class="mouse-demo" style="margin-top:20px;">
+      <p style="font-weight:700; margin-bottom:10px;">🖱️ 드래그 앤 드롭이란?</p>
+      <div class="mouse-svg-wrap">
+        <div style="text-align:center">
+          <div style="font-size:44px; animation:float 1.5s ease-in-out infinite;">📦</div>
+          <div style="font-size:14px; color:#555; margin-top:6px;">꾹 누르기</div>
+        </div>
+        <div class="arrow-anim">
+          <span style="animation-delay:0s">➡️</span>
+          <span style="animation-delay:0.2s">➡️</span>
+          <span style="animation-delay:0.4s">➡️</span>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:44px; background:#d1fae5; border-radius:12px; padding:4px 12px;">📦</div>
+          <div style="font-size:14px; color:#555; margin-top:6px;">놓기!</div>
+        </div>
+      </div>
+      <p style="margin-top:12px; font-size:15px; color:#333;">잡아서 → 끌고 가서 → 내려놓기!</p>
+    </div>
+
+    <div class="mouse-demo" style="margin-top:12px; background: #E3F2FD;">
+      <p style="font-weight:700; margin-bottom:10px;">⌨️ 방향키가 뭐예요?</p>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; align-items:center;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; width:130px;">
+          <div></div>
+          <div class="key-badge" style="font-size:20px;">↑</div>
+          <div></div>
+          <div class="key-badge" style="font-size:20px;">←</div>
+          <div class="key-badge" style="font-size:20px;">↓</div>
+          <div class="key-badge" style="font-size:20px;">→</div>
+        </div>
+        <div style="font-size:16px; color:#333;">
+          ← 이 네 개의 키가 방향키예요!<br>
+          누르면 캐릭터가 움직여요. 🚶
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 미션 1 - 드래그 앤 드롭 퍼즐 -->
+  <section class="card green" id="sec-puzzle">
+    <div class="card-title">🖱️ 미션 1 — 드래그 앤 드롭 퍼즐!</div>
+    <p>아래 동물 조각을 <strong>드래그해서</strong> 알맞은 칸에 놓아보세요! 🎉</p>
+
+    <div id="puzzle-area">
+      <!-- 9 slots, each expects a specific emoji -->
+      <div class="puzzle-slot" data-expects="🐶" data-name="강아지" data-index="0"><span class="slot-label">강아지</span></div>
+      <div class="puzzle-slot" data-expects="🐱" data-name="고양이" data-index="1"><span class="slot-label">고양이</span></div>
+      <div class="puzzle-slot" data-expects="🐰" data-name="토끼" data-index="2"><span class="slot-label">토끼</span></div>
+      <div class="puzzle-slot" data-expects="🐸" data-name="개구리" data-index="3"><span class="slot-label">개구리</span></div>
+      <div class="puzzle-slot" data-expects="🦊" data-name="여우" data-index="4"><span class="slot-label">여우</span></div>
+      <div class="puzzle-slot" data-expects="🐻" data-name="곰" data-index="5"><span class="slot-label">곰</span></div>
+      <div class="puzzle-slot" data-expects="🐼" data-name="판다" data-index="6"><span class="slot-label">판다</span></div>
+      <div class="puzzle-slot" data-expects="🐨" data-name="코알라" data-index="7"><span class="slot-label">코알라</span></div>
+      <div class="puzzle-slot" data-expects="🦁" data-name="사자" data-index="8"><span class="slot-label">사자</span></div>
+    </div>
+
+    <p style="text-align:center; margin-top:14px; font-size:15px; color:#555;">👇 아래 동물 조각을 위 칸으로 드래그해 보세요!</p>
+    <div class="piece-bank" id="piece-bank">
+      <!-- pieces generated by JS -->
+    </div>
+    <div class="puzzle-msg" id="puzzle-msg"></div>
+    <button class="btn btn-secondary" id="puzzle-reset" onclick="resetPuzzle()">🔄 다시 도전!</button>
+  </section>
+
+  <!-- 4. 미션 2 - 미로 탈출 -->
+  <section class="card" id="sec-maze">
+    <div class="card-title">⌨️ 미션 2 — 방향키로 미로 탈출!</div>
+    <p><strong>방향키(↑↓←→)</strong>로 🐰 캐릭터를 움직여 ⭐ 출구까지 도달해 보세요!</p>
+
+    <div class="maze-key-hint" style="margin-bottom:12px;">
+      <span style="font-size:16px; font-weight:700;">사용할 키:</span>
+      <div class="key-badge">↑</div>
+      <div class="key-badge">↓</div>
+      <div class="key-badge">←</div>
+      <div class="key-badge">→</div>
+      <span style="font-size:15px; color:#555;">키보드의 방향키를 눌러요!</span>
+    </div>
+
+    <div id="maze-canvas-wrap">
+      <canvas id="maze-canvas" width="350" height="350" tabindex="0" style="outline:none;"></canvas>
+    </div>
+    <div class="maze-msg" id="maze-msg">⬆️ 캔버스를 클릭한 후 방향키를 누르세요!</div>
+    <div class="maze-controls">
+      <!-- On-screen D-pad for touch -->
+      <div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; width:130px; margin:0 auto;">
+          <div></div>
+          <button class="btn btn-primary" style="padding:10px;font-size:20px;" onclick="moveMaze(0,-1)">↑</button>
+          <div></div>
+          <button class="btn btn-primary" style="padding:10px;font-size:20px;" onclick="moveMaze(-1,0)">←</button>
+          <button class="btn btn-primary" style="padding:10px;font-size:20px;" onclick="moveMaze(0,1)">↓</button>
+          <button class="btn btn-primary" style="padding:10px;font-size:20px;" onclick="moveMaze(1,0)">→</button>
+        </div>
+        <p style="text-align:center; font-size:13px; color:#888; margin-top:6px;">터치/마우스로도 이동 가능!</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
+        <button class="btn btn-secondary" onclick="resetMaze()">🔄 미로 새로 시작</button>
+        <button class="btn" style="background:#e9d5ff;color:var(--primary);" onclick="nextMaze()">🔀 다른 미로 도전!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 퀴즈 -->
+  <section class="card yellow" id="sec-quiz">
+    <div class="card-title">✏️ 퀴즈 시간! 얼마나 알고 있나요?</div>
+    <div id="quiz-container"></div>
+    <div id="quiz-complete" style="display:none;">
+      <div class="score-display">
+        <span class="lbl">내 점수</span>
+        <span id="final-score">0</span> / 5 ⭐
+      </div>
+      <p style="text-align:center; font-size:17px;" id="score-msg"></p>
+      <div style="text-align:center; margin-top:14px;">
+        <button class="btn btn-primary" onclick="restartQuiz()">🔄 퀴즈 다시 풀기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 정리 & 체크리스트 -->
+  <section class="card pink" id="sec-summary">
+    <div class="card-title">📝 오늘 배운 내용 정리해요!</div>
+    <div class="summary-box">
+      <h4>🖱️ 마우스 기술 — 드래그 앤 드롭</h4>
+      <ul>
+        <li>마우스 왼쪽 버튼을 꾹 누른 채 끌기 → 드래그!</li>
+        <li>원하는 위치에서 버튼 놓기 → 드롭!</li>
+        <li>퍼즐 맞추기, 파일 이동 등에 사용해요.</li>
+      </ul>
+    </div>
+    <div class="summary-box" style="margin-top:14px;">
+      <h4>⌨️ 키보드 기술 — 방향키 이동</h4>
+      <ul>
+        <li>키보드 오른쪽 아래에 있는 ↑↓←→ 키!</li>
+        <li>게임, 커서 이동, 슬라이드 조작 등에 사용해요.</li>
+        <li>두 손 모두 키보드 위에 편하게 올려놓고 눌러요.</li>
+      </ul>
+    </div>
+
+    <div class="card-title" style="margin-top:24px;">📊 나의 학습 확인 문제</div>
+    <div id="short-answer-list"></div>
+
+    <div id="completion-banner">
+      <h2>🏆 오늘 수업 완료!</h2>
+      <p style="font-size:18px; color:#047857;">정말 잘했어요! 키보드와 마우스 실력이 쑥쑥 늘었어요! 🌟</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ================== UTILS ====================
+function confetti(x, y) {
+  const colors = ['#6366F1','#F97316','#22C55E','#FBBF24','#F43F5E','#8B5CF6'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (x + (Math.random()-0.5)*120) + 'px';
+    el.style.top  = (y + (Math.random()-0.5)*60)  + 'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    el.style.animationDuration = (0.9 + Math.random()*0.6) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+// ================== PROGRESS ====================
+const TOTAL_SECTIONS = 6;
+let sectionsViewed = new Set();
+function updateProgress() {
+  const count = sectionsViewed.size;
+  const pct = Math.round((count / TOTAL_SECTIONS) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `⭐ ${count} / ${TOTAL_SECTIONS} 완료`;
+}
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { sectionsViewed.add(e.target.id); updateProgress(); }});
+}, { threshold: 0.3 });
+['sec-goal','sec-concept','sec-puzzle','sec-maze','sec-quiz','sec-summary'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// ================== PUZZLE ====================
+const PIECES = ['🐶','🐱','🐰','🐸','🦊','🐻','🐼','🐨','🦁'];
+let piecesLeft = [];
+let correctCount = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function resetPuzzle() {
+  piecesLeft = shuffle([...PIECES]);
+  correctCount = 0;
+  document.getElementById('puzzle-msg').textContent = '';
+  // reset slots
+  document.querySelectorAll('.puzzle-slot').forEach(sl => {
+    sl.textContent = '';
+    sl.className = 'puzzle-slot';
+    sl.innerHTML = `<span class="slot-label">${sl.dataset.name}</span>`;
+  });
+  // render pieces
+  const bank = document.getElementById('piece-bank');
+  bank.innerHTML = '';
+  piecesLeft.forEach(emoji => {
+    const p = document.createElement('div');
+    p.className = 'puzzle-piece';
+    p.textContent = emoji;
+    p.draggable = true;
+    p.dataset.emoji = emoji;
+    p.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', emoji);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    // Touch support
+    p.addEventListener('touchstart', onPieceTouchStart, {passive: true});
+    bank.appendChild(p);
+  });
+  setupSlots();
+}
+
+function setupSlots() {
+  document.querySelectorAll('.puzzle-slot').forEach(slot => {
+    slot.ondragover = e => { e.preventDefault(); slot.classList.add('over'); };
+    slot.ondragleave = () => slot.classList.remove('over');
+    slot.ondrop = e => {
+      e.preventDefault();
+      slot.classList.remove('over');
+      const emoji = e.dataTransfer.getData('text/plain');
+      tryPlace(slot, emoji);
+    };
+    slot.addEventListener('touchend', onSlotTouchEnd);
+  });
+}
+
+// Simple touch drag
+let touchDragEmoji = null;
+let touchDragEl = null;
+function onPieceTouchStart(e) {
+  touchDragEmoji = e.currentTarget.dataset.emoji;
+  touchDragEl = e.currentTarget;
+}
+function onSlotTouchEnd(e) {
+  if (!touchDragEmoji) return;
+  tryPlace(e.currentTarget, touchDragEmoji);
+  touchDragEmoji = null;
+  touchDragEl = null;
+}
+
+function tryPlace(slot, emoji) {
+  if (slot.classList.contains('correct')) return;
+  if (slot.dataset.expects === emoji) {
+    slot.innerHTML = `<span style="font-size:34px;line-height:1;">${emoji}</span><span class="slot-label" style="color:#065f46;">${slot.dataset.name}</span>`;
+    slot.classList.add('correct');
+    // mark piece as placed
+    const pieces = document.querySelectorAll('.puzzle-piece');
+    pieces.forEach(p => { if (p.dataset.emoji === emoji && !p.classList.contains('placed')) p.classList.add('placed'); });
+    correctCount++;
+    if (correctCount === PIECES.length) {
+      document.getElementById('puzzle-msg').innerHTML = '🎉 퍼즐 완성! 최고예요!';
+      document.getElementById('puzzle-msg').style.color = '#22C55E';
+      confetti(window.innerWidth/2, 400);
+      setTimeout(() => confetti(window.innerWidth/2, 400), 400);
+    } else {
+      document.getElementById('puzzle-msg').innerHTML = `✅ ${correctCount}개 맞았어요! 계속 해봐요!`;
+    }
+  } else {
+    slot.style.animation = 'none';
+    slot.style.background = '#ffe4e6';
+    setTimeout(() => { slot.style.background = ''; }, 600);
+    document.getElementById('puzzle-msg').innerHTML = '❌ 다른 칸을 찾아봐요!';
+    document.getElementById('puzzle-msg').style.color = '#F43F5E';
+  }
+}
+
+// ================== MAZE ====================
+const CELL = 50; // cell size px
+const COLS = 7;
+const ROWS = 7;
+let maze = [], player = {x:0,y:0}, goal = {x:6,y:6};
+let mazeSolved = false;
+const canvas = document.getElementById('maze-canvas');
+const ctx = canvas.getContext('2d');
+
+// Maze layouts (0=open, 1=wall)
+const MAZES = [
+  // Maze 0
+  [
+    [0,1,0,0,0,1,0],
+    [0,1,0,1,0,1,0],
+    [0,0,0,1,0,0,0],
+    [1,1,0,1,1,1,0],
+    [0,0,0,0,0,1,0],
+    [0,1,1,1,0,1,0],
+    [0,0,0,0,0,0,0],
+  ],
+  // Maze 1
+  [
+    [0,0,0,1,0,0,0],
+    [1,1,0,1,0,1,0],
+    [0,0,0,0,0,1,0],
+    [0,1,1,1,1,1,0],
+    [0,0,0,0,0,0,0],
+    [1,1,0,1,1,0,1],
+    [0,0,0,0,0,0,0],
+  ],
+  // Maze 2
+  [
+    [0,1,0,0,0,0,0],
+    [0,1,0,1,1,1,0],
+    [0,0,0,1,0,0,0],
+    [1,1,0,1,0,1,1],
+    [0,0,0,0,0,0,0],
+    [0,1,1,1,0,1,0],
+    [0,0,0,0,0,0,0],
+  ]
+];
+let currentMazeIdx = 0;
+
+function initMaze(idx) {
+  maze = MAZES[idx];
+  player = {x:0, y:0};
+  goal = {x:6, y:6};
+  mazeSolved = false;
+  document.getElementById('maze-msg').textContent = '⬆️ 캔버스를 클릭한 후 방향키를 누르세요!';
+  drawMaze();
+}
+
+function drawMaze() {
+  const W = canvas.width, H = canvas.height;
+  const cw = W/COLS, ch = H/ROWS;
+  ctx.clearRect(0,0,W,H);
+  // Draw cells
+  for (let r=0; r<ROWS; r++) {
+    for (let c=0; c<COLS; c++) {
+      if (maze[r][c] === 1) {
+        ctx.fillStyle = '#4338CA';
+        ctx.beginPath();
+        ctx.roundRect(c*cw+2, r*ch+2, cw-4, ch-4, 8);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#F5F3FF';
+        ctx.fillRect(c*cw, r*ch, cw, ch);
+      }
+    }
+  }
+  // Goal
+  ctx.font = `${Math.floor(cw*0.65)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⭐', goal.x*cw + cw/2, goal.y*ch + ch/2);
+  // Player
+  ctx.fillText('🐰', player.x*cw + cw/2, player.y*ch + ch/2);
+}
+
+function moveMaze(dx, dy) {
+  if (mazeSolved) return;
+  const nx = player.x + dx;
+  const ny = player.y + dy;
+  if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return;
+  if (maze[ny][nx] === 1) {
+    // bump animation
+    document.getElementById('maze-msg').textContent = '🧱 벽이에요! 다른 방향으로 가봐요!';
+    return;
+  }
+  player.x = nx;
+  player.y = ny;
+  drawMaze();
+  document.getElementById('maze-msg').textContent = '잘하고 있어요! 계속 가봐요! 🐰';
+  if (player.x === goal.x && player.y === goal.y) {
+    mazeSolved = true;
+    document.getElementById('maze-msg').textContent = '🎉 탈출 성공! 방향키 마스터! 🏆';
+    confetti(canvas.getBoundingClientRect().left + canvas.width/2, canvas.getBoundingClientRect().top + canvas.height/2);
+  }
+}
+
+function resetMaze() { initMaze(currentMazeIdx); }
+function nextMaze() { currentMazeIdx = (currentMazeIdx + 1) % MAZES.length; initMaze(currentMazeIdx); }
+
+// Keyboard
+canvas.addEventListener('keydown', e => {
+  const keyMap = {'ArrowUp':[0,-1],'ArrowDown':[0,1],'ArrowLeft':[-1,0],'ArrowRight':[1,0]};
+  if (keyMap[e.key]) { e.preventDefault(); moveMaze(...keyMap[e.key]); }
+});
+canvas.addEventListener('click', () => canvas.focus());
+// Also global keydown when canvas not focused
+document.addEventListener('keydown', e => {
+  const keyMap = {'ArrowUp':[0,-1],'ArrowDown':[0,1],'ArrowLeft':[-1,0],'ArrowRight':[1,0]};
+  if (keyMap[e.key]) { e.preventDefault(); moveMaze(...keyMap[e.key]); }
+});
+
+// ================== QUIZ ====================
+const quizData = [
+  {
+    q: "🤔 마우스로 물건을 꾹 누른 채 끌어다 다른 곳에 놓는 것을 무엇이라고 할까요?",
+    opts: ["🖱️ 더블클릭", "📋 복사하기", "🎯 드래그 앤 드롭", "⌨️ 타이핑"],
+    ans: 2,
+    exp: "정답! 마우스를 꾹 누른 채 끌었다가 놓는 것이 바로 '드래그 앤 드롭'이에요! 파일 이동, 퍼즐 맞추기 등에 사용해요."
+  },
+  {
+    q: "🎮 컴퓨터 게임에서 캐릭터를 위·아래·왼쪽·오른쪽으로 움직이고 싶을 때 사용하는 키는?",
+    opts: ["📝 숫자 키", "🔤 알파벳 키", "📍 방향키(↑↓←→)", "🔧 Ctrl 키"],
+    ans: 2,
+    exp: "맞아요! ↑↓←→ 방향키로 캐릭터를 움직일 수 있어요. 키보드 오른쪽 아래에 있어요!"
+  },
+  {
+    q: "🧩 퍼즐 조각을 맞추려면 어떤 마우스 동작을 사용해야 할까요?",
+    opts: ["🖱️ 한 번 클릭", "✏️ 드래그 앤 드롭", "🖨️ 오른쪽 클릭", "🔤 타이핑"],
+    ans: 1,
+    exp: "훌륭해요! 퍼즐 조각을 드래그해서 알맞은 위치에 드롭하면 돼요!"
+  },
+  {
+    q: "⌨️ 미로에서 오른쪽으로 이동하고 싶을 때 어떤 키를 눌러야 할까요?",
+    opts: ["⬆️ ↑ 위 방향키", "⬇️ ↓ 아래 방향키", "⬅️ ← 왼쪽 방향키", "➡️ → 오른쪽 방향키"],
+    ans: 3,
+    exp: "정확해요! → 오른쪽 방향키를 누르면 오른쪽으로 이동할 수 있어요!"
+  },
+  {
+    q: "🤖 마우스와 키보드, 어떤 상황에서 각각 사용할까요? 글자를 입력할 때 주로 사용하는 것은?",
+    opts: ["🖱️ 마우스", "🖱️ 마우스 휠", "⌨️ 키보드", "🖥️ 모니터"],
+    ans: 2,
+    exp: "맞아요! 글자를 입력할 때는 키보드를 사용해요. 마우스는 클릭·드래그 같은 화면 조작에 사용해요!"
+  }
+];
+
+let currentQ = 0, score = 0, answered = [];
+
+function renderQuiz() {
+  if (currentQ >= quizData.length) {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('quiz-complete').style.display = 'block';
+    document.getElementById('final-score').textContent = score;
+    const msgs = ['조금 더 연습해봐요! 할 수 있어요! 💪','잘했어요! 다시 한번 도전해봐요! 😊','훌륭해요! 거의 다 맞았어요! 🌟','완벽해요! 천재 컴퓨터 박사! 🏆🎉'];
+    const idx = score <= 1 ? 0 : score <= 2 ? 1 : score <= 4 ? 2 : 3;
+    document.getElementById('score-msg').textContent = msgs[idx];
+    if (score >= 4) confetti(window.innerWidth/2, window.innerHeight/2);
+    return;
+  }
+  const q = quizData[currentQ];
+  let html = `
+    <div class="quiz-q">문제 ${currentQ+1}/5 &nbsp;<span class="quiz-star">${'⭐'.repeat(currentQ+1)}</span><br>${q.q}</div>
+    <div class="quiz-options">
+  `;
+  q.opts.forEach((opt, i) => {
+    html += `<button class="quiz-opt" onclick="answerQuiz(${i})" id="qopt${i}">${opt}</button>`;
+  });
+  html += `</div>
+    <div class="quiz-feedback" id="qfeedback"></div>
+    <div class="quiz-nav">
+      <button class="btn" style="background:#e9d5ff;color:var(--primary);" onclick="showHint()">💡 힌트 보기</button>
+      <button class="btn btn-primary" id="nextBtn" style="display:none;" onclick="nextQuestion()">다음 문제 ➡️</button>
+    </div>
+  `;
+  document.getElementById('quiz-container').innerHTML = html;
+  document.getElementById('quiz-container').style.display = 'block';
+}
+
+function answerQuiz(choice) {
+  const q = quizData[currentQ];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  const fb = document.getElementById('qfeedback');
+  if (choice === q.ans) {
+    opts[choice].classList.add('correct');
+    fb.className = 'quiz-feedback show good';
+    fb.innerHTML = '🎉 정답! ' + q.exp;
+    score++;
+    confetti(window.innerWidth/2, 400);
+  } else {
+    opts[choice].classList.add('wrong');
+    opts[q.ans].classList.add('correct');
+    fb.className = 'quiz-feedback show bad';
+    fb.innerHTML = '😢 아쉬워요! 정답은 ' + (q.ans+1) + '번이에요. ' + q.exp;
+  }
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function showHint() {
+  const hints = [
+    "힌트: '드래그' + '드롭' 두 단어를 합친 이름이에요!",
+    "힌트: 키보드에서 화살표(↑↓←→) 모양의 키를 찾아봐요!",
+    "힌트: 끌어다 놓는 동작이에요!",
+    "힌트: 오른쪽으로 가는 화살표 방향의 키예요!",
+    "힌트: 글자를 만들어내는 도구예요!"
+  ];
+  const fb = document.getElementById('qfeedback');
+  fb.className = 'quiz-feedback show';
+  fb.style.background = '#FEF9C3';
+  fb.style.color = '#92400E';
+  fb.innerHTML = '💡 ' + hints[currentQ];
+}
+
+function nextQuestion() { currentQ++; renderQuiz(); }
+function restartQuiz() {
+  currentQ = 0; score = 0; answered = [];
+  document.getElementById('quiz-complete').style.display = 'none';
+  renderQuiz();
+}
+
+// ================== SHORT ANSWER ====================
+const SA_DATA = [
+  {
+    q: "🖱️ 마우스로 끌어서 필요한 곳에 놓는 행동을 무엇이라 부르나요?",
+    answers: ["드래그 앤 드롭", "드래그앤드롭", "drag and drop"],
+    hint: "힌트: '끌기(드래그)' + '놓기(드롭)' 두 단어를 합쳐요!"
+  },
+  {
+    q: "🧩 오늘 마우스 드래그로 완성한 활동은 무엇인가요?",
+    answers: ["퍼즐", "퍼즐 맞추기", "퍼즐맞추기"],
+    hint: "힌트: 조각을 끼워 맞추는 놀이예요!"
+  },
+  {
+    q: "⌨️ 키보드에서 위, 아래, 왼쪽, 오른쪽으로 이동할 때 사용하는 키를 무엇이라고 하나요?",
+    answers: ["방향키", "화살표키", "화살표 키", "방향 키"],
+    hint: "힌트: ↑ ↓ ← → 화살표 모양의 키예요!"
+  },
+  {
+    q: "🐰 오늘 방향키로 캐릭터를 움직여서 탈출한 곳은 어디인가요?",
+    answers: ["미로", "maze", "미로탈출"],
+    hint: "힌트: 길을 찾아 빠져나오는 복잡한 통로예요!"
+  },
+  {
+    q: "🖱️⌨️ 글자를 입력할 때 주로 사용하는 컴퓨터 도구는 무엇인가요?",
+    answers: ["키보드", "keyboard"],
+    hint: "힌트: 글자, 숫자, 방향키가 모두 있는 도구예요!"
+  },
+  {
+    q: "💡 마우스를 사용할 때, 화면의 아이콘을 두 번 빠르게 누르는 동작을 무엇이라 하나요?",
+    answers: ["더블클릭", "더블 클릭", "double click", "두번클릭", "두 번 클릭"],
+    hint: "힌트: '두 번'을 뜻하는 영어 단어 + '클릭'이에요!"
+  }
+];
+
+let saAnswered = new Array(SA_DATA.length).fill(false);
+
+function normalize(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, '');
+}
+
+function renderShortAnswers() {
+  const container = document.getElementById('short-answer-list');
+  container.innerHTML = '';
+  SA_DATA.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'sa-item';
+    div.id = 'sa-item-' + i;
+    div.innerHTML = `
+      <div class="sa-q">${i+1}. ${item.q}</div>
+      <div class="sa-input-row">
+        <input class="sa-input" id="sa-input-${i}" type="text" placeholder="여기에 답을 써요!" autocomplete="off" />
+        <button class="sa-submit" id="sa-btn-${i}" onclick="checkSA(${i})">확인 ✔</button>
+        <button class="sa-hint-btn" onclick="showSAHint(${i})">💡 힌트</button>
+      </div>
+      <div class="sa-feedback" id="sa-fb-${i}"></div>
+    `;
+    container.appendChild(div);
+    // Enter key
+    div.querySelector(`#sa-input-${i}`).addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkSA(i);
+    });
+  });
+}
+
+function checkSA(i) {
+  if (saAnswered[i]) return;
+  const input = document.getElementById('sa-input-' + i);
+  const fb    = document.getElementById('sa-fb-' + i);
+  const btn   = document.getElementById('sa-btn-' + i);
+  const val   = normalize(input.value);
+  const correct = SA_DATA[i].answers.some(a => normalize(a) === val);
+
+  if (!val) {
+    fb.className = 'sa-feedback bad';
+    fb.textContent = '✏️ 답을 입력해 보세요!';
+    return;
+  }
+
+  if (correct) {
+    input.classList.add('correct-input');
+    input.disabled = true;
+    btn.disabled = true;
+    fb.className = 'sa-feedback good';
+    fb.textContent = '🎉 정답이에요! 잘했어요!';
+    saAnswered[i] = true;
+    confetti(window.innerWidth / 2, input.getBoundingClientRect().top + window.scrollY);
+    saveSAProgress();
+    checkAllSADone();
+    updateProgress();
+  } else {
+    input.classList.add('wrong-input');
+    fb.className = 'sa-feedback bad';
+    fb.textContent = '😢 아쉬워요! 다시 한번 생각해 봐요~';
+    setTimeout(() => {
+      input.classList.remove('wrong-input');
+      input.value = '';
+      fb.textContent = '';
+    }, 1200);
+  }
+}
+
+function showSAHint(i) {
+  const fb = document.getElementById('sa-fb-' + i);
+  fb.className = 'sa-feedback';
+  fb.style.color = '#92400E';
+  fb.textContent = '💡 ' + SA_DATA[i].hint;
+}
+
+function saveSAProgress() {
+  localStorage.setItem('sw-sa-progress', JSON.stringify(saAnswered));
+}
+
+function loadSAProgress() {
+  const saved = JSON.parse(localStorage.getItem('sw-sa-progress') || 'null');
+  if (!saved) return;
+  saved.forEach((done, i) => {
+    if (done) {
+      saAnswered[i] = true;
+      const input = document.getElementById('sa-input-' + i);
+      const btn   = document.getElementById('sa-btn-' + i);
+      const fb    = document.getElementById('sa-fb-' + i);
+      if (input) {
+        input.value = SA_DATA[i].answers[0];
+        input.classList.add('correct-input');
+        input.disabled = true;
+      }
+      if (btn) btn.disabled = true;
+      if (fb) { fb.className = 'sa-feedback good'; fb.textContent = '🎉 정답이에요! 잘했어요!'; }
+    }
+  });
+}
+
+function checkAllSADone() {
+  if (saAnswered.every(Boolean)) {
+    document.getElementById('completion-banner').style.display = 'block';
+    confetti(window.innerWidth / 2, window.innerHeight / 2);
+    setTimeout(() => confetti(window.innerWidth / 3, window.innerHeight / 3), 400);
+  }
+}
+
+// ================== INIT ====================
+window.onload = () => {
+  resetPuzzle();
+  initMaze(0);
+  renderQuiz();
+  renderShortAnswers();
+  loadSAProgress();
+  updateProgress();
+};
+</script>
+</body>
+</html>
