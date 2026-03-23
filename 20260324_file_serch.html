@@ -33,6 +33,7 @@
             background-color: #F0F9FF;
             background-image: radial-gradient(#4EA8DE 1px, transparent 1px);
             background-size: 20px 20px;
+            word-break: keep-all; /* 한글 단어가 중간에 잘리지 않도록 보호하는 설정 추가 */
         }
 
         .lesson-card {
@@ -81,7 +82,7 @@
             border: 2px solid #e5e7eb; transition: all 0.4s ease;
         }
         .mock-titlebar { background: #f3f4f6; padding: 8px 16px; display: flex; align-items: center; border-bottom: 1px solid #e5e7eb; }
-        .window-btn { width: 16px; height: 16px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-left: 8px; cursor: pointer; font-size: 10px; color: transparent; transition: all 0.2s;}
+        .window-btn { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-left: 8px; cursor: pointer; font-size: 12px; color: transparent; transition: all 0.2s; font-weight: bold;}
         .window-btn:hover { color: rgba(0,0,0,0.6); transform: scale(1.1); }
         .folder-icon-hover { transition: transform 0.2s; cursor: pointer; }
         .folder-icon-hover:hover { transform: scale(1.05); background-color: #f3f4f6; border-radius: 8px; }
@@ -149,8 +150,9 @@
                     컴퓨터 안의 그림, 음악, 글 자료를 <span class="font-black text-accent text-2xl">'파일(File)'</span>이라고 해요.
                 </p>
                 <div class="bg-yellow-50 border-4 border-primary rounded-2xl p-5 mb-8 text-center shadow-md transform transition hover:scale-[1.02]">
-                    <p class="text-2xl font-black text-yellow-900">
-                        👇 흩어진 파일 <span class="text-red-500">5개</span>를 마우스로 드래그해서</br>노란색 <span class="text-primary drop-shadow-sm">'폴더'</span> 안으로 쏙 넣어주세요!
+                    <p class="text-2xl font-black text-yellow-900 flex flex-wrap items-center justify-center gap-3 break-keep">
+                        <span class="bg-primary text-yellow-900 px-4 py-1 rounded-full text-xl shadow-sm whitespace-nowrap flex-shrink-0">1단계 미션</span>
+                        <span>👇 흩어진 파일 <span class="text-red-500">5개</span>를 마우스로 드래그해서 노란색 <span class="text-primary drop-shadow-sm">'폴더'</span> 안으로 쏙 넣어주세요!</span>
                     </p>
                 </div>
 
@@ -195,13 +197,13 @@
 
             <!-- 레벨 2: 종류별로 나누어 폴더에 넣기 -->
             <div id="level2-container" class="hidden">
-                <p class="text-xl text-gray-700 mb-4 font-bold text-center">
+                <p class="text-xl text-gray-700 mb-4 font-bold text-center break-keep">
                     진짜 고수들은 파일 종류(그림, 음악, 글)에 따라 폴더를 여러 개 만들어서 나눠 담아요.
                 </p>
                 <div class="bg-pink-50 border-4 border-accent rounded-2xl p-5 mb-8 text-center shadow-md transform transition hover:scale-[1.02]">
-                    <p class="text-2xl font-black text-pink-900 flex items-center justify-center gap-3">
-                        <span class="bg-accent text-white px-4 py-1 rounded-full text-xl shadow-sm">2단계 미션</span>
-                        👇 알맞은 그림이 그려진 폴더로 파일들을 끼리끼리 분류해주세요!
+                    <p class="text-2xl font-black text-pink-900 flex flex-wrap items-center justify-center gap-3 break-keep">
+                        <span class="bg-accent text-white px-4 py-1 rounded-full text-xl shadow-sm whitespace-nowrap flex-shrink-0">2단계 미션</span>
+                        <span>👇 알맞은 그림이 그려진 폴더로 파일들을 끼리끼리 분류해주세요!</span>
                     </p>
                 </div>
 
@@ -270,48 +272,53 @@
                 <i data-lucide="maximize" class="w-8 h-8 text-secondary"></i>
                 <h2 class="text-2xl font-bold">탐험 2: 창문(Window) 조종 마법사!</h2>
             </div>
-            <p class="text-lg text-gray-600 mb-6 font-medium">탐색기가 짠! 하고 나타났어요. 컴퓨터의 프로그램은 이런 '창문(Window)' 모양이에요. 창 오른쪽 위에 있는 <span class="font-bold text-secondary">3개의 조종 버튼</span>을 모두 한 번씩 눌러보세요.</p>
+            <p class="text-lg text-gray-600 mb-6 font-medium break-keep">탐색기가 짠! 하고 나타났어요. 컴퓨터의 프로그램은 이런 '창문(Window)' 모양이에요. <strong class="text-secondary">오른쪽 위에 있는 3개의 조종 버튼</strong>을 모두 한 번씩 눌러보세요.</p>
 
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="w-full md:w-1/3 space-y-4">
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-200">
-                        <span class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center font-bold text-white">-</span>
-                        <div><p class="font-bold text-gray-800">최소화</p><p class="text-xs text-gray-500">창을 아래로 숨겨요</p></div>
+            <div class="flex flex-col gap-6">
+                <!-- 위쪽: 조종 버튼 설명 (가로 나열) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+                    <div class="flex items-center gap-3 bg-white p-4 rounded-2xl border-2 border-gray-200 shadow-sm hover:border-gray-400 transition-colors">
+                        <span class="w-12 h-12 bg-gray-300 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-white text-2xl pb-1">-</span>
+                        <div><p class="font-bold text-gray-800 text-lg">최소화</p><p class="text-sm text-gray-500 break-keep">창을 아래로 숨겨요</p></div>
                     </div>
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-200">
-                        <span class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center font-bold text-white">□</span>
-                        <div><p class="font-bold text-gray-800">최대화</p><p class="text-xs text-gray-500">화면을 꽉 채워요</p></div>
+                    <div class="flex items-center gap-3 bg-white p-4 rounded-2xl border-2 border-gray-200 shadow-sm hover:border-gray-400 transition-colors">
+                        <span class="w-12 h-12 bg-gray-300 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-white text-xl">□</span>
+                        <div><p class="font-bold text-gray-800 text-lg">최대화</p><p class="text-sm text-gray-500 break-keep">화면을 꽉 채워요</p></div>
                     </div>
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-200">
-                        <span class="w-8 h-8 bg-red-400 rounded-full flex items-center justify-center font-bold text-white">X</span>
-                        <div><p class="font-bold text-red-600">닫기</p><p class="text-xs text-gray-500">프로그램을 완전히 꺼요</p></div>
+                    <div class="flex items-center gap-3 bg-white p-4 rounded-2xl border-2 border-red-200 shadow-sm hover:border-red-400 transition-colors">
+                        <span class="w-12 h-12 bg-red-400 rounded-full flex flex-shrink-0 items-center justify-center font-bold text-white text-xl">X</span>
+                        <div><p class="font-bold text-red-600 text-lg">닫기</p><p class="text-sm text-gray-500 break-keep">프로그램을 완전히 꺼요</p></div>
                     </div>
                 </div>
 
-                <div class="w-full md:w-2/3 relative h-64 bg-gray-100 rounded-2xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                    <div id="practice-window" class="mock-window bg-white w-4/5 h-4/5 flex flex-col shadow-2xl absolute">
-                        <div class="mock-titlebar justify-between bg-blue-100">
-                            <div class="flex items-center text-sm font-bold text-blue-800 gap-2"><i data-lucide="folder" class="w-4 h-4 fill-primary"></i> 파일 탐색기 연습창</div>
-                            <div class="flex">
+                <!-- 아래쪽: 넓은 연습 창 -->
+                <div class="w-full relative h-80 bg-gray-100 rounded-3xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                    <div id="practice-window" class="mock-window bg-white w-11/12 max-w-4xl h-3/4 flex flex-col shadow-2xl absolute transition-all duration-500">
+                        <div class="mock-titlebar justify-between bg-blue-100 py-3">
+                            <div class="flex items-center text-base font-bold text-blue-800 gap-2"><i data-lucide="folder" class="w-5 h-5 fill-primary"></i> 파일 탐색기 연습창</div>
+                            <div class="flex gap-1 pr-2">
                                 <div class="window-btn bg-yellow-400" onclick="winAction('min')">-</div>
                                 <div class="window-btn bg-green-400" onclick="winAction('max')">□</div>
                                 <div class="window-btn bg-red-400 text-white" onclick="winAction('close')">X</div>
                             </div>
                         </div>
                         <div class="flex-1 flex flex-col items-center justify-center p-4 text-center">
-                            <i data-lucide="mouse-pointer-click" class="w-12 h-12 text-gray-300 mb-2"></i>
-                            <p id="win-status" class="text-gray-500 font-medium">위의 버튼 3개를 <br>모두 한 번씩 눌러보세요!</p>
+                            <i data-lucide="mouse-pointer-click" class="w-16 h-16 text-gray-300 mb-4 animate-bounce"></i>
+                            <p id="win-status" class="text-gray-500 font-bold text-lg bg-gray-50 px-6 py-3 rounded-full border border-gray-200">
+                                오른쪽 위의 버튼 3개를 모두 한 번씩 눌러보세요!
+                            </p>
                         </div>
                     </div>
+                    
                     <div id="win-closed-msg" class="hidden flex flex-col items-center">
-                        <div class="text-4xl mb-2">💨</div>
-                        <p class="font-bold text-gray-600">창이 닫혔습니다!</p>
-                        <button onclick="resetWindow()" class="mt-2 text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">다시 열기</button>
+                        <div class="text-6xl mb-4">💨</div>
+                        <p class="font-bold text-gray-600 text-2xl mb-4">창이 닫혔습니다!</p>
+                        <button onclick="resetWindow()" class="px-6 py-2 bg-blue-500 text-white font-bold rounded-full hover:bg-blue-600 shadow-md hover:scale-105 transition">다시 열기</button>
                     </div>
                 </div>
             </div>
             
-            <div id="win-mission-clear" class="hidden mt-6 text-center">
+            <div id="win-mission-clear" class="hidden mt-8 text-center">
                 <button onclick="startExp3()" class="bg-secondary text-white px-8 py-3 rounded-full font-bold text-lg hover:scale-105 transition shadow-lg animate-pulse">
                     조종 완벽해요! 다음으로 가요 🚀
                 </button>
@@ -372,7 +379,7 @@
                 <i data-lucide="hard-drive" class="w-8 h-8 text-purple-500"></i>
                 <h2 class="text-2xl font-bold">탐험 4: 컴퓨터의 심장과 내 보물창고</h2>
             </div>
-            <p class="text-lg text-gray-600 mb-6 font-medium">컴퓨터 안에는 윈도우가 살고 있는 중요한 <strong class="text-accent">시스템 방(C드라이브)</strong>과 우리가 만든 것을 저장하는 <strong class="text-secondary">자료 방(문서/사진 폴더)</strong>이 따로 있어요.</p>
+            <p class="text-lg text-gray-600 mb-6 font-medium break-keep">컴퓨터 안에는 윈도우가 살고 있는 중요한 <strong class="text-accent whitespace-nowrap">시스템 방(C드라이브)</strong>과 우리가 만든 것을 저장하는 <strong class="text-secondary whitespace-nowrap">자료 방(문서/사진 폴더)</strong>이 따로 있어요.</p>
 
             <div class="flex flex-col gap-6 mb-6">
                 <!-- C드라이브 (시스템 창고) -->
@@ -810,9 +817,9 @@
         function resetWindow() {
             const win = document.getElementById('practice-window');
             win.classList.remove('hidden'); win.style.transform = 'scale(1) translateY(0)';
-            win.style.width = '80%'; win.style.height = '80%';
+            win.style.width = '91.666667%'; win.style.height = '75%';
             document.getElementById('win-closed-msg').classList.add('hidden');
-            document.getElementById('win-status').innerHTML = "위의 버튼 3개를 <br>모두 한 번씩 눌러보세요!";
+            document.getElementById('win-status').innerHTML = "오른쪽 위의 버튼 3개를 모두 한 번씩 눌러보세요!";
         }
         function checkWinMission() {
             if(winState.min && winState.max && winState.close) document.getElementById('win-mission-clear').classList.remove('hidden');
