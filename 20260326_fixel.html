@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4회차: 규칙대로 색칠하면 비밀 그림이 짠!</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .font-gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary); 
+            border-radius: 10px;
+            border: 3px solid #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f4b938; 
+        }
+        
+        .bounce-hover:hover {
+            transform: translateY(-5px);
+            transition: transform 0.2s ease;
+        }
+
+        .pulse-btn {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 209, 102, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 209, 102, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 상단 네비게이션바 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="bg-primary p-2 rounded-2xl hidden sm:block">
+                        <i data-lucide="palette" class="text-white w-8 h-8"></i>
+                    </div>
+                    <h1 class="font-gaegu text-2xl sm:text-3xl font-bold text-gray-800">AI 탐험대</h1>
+                </div>
+                
+                <nav class="flex space-x-1 sm:space-x-4">
+                    <button id="nav-intro" onclick="showSection('intro')" class="nav-item flex flex-col items-center p-2 text-primary border-b-4 border-primary font-bold transition-colors">
+                        <i data-lucide="home" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">시작</span>
+                    </button>
+                    <button id="nav-concept" onclick="showSection('concept')" class="nav-item flex flex-col items-center p-2 text-gray-500 transition-colors">
+                        <i data-lucide="help-circle" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">규칙 알기</span>
+                    </button>
+                    <button id="nav-practice" onclick="showSection('practice')" class="nav-item flex flex-col items-center p-2 text-gray-500 transition-colors">
+                        <i data-lucide="edit-2" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">연습하기</span>
+                    </button>
+                    <button id="nav-mission" onclick="showSection('mission')" class="nav-item flex flex-col items-center p-2 text-gray-500 transition-colors">
+                        <i data-lucide="image" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">비밀 그림</span>
+                    </button>
+                    <button id="nav-freeplay" onclick="showSection('freeplay')" class="nav-item flex flex-col items-center p-2 text-gray-500 transition-colors">
+                        <i data-lucide="smile" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">내 그림</span>
+                    </button>
+                    <button id="nav-finish" onclick="showSection('finish')" class="nav-item flex flex-col items-center p-2 text-gray-500 transition-colors">
+                        <i data-lucide="check-circle" class="w-5 h-5 sm:w-6 sm:h-6 mb-1"></i>
+                        <span class="text-[10px] sm:text-sm">마무리</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- 1. 시작 섹션 -->
+        <section id="section-intro" class="h-full flex flex-col items-center justify-center animate-fade-in text-center p-6 bg-yellow-50 rounded-3xl border-4 border-dashed border-primary shadow-lg">
+            <div class="bg-white p-6 rounded-full shadow-md mb-6 bounce-hover inline-block">
+                <span class="text-6xl sm:text-8xl">🎨🤖</span>
+            </div>
+            <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-gray-800 mb-8 leading-tight">
+                4회차: 규칙대로 색칠하면 <br><span class="text-accent">비밀 그림</span>이 짠!
+            </h2>
+            
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border-2 border-yellow-200 mb-10 max-w-2xl relative text-left">
+                <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-yellow-900 font-bold px-6 py-2 rounded-full shadow-md flex items-center gap-2 w-max text-lg sm:text-xl">
+                    <i data-lucide="lightbulb" class="w-6 h-6"></i> 왜 이 놀이를 할까요?
+                </div>
+                <p class="text-lg sm:text-xl text-gray-700 leading-relaxed font-medium mt-4">
+                    우리가 좋아하는 <span class="text-blue-500 font-bold">스마트폰 게임</span>이나 <span class="text-red-500 font-bold">유튜브 영상</span>은 어떻게 화면에 나오는 걸까요? 🤔<br><br>
+                    사실은 컴퓨터가 아주아주 작은 네모 칸들에 <span class="bg-yellow-200 px-2 rounded-md font-bold">'정해진 규칙대로 색칠해서'</span> 우리에게 예쁜 그림으로 보여주는 마법이랍니다! ✨<br><br>
+                    오늘 우리가 직접 컴퓨터처럼 규칙을 따라 색칠해 보면, 컴퓨터의 똑똑한 비밀을 알 수 있어요.<br>
+                    자, 마법의 붓을 들고 진짜 <span class="text-primary text-2xl font-black font-gaegu">꼬마 컴퓨터 마법사</span>가 되어 볼까요? 🧙‍♀️🧙‍♂️
+                </p>
+            </div>
+
+            <button onclick="showSection('concept')" class="pulse-btn bg-primary hover:bg-yellow-400 text-yellow-900 text-2xl font-bold py-5 px-12 rounded-full shadow-xl transition-all flex items-center gap-3">
+                출발하기! <i data-lucide="arrow-right" class="w-8 h-8"></i>
+            </button>
+        </section>
+
+        <!-- 2. 규칙 알기 섹션 -->
+        <section id="section-concept" class="hidden h-full flex flex-col items-center animate-fade-in p-6 bg-blue-50 rounded-3xl border-4 border-dashed border-secondary shadow-lg">
+            <div class="w-full flex justify-between items-center mb-8">
+                <h2 class="font-gaegu text-4xl font-bold text-secondary flex items-center gap-3">
+                    <i data-lucide="help-circle" class="w-10 h-10"></i> 규칙이 뭘까요?
+                </h2>
+                <div class="bg-blue-200 text-blue-800 px-4 py-2 rounded-full font-bold">배움 1</div>
+            </div>
+
+            <div class="w-full max-w-2xl bg-white p-8 rounded-3xl shadow-md border-2 border-blue-200 text-center mb-8">
+                
+                <div class="bg-blue-50 p-6 rounded-2xl mb-8 text-left border-2 border-blue-200 shadow-inner">
+                    <h3 class="text-2xl font-black text-blue-700 mb-3 flex items-center gap-2">
+                        <i data-lucide="info" class="w-7 h-7"></i> 잠깐! 규칙이 무슨 뜻일까요?
+                    </h3>
+                    <p class="text-xl text-gray-700 leading-relaxed font-medium">
+                        선생님이 <span class="text-red-500 font-bold">"박수 세 번!"</span> 하면 우리가 <span class="font-bold">짝! 짝! 짝!</span> 치는 것처럼, <br>
+                        컴퓨터에게 <span class="bg-yellow-200 px-2 rounded-md font-bold">"이렇게 색칠해줘~"</span> 하고 알려주는 약속을 <span class="text-blue-600 font-black text-2xl">규칙</span>이라고 해요!
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 mb-8 shadow-sm">
+                    <p class="text-2xl font-bold text-gray-700 mb-4">
+                        자, 컴퓨터가 보낸 첫 번째 규칙(암호)이에요! 💌
+                    </p>
+                    <div class="bg-white px-8 py-4 rounded-full shadow-md border-4 border-blue-300 text-3xl font-black text-blue-600 mb-4 flex items-center gap-4">
+                        <span class="inline-block w-8 h-8 bg-blue-400 rounded-md border-2 border-blue-500"></span> 파란색 3칸!
+                    </div>
+                    <p class="text-xl text-gray-600 font-medium">
+                        아래 3개의 하얀 빈칸을 손가락으로 <span class="text-accent font-bold text-2xl">톡! 톡! 톡!</span> 눌러서 <br>
+                        모두 <span class="text-blue-500 font-bold text-2xl">파란색</span>으로 변신시켜 주세요!
+                    </p>
+                </div>
+
+                <!-- 1x3 Grid -->
+                <div id="grid-concept" class="flex justify-center gap-4 mb-6">
+                    <div class="grid-cell w-24 h-24 sm:w-32 sm:h-32 bg-white border-4 border-gray-300 rounded-2xl cursor-pointer transition-colors duration-200 shadow-sm" onclick="colorCell(this, 'concept')"></div>
+                    <div class="grid-cell w-24 h-24 sm:w-32 sm:h-32 bg-white border-4 border-gray-300 rounded-2xl cursor-pointer transition-colors duration-200 shadow-sm" onclick="colorCell(this, 'concept')"></div>
+                    <div class="grid-cell w-24 h-24 sm:w-32 sm:h-32 bg-white border-4 border-gray-300 rounded-2xl cursor-pointer transition-colors duration-200 shadow-sm" onclick="colorCell(this, 'concept')"></div>
+                </div>
+
+                <div id="feedback-concept" class="hidden animate-bounce bg-green-100 p-6 rounded-2xl border-4 border-green-400 mt-8">
+                    <p class="text-3xl font-black text-green-700">🎉 정답이에요! 참 잘했어요!</p>
+                    <p class="text-xl text-green-600 mt-2 font-bold">규칙을 완벽하게 이해했네요!</p>
+                </div>
+            </div>
+
+            <div class="w-full flex justify-between mt-auto pt-4">
+                <button onclick="showSection('intro')" class="bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-50 text-xl font-bold py-3 px-8 rounded-full shadow-sm transition-all flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i> 이전
+                </button>
+                <button id="btn-next-concept" onclick="showSection('practice')" class="bg-secondary hover:bg-blue-500 text-white text-xl font-bold py-3 px-8 rounded-full shadow-md transition-all flex items-center gap-2 pulse-btn">
+                    다음 <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. 연습하기 섹션 -->
+        <section id="section-practice" class="hidden h-full flex flex-col items-center animate-fade-in p-6 bg-green-50 rounded-3xl border-4 border-dashed border-success shadow-lg">
+            <div class="w-full flex justify-between items-center mb-6">
+                <h2 class="font-gaegu text-4xl font-bold text-green-600 flex items-center gap-3">
+                    <i data-lucide="edit-2" class="w-10 h-10"></i> 연습해보기: 예쁜 꽃 만들기
+                </h2>
+                <div class="bg-green-200 text-green-800 px-4 py-2 rounded-full font-bold">배움 2</div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
+                <!-- 규칙 안내 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-green-200 w-full md:w-1/2">
+                    <h3 class="text-2xl font-bold mb-4 text-green-700 bg-green-100 p-3 rounded-xl text-center">📜 컴퓨터의 규칙</h3>
+                    <p class="text-lg text-gray-600 mb-4 font-bold">줄마다 규칙이 달라요. 천천히 읽고 색칠해 보세요!</p>
+                    
+                    <ul class="text-lg space-y-4 font-bold text-gray-700">
+                        <li class="flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <span class="bg-gray-600 text-white px-3 py-1 rounded-full w-max text-sm">1번째 줄</span>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-white rounded"></span> 빈칸 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-pink-400 rounded"></span> 분홍 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-white rounded"></span> 빈칸 1
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <span class="bg-gray-600 text-white px-3 py-1 rounded-full w-max text-sm">2번째 줄</span>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-pink-400 rounded"></span> 분홍 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-yellow-400 rounded"></span> 노랑 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-pink-400 rounded"></span> 분홍 1
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <span class="bg-gray-600 text-white px-3 py-1 rounded-full w-max text-sm">3번째 줄</span>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-white rounded"></span> 빈칸 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-green-500 rounded"></span> 초록 1,
+                                <span class="inline-block w-6 h-6 border-2 border-gray-300 bg-white rounded"></span> 빈칸 1
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 그리기 영역 -->
+                <div class="w-full md:w-1/2 flex flex-col items-center">
+                    <!-- 팔레트 -->
+                    <div class="flex justify-center gap-3 p-3 bg-white rounded-2xl shadow-md border-2 border-gray-200 palette-container mb-6 w-full max-w-[300px]">
+                        <button class="color-btn bg-pink-400 w-12 h-12 rounded-full border-4 border-gray-400 ring-4 ring-offset-4 ring-gray-400 scale-110 shadow-inner transition-transform" onclick="setColor('practice', 'bg-pink-400', this)"></button>
+                        <button class="color-btn bg-yellow-400 w-12 h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('practice', 'bg-yellow-400', this)"></button>
+                        <button class="color-btn bg-green-500 w-12 h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('practice', 'bg-green-500', this)"></button>
+                        <button class="color-btn bg-white w-12 h-12 rounded-full border-4 border-gray-200 shadow-inner flex items-center justify-center transition-transform" onclick="setColor('practice', 'bg-white', this)">
+                            <i data-lucide="eraser" class="text-gray-500 w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    <!-- 3x3 Grid -->
+                    <div id="grid-practice" class="grid grid-cols-3 gap-2 p-3 bg-gray-300 rounded-2xl shadow-inner border-4 border-gray-400">
+                        <!-- 9 Cells -->
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                        <div class="grid-cell w-20 h-20 sm:w-24 sm:h-24 bg-white border-2 border-gray-300 rounded-xl cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'practice')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedback-practice" class="hidden w-full max-w-4xl animate-bounce bg-yellow-100 p-6 rounded-2xl border-4 border-yellow-400 mt-6 text-center">
+                <p class="text-3xl font-black text-yellow-700">🌻 우와! 예쁜 꽃이 피었어요!</p>
+                <p class="text-xl text-yellow-600 mt-2 font-bold">이제 진짜 비밀 그림을 찾으러 가볼까요?</p>
+            </div>
+
+            <div class="w-full flex justify-between mt-auto pt-4">
+                <button onclick="showSection('concept')" class="bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-50 text-xl font-bold py-3 px-8 rounded-full shadow-sm transition-all flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i> 이전
+                </button>
+                <button id="btn-next-practice" onclick="showSection('mission')" class="bg-success hover:bg-green-600 text-white text-xl font-bold py-3 px-8 rounded-full shadow-md transition-all flex items-center gap-2 pulse-btn">
+                    다음 <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. 비밀 그림 (미션) 섹션 -->
+        <section id="section-mission" class="hidden h-full flex flex-col items-center animate-fade-in p-6 bg-pink-50 rounded-3xl border-4 border-dashed border-accent shadow-lg">
+            <div class="w-full flex justify-between items-center mb-6">
+                <h2 class="font-gaegu text-4xl font-bold text-accent flex items-center gap-3">
+                    <i data-lucide="image" class="w-10 h-10"></i> 마법의 픽셀 아트: 비밀 암호!
+                </h2>
+                <div class="bg-pink-200 text-pink-800 px-4 py-2 rounded-full font-bold">배움 3</div>
+            </div>
+
+            <p class="text-xl text-gray-700 font-bold mb-6 text-center bg-white px-6 py-3 rounded-full shadow-sm">
+                진짜 마법사처럼 규칙(암호)을 풀어서 숨겨진 커다란 그림을 찾아보세요! 🕵️‍♀️
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-8 w-full max-w-5xl justify-center items-start">
+                
+                <!-- 비밀 암호 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border-4 border-pink-200 w-full md:w-5/12">
+                    <h3 class="text-3xl font-bold mb-5 text-accent font-gaegu flex items-center justify-center gap-2 bg-pink-100 py-3 rounded-xl">
+                        <i data-lucide="key" class="w-8 h-8"></i> 비밀 암호
+                    </h3>
+                    
+                    <ul class="text-lg space-y-4 font-bold text-gray-700">
+                        <li class="flex flex-col gap-2 border-b-2 border-dashed border-gray-200 pb-3">
+                            <span class="text-pink-600 text-xl">1줄</span>
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span>빨1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span>빨1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈1
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2 border-b-2 border-dashed border-gray-200 pb-3">
+                            <span class="text-pink-600 text-xl">2줄</span>
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span> 빨강 5칸 모두!
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2 border-b-2 border-dashed border-gray-200 pb-3">
+                            <span class="text-pink-600 text-xl">3줄</span>
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span> 빨강 5칸 모두!
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2 border-b-2 border-dashed border-gray-200 pb-3">
+                            <span class="text-pink-600 text-xl">4줄</span>
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span>빨3,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈1
+                            </div>
+                        </li>
+                        <li class="flex flex-col gap-2">
+                            <span class="text-pink-600 text-xl">5줄</span>
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈2,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-red-500 rounded"></span>빨1,
+                                <span class="inline-block w-5 h-5 border border-gray-300 bg-white rounded"></span>빈2
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 그리기 영역 -->
+                <div class="w-full md:w-7/12 flex flex-col items-center">
+                    
+                    <!-- 팔레트 -->
+                    <div class="flex justify-center gap-6 p-4 bg-white rounded-2xl shadow-md border-2 border-gray-200 palette-container mb-6">
+                        <button class="color-btn bg-red-500 w-16 h-16 rounded-full border-4 border-gray-400 ring-4 ring-offset-4 ring-gray-400 scale-110 shadow-inner transition-transform" onclick="setColor('mission', 'bg-red-500', this)"></button>
+                        <button class="color-btn bg-white w-16 h-16 rounded-full border-4 border-gray-200 shadow-inner flex flex-col items-center justify-center transition-transform" onclick="setColor('mission', 'bg-white', this)">
+                            <i data-lucide="eraser" class="text-gray-600 w-8 h-8"></i>
+                            <span class="text-xs font-bold text-gray-600 mt-1">지우개</span>
+                        </button>
+                    </div>
+
+                    <!-- 5x5 Grid -->
+                    <div id="grid-mission" class="grid grid-cols-5 gap-1 sm:gap-2 p-3 sm:p-4 bg-gray-300 rounded-2xl shadow-inner border-4 border-gray-400 w-max">
+                        <!-- 25 Cells -->
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                        <div class="grid-cell w-12 h-12 sm:w-16 sm:h-16 bg-white border-2 border-gray-300 rounded-lg cursor-pointer transition-colors duration-200" onclick="colorCell(this, 'mission')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedback-mission" class="hidden w-full max-w-5xl animate-bounce bg-pink-100 p-8 rounded-3xl border-4 border-accent mt-8 text-center shadow-lg">
+                <p class="text-4xl font-black text-pink-700 mb-2">💖 사랑의 하트 완성!</p>
+                <p class="text-2xl text-pink-600 font-bold">비밀 암호를 완벽하게 풀었어요! 우리 친구들 최고예요!</p>
+            </div>
+
+            <div class="w-full flex justify-between mt-auto pt-8">
+                <button onclick="showSection('practice')" class="bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-50 text-xl font-bold py-3 px-8 rounded-full shadow-sm transition-all flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i> 이전
+                </button>
+                <button id="btn-next-mission" onclick="showSection('freeplay')" class="bg-accent hover:bg-pink-600 text-white text-xl font-bold py-3 px-8 rounded-full shadow-md transition-all flex items-center gap-2 pulse-btn">
+                    다음 <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. 내 맘대로 그리기 섹션 -->
+        <section id="section-freeplay" class="hidden h-full flex flex-col items-center animate-fade-in p-6 bg-purple-50 rounded-3xl border-4 border-dashed border-purple-400 shadow-lg">
+            <div class="w-full flex justify-between items-center mb-4">
+                <h2 class="font-gaegu text-4xl font-bold text-purple-600 flex items-center gap-3">
+                    <i data-lucide="smile" class="w-10 h-10"></i> 내 맘대로 그려요!
+                </h2>
+                <div class="bg-purple-200 text-purple-800 px-4 py-2 rounded-full font-bold">자유 놀이</div>
+            </div>
+
+            <p class="text-lg text-gray-700 font-bold mb-4 text-center bg-white px-6 py-2 rounded-full shadow-sm">
+                무지개 색깔로 나만의 멋진 상상 그림을 그리고, <span class="text-purple-600">사진으로 저장</span>해 보세요! 📸
+            </p>
+
+            <div class="w-full flex flex-col items-center max-w-2xl">
+                
+                <!-- 확장된 팔레트 -->
+                <div class="flex flex-wrap justify-center gap-3 sm:gap-4 p-4 bg-white rounded-2xl shadow-md border-2 border-gray-200 palette-container mb-6 w-full">
+                    <button class="color-btn bg-red-500 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-red-500', this)"></button>
+                    <button class="color-btn bg-orange-400 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-orange-400', this)"></button>
+                    <button class="color-btn bg-yellow-400 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-yellow-400', this)"></button>
+                    <button class="color-btn bg-green-500 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-green-500', this)"></button>
+                    <button class="color-btn bg-blue-400 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-blue-400', this)"></button>
+                    <button class="color-btn bg-purple-500 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-purple-500', this)"></button>
+                    <button class="color-btn bg-pink-400 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-pink-400', this)"></button>
+                    <button class="color-btn bg-black w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-400 ring-4 ring-offset-2 ring-gray-400 scale-110 shadow-inner transition-transform" onclick="setColor('freeplay', 'bg-black', this)"></button>
+                    <button class="color-btn bg-white w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-gray-200 shadow-inner flex items-center justify-center transition-transform" onclick="setColor('freeplay', 'bg-white', this)">
+                        <i data-lucide="eraser" class="text-gray-600 w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- 8x8 Grid (JS로 자동 생성됨) -->
+                <div id="grid-freeplay" class="grid grid-cols-8 gap-[2px] sm:gap-1 p-2 sm:p-3 bg-gray-300 rounded-xl shadow-inner border-4 border-gray-400 w-max mb-6">
+                    <!-- 자바스크립트가 64개의 칸을 여기에 채워줄 거예요! -->
+                </div>
+
+                <!-- 도구 버튼 -->
+                <div class="flex gap-4 mb-4">
+                    <button onclick="clearFreeplay()" class="bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-6 rounded-full shadow-sm flex items-center gap-2 transition-colors">
+                        <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i> 싹싹 지우기
+                    </button>
+                    <button onclick="downloadFreeplay()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-md flex items-center gap-2 transition-all transform hover:scale-105">
+                        <i data-lucide="camera" class="w-6 h-6"></i> 찰칵! 사진 찍기
+                    </button>
+                </div>
+            </div>
+
+            <div id="feedback-freeplay" class="hidden w-full max-w-2xl animate-bounce bg-purple-100 p-4 rounded-2xl border-4 border-purple-400 mt-2 text-center shadow-sm">
+                <p class="text-2xl font-black text-purple-700">📸 사진 저장 완료!</p>
+                <p class="text-lg text-purple-600 font-bold mt-1">우와, 정말 멋진 작품이에요! 선생님께 자랑해 볼까요?</p>
+            </div>
+
+            <div class="w-full flex justify-between mt-auto pt-4">
+                <button onclick="showSection('mission')" class="bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-50 text-xl font-bold py-3 px-8 rounded-full shadow-sm transition-all flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i> 이전
+                </button>
+                <button onclick="showSection('finish')" class="bg-primary hover:bg-yellow-400 text-yellow-900 text-xl font-bold py-3 px-8 rounded-full shadow-md transition-all flex items-center gap-2 pulse-btn">
+                    마무리 <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 6. 마무리 섹션 -->
+        <section id="section-finish" class="hidden h-full flex flex-col items-center justify-center animate-fade-in text-center p-6 bg-yellow-50 rounded-3xl border-4 border-dashed border-primary shadow-lg">
+            <div class="bg-white p-8 rounded-full shadow-lg mb-8 bounce-hover relative">
+                <span class="text-9xl">🏅</span>
+                <div class="absolute -top-4 -right-4 bg-accent text-white font-bold px-4 py-2 rounded-full transform rotate-12 text-xl shadow-md">
+                    최고!
+                </div>
+            </div>
+            
+            <h2 class="font-gaegu text-5xl font-bold text-gray-800 mb-6 leading-tight">
+                오늘의 탐험 완료!
+            </h2>
+            
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-md border-2 border-yellow-200 mb-10 max-w-2xl w-full">
+                <p class="text-xl sm:text-2xl text-gray-700 font-bold leading-relaxed mb-6 break-keep">
+                    규칙대로 색칠하니까<br class="sm:hidden"> 멋진 그림이 만들어졌죠? 🤩<br>
+                    컴퓨터도 이렇게 규칙(암호)을 모아서<br> 똑똑하게 움직인답니다!
+                </p>
+                <p class="text-lg sm:text-xl text-gray-500 font-medium break-keep">
+                    우리 반 친구들 모두<br class="sm:hidden"> 훌륭한 꼬마 컴퓨터 마법사가 되었어요!<br>
+                    다음 시간에도 재미있는 놀이로 만나요! 👋
+                </p>
+            </div>
+
+            <button onclick="showSection('intro')" class="bg-white border-4 border-primary text-yellow-700 hover:bg-yellow-100 text-2xl font-bold py-4 px-10 rounded-full shadow-md transition-all flex items-center gap-3">
+                <i data-lucide="rotate-ccw" class="w-8 h-8"></i> 처음으로 돌아가기
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        // 루시드 아이콘 초기화
+        lucide.createIcons();
+
+        // 섹션 이동 로직
+        const sections = ['intro', 'concept', 'practice', 'mission', 'freeplay', 'finish'];
+        
+        function showSection(sectionId) {
+            // 모든 섹션 숨기기
+            sections.forEach(id => {
+                const el = document.getElementById(`section-${id}`);
+                if(el) el.classList.add('hidden');
+            });
+            // 선택한 섹션 보이기
+            document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+            
+            // 맨 위로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // 네비게이션 스타일 업데이트
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('text-primary', 'border-b-4', 'border-primary', 'font-bold');
+                item.classList.add('text-gray-500');
+            });
+            const activeNav = document.getElementById(`nav-${sectionId}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-gray-500');
+                activeNav.classList.add('text-primary', 'border-b-4', 'border-primary', 'font-bold');
+            }
+        }
+
+        // --- 색칠하기 로직 ---
+
+        // 섹션별 선택된 색상 저장 (자유 놀이는 기본 검정색)
+        let currentColors = {
+            'concept': 'bg-blue-400',
+            'practice': 'bg-pink-400',
+            'mission': 'bg-red-500',
+            'freeplay': 'bg-black' 
+        };
+
+        // 지울 때 제거해야 하는 모든 색상 클래스 목록
+        const allColors = [
+            'bg-white', 'bg-red-500', 'bg-orange-400', 'bg-yellow-400', 
+            'bg-green-500', 'bg-blue-400', 'bg-purple-500', 'bg-pink-400', 'bg-black'
+        ];
+
+        // 팔레트 색상 선택 함수
+        function setColor(section, colorClass, btnElement) {
+            currentColors[section] = colorClass;
+            
+            // 해당 섹션의 팔레트 버튼 스타일 초기화
+            const container = btnElement.closest('.palette-container');
+            container.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-offset-2', 'ring-offset-4', 'ring-gray-400', 'scale-110', 'border-gray-400');
+                btn.classList.add('border-gray-200'); // 기본 테두리
+            });
+            
+            // 선택된 버튼 강조
+            btnElement.classList.remove('border-gray-200');
+            btnElement.classList.add('ring-4', 'ring-offset-2', 'ring-gray-400', 'scale-110', 'border-gray-400');
+        }
+
+        // 셀 색칠 및 확인 함수
+        function colorCell(cell, section) {
+            // 기존 색상 모두 제거
+            cell.classList.remove(...allColors);
+            
+            // 새 색상 적용
+            cell.classList.add(currentColors[section]);
+            
+            // 애니메이션 효과
+            cell.classList.add('scale-95');
+            setTimeout(() => cell.classList.remove('scale-95'), 150);
+
+            // 섹션별 정답 확인
+            if (section === 'concept') checkConcept();
+            else if (section === 'practice') checkPractice();
+            else if (section === 'mission') checkMission();
+            // freeplay는 자유이므로 정답 체크 없음
+        }
+
+        // --- 정답 확인 로직 ---
+
+        // 1. 규칙 알기 (파란색 3칸)
+        function checkConcept() {
+            const cells = document.querySelectorAll('#grid-concept .grid-cell');
+            let isCorrect = true;
+            
+            cells.forEach(cell => {
+                if (!cell.classList.contains('bg-blue-400')) {
+                    isCorrect = false;
+                }
+            });
+
+            const feedback = document.getElementById('feedback-concept');
+            if (isCorrect) {
+                feedback.classList.remove('hidden');
+            } else {
+                feedback.classList.add('hidden');
+            }
+        }
+
+        // 2. 연습하기 (꽃 모양)
+        function checkPractice() {
+            const target = [
+                'bg-white', 'bg-pink-400', 'bg-white',
+                'bg-pink-400', 'bg-yellow-400', 'bg-pink-400',
+                'bg-white', 'bg-green-500', 'bg-white'
+            ];
+            
+            const cells = document.querySelectorAll('#grid-practice .grid-cell');
+            let isCorrect = true;
+            
+            cells.forEach((cell, index) => {
+                if (!cell.classList.contains(target[index])) {
+                    isCorrect = false;
+                }
+            });
+
+            const feedback = document.getElementById('feedback-practice');
+            if (isCorrect) {
+                feedback.classList.remove('hidden');
+            } else {
+                feedback.classList.add('hidden');
+            }
+        }
+
+        // 3. 비밀 그림 (하트 모양)
+        function checkMission() {
+            const target = [
+                'bg-white', 'bg-red-500', 'bg-white', 'bg-red-500', 'bg-white',
+                'bg-red-500', 'bg-red-500', 'bg-red-500', 'bg-red-500', 'bg-red-500',
+                'bg-red-500', 'bg-red-500', 'bg-red-500', 'bg-red-500', 'bg-red-500',
+                'bg-white', 'bg-red-500', 'bg-red-500', 'bg-red-500', 'bg-white',
+                'bg-white', 'bg-white', 'bg-red-500', 'bg-white', 'bg-white'
+            ];
+            
+            const cells = document.querySelectorAll('#grid-mission .grid-cell');
+            let isCorrect = true;
+            
+            cells.forEach((cell, index) => {
+                if (!cell.classList.contains(target[index])) {
+                    isCorrect = false;
+                }
+            });
+
+            const feedback = document.getElementById('feedback-mission');
+            if (isCorrect) {
+                feedback.classList.remove('hidden');
+            } else {
+                feedback.classList.add('hidden');
+            }
+        }
+
+        // --- 자유 놀이 (내 맘대로 그리기) 특별 로직 ---
+        
+        // 8x8 그리드 생성 함수
+        function initFreeplayGrid() {
+            const gridContainer = document.getElementById('grid-freeplay');
+            gridContainer.innerHTML = ''; // 초기화
+            
+            // 8x8 = 64개의 빈 칸 생성
+            for (let i = 0; i < 64; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell w-8 h-8 sm:w-10 sm:h-10 bg-white border border-gray-300 rounded-sm sm:rounded-md cursor-pointer transition-colors duration-200';
+                cell.onclick = function() { colorCell(this, 'freeplay'); };
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        // 모두 지우기
+        function clearFreeplay() {
+            const cells = document.querySelectorAll('#grid-freeplay .grid-cell');
+            cells.forEach(cell => {
+                cell.classList.remove(...allColors);
+                cell.classList.add('bg-white'); // 하얀 도화지로 초기화
+            });
+            document.getElementById('feedback-freeplay').classList.add('hidden');
+        }
+
+        // 그림 다운로드(저장) 하기 기능
+        function downloadFreeplay() {
+            const grid = document.getElementById('grid-freeplay');
+            const cells = grid.querySelectorAll('.grid-cell');
+            
+            const cols = 8;
+            const rows = 8;
+            const cellSize = 50; // 다운로드되는 이미지의 1칸 픽셀 크기
+
+            // HTML5 숨겨진 Canvas 생성
+            const canvas = document.createElement('canvas');
+            canvas.width = cols * cellSize;
+            canvas.height = rows * cellSize;
+            const ctx = canvas.getContext('2d');
+
+            // 바탕을 하얀색으로 먼저 채우기
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 각 칸의 색상을 읽어와서 캔버스에 그리기
+            cells.forEach((cell, index) => {
+                const x = (index % cols) * cellSize;
+                const y = Math.floor(index / cols) * cellSize;
+                
+                // 화면에 칠해진 실제 배경색(rgb값) 가져오기
+                const bgColor = window.getComputedStyle(cell).backgroundColor;
+
+                // 칸 색칠하기
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(x, y, cellSize, cellSize);
+
+                // 연한 테두리 선 그려주기 (모눈종이 느낌)
+                ctx.strokeStyle = '#e5e7eb'; // 회색 선
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, cellSize, cellSize);
+            });
+
+            // 캔버스 이미지를 다운로드 파일로 만들기
+            const link = document.createElement('a');
+            link.download = '나만의_마법_그림.png'; // 저장될 파일 이름
+            link.href = canvas.toDataURL('image/png'); // 이미지 데이터로 변환
+            link.click(); // 강제 클릭으로 다운로드 실행
+            
+            // 칭찬 문구 보여주기
+            const feedback = document.getElementById('feedback-freeplay');
+            feedback.classList.remove('hidden');
+        }
+
+        // 페이지 로드 시 자유 놀이 그리드 만들기
+        window.onload = function() {
+            initFreeplayGrid();
+        };
+
+    </script>
+</body>
+</html>
