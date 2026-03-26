@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3차시: '데이터'가 뭘까요? - 여량초 AI 탐험대</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f0f9ff;
+            user-select: none;
+            font-size: 1.5rem;
+            overflow-x: hidden;
+            color: #1f2937;
+        }
+
+        .highlight-blue {
+            text-decoration: underline;
+            text-decoration-color: #3b82f6;
+            text-decoration-thickness: 4px;
+            font-weight: bold;
+        }
+
+        .highlight-orange {
+            text-decoration: underline;
+            text-decoration-color: #f97316;
+            text-decoration-thickness: 4px;
+            font-weight: bold;
+        }
+
+        .floating { 
+            animation: floating 3s ease-in-out infinite; 
+        }
+        @keyframes floating {
+            0%   { transform: translateY(0px); }
+            50%  { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+            min-height: 80vh;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-next {
+            background-color: #fbbf24;
+            transition: all 0.2s;
+        }
+        .btn-next:hover {
+            transform: scale(1.1);
+            background-color: #f59e0b;
+        }
+        
+        .data-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .drop-zone {
+            border: 3px dashed #cbd5e1;
+            transition: all 0.3s;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: white;
+            border-radius: .4em;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 20px solid transparent;
+            border-top-color: white;
+            border-bottom: 0;
+            margin-left: -20px;
+            margin-bottom: -20px;
+        }
+
+        .pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 드래그 앤 드롭 아이템 스타일 */
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+        .drop-zone.drag-over {
+            border-color: #a855f7; /* purple-500 */
+            background-color: #faf5ff; /* purple-50 */
+            box-shadow: inset 0 0 15px rgba(168, 85, 247, 0.2);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- 상단 진행 바 -->
+    <div class="max-w-4xl mx-auto mb-8">
+        <div class="flex justify-between items-center mb-2 text-orange-600 font-bold">
+            <span id="slide-title">탐험 준비</span>
+            <span id="slide-number">1 / 8</span>
+        </div>
+        <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+            <div id="progress-bar" class="bg-orange-400 h-full transition-all duration-500" style="width: 12.5%;"></div>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl p-6 md:p-10 relative overflow-hidden">
+        
+        <!-- 슬라이드 1: 도입 및 복습 -->
+        <section class="slide active" id="slide1">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-blue-500 mb-6">안녕! AI 탐험대 친구들! 👋</h1>
+                <p class="text-2xl mb-6">우리 탐험대 친구들, 일주일 동안 잘 지냈나요?<br>오늘도 신나게 인공지능 탐험을 떠나보아요!</p>
+                <div class="bg-blue-50 p-6 rounded-3xl mb-8 border-2 border-blue-100">
+                    <p class="text-3xl mb-4 text-blue-800 font-bold">✨ 지난 시간 복습 퀴즈 ✨</p>
+                    <p class="text-2xl mb-6">우리가 저번 시간에 배웠던 중요한 단어들이에요.<br>자음과 힌트를 보고 알맞은 단어를 맞춰볼까요?</p>
+                    <div class="flex flex-col gap-8 items-center">
+                        <div class="flex items-center gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="text-4xl bg-white px-5 py-3 rounded-xl border-2 border-blue-200 shadow-sm mb-2">ㄴ ㅇ</span>
+                                <span class="text-lg text-blue-600 bg-blue-100 px-3 py-1 rounded-full shadow-sm font-bold">💡 책에 적힌 글이나 이야기</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-blue-300 text-2xl"></i>
+                            <input type="text" oninput="checkQuizInput(this, '내용')" class="w-40 p-3 border-b-4 border-blue-300 text-center focus:outline-none text-3xl transition-colors bg-transparent" placeholder="정답은?">
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="text-4xl bg-white px-5 py-3 rounded-xl border-2 border-blue-200 shadow-sm mb-2">ㄱ ㅎ</span>
+                                <span class="text-lg text-blue-600 bg-blue-100 px-3 py-1 rounded-full shadow-sm font-bold">💡 더하기(+), 빼기(-) 같은 약속된 표시</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-blue-300 text-2xl"></i>
+                            <input type="text" oninput="checkQuizInput(this, '기호')" class="w-40 p-3 border-b-4 border-blue-300 text-center focus:outline-none text-3xl transition-colors bg-transparent" placeholder="정답은?">
+                        </div>
+                    </div>
+                </div>
+                <p class="text-2xl text-gray-700 bg-gray-100 inline-block px-6 py-2 rounded-full">정답을 모두 맞췄다면 <span class="font-bold text-orange-500">다음으로</span> 버튼을 눌러요!</p>
+            </div>
+        </section>
+
+        <!-- 슬라이드 2: 학습 목표 -->
+        <section class="slide" id="slide2">
+            <h2 class="text-4xl font-bold text-blue-600 mb-4 text-center">오늘의 탐험 주제 🗺️</h2>
+            <p class="text-2xl text-center mb-8 text-gray-700">우와, 퀴즈를 아주 잘 풀어주었어요!<br>오늘 우리가 어떤 재미있는 것들을 탐험할지 지도에서 확인해 볼까요?</p>
+            <div class="space-y-6 w-full max-w-lg mx-auto">
+                <div class="flex items-center gap-6 p-5 bg-blue-50 rounded-2xl shadow-sm hover:scale-105 transition-transform">
+                    <div class="w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center text-3xl font-bold shrink-0">1</div>
+                    <p class="text-2xl"><span class="highlight-blue">'데이터'</span>가 무엇인지 알아보기</p>
+                </div>
+                <div class="flex items-center gap-6 p-5 bg-green-50 rounded-2xl shadow-sm hover:scale-105 transition-transform">
+                    <div class="w-14 h-14 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl font-bold shrink-0">2</div>
+                    <p class="text-2xl">생활 속 다양한 <span class="highlight-orange">데이터 찾기</span></p>
+                </div>
+                <div class="flex items-center gap-6 p-5 bg-purple-50 rounded-2xl shadow-sm hover:scale-105 transition-transform">
+                    <div class="w-14 h-14 bg-purple-500 text-white rounded-full flex items-center justify-center text-3xl font-bold shrink-0">3</div>
+                    <p class="text-2xl">데이터를 끼리끼리 모으는 <span class="highlight-blue">'분류'</span> 배우기</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 3: 데이터란? -->
+        <section class="slide" id="slide3">
+            <h2 class="text-4xl font-bold text-purple-600 mb-4 text-center">'데이터'는 인공지능의 밥이에요! 🍚</h2>
+            <div class="bg-purple-50 p-6 rounded-3xl border-2 border-purple-100 mb-8 w-full">
+                <p class="text-2xl text-center leading-relaxed">
+                    우리가 눈으로 <strong>보는</strong> 예쁜 꽃 사진 🌸<br>
+                    귀로 <strong>듣는</strong> 시원한 빗소리 ☔<br>
+                    손으로 <strong>쓰는</strong> 나의 그림일기 📝<br>
+                    입으로 <strong>말하는</strong> "안녕!" 인사 👋<br>
+                    <span class="bg-white px-2 py-1 rounded shadow-sm mt-2 inline-block">이 모든 것이 인공지능에게는 맛있는 <span class="text-purple-600 font-bold text-3xl">데이터</span> 밥이 된답니다!</span>
+                </p>
+            </div>
+            <div class="w-full text-center">
+                <p class="text-2xl font-bold text-gray-700 mb-6 bg-yellow-100 inline-block px-6 py-2 rounded-full shadow-sm">
+                    컴퓨터는 데이터를 어떻게 먹을까요? <span class="text-orange-500">순서대로 눌러보세요!</span> 👇
+                </p>
+                <div class="flex flex-col md:flex-row justify-center items-start gap-4">
+                    <!-- 1단계 -->
+                    <div id="step1-btn" class="bg-white p-4 rounded-3xl border-4 border-purple-200 cursor-pointer w-full md:w-1/3 hover:scale-105 transition-transform shadow-md" onclick="revealInteractiveStep(2)">
+                        <div class="bg-purple-100 rounded-full w-14 h-14 flex items-center justify-center font-bold text-2xl mb-2 mx-auto text-purple-700 shadow-inner">1</div>
+                        <p class="font-bold text-xl mb-3 text-gray-700">우리가 주는 데이터</p>
+                        <div class="text-7xl mb-2">🐶</div>
+                        <p class="text-lg text-purple-600 font-bold animate-pulse mt-2">눌러보세요!</p>
+                    </div>
+                    
+                    <div id="arrow1" class="hidden text-4xl text-gray-300 md:rotate-0 rotate-90 self-center"><i class="fas fa-arrow-right"></i></div>
+                    
+                    <!-- 2단계 -->
+                    <div id="step2-card" class="hidden bg-white p-4 rounded-3xl border-4 border-blue-200 cursor-pointer w-full md:w-1/3 hover:scale-105 transition-transform shadow-md" onclick="revealInteractiveStep(3)">
+                        <div class="bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center font-bold text-2xl mb-2 mx-auto text-blue-700 shadow-inner">2</div>
+                        <p class="font-bold text-xl mb-3 text-gray-700">컴퓨터의 눈에는?</p>
+                        <div class="text-4xl text-blue-500 font-mono tracking-widest leading-none my-4">0101<br>1010</div>
+                        <p class="text-lg text-blue-600 font-bold animate-pulse">또 눌러보세요!</p>
+                        <!-- 고정된 설명 문구 -->
+                        <div class="mt-4 text-xl text-blue-800 bg-blue-50 py-2 px-3 rounded-2xl font-bold border-2 border-blue-100 shadow-sm">
+                            우리가 준 사진이<br>숫자로 변했어요!
+                        </div>
+                    </div>
+                    
+                    <div id="arrow2" class="hidden text-4xl text-gray-300 md:rotate-0 rotate-90 self-center"><i class="fas fa-arrow-right"></i></div>
+                    
+                    <!-- 3단계 -->
+                    <div id="step3-card" class="hidden bg-white p-4 rounded-3xl border-4 border-green-200 w-full md:w-1/3 shadow-md relative">
+                        <div class="bg-green-100 rounded-full w-14 h-14 flex items-center justify-center font-bold text-2xl mb-2 mx-auto text-green-700 shadow-inner">3</div>
+                        <p class="font-bold text-xl mb-3 text-gray-700">똑똑해진 인공지능</p>
+                        <i class="fas fa-robot text-5xl text-gray-400 mb-2"></i>
+                        <p class="text-xl text-green-600 font-bold bg-green-50 rounded-xl p-2 mt-2 border border-green-200">"귀여운 강아지네!"</p>
+                        <!-- 고정된 설명 문구 -->
+                        <div class="mt-4 text-xl text-green-800 bg-green-50 py-2 px-3 rounded-2xl font-bold border-2 border-green-100 shadow-sm">
+                            아하! 인공지능이<br>데이터를 이해했네요! 🤖
+                        </div>
+                        <div class="absolute -top-4 -right-4 text-4xl floating">✨</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 4: 데이터 숨바꼭질 -->
+        <section class="slide" id="slide4">
+            <h2 class="text-4xl font-bold text-green-600 mb-4 text-center">어떤 데이터인지 맞춰볼까요? 🔍</h2>
+            <p class="text-2xl text-center mb-8 text-gray-700">아래 상자들을 <span class="highlight-orange">하나씩 클릭해서</span> 숨겨진 정답을 크게 확인해 보세요!</p>
+            
+            <div class="grid grid-cols-1 gap-4 w-full px-4 max-w-xl mx-auto">
+                <div class="data-card bg-white p-5 rounded-3xl border-4 border-green-100 flex items-center gap-6" onclick="showDataType(this, '글자 데이터', 'bg-blue-100', 'text-blue-700')">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-4xl shrink-0 transition-transform">📝</div>
+                    <div class="w-full text-left">
+                        <p class="text-2xl font-bold">"안녕, 친구야!"</p>
+                        <div class="click-hint-container mt-1">
+                            <p class="text-lg text-gray-400">👉 여길 클릭해 보세요!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-card bg-white p-5 rounded-3xl border-4 border-green-100 flex items-center gap-6" onclick="showDataType(this, '숫자 데이터', 'bg-red-100', 'text-red-700')">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-4xl shrink-0 transition-transform">🔢</div>
+                    <div class="w-full text-left">
+                        <p class="text-2xl font-bold">1, 2, 3... 100!</p>
+                        <div class="click-hint-container mt-1">
+                            <p class="text-lg text-gray-400">👉 여길 클릭해 보세요!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-card bg-white p-5 rounded-3xl border-4 border-green-100 flex items-center gap-6" onclick="showDataType(this, '소리 데이터', 'bg-yellow-100', 'text-yellow-700')">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-4xl shrink-0 transition-transform">🔊</div>
+                    <div class="w-full text-left">
+                        <p class="text-2xl font-bold">강아지의 "멍멍!"</p>
+                        <div class="click-hint-container mt-1">
+                            <p class="text-lg text-gray-400">👉 여길 클릭해 보세요!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-card bg-white p-5 rounded-3xl border-4 border-green-100 flex items-center gap-6" onclick="showDataType(this, '사진 데이터', 'bg-purple-100', 'text-purple-700')">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-4xl shrink-0 transition-transform">🖼️</div>
+                    <div class="w-full text-left">
+                        <p class="text-2xl font-bold">우리 학교 예쁜 사진</p>
+                        <div class="click-hint-container mt-1">
+                            <p class="text-lg text-gray-400">👉 여길 클릭해 보세요!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 5: 분류 설명 -->
+        <section class="slide" id="slide5">
+            <h2 class="text-4xl font-bold text-orange-600 mb-6 text-center">인공지능이 똑똑해지려면 잘 '분류'된 데이터가 필요해요! ✨</h2>
+            <div class="flex flex-col items-center w-full max-w-2xl mx-auto">
+                <div class="bg-white p-6 rounded-3xl border-4 border-orange-200 shadow-sm w-full mb-6 text-center relative overflow-hidden">
+                    <p class="text-2xl text-gray-700 font-bold mb-4 transition-colors duration-300" id="box-title">어지러운 장난감 상자 😵</p>
+                    <div id="toy-box" class="flex flex-wrap gap-4 justify-center items-center mb-6 min-h-[100px] transition-all duration-500">
+                        <span class="text-6xl floating" style="animation-delay: 0.1s">🧸</span>
+                        <span class="text-6xl floating" style="animation-delay: 0.5s">🚗</span>
+                        <span class="text-6xl floating" style="animation-delay: 0.3s">🤖</span>
+                        <span class="text-6xl floating" style="animation-delay: 0.7s">🚗</span>
+                        <span class="text-6xl floating" style="animation-delay: 0.2s">🧸</span>
+                        <span class="text-6xl floating" style="animation-delay: 0.6s">🤖</span>
+                    </div>
+                    <button id="sort-btn" onclick="sortToys()" class="bg-orange-500 text-white px-8 py-3 rounded-full font-bold text-2xl hover:bg-orange-600 shadow-md transition-transform hover:scale-105">
+                        ✨ 마법의 분류 버튼 ✨
+                    </button>
+                </div>
+
+                <div class="bg-orange-50 p-6 rounded-3xl text-center border-2 border-orange-100 w-full shadow-sm">
+                    <p class="text-2xl text-gray-800 leading-relaxed">
+                        섞여 있는 데이터 중에서 비슷한 것끼리 <br>
+                        <span class="highlight-orange bg-white px-2 py-1 rounded">끼리끼리 모아주는 것</span>을 <strong class="text-3xl text-orange-600">'분류'</strong>라고 해요.
+                    </p>
+                    <div id="sort-message" class="hidden mt-4 bg-white p-4 rounded-2xl border border-orange-200 pop-in">
+                        <p class="text-2xl text-orange-700 font-bold">
+                            💡 장난감을 분류하니까 깔끔해서 찾기 쉽죠?<br>데이터를 예쁘게 분류해 주면 인공지능이 헷갈리지 않고 훨씬 빠르게 배울 수 있어요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 6: 분류 활동 (2단계로 확장) -->
+        <section class="slide" id="slide6">
+            <h2 class="text-4xl font-bold text-blue-600 mb-4 text-center">활동: 끼리끼리 모아보자! 🍎🐶</h2>
+            
+            <!-- 자동 분류 (연습 모드 - 과일/채소) -->
+            <div id="auto-game-section" class="w-full">
+                <div class="bg-blue-50 py-4 px-6 rounded-2xl mb-8 border border-blue-200 text-center">
+                    <p class="text-2xl text-blue-800 font-bold">연습 1단계: 클릭해서 마법처럼 분류하기 🪄</p>
+                    <p class="text-xl text-gray-700 mt-2">그림을 클릭하면 알맞은 바구니로 자동으로 쏙 들어갑니다.</p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-6 mb-10 min-h-[80px]" id="item-container"></div>
+                
+                <div class="grid grid-cols-2 gap-8 w-full">
+                    <div class="flex flex-col items-center">
+                        <div id="basket-fruit" class="drop-zone w-full rounded-3xl bg-red-50 p-6 flex flex-wrap gap-4 content-start border-4 border-red-200 shadow-inner min-h-[160px]">
+                            <div class="w-full text-center font-bold text-red-500 mb-2 text-2xl">🍎 과일 바구니</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div id="basket-veggie" class="drop-zone w-full rounded-3xl bg-green-50 p-6 flex flex-wrap gap-4 content-start border-4 border-green-200 shadow-inner min-h-[160px]">
+                            <div class="w-full text-center font-bold text-green-500 mb-2 text-2xl">🥦 채소 바구니</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="activity-success" class="hidden mt-8 text-3xl font-bold text-blue-600 pop-in text-center bg-blue-100 py-4 rounded-full w-full">
+                    🌟 연습 끝! 모든 데이터를 알맞게 분류했어요! 🌟
+                </div>
+                <div id="next-level-btn-container" class="hidden text-center mt-6">
+                    <button onclick="startManualGame()" class="bg-purple-500 text-white px-8 py-3 rounded-full font-bold text-2xl hover:bg-purple-600 shadow-lg transition-transform hover:scale-105 animate-bounce">
+                        다음 단계: 마우스로 직접 드래그하기! 🚀
+                    </button>
+                </div>
+            </div>
+
+            <!-- 수동 분류 (도전 모드 - 동물/탈것) -->
+            <div id="manual-game-section" class="hidden w-full">
+                <div class="bg-purple-50 py-4 px-6 rounded-2xl mb-8 border border-purple-200 text-center relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-20">🖱️</div>
+                    <p class="text-2xl text-purple-800 font-bold">도전 2단계: 내 손으로 직접 끌어서 분류하기 🤚</p>
+                    <p class="text-xl text-gray-700 mt-2">이번엔 <span class="font-bold text-purple-600">동물</span>과 <span class="font-bold text-purple-600">탈것</span>이에요!<br>마우스로 <span class="text-purple-600 font-bold">꾹 누른 채로</span> 알맞은 바구니로 끌어다 놓으세요!</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-6 mb-10 min-h-[80px]" id="manual-item-container"></div>
+
+                <div class="grid grid-cols-2 gap-8 w-full">
+                    <div class="flex flex-col items-center">
+                        <div id="manual-basket-animal" class="drop-zone w-full rounded-3xl bg-orange-50 p-6 flex flex-wrap gap-4 content-start border-4 border-orange-200 shadow-inner min-h-[200px] transition-colors duration-300" ondragover="allowDrop(event)" ondrop="drop(event, 'animal')" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+                            <div class="w-full text-center font-bold text-orange-500 mb-2 text-2xl pointer-events-none">🐶 동물 바구니</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div id="manual-basket-vehicle" class="drop-zone w-full rounded-3xl bg-blue-50 p-6 flex flex-wrap gap-4 content-start border-4 border-blue-200 shadow-inner min-h-[200px] transition-colors duration-300" ondragover="allowDrop(event)" ondrop="drop(event, 'vehicle')" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+                            <div class="w-full text-center font-bold text-blue-500 mb-2 text-2xl pointer-events-none">🚗 탈것 바구니</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="manual-activity-success" class="hidden mt-8 text-3xl font-bold text-purple-600 pop-in text-center bg-purple-100 py-4 rounded-full w-full">
+                    🌟 최고예요! 내 손으로 완벽하게 분류를 마쳤어요! 🌟
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 7: 확인학습 퀴즈 -->
+        <section class="slide" id="slide7">
+            <h2 class="text-4xl font-bold text-blue-600 mb-4 text-center">마무리 퀴즈 🔔</h2>
+            <p class="text-2xl text-center mb-6 text-gray-700">오늘 배운 내용을 잘 기억하고 있는지 확인해 볼까요?</p>
+
+            <div class="space-y-6 w-full max-w-2xl mx-auto">
+                <!-- 문제 1 -->
+                <div class="bg-white p-5 rounded-3xl border-4 border-blue-100 shadow-sm text-center">
+                    <p class="text-2xl font-bold mb-5">1. 사진, 글자, 소리는 모두 인공지능의 밥인 <span class="text-purple-600 text-3xl">'데이터'</span>가 될 수 있나요?</p>
+                    <div class="flex justify-center gap-8">
+                        <button onclick="solveQuiz(this, 1, true)" class="w-20 h-20 rounded-full bg-blue-50 border-4 border-blue-200 text-4xl hover:bg-blue-100 transition-all flex items-center justify-center font-bold text-blue-500 ring-blue-400">O</button>
+                        <button onclick="solveQuiz(this, 1, false)" class="w-20 h-20 rounded-full bg-red-50 border-4 border-red-200 text-4xl hover:bg-red-100 transition-all flex items-center justify-center font-bold text-red-500 ring-red-400">X</button>
+                    </div>
+                    <p id="quiz-msg-1" class="hidden"></p>
+                </div>
+
+                <!-- 문제 2 -->
+                <div class="bg-white p-5 rounded-3xl border-4 border-green-100 shadow-sm text-center">
+                    <p class="text-2xl font-bold mb-5">2. 섞여있는 데이터를 끼리끼리 모아주는 것을 <span class="text-orange-600 text-3xl">'분류'</span>라고 부르나요?</p>
+                    <div class="flex justify-center gap-8">
+                        <button onclick="solveQuiz(this, 2, true)" class="w-20 h-20 rounded-full bg-blue-50 border-4 border-blue-200 text-4xl hover:bg-blue-100 transition-all flex items-center justify-center font-bold text-blue-500 ring-blue-400">O</button>
+                        <button onclick="solveQuiz(this, 2, false)" class="w-20 h-20 rounded-full bg-red-50 border-4 border-red-200 text-4xl hover:bg-red-100 transition-all flex items-center justify-center font-bold text-red-500 ring-red-400">X</button>
+                    </div>
+                    <p id="quiz-msg-2" class="hidden"></p>
+                </div>
+                
+                <!-- 문제 3 -->
+                <div class="bg-white p-5 rounded-3xl border-4 border-purple-100 shadow-sm text-center">
+                    <p class="text-2xl font-bold mb-5">3. 여러 가지 데이터를 마구 섞어두면 인공지능이 공부하기 더 편할까요?</p>
+                    <div class="flex justify-center gap-8">
+                        <button onclick="solveQuiz(this, 3, false)" class="w-20 h-20 rounded-full bg-blue-50 border-4 border-blue-200 text-4xl hover:bg-blue-100 transition-all flex items-center justify-center font-bold text-blue-500 ring-blue-400">O</button>
+                        <button onclick="solveQuiz(this, 3, true)" class="w-20 h-20 rounded-full bg-red-50 border-4 border-red-200 text-4xl hover:bg-red-100 transition-all flex items-center justify-center font-bold text-red-500 ring-red-400">X</button>
+                    </div>
+                    <p id="quiz-msg-3" class="hidden"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 슬라이드 8: 마무리 -->
+        <section class="slide" id="slide8">
+            <h2 class="text-4xl font-bold text-orange-600 mb-8 text-center">참 잘했어요! 탐험 완료 🏅</h2>
+            <div class="text-center space-y-8">
+                <div class="text-7xl mb-4 floating">🎉</div>
+                <p class="text-3xl font-bold text-gray-800">오늘 우리는 이런 멋진 것들을 배웠어요!</p>
+                <ul class="text-2xl space-y-4 inline-block text-left bg-orange-50 p-8 rounded-3xl border-2 border-orange-100 shadow-sm">
+                    <li class="flex items-center gap-3"><span class="text-green-500 text-4xl">✅</span> <strong>데이터</strong>는 정보의 조각들이에요.</li>
+                    <li class="flex items-center gap-3"><span class="text-green-500 text-4xl">✅</span> 글자, 숫자, 소리, 사진 데이터가 있어요.</li>
+                    <li class="flex items-center gap-3"><span class="text-green-500 text-4xl">✅</span> 데이터를 끼리끼리 모으는 것을 <strong>분류</strong>라고 해요.</li>
+                </ul>
+                <p class="text-2xl text-blue-600 font-bold mt-8">다음 시간에는 우리 반 친구들의 데이터를 직접 모아볼 거예요. 기대해 주세요!</p>
+                <button onclick="restartLesson()" class="mt-8 bg-gray-200 px-8 py-3 rounded-full text-gray-700 hover:bg-gray-300 transition-colors text-2xl font-bold shadow-md">처음부터 다시 보기</button>
+            </div>
+        </section>
+
+        <!-- 내비게이션 버튼 -->
+        <div class="flex justify-between mt-12 w-full px-4">
+            <button id="prevBtn" onclick="changeSlide(-1)" class="bg-gray-200 text-gray-500 px-8 py-3 rounded-2xl font-bold opacity-50 cursor-not-allowed text-2xl">
+                <i class="fas fa-arrow-left mr-2"></i> 이전으로
+            </button>
+            <button id="nextBtn" onclick="changeSlide(1)" class="btn-next text-white px-10 py-3 rounded-2xl font-bold shadow-lg text-2xl">
+                다음으로 <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- 알림 메시지 상자 -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-black text-white px-8 py-4 rounded-full opacity-0 transition-opacity duration-300 pointer-events-none z-50 text-2xl font-bold shadow-2xl">
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+        const slideTitles = [
+            "탐험 준비", "학습 목표", "데이터란?", "데이터 종류", "왜 분류할까?", "분류하기 활동", "확인 퀴즈", "탐험 완료"
+        ];
+
+        // 6단계 연습 모드 (과일/채소)
+        const practiceItems = [
+            { id: 1, name: '사과', icon: '🍎', type: 'fruit' },
+            { id: 2, name: '당근', icon: '🥕', type: 'veggie' },
+            { id: 3, name: '포도', icon: '🍇', type: 'fruit' },
+            { id: 4, name: '브로콜리', icon: '🥦', type: 'veggie' },
+            { id: 5, name: '바나나', icon: '🍌', type: 'fruit' },
+            { id: 6, name: '오이', icon: '🥒', type: 'veggie' }
+        ];
+
+        // 6단계 도전 모드 (동물/탈것)
+        const challengeItems = [
+            { id: 1, name: '강아지', icon: '🐶', type: 'animal' },
+            { id: 2, name: '자동차', icon: '🚗', type: 'vehicle' },
+            { id: 3, name: '고양이', icon: '🐱', type: 'animal' },
+            { id: 4, name: '비행기', icon: '✈️', type: 'vehicle' },
+            { id: 5, name: '토끼', icon: '🐰', type: 'animal' },
+            { id: 6, name: '기차', icon: '🚆', type: 'vehicle' }
+        ];
+
+        let classifiedCount = 0;
+        let manualClassifiedCount = 0;
+        let quizResults = { 1: false, 2: false, 3: false };
+
+        function changeSlide(direction) {
+            const nextSlide = currentSlide + direction;
+            if (nextSlide >= 1 && nextSlide <= totalSlides) {
+                document.getElementById(`slide${currentSlide}`).classList.remove('active');
+                currentSlide = nextSlide;
+                document.getElementById(`slide${currentSlide}`).classList.add('active');
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentSlide === 1) {
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = false;
+            }
+
+            if (currentSlide === totalSlides) {
+                nextBtn.innerHTML = '탐험 끝! <i class="fas fa-check ml-2"></i>';
+                nextBtn.classList.replace('btn-next', 'bg-green-500');
+            } else {
+                nextBtn.innerHTML = '다음으로 <i class="fas fa-arrow-right ml-2"></i>';
+                nextBtn.classList.add('btn-next');
+                nextBtn.classList.remove('bg-green-500');
+            }
+
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('slide-number').innerText = `${currentSlide} / ${totalSlides}`;
+            document.getElementById('slide-title').innerText = slideTitles[currentSlide - 1];
+
+            if (currentSlide === 6 && document.getElementById('item-container').children.length === 0) {
+                initActivity();
+            }
+        }
+
+        function checkQuizInput(input, answer) {
+            if (input.value === answer) {
+                input.classList.remove('border-blue-300');
+                input.classList.add('border-green-500', 'bg-green-50', 'text-green-600', 'font-bold');
+                showToast("✨ 정답이에요! 참 잘했어요!");
+            }
+        }
+
+        // 4단계: 클릭 시 강조 효과 업데이트
+        function showDataType(card, typeText, bgColor, textColor) {
+            if(card.classList.contains('revealed')) return; // 이미 눌렀으면 무시
+            
+            card.classList.add('revealed', 'border-green-500', 'scale-105');
+            card.classList.remove('border-green-100');
+            
+            const hintContainer = card.querySelector('.click-hint-container');
+            
+            // 배지 애니메이션과 함께 결과 출력
+            hintContainer.innerHTML = `
+                <div class="pop-in inline-block mt-1">
+                    <span class="${bgColor} ${textColor} font-extrabold text-3xl px-4 py-2 rounded-2xl border-2 border-white shadow-md">
+                        ✨ ${typeText} ✨
+                    </span>
+                </div>
+            `;
+            
+            showToast(`이것은 [${typeText}]입니다!`);
+        }
+
+        // 3단계 인터랙티브 함수
+        function revealInteractiveStep(stepNum) {
+            if (stepNum === 2) {
+                document.getElementById('arrow1').classList.remove('hidden');
+                const step2 = document.getElementById('step2-card');
+                step2.classList.remove('hidden');
+                step2.classList.add('pop-in');
+                const step1BtnText = document.querySelector('#step1-btn p.animate-pulse');
+                if(step1BtnText) step1BtnText.classList.add('hidden');
+            } else if (stepNum === 3) {
+                document.getElementById('arrow2').classList.remove('hidden');
+                const step3 = document.getElementById('step3-card');
+                step3.classList.remove('hidden');
+                step3.classList.add('pop-in');
+                const step2BtnText = document.querySelector('#step2-card p.animate-pulse');
+                if(step2BtnText) step2BtnText.classList.add('hidden');
+            }
+        }
+
+        // 5단계: 마법의 분류 버튼 로직
+        function sortToys() {
+            const box = document.getElementById('toy-box');
+            const title = document.getElementById('box-title');
+            const btn = document.getElementById('sort-btn');
+            
+            box.innerHTML = `
+                <div class="bg-blue-50 p-4 rounded-3xl border-2 border-blue-200 flex gap-4 pop-in shadow-sm"><span class="text-6xl">🤖</span><span class="text-6xl">🤖</span></div>
+                <div class="bg-yellow-50 p-4 rounded-3xl border-2 border-yellow-200 flex gap-4 pop-in shadow-sm" style="animation-delay: 0.2s"><span class="text-6xl">🧸</span><span class="text-6xl">🧸</span></div>
+                <div class="bg-red-50 p-4 rounded-3xl border-2 border-red-200 flex gap-4 pop-in shadow-sm" style="animation-delay: 0.4s"><span class="text-6xl">🚗</span><span class="text-6xl">🚗</span></div>
+            `;
+            
+            title.innerText = "깔끔하게 분류된 장난감 상자 ✨";
+            title.classList.replace('text-gray-700', 'text-green-600');
+            
+            btn.classList.add('hidden');
+            document.getElementById('sort-message').classList.remove('hidden');
+            showToast("우와! 장난감들이 깔끔하게 분류되었어요!");
+        }
+
+        // 6단계: 자동 게임(1단계 - 연습)
+        function initActivity() {
+            const container = document.getElementById('item-container');
+            container.innerHTML = '';
+            classifiedCount = 0;
+            document.getElementById('activity-success').classList.add('hidden');
+            document.getElementById('next-level-btn-container').classList.add('hidden');
+            
+            document.getElementById('basket-fruit').innerHTML = '<div class="w-full text-center font-bold text-red-500 mb-2 text-2xl">🍎 과일 바구니</div>';
+            document.getElementById('basket-veggie').innerHTML = '<div class="w-full text-center font-bold text-green-500 mb-2 text-2xl">🥦 채소 바구니</div>';
+
+            practiceItems.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'w-20 h-20 bg-white border-4 border-blue-200 rounded-2xl flex items-center justify-center text-5xl cursor-pointer hover:scale-110 transition-transform shadow-md';
+                el.innerText = item.icon;
+                el.onclick = () => classifyItem(el, item);
+                container.appendChild(el);
+            });
+        }
+
+        function classifyItem(element, item) {
+            const basketId = item.type === 'fruit' ? 'basket-fruit' : 'basket-veggie';
+            const basket = document.getElementById(basketId);
+            
+            element.onclick = null;
+            element.classList.remove('hover:scale-110', 'cursor-pointer', 'w-20', 'h-20', 'text-5xl', 'border-blue-200');
+            element.classList.add('w-14', 'h-14', 'text-3xl', 'border-gray-200');
+            basket.appendChild(element);
+            
+            classifiedCount++;
+            
+            if (classifiedCount === practiceItems.length) {
+                document.getElementById('activity-success').classList.remove('hidden');
+                document.getElementById('next-level-btn-container').classList.remove('hidden');
+                showToast("🎉 연습 완료! 다음 단계에 도전해 보세요!");
+            }
+        }
+
+        // 6단계: 수동 게임(2단계 - 동물/탈것 드래그 앤 드롭)
+        function startManualGame() {
+            document.getElementById('auto-game-section').classList.add('hidden');
+            document.getElementById('manual-game-section').classList.remove('hidden');
+            initManualActivity();
+            showToast("동물과 탈것을 직접 드래그해 보세요!");
+        }
+
+        function initManualActivity() {
+            const container = document.getElementById('manual-item-container');
+            container.innerHTML = '';
+            manualClassifiedCount = 0;
+            
+            document.getElementById('manual-activity-success').classList.add('hidden');
+            
+            const animalBasket = document.getElementById('manual-basket-animal');
+            const vehicleBasket = document.getElementById('manual-basket-vehicle');
+            animalBasket.innerHTML = '<div class="w-full text-center font-bold text-orange-500 mb-2 text-2xl pointer-events-none">🐶 동물 바구니</div>';
+            vehicleBasket.innerHTML = '<div class="w-full text-center font-bold text-blue-500 mb-2 text-2xl pointer-events-none">🚗 탈것 바구니</div>';
+
+            // 아이템 섞기
+            let shuffledItems = [...challengeItems].sort(() => Math.random() - 0.5);
+            
+            shuffledItems.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.id = `drag-item-${index}`;
+                el.draggable = true;
+                el.dataset.type = item.type;
+                el.className = 'drag-item w-20 h-20 bg-white border-4 border-purple-300 rounded-2xl flex items-center justify-center text-5xl cursor-grab hover:scale-110 transition-transform shadow-md active:cursor-grabbing';
+                el.innerText = item.icon;
+                
+                el.addEventListener('dragstart', dragStart);
+                el.addEventListener('dragend', dragEnd);
+                container.appendChild(el);
+            });
+        }
+
+        function dragStart(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+            ev.dataTransfer.setData("type", ev.target.dataset.type);
+            setTimeout(() => ev.target.classList.add('dragging'), 0);
+        }
+
+        function dragEnd(ev) {
+            ev.target.classList.remove('dragging');
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+        }
+
+        function dragEnter(ev) {
+            ev.preventDefault();
+            if (ev.currentTarget.classList.contains('drop-zone')) {
+                ev.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function dragLeave(ev) {
+            if (ev.currentTarget.classList.contains('drop-zone')) {
+                ev.currentTarget.classList.remove('drag-over');
+            }
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drop(ev, basketType) {
+            ev.preventDefault();
+            const targetBasket = ev.currentTarget;
+            targetBasket.classList.remove('drag-over');
+
+            const dataId = ev.dataTransfer.getData("text");
+            const itemType = ev.dataTransfer.getData("type");
+            
+            if (!dataId) return;
+
+            if (itemType === basketType) {
+                const el = document.getElementById(dataId);
+                el.classList.remove('w-20', 'h-20', 'text-5xl', 'cursor-grab', 'hover:scale-110', 'active:cursor-grabbing', 'border-purple-300', 'drag-item');
+                el.classList.add('w-14', 'h-14', 'text-3xl', 'border-gray-200');
+                el.draggable = false;
+                
+                targetBasket.appendChild(el);
+                
+                showToast("딩동댕! 🎵 맞았어요!");
+                manualClassifiedCount++;
+                
+                if (manualClassifiedCount === challengeItems.length) {
+                    document.getElementById('manual-activity-success').classList.remove('hidden');
+                }
+            } else {
+                showToast("앗! 다른 바구니인 것 같아요. 🤔");
+            }
+        }
+
+        // 7단계: 마무리 퀴즈
+        function solveQuiz(btn, qNum, isCorrectAnswer) {
+            const container = btn.parentElement;
+            const msg = document.getElementById(`quiz-msg-${qNum}`);
+            
+            // 버튼 스타일 업데이트
+            container.querySelectorAll('button').forEach(b => {
+                b.classList.remove('ring-8', 'scale-110');
+                b.classList.add('opacity-50');
+            });
+            btn.classList.remove('opacity-50');
+            btn.classList.add('ring-8', 'scale-110');
+
+            msg.classList.remove('hidden');
+            
+            // 정답 확인 로직
+            if (isCorrectAnswer === true) { 
+                msg.innerText = "✨ 정답이에요! 참 잘했어요!";
+                msg.className = "text-xl font-bold mt-4 text-green-600 pop-in bg-green-50 py-3 rounded-xl";
+                quizResults[qNum] = true;
+                showToast("딩동댕! 정답입니다!");
+            } else {
+                msg.innerText = "앗, 다시 한 번 생각해 볼까요? 🤔";
+                msg.className = "text-xl font-bold mt-4 text-red-500 pop-in bg-red-50 py-3 rounded-xl";
+                quizResults[qNum] = false;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+
+        function restartLesson() {
+            currentSlide = 1;
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide1').classList.add('active');
+            
+            // 인풋 초기화
+            document.querySelectorAll('input').forEach(i => {
+                i.value = '';
+                i.className = 'w-40 p-3 border-b-4 border-blue-300 text-center focus:outline-none text-3xl transition-colors bg-transparent';
+            });
+
+            // 3단계 초기화
+            document.getElementById('arrow1').classList.add('hidden');
+            document.getElementById('arrow2').classList.add('hidden');
+            const step2 = document.getElementById('step2-card');
+            const step3 = document.getElementById('step3-card');
+            step2.classList.add('hidden');
+            step2.classList.remove('pop-in');
+            step3.classList.add('hidden');
+            step3.classList.remove('pop-in');
+            
+            const step1BtnText = document.querySelector('#step1-btn p.animate-pulse');
+            if(step1BtnText) step1BtnText.classList.remove('hidden');
+            const step2BtnText = document.querySelector('#step2-card p.animate-pulse');
+            if(step2BtnText) step2BtnText.classList.remove('hidden');
+
+            // 4단계 초기화
+            document.querySelectorAll('.data-card').forEach(card => {
+                card.classList.remove('revealed', 'border-green-500', 'scale-105');
+                card.classList.add('border-green-100');
+                const hintContainer = card.querySelector('.click-hint-container');
+                if (hintContainer) {
+                    hintContainer.innerHTML = '<p class="text-lg text-gray-400">👉 여길 클릭해 보세요!</p>';
+                }
+            });
+
+            // 5단계 장난감 상자 초기화
+            document.getElementById('toy-box').innerHTML = `
+                <span class="text-6xl floating" style="animation-delay: 0.1s">🧸</span>
+                <span class="text-6xl floating" style="animation-delay: 0.5s">🚗</span>
+                <span class="text-6xl floating" style="animation-delay: 0.3s">🤖</span>
+                <span class="text-6xl floating" style="animation-delay: 0.7s">🚗</span>
+                <span class="text-6xl floating" style="animation-delay: 0.2s">🧸</span>
+                <span class="text-6xl floating" style="animation-delay: 0.6s">🤖</span>
+            `;
+            document.getElementById('box-title').innerText = "어지러운 장난감 상자 😵";
+            document.getElementById('box-title').classList.replace('text-green-600', 'text-gray-700');
+            document.getElementById('sort-btn').classList.remove('hidden');
+            document.getElementById('sort-message').classList.add('hidden');
+
+            // 6단계 초기화
+            document.getElementById('auto-game-section').classList.remove('hidden');
+            document.getElementById('manual-game-section').classList.add('hidden');
+            document.getElementById('next-level-btn-container').classList.add('hidden');
+            
+            // 7단계 퀴즈 초기화
+            quizResults = { 1: false, 2: false, 3: false };
+            document.querySelectorAll('#slide7 button').forEach(b => {
+                b.classList.remove('ring-8', 'scale-110', 'opacity-50');
+            });
+            document.getElementById('quiz-msg-1').classList.add('hidden');
+            document.getElementById('quiz-msg-2').classList.add('hidden');
+            document.getElementById('quiz-msg-3').classList.add('hidden');
+
+            initActivity();
+            updateUI();
+        }
+
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
