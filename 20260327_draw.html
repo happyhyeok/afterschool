@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4회차: 꼬마 화가 그림판 마법사</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        bgLight: '#FFF9E6'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: var(--bgLight);
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            word-break: keep-all;
+        }
+        h1, h2, h3, .gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+            border: 6px solid white;
+            transition: border-color 0.3s ease;
+        }
+
+        .nav-btn {
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #855d00;
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
+
+        .next-step-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: white;
+            color: #374151;
+            padding: 1.25rem 2.5rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 4px solid #e5e7eb;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .next-step-link:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+
+        /* 클릭 이모지 애니메이션 */
+        .click-emoji {
+            position: absolute;
+            font-size: 2.5rem;
+            transform: translate(-50%, -50%);
+            animation: pop 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1.5); opacity: 0; }
+        }
+
+        /* 그림판 도구 툴팁 */
+        .tool-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .tool-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* 색상 팔레트 */
+        .color-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+        .color-btn.active {
+            transform: scale(1.2);
+            border-color: #374151;
+        }
+
+        /* 스케치북 캔버스 */
+        #drawing-canvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        /* 색칠하기 SVG 요소 */
+        .colorable {
+            transition: fill 0.3s;
+            cursor: pointer;
+        }
+        .colorable:hover {
+            opacity: 0.8;
+            stroke: #475569;
+            stroke-width: 3px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- 헤더 -->
+    <header class="bg-white border-b-8 border-primary p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-accent p-3 rounded-2xl shadow-inner">
+                    <i data-lucide="palette" class="w-10 h-10 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">4회차: 그림판 마법사!</h1>
+                    <p class="text-lg md:text-xl text-pink-700 font-bold">도형과 색칠로 우리가족 그리기</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex gap-2">
+                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 그림판 열기</button>
+                <button onclick="showStep(2)" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">2. 마법 도구</button>
+                <button onclick="showStep(3)" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">3. 스케치북</button>
+                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">4. 색칠 마법</button>
+                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">5. 오늘의 미션</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-5xl p-6 mt-4">
+
+        <!-- 1단계: 그림판 열기 (복습 포함) -->
+        <section id="step1" class="step-content active space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="search" class="w-12 h-12 text-primary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">그림판은 어디 숨었을까?</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    컴퓨터 안의 마법 스케치북, <strong>'그림판'</strong>을 찾아볼까요?<br>
+                    지난 시간에 배운 <span class="bg-blue-600 text-white px-3 py-1 rounded font-bold">시작</span> 버튼을 누르고 그림판 아이콘을 찾아 클릭해보세요!
+                </p>
+
+                <!-- 바탕화면 시뮬레이터 -->
+                <div class="relative w-full h-[450px] bg-sky-200 rounded-3xl border-8 border-slate-300 overflow-hidden shadow-inner flex flex-col justify-end">
+                    
+                    <div class="absolute top-10 left-10 text-6xl opacity-50 select-none animate-float">☁️</div>
+                    <div class="absolute top-24 right-20 text-8xl opacity-50 select-none animate-float" style="animation-delay: 1s;">☁️</div>
+
+                    <!-- 시작 메뉴 -->
+                    <div id="start-menu" class="absolute bottom-16 left-4 w-80 bg-white border border-gray-300 shadow-2xl rounded-xl flex flex-col transition-all duration-300 transform translate-y-[120%] opacity-0 pointer-events-none z-30">
+                        <div class="p-4 bg-gray-50 border-b border-gray-200 font-bold text-gray-700 flex items-center gap-2 rounded-t-xl">
+                            <i data-lucide="layout-grid" class="w-5 h-5"></i> 프로그램 목록
+                        </div>
+                        <div class="p-2 h-72 overflow-y-auto">
+                            <div class="p-3 hover:bg-gray-100 cursor-pointer rounded-lg flex items-center gap-3 transition-colors">
+                                <div class="text-2xl">📝</div>
+                                <span class="font-bold text-gray-600">메모장</span>
+                            </div>
+                            <div class="p-3 hover:bg-gray-100 cursor-pointer rounded-lg flex items-center gap-3 transition-colors">
+                                <div class="text-2xl">🧮</div>
+                                <span class="font-bold text-gray-600">계산기</span>
+                            </div>
+                            <!-- 그림판 버튼 -->
+                            <div onclick="openPaintSimulator()" class="p-3 bg-pink-50 border-2 border-pink-200 cursor-pointer rounded-lg flex items-center gap-3 hover:bg-pink-100 transition-colors shadow-sm group mt-2">
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">🎨</div>
+                                <span class="font-black text-pink-700 text-lg">그림판 (클릭!)</span>
+                            </div>
+                            <div class="p-3 hover:bg-gray-100 cursor-pointer rounded-lg flex items-center gap-3 mt-2 transition-colors">
+                                <div class="text-2xl">🌐</div>
+                                <span class="font-bold text-gray-600">인터넷 브라우저</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 작업표시줄 -->
+                    <div class="w-full h-16 bg-slate-800 flex items-center px-4 z-40">
+                        <button onclick="toggleStartMenu()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xl px-6 py-2.5 rounded-lg shadow-lg flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+                            <i data-lucide="monitor" class="w-6 h-6"></i> 시작
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-8 bg-pink-50 rounded-3xl border-4 border-dashed border-accent text-center hidden" id="found-paint-msg">
+                    <h3 class="text-3xl font-black text-accent mb-4">🎉 그림판을 찾았어요!</h3>
+                    <button onclick="showStep(2)" class="next-step-link border-accent text-accent">
+                        그림판 도구 배우러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2단계: 마법 도구 소개 -->
+        <section id="step2" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="brush" class="w-12 h-12 text-secondary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">그림판의 마법 도구 친구들</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-8">
+                    멋진 그림을 그리려면 도구 사용법을 알아야 해요.<br>
+                    카드를 <span class="text-secondary font-bold">클릭</span>해서 각 도구가 어떤 마법을 부리는지 확인해 보세요!
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- 도구 1: 연필/브러시 -->
+                    <div onclick="flipCard(this, '✏️', '브러시', '마우스를 지익~ 드래그하면 원하는 선을 자유롭게 그릴 수 있어요!')" class="tool-card bg-white border-4 border-gray-200 rounded-3xl p-6 text-center h-64 flex flex-col justify-center items-center shadow-md">
+                        <div class="text-6xl mb-4 icon-slot">✏️</div>
+                        <h3 class="text-2xl font-black text-gray-800 title-slot">브러시</h3>
+                        <p class="text-gray-500 mt-2 font-bold">눌러보세요!</p>
+                    </div>
+
+                    <!-- 도구 2: 페인트통 -->
+                    <div onclick="flipCard(this, '🪣', '페인트통 (채우기)', '닫혀있는 모양 안쪽을 클릭하면 색깔이 마법처럼 한 번에 채워져요!')" class="tool-card bg-white border-4 border-gray-200 rounded-3xl p-6 text-center h-64 flex flex-col justify-center items-center shadow-md">
+                        <div class="text-6xl mb-4 icon-slot">🪣</div>
+                        <h3 class="text-2xl font-black text-gray-800 title-slot">페인트통</h3>
+                        <p class="text-gray-500 mt-2 font-bold">눌러보세요!</p>
+                    </div>
+
+                    <!-- 도구 3: 지우개 -->
+                    <div onclick="flipCard(this, '🧼', '지우개', '실수해도 괜찮아요! 마우스를 드래그해서 쓱싹쓱싹 지울 수 있어요.')" class="tool-card bg-white border-4 border-gray-200 rounded-3xl p-6 text-center h-64 flex flex-col justify-center items-center shadow-md">
+                        <div class="text-6xl mb-4 icon-slot">🧼</div>
+                        <h3 class="text-2xl font-black text-gray-800 title-slot">지우개</h3>
+                        <p class="text-gray-500 mt-2 font-bold">눌러보세요!</p>
+                    </div>
+
+                    <!-- 도구 4: 도형 -->
+                    <div onclick="flipCard(this, '⭐', '도형 도구', '동그라미, 네모, 별 모양을 쉽게 그릴 수 있어요. 마우스를 대각선으로 드래그해 보세요!')" class="tool-card bg-white border-4 border-gray-200 rounded-3xl p-6 text-center h-64 flex flex-col justify-center items-center shadow-md">
+                        <div class="text-6xl mb-4 icon-slot">⭐</div>
+                        <h3 class="text-2xl font-black text-gray-800 title-slot">도형</h3>
+                        <p class="text-gray-500 mt-2 font-bold">눌러보세요!</p>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <button onclick="showStep(3)" class="next-step-link border-secondary text-secondary">
+                        스케치북에 직접 그려보기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3단계: 캔버스 드래그 그리기 -->
+        <section id="step3" class="step-content space-y-8">
+            <div class="lesson-card bg-slate-50">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="edit-3" class="w-12 h-12 text-purple-500"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">마우스로 쓱싹쓱싹 연습장</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-6">
+                    마우스 왼쪽 버튼을 <span class="bg-purple-100 text-purple-800 font-bold px-2 rounded">꾹~ 누른 채로 (드래그)</span> 움직여보세요.<br>
+                    하얀 스케치북에 멋진 선이 그려집니다!
+                </p>
+
+                <div class="max-w-3xl mx-auto">
+                    <!-- 그리기 도구/색상 툴바 -->
+                    <div class="bg-white p-4 rounded-t-2xl border-4 border-b-0 border-gray-300 flex justify-between items-center shadow-sm">
+                        <div class="flex gap-3" id="draw-palette">
+                            <button class="color-btn active" style="background-color: #000000;" onclick="setDrawColor(this, '#000000')"></button>
+                            <button class="color-btn" style="background-color: #EF476F;" onclick="setDrawColor(this, '#EF476F')"></button>
+                            <button class="color-btn" style="background-color: #4EA8DE;" onclick="setDrawColor(this, '#4EA8DE')"></button>
+                            <button class="color-btn" style="background-color: #06D6A0;" onclick="setDrawColor(this, '#06D6A0')"></button>
+                            <button class="color-btn" style="background-color: #FFD166;" onclick="setDrawColor(this, '#FFD166')"></button>
+                        </div>
+                        <button onclick="clearCanvas()" class="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-xl font-bold transition-colors">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i> 모두 지우기
+                        </button>
+                    </div>
+                    
+                    <!-- 캔버스 영역 -->
+                    <div class="border-4 border-gray-300 rounded-b-2xl overflow-hidden bg-white shadow-lg touch-none">
+                        <canvas id="drawing-canvas" width="800" height="400" class="w-full bg-white"></canvas>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button onclick="showStep(4)" class="next-step-link border-purple-400 text-purple-600">
+                        페인트통 색칠 마법 배우기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4단계: 페인트통 색칠하기 (SVG) -->
+        <section id="step4" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="paint-bucket" class="w-12 h-12 text-success"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">페인트통으로 우리집 색칠하기</h2>
+                </div>
+                <p class="text-2xl text-gray-700 leading-relaxed mb-6">
+                    도형으로 그린 우리집이에요! <br>
+                    원하는 <strong>색깔을 먼저 고르고</strong>, 색칠하고 싶은 부분을 <span class="text-success font-black text-3xl">클릭!</span> 해보세요.
+                </p>
+
+                <div class="flex flex-col md:flex-row gap-8 items-center justify-center bg-gray-50 p-8 rounded-3xl border-4 border-gray-200">
+                    
+                    <!-- 색상 팔레트 -->
+                    <div class="flex md:flex-col gap-4 bg-white p-4 rounded-2xl shadow-md border-2 border-gray-100" id="fill-palette">
+                        <button class="color-btn active" style="background-color: #EF476F;" onclick="setFillColor(this, '#EF476F')"></button>
+                        <button class="color-btn" style="background-color: #FFD166;" onclick="setFillColor(this, '#FFD166')"></button>
+                        <button class="color-btn" style="background-color: #06D6A0;" onclick="setFillColor(this, '#06D6A0')"></button>
+                        <button class="color-btn" style="background-color: #4EA8DE;" onclick="setFillColor(this, '#4EA8DE')"></button>
+                        <button class="color-btn" style="background-color: #9D4EDD;" onclick="setFillColor(this, '#9D4EDD')"></button>
+                        <button class="color-btn" style="background-color: #FF9F1C;" onclick="setFillColor(this, '#FF9F1C')"></button>
+                    </div>
+
+                    <!-- 색칠용 SVG 이미지 (도형 조합) -->
+                    <div class="w-full max-w-[500px] bg-white border-4 border-dashed border-gray-300 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                        <svg viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto drop-shadow-md">
+                            <!-- 배경/하늘 (선택불가) -->
+                            <rect width="500" height="400" fill="#f8fafc" />
+                            
+                            <!-- 해 -->
+                            <circle cx="80" cy="80" r="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            
+                            <!-- 땅 -->
+                            <path d="M0,320 Q250,280 500,320 L500,400 L0,400 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            
+                            <!-- 나무 줄기 -->
+                            <rect x="380" y="200" width="40" height="120" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            <!-- 나무 잎 -->
+                            <circle cx="400" cy="180" r="60" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+
+                            <!-- 집 몸통 (사각형) -->
+                            <rect x="150" y="180" width="180" height="150" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            
+                            <!-- 집 지붕 (삼각형) -->
+                            <polygon points="130,180 240,80 350,180" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            
+                            <!-- 문 -->
+                            <rect x="215" y="250" width="50" height="80" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            <!-- 문고리 -->
+                            <circle cx="225" cy="290" r="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" class="colorable" onclick="fillArea(this)" />
+                            
+                            <!-- 창문 1 -->
+                            <rect x="170" y="210" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                            <!-- 창문 2 -->
+                            <rect x="270" y="210" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" class="colorable" onclick="fillArea(this)" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <button onclick="showStep(5)" class="next-step-link border-success text-success">
+                        오늘의 최종 미션 확인하기 <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5단계: 오늘의 미션 -->
+        <section id="step5" class="step-content space-y-8">
+            <div class="lesson-card border-accent">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="crown" class="w-12 h-12 text-accent"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">그림판 아티스트 최종 미션!</h2>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-pink-100 rounded-3xl shadow-sm hover:border-accent transition-colors">
+                        <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">1</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">진짜 그림판 열기</h4>
+                            <p class="text-xl text-gray-600 mb-3">화면 아래 <strong>시작 버튼</strong>을 누르고 <span class="bg-gray-100 px-2 rounded font-bold">그림판</span>을 찾아 실행하세요.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-pink-100 rounded-3xl shadow-sm hover:border-accent transition-colors">
+                        <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">2</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">우리가족 / 우리집 그리기</h4>
+                            <p class="text-xl text-gray-600 mb-3">
+                                <strong>도형 도구</strong>(동그라미, 네모)를 활용해 우리가족의 얼굴이나 우리집을 그려보세요. <br>
+                                다 그렸다면 <strong>페인트통</strong>으로 예쁘게 색칠해 봐요!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-6 p-8 bg-white border-4 border-pink-100 rounded-3xl shadow-sm hover:border-accent transition-colors">
+                        <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl font-black shrink-0">3</div>
+                        <div>
+                            <h4 class="text-2xl font-bold text-gray-800 mb-2">파일 저장하기</h4>
+                            <p class="text-xl text-gray-600 mb-3">그림을 완성했다면 지워지지 않게 저장해야 해요!</p>
+                            <div class="bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-200 text-lg text-yellow-800">
+                                <span class="font-bold bg-white px-1">파일 -> 저장</span>을 누르고, <br>
+                                파일 이름에 <span class="text-accent font-black">"우리집 그림 파일"</span> 또는 <span class="text-accent font-black">"내이름"</span>을 적어서 바탕화면에 저장해요.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 p-10 bg-pink-50 rounded-3xl border-4 border-dashed border-accent text-center">
+                    <p class="text-2xl font-bold text-pink-800 mb-8">모든 미션을 완료하고 멋진 그림을 저장했다면 선생님을 불러주세요! 👨‍🏫👩‍🏫</p>
+                    <div class="flex flex-col md:flex-row justify-center gap-4">
+                        <button onclick="location.reload()" class="next-step-link bg-white text-gray-500 border-gray-200 font-bold">
+                             처음부터 다시 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 하단 내비게이션 (모바일용) -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentStep = 1;
+
+        // 공통: 이모지 효과
+        function createEmoji(x, y, char) {
+            const emoji = document.createElement('div');
+            emoji.className = 'click-emoji gaegu';
+            emoji.innerText = char;
+            emoji.style.left = x + (window.scrollX || 0) + 'px';
+            emoji.style.top = y + (window.scrollY || 0) + 'px';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 600);
+        }
+
+        // 스텝 전환
+        function showStep(n) {
+            currentStep = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+                btn.classList.toggle('border-primary', idx + 1 === n);
+                btn.classList.toggle('border-gray-200', idx + 1 !== n);
+            });
+            document.getElementById('step' + n).classList.add('active');
+            
+            // 캔버스 크기 재조정 (화면에 나타날 때)
+            if(n === 3) resizeCanvas();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function nextStep() { return Math.min(currentStep + 1, 5); }
+        function prevStep() { return Math.max(currentStep - 1, 1); }
+
+        // Step 1: 시작메뉴 시뮬레이터
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            if (menu.classList.contains('opacity-0')) {
+                menu.classList.remove('opacity-0', 'translate-y-[120%]', 'pointer-events-none');
+                const btn = event.currentTarget;
+                createEmoji(btn.getBoundingClientRect().left + 50, btn.getBoundingClientRect().top, '✨');
+            } else {
+                menu.classList.add('opacity-0', 'translate-y-[120%]', 'pointer-events-none');
+            }
+        }
+        function openPaintSimulator() {
+            toggleStartMenu();
+            const msg = document.getElementById('found-paint-msg');
+            msg.classList.remove('hidden');
+            msg.classList.add('animate-bounce');
+            createEmoji(window.innerWidth / 2, window.innerHeight / 2, '🎨');
+            setTimeout(() => msg.classList.remove('animate-bounce'), 1000);
+        }
+
+        // Step 2: 마법 도구 카드 뒤집기 (내용 변경)
+        function flipCard(card, icon, title, desc) {
+            card.classList.replace('border-gray-200', 'border-secondary');
+            card.classList.add('bg-blue-50');
+            card.innerHTML = `
+                <div class="text-4xl mb-3">${icon}</div>
+                <h3 class="text-xl font-black text-secondary mb-2">${title}</h3>
+                <p class="text-md text-gray-700 font-bold leading-snug break-keep">${desc}</p>
+            `;
+            createEmoji(card.getBoundingClientRect().left + card.offsetWidth/2, card.getBoundingClientRect().top + card.offsetHeight/2, '💡');
+        }
+
+        // Step 3: 캔버스 드래그 그리기
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let drawColor = '#000000';
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            // 내부 해상도를 컨테이너 크기에 맞춤 (선명하게 유지)
+            canvas.width = container.offsetWidth;
+            // 스타일 크기도 맞춤
+            canvas.style.width = container.offsetWidth + 'px';
+            
+            // 초기화 배경 흰색
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        window.addEventListener('resize', () => { if(currentStep === 3) resizeCanvas(); });
+
+        function setDrawColor(btn, color) {
+            document.querySelectorAll('#draw-palette .color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            drawColor = color;
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            createEmoji(canvas.getBoundingClientRect().left + canvas.offsetWidth/2, canvas.getBoundingClientRect().top + canvas.offsetHeight/2, '🧼');
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            
+            // 화면 크기와 캔버스 내부 해상도 비율 계산
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function startPosition(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault(); // 모바일 스크롤 방지
+            
+            const pos = getMousePos(e);
+            
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = drawColor;
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        // 마우스 이벤트
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseleave', endPosition);
+        
+        // 터치 이벤트 (태블릿/모바일 지원)
+        canvas.addEventListener('touchstart', startPosition, {passive: false});
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw, {passive: false});
+
+        // Step 4: 페인트통 색칠하기
+        let fillColor = '#EF476F'; // 기본색 핑크
+
+        function setFillColor(btn, color) {
+            document.querySelectorAll('#fill-palette .color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            fillColor = color;
+        }
+
+        function fillArea(element) {
+            element.setAttribute('fill', fillColor);
+            // 클릭한 위치에 물방울 이모지 표시
+            const rect = element.getBoundingClientRect();
+            createEmoji(rect.left + rect.width/2, rect.top + rect.height/2, '💧');
+        }
+
+    </script>
+</body>
+</html>
