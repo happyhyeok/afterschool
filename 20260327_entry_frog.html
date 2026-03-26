@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엔트리 코딩 교실 - 돌멩이 피하는 개구리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f8fafc;
+            font-size: 1.1rem;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 35px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-header {
+            background: #10b981; /* Green for frog theme */
+            color: white;
+            padding: 20px 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+        }
+
+        .content-body {
+            padding: 30px;
+        }
+
+        #gameCanvas {
+            background-color: #a5f3fc; /* Sky blue */
+            border: 6px solid #1e293b;
+            border-radius: 16px;
+            width: 100%;
+            height: auto;
+            max-width: 480px;
+            display: block;
+            margin: 0 auto;
+            image-rendering: pixelated;
+        }
+
+        .status-bubble {
+            position: absolute;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 24px;
+            border: 3px solid #10b981;
+            font-weight: bold;
+            display: none;
+            pointer-events: none;
+            z-index: 50;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 22px;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin: 18px 0;
+            white-space: pre-wrap;
+            border-left: 8px solid #34d399;
+        }
+
+        .pseudo-num { color: #facc15; font-weight: bold; margin-right: 6px; }
+
+        .btn-hint {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-hint:hover { background: #e2e8f0; }
+
+        .hint-box {
+            display: none;
+            background: #f0fdf4;
+            border: 2px dashed #10b981;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        /* Quiz Design */
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 18px 22px;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .quiz-option:hover {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.correct {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .quiz-option.wrong {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .option-index {
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 800;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-12 text-center">
+        <div class="inline-block bg-emerald-600 text-white px-5 py-1.5 rounded-full text-sm font-bold mb-4 shadow-md">실전 모의고사 07</div>
+        <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">🐸 돌멩이 피하는 개구리</h1>
+        <p class="text-slate-600 mt-4 text-lg max-w-2xl mx-auto">복제본을 활용한 장애물 생성과 신호를 이용한 게임 흐름 제어를 배워봅시다.</p>
+    </header>
+
+    <!-- Project Simulation -->
+    <div class="step-card">
+        <div class="step-header"><span>🎮</span> 완성 작품 시뮬레이션</div>
+        <div class="content-body bg-slate-50">
+            <div class="relative w-full overflow-hidden mb-8">
+                <canvas id="gameCanvas" width="480" height="360"></canvas>
+                <div id="speechBubble" class="status-bubble">미션 실패...</div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="startBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 text-lg">
+                    시작하기
+                </button>
+                <button id="resetBtn" class="bg-slate-500 hover:bg-slate-600 text-white px-10 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 text-lg">
+                    다시 하기
+                </button>
+            </div>
+            
+            <p class="text-center mt-6 text-slate-500 font-medium">
+                [Space] 키를 눌러 개구리를 점프시켜 다가오는 돌멩이를 피하세요!
+            </p>
+        </div>
+    </div>
+
+    <!-- 1. Signal Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>1</span> 소통의 핵심: 신호(Signal)</div>
+        <div class="content-body">
+            <p class="mb-4">이 작품에서는 오브젝트들이 서로 정보를 주고받기 위해 **3가지 신호**를 사용합니다.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 bg-blue-50 border border-blue-100 rounded-2xl text-center">
+                    <span class="text-3xl block mb-2">🚩</span>
+                    <strong class="text-blue-700">활동</strong>
+                    <p class="text-sm text-blue-600 mt-1">게임 시작을 알리고 모든 동작을 가동해요.</p>
+                </div>
+                <div class="p-5 bg-rose-50 border border-rose-100 rounded-2xl text-center">
+                    <span class="text-3xl block mb-2">❌</span>
+                    <strong class="text-rose-700">미션실패</strong>
+                    <p class="text-sm text-rose-600 mt-1">돌멩이에 닿았을 때 게임을 멈춰요.</p>
+                </div>
+                <div class="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl text-center">
+                    <span class="text-3xl block mb-2">🏆</span>
+                    <strong class="text-emerald-700">미션성공</strong>
+                    <p class="text-sm text-emerald-600 mt-1">30초 동안 버티면 성공을 알려요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Toad Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>2</span> [두꺼비] 점프 알고리즘</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">스페이스 키를 눌렀을 때만 위로 올라갔다 내려오는 점프를 구현합니다.</p>
+            <div class="code-block"><b>[두꺼비 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>활동 신호</b>를 받았을 때: 계속 반복하기
+<span class="pseudo-num">②</span> 만일 <b>스페이스 키</b>가 눌려져 있는가? 라면
+  └ 모양을 점프 모양으로 바꾸기
+  └ <b>20번 반복하기</b>: y 좌표를 <b>5</b>만큼 바꾸기 (위로)
+  └ <b>두꺼비 y좌표가 -90보다 작을 때까지</b> 반복하기
+    └ y 좌표를 <b>-5</b>만큼 바꾸기 (아래로)</div>
+            
+            <button class="btn-hint" onclick="toggleHint('hint_frog')">💡 두꺼비 코드 블록 힌트 보기</button>
+            <div id="hint_frog" class="hint-box">
+                [교과서 2페이지의 두꺼비 코드 부분을 참고하세요. 점프 후 다시 원래 높이(-90)로 돌아오는 로직이 핵심입니다!]
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Stone Clone Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>3</span> [돌멩이] 복제본 생성과 이동</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">하나의 돌멩이가 아닌, 여러 개의 돌멩이가 계속 나타나게 만듭니다.</p>
+            <div class="code-block"><b>[돌멩이 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>활동 신호</b>를 받았을 때: 
+  └ <b>자신의 복제본 만들기</b>
+  └ <b>2~5초 사이의 무작위 수</b>만큼 기다리기 (반복)
+<span class="pseudo-num">②</span> <b>복제본이 처음 생성되었을 때</b>:
+  └ 모양 보이기
+  └ <b>벽에 닿았는가?</b> 까지 반복: x 좌표를 <b>-5</b>만큼 바꾸기
+  └ 만일 <b>두꺼비</b>에 닿았는가? 라면: <b>미션실패 신호</b> 보내기
+  └ 루프 종료 후 <b>이 복제본 삭제하기</b></div>
+        </div>
+    </div>
+
+    <!-- 4. Success Condition -->
+    <div class="step-card">
+        <div class="step-header"><span>4</span> [구름] 게임 승리 조건</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">구름 오브젝트는 배경 장식뿐만 아니라 '타이머' 역할도 수행합니다.</p>
+            <div class="code-block"><b>[구름 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>활동 신호</b>를 받았을 때:
+  └ <b>30초</b> 기다리기
+  └ <b>미션성공 신호</b> 보내기
+  └ <b>다른 오브젝트의 코드 멈추기</b></div>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <section class="mt-16 mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-slate-800">✍️ 오늘의 코딩 퀴즈</h2>
+            <p class="text-slate-500 mt-3 font-medium">학습한 내용을 문제를 풀며 복습해 봅시다!</p>
+        </div>
+        <div id="quiz-container"></div>
+    </section>
+
+    <script>
+        // --- Simulation Logic ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const speechBubble = document.getElementById('speechBubble');
+
+        let isRunning = false;
+        let animationId;
+        let gameTimer;
+        let gameTime = 0;
+
+        const frog = { 
+            x: 80, y: 270, baseY: 270, w: 40, h: 40, 
+            isJumping: false, jumpPhase: 0, 
+            color: '#10b981', effect: 0 
+        };
+        let stones = [];
+        let clouds = [];
+        let keys = {};
+
+        window.addEventListener('keydown', e => { if(e.code === 'Space') keys[e.code] = true; });
+        window.addEventListener('keyup', e => { if(e.code === 'Space') keys[e.code] = false; });
+
+        function drawBackground() {
+            // Ground
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(0, 310, 480, 50);
+            ctx.fillStyle = '#a16207';
+            ctx.fillRect(0, 310, 480, 10);
+            
+            // Distant hills
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath();
+            ctx.moveTo(0, 310);
+            ctx.quadraticCurveTo(120, 200, 240, 310);
+            ctx.quadraticCurveTo(360, 220, 480, 310);
+            ctx.fill();
+        }
+
+        function drawFrog() {
+            ctx.save();
+            if (frog.effect > 0) ctx.filter = `hue-rotate(${frog.effect}deg)`;
+            
+            ctx.fillStyle = frog.color;
+            // Body
+            ctx.beginPath();
+            ctx.ellipse(frog.x, frog.y, 20, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyes
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(frog.x + 10, frog.y - 12, 6, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'black';
+            ctx.beginPath(); ctx.arc(frog.x + 12, frog.y - 12, 3, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawStone(s) {
+            ctx.fillStyle = '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(s.x + 30, s.y - 5);
+            ctx.lineTo(s.x + 35, s.y + 20);
+            ctx.lineTo(s.x + 5, s.y + 25);
+            ctx.closePath();
+            ctx.fill();
+            // Texture
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(s.x + 10, s.y + 5, 5, 5);
+        }
+
+        function update() {
+            if (!isRunning) return;
+
+            // Frog Jump Logic
+            if (keys['Space'] && !frog.isJumping) {
+                frog.isJumping = true;
+                frog.jumpPhase = 0;
+            }
+
+            if (frog.isJumping) {
+                if (frog.jumpPhase < 20) {
+                    frog.y -= 5; // Go up
+                } else {
+                    frog.y += 5; // Go down
+                    if (frog.y >= frog.baseY) {
+                        frog.y = frog.baseY;
+                        frog.isJumping = false;
+                    }
+                }
+                frog.jumpPhase++;
+            }
+
+            // Stone Logic
+            if (Math.random() < 0.015) {
+                stones.push({ x: 500, y: 285 });
+            }
+
+            for (let i = stones.length - 1; i >= 0; i--) {
+                stones[i].x -= 5;
+                
+                // Collision
+                const dx = frog.x - (stones[i].x + 15);
+                const dy = frog.y - (stones[i].y + 10);
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < 30) {
+                    endGame(false);
+                }
+
+                if (stones[i].x < -50) stones.splice(i, 1);
+            }
+
+            // Time Tracking
+            gameTime += 1/60;
+            if (gameTime >= 20) { // Win after 20s for demo
+                endGame(true);
+            }
+
+            ctx.clearRect(0, 0, 480, 360);
+            drawBackground();
+            drawFrog();
+            stones.forEach(drawStone);
+
+            // Timer display
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`남은 시간: ${Math.max(0, Math.ceil(20 - gameTime))}초`, 20, 30);
+
+            animationId = requestAnimationFrame(update);
+        }
+
+        function endGame(success) {
+            isRunning = false;
+            cancelAnimationFrame(animationId);
+            const rect = canvas.getBoundingClientRect();
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = (frog.x / 480 * rect.width) + 'px';
+            speechBubble.style.top = (frog.y / 360 * rect.height - 40) + 'px';
+
+            if (success) {
+                speechBubble.innerText = "미션 성공!";
+                speechBubble.style.borderColor = "#10b981";
+            } else {
+                speechBubble.innerText = "미션 실패...";
+                speechBubble.style.borderColor = "#ef4444";
+                frog.effect = 100; // Reddish
+                drawFrog();
+            }
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (isRunning) return;
+            stones = []; gameTime = 0;
+            frog.y = frog.baseY; frog.isJumping = false; frog.effect = 0;
+            speechBubble.style.display = 'none';
+            isRunning = true;
+            update();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => { location.reload(); });
+
+        // --- Quiz Setup ---
+        const quizzes = [
+            {
+                q: "작품에서 돌멩이가 개구리에 닿았을 때 보내야 하는 신호는 무엇인가요?",
+                a: ["활동", "모양 바꾸기", "미션실패", "점수 추가"],
+                correct: 2,
+                hint: "장애물에 닿으면 게임을 중단하거나 실패를 알려야 해요."
+            },
+            {
+                q: "개구리의 점프를 구현할 때, y좌표를 '+' 방향으로 바꾸면 어느 쪽으로 이동하나요?",
+                a: ["아래쪽", "위쪽", "오른쪽", "왼쪽"],
+                correct: 1,
+                hint: "엔트리와 수학 좌표계에서 y값이 커지면 위로 올라갑니다."
+            },
+            {
+                q: "돌멩이를 한 개가 아닌 여러 개로 계속 나타나게 하려면 어떤 기능을 써야 하나요?",
+                a: ["변수", "복제본", "신호", "리스트"],
+                correct: 1,
+                hint: "같은 성격의 오브젝트를 여러 개 생성할 때는 '자신의 복제본 만들기'가 필수입니다."
+            },
+            {
+                q: "구름 오브젝트에서 '30초 기다리기' 후에 실행되어야 할 가장 적절한 블록은?",
+                a: ["자료값 정하기", "미션성공 신호 보내기", "모양 숨기기", "다시 시작하기"],
+                correct: 1,
+                hint: "정해진 시간을 버텨냈으므로 미션을 완료했다는 소식을 알려야 해요."
+            }
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            quizzes.forEach((quiz, qIdx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mb-10 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md';
+                
+                let optionsHtml = quiz.a.map((opt, oIdx) => `
+                    <button class="quiz-option" data-q="${qIdx}" data-o="${oIdx}">
+                        <span class="option-index">${oIdx + 1}</span>
+                        <span class="option-text">${opt}</span>
+                    </button>
+                `).join('');
+
+                qDiv.innerHTML = `
+                    <h3 class="font-bold mb-6 text-slate-800 text-xl flex items-start">
+                        <span class="bg-emerald-100 text-emerald-700 w-9 h-9 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 text-sm font-black">Q${qIdx+1}</span>
+                        <span class="pt-1">${quiz.q}</span>
+                    </h3>
+                    <div class="options-wrapper">${optionsHtml}</div>
+                    <div id="q-hint-${qIdx}" class="hidden mt-6 p-5 bg-emerald-50 text-emerald-800 rounded-2xl text-sm border border-emerald-100 animate-pulse">
+                        💡 <b>도움말:</b> ${quiz.hint}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const qIdx = parseInt(this.getAttribute('data-q'));
+                    const oIdx = parseInt(this.getAttribute('data-o'));
+                    const correctIdx = quizzes[qIdx].correct;
+                    const options = this.closest('.options-wrapper').querySelectorAll('.quiz-option');
+                    
+                    if (oIdx === correctIdx) {
+                        this.classList.add('correct');
+                        this.querySelector('.option-text').innerHTML += " <strong>(정답입니다!)</strong>";
+                        options.forEach(b => b.disabled = true);
+                    } else {
+                        this.classList.add('wrong');
+                        this.disabled = true;
+                        document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        function toggleHint(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>
