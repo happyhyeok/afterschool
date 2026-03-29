@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3차시: 좌표 기초 - 바닷가 친구들 움직이기</title>
+    <!-- 가독성 좋은 웹 폰트 (Noto Sans KR) 적용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 타이포그래피 및 레이아웃 설정 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f6f9; /* 배경은 시선을 빼앗지 않는 아주 옅은 회색 */
+            color: #2c3e50;
+            margin: 0;
+            padding: 30px 15px;
+            line-height: 1.8; /* 줄간격을 넓혀 초등학생의 가독성 확보 */
+            font-size: 18px; /* 기본 폰트 크기 확대 */
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: #ffffff; /* 본문 영역은 깨끗한 흰색 */
+            border-radius: 16px;
+            padding: 50px 60px; /* 충분한 내부 여백 확보 */
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04); /* 테두리 대신 부드러운 그림자만 사용 */
+        }
+
+        /* 헤딩(제목) 위계 질서 확립 */
+        h1 {
+            font-size: 34px;
+            font-weight: 900;
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 50px;
+            letter-spacing: -0.5px;
+        }
+        h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2b6cb0;
+            border-bottom: 2px solid #edf2f7; /* 가벼운 구분선 */
+            padding-bottom: 12px;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+        h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-top: 35px;
+            margin-bottom: 10px;
+        }
+
+        /* 텍스트 요소 */
+        p {
+            margin-bottom: 15px;
+        }
+        .highlight {
+            background-color: #fefcbf;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #b7791f;
+        }
+        .guide-text {
+            color: #319795;
+            font-weight: 700;
+            background-color: #e6fffa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* 리스트 (의사코드 넘버링) */
+        ul {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        ol.code-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            counter-reset: step-counter;
+            list-style-type: none;
+        }
+        ol.code-list li {
+            position: relative;
+            margin-bottom: 14px;
+            padding-left: 35px;
+            color: #4a5568;
+        }
+        ol.code-list li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-weight: 700;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 버튼 스타일 통일 및 개선 */
+        button {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 10px 20px;
+            margin: 5px 5px 15px 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { filter: brightness(0.95); }
+        button:active { transform: scale(0.98); }
+        
+        .btn-toggle {
+            background-color: #ebf8ff;
+            color: #3182ce;
+            border: 1px solid #bee3f8;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-sim { background-color: #e2e8f0; color: #4a5568; }
+        .btn-sim.blue { background-color: #3182ce; color: #fff; }
+        .btn-sim.green { background-color: #38a169; color: #fff; }
+        
+        /* 힌트 이미지 영역 */
+        .hint-img-container {
+            display: none; /* 초기에는 숨김 */
+            margin-top: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .hint-img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 시뮬레이터 스타일 정리 */
+        .simulator-area {
+            background-color: #f7fafc;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .track {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            border: 2px solid #cbd5e0;
+            border-radius: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        .center-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e53e3e;
+        }
+        .character {
+            position: absolute;
+            left: 50%;
+            font-size: 36px;
+            transform: translateX(-50%);
+            transition: left 0.3s ease-out;
+        }
+        .axis-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+        #simulatorExplanation {
+            font-weight: 700;
+            color: #2b6cb0;
+            height: 40px;
+            margin-top: 20px;
+        }
+
+        /* 퀴즈 영역 */
+        .quiz-item {
+            background-color: #fdfdfd;
+            border: 1px solid #edf2f7;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: border-color 0.2s;
+        }
+        .quiz-item:hover { border-color: #e2e8f0; }
+        .quiz-item p { margin-top: 0; font-weight: 500; }
+        .btn-quiz {
+            background-color: #edf2f7;
+            color: #4a5568;
+            margin-right: 10px;
+        }
+        .feedback {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 600px) {
+            .container { padding: 30px 20px; }
+            h1 { font-size: 28px; }
+            h2 { font-size: 22px; }
+            .btn-sim { display: block; width: 100%; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌊 3차시: 좌표 기초 - 바닷가 친구들 움직이기</h1>
+
+    <!-- 1. 도입 -->
+    <section>
+        <h2>1. 도입: 마법의 지도, 좌표! 🗺️</h2>
+        <p>안녕, 친구들! 오늘은 바닷가에 놀러 온 꽃게와 고등어를 엔트리에서 움직여 볼 거예요.</p>
+        <p>컴퓨터 화면은 엄청 넓은 운동장과 같아요. 꽃게에게 "오른쪽으로 가!"라고 말하면, 컴퓨터는 "얼마나 가야 해? 어디로 가야 해?"라고 헷갈려 한답니다. 이때 정확한 위치를 알려주는 마법의 주소가 바로 <span class="highlight">좌표(X, Y)</span>랍니다!</p>
+    </section>
+
+    <!-- 2. 전개 -->
+    <section>
+        <h2>2. 전개: 움직이기 vs 위치로 이동하기 🤔</h2>
+        <p>좌표에는 두 가지 중요한 규칙이 있어요.</p>
+        <ul>
+            <li><strong>X 좌표:</strong> 가로 방향(왼쪽, 오른쪽)이에요. ↔️</li>
+            <li><strong>Y 좌표:</strong> 세로 방향(위, 아래)이에요. ↕️</li>
+        </ul>
+        <p>코딩을 하다 보면 <strong>"~만큼 움직이기"</strong>와 <strong>"~위치로 이동하기"</strong> 두 블록을 보게 될 거예요. 이 둘은 어떻게 다를까요? 아래 자동차🚗 버튼을 직접 눌러보며 확인해 봐요!</p>
+
+        <!-- 인터랙티브 시뮬레이터 -->
+        <div class="simulator-area">
+            <h3>🎮 직접 눌러보며 차이점 알아보기!</h3>
+            <p style="margin-bottom: 20px;">현재 자동차의 X 좌표: <span id="currentXDisplay" class="highlight">0</span></p>
+            
+            <div class="axis-label">
+                <span>X: -100 (왼쪽)</span>
+                <span>X: 0 (가운데)</span>
+                <span>X: 100 (오른쪽)</span>
+            </div>
+            
+            <div class="track">
+                <div class="center-line"></div>
+                <div class="character" id="car">🚗</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn-sim blue" onclick="moveBy10()">[X좌표 10만큼 움직이기]</button>
+                <button class="btn-sim green" onclick="moveTo10()">[X 10 위치로 이동하기]</button>
+                <button class="btn-sim" onclick="resetCar()">처음으로 (X: 0)</button>
+            </div>
+            
+            <p id="simulatorExplanation">버튼을 눌러보세요! 어떤 차이가 있나요?</p>
+        </div>
+        
+        <p>💡 <strong>비밀 노트:</strong><br>
+        - <span class="highlight">~만큼 움직이기</span>: 지금 있는 곳에서부터 덧셈(+)을 해서 앞으로 나아가는 거예요! (누를 때마다 계속 감)<br>
+        - <span class="highlight">~위치로 이동하기</span>: 지금 어디에 있든 상관없이, 내가 정해준 그 자리로 '순간이동' 하는 거예요! (여러 번 눌러도 그 자리에 멈춰 있음)</p>
+    </section>
+
+    <!-- 3. 실습 -->
+    <section>
+        <h2>3. 실습: 바닷가 친구들 코딩하기 💻</h2>
+        
+        <h3>✅ 사전 준비 (먼저 해주세요!)</h3>
+        <ul>
+            <li>네이버 엔트리(playentry.org)에 접속하고 로그인해 주세요.</li>
+            <li>상단 메뉴에서 <strong>[만들기] - [작품 만들기]</strong>를 클릭해요.</li>
+            <li>화면 가운데 있는 귀여운 엔트리봇은 'X' 버튼을 눌러 지워주세요.</li>
+        </ul>
+
+        <h3>✅ 필요한 오브젝트 추가하기</h3>
+        <p>오브젝트 추가하기(+) 버튼을 누르고 아래 4가지를 검색해서 추가해 주세요!</p>
+        <ul>
+            <li>🐟 <strong>고등어</strong></li>
+            <li>🦀 <strong>꽃게</strong></li>
+            <li>☁️ <strong>구름</strong></li>
+            <li>🏖️ <strong>해변가</strong> (배경)</li>
+        </ul>
+
+        <h3>📝 어떻게 코딩할까요?</h3>
+        <p>아래 의사코드의 순서에 따라 블록을 차례대로 연결해 보세요.</p>
+
+        <!-- 구름 코드 -->
+        <h4>☁️ 1. 구름 코딩하기</h4>
+        <ol class="code-list">
+            <li>시작하기 버튼을 클릭하면</li>
+            <li>크기를 70으로 정해요.</li>
+            <li>x: 210, y: 95 위치로 이동해요. (오른쪽 위 하늘로 가요!)</li>
+            <li>모양을 보여요.</li>
+            <li>15초 동안 x: -210, y: 95 위치로 이동해요. (왼쪽으로 천천히 흘러가요)</li>
+            <li>모양을 숨겨요.</li>
+        </ol>
+        <button class="btn-toggle" onclick="toggleHint('hint-cloud')">👀 블록 힌트 보기</button>
+        <div id="hint-cloud" class="hint-img-container">
+            <img src="https://happyhyeok.github.io/afterschool/34G_3_03.PNG" alt="구름 코딩 블록 힌트">
+        </div>
+
+        <!-- 고등어 코드 -->
+        <h4>🐟 2. 고등어 코딩하기</h4>
+        <ol class="code-list">
+            <li>시작하기 버튼을 클릭하면</li>
+            <li>크기를 45로 정해요.</li>
+            <li>x: -160, y: 30 위치로 이동해요.</li>
+            <li>5초 기다려요.</li>
+            <li>1초 동안 구름 위치로 이동해요. (구름한테 날아가요!)</li>
+            <li>1초 동안 x: 160, y: 30 위치로 이동해요.</li>
+        </ol>
+        <button class="btn-toggle" onclick="toggleHint('hint-fish')">👀 블록 힌트 보기</button>
+        <div id="hint-fish" class="hint-img-container">
+            <img src="https://happyhyeok.github.io/afterschool/34G_3_01.PNG" alt="고등어 코딩 블록 힌트">
+        </div>
+
+        <!-- 꽃게 코드 -->
+        <h4>🦀 3. 꽃게 코딩하기 (키보드로 조종해요!)</h4>
+        
+        <p style="font-weight: 700; color: #2c3e50; margin-top: 15px; margin-bottom: 10px;">📌 꽃게가 특정 위치로 이동해요.</p>
+        <ol class="code-list">
+            <li>시작하기 버튼을 클릭하면</li>
+            <li>크기를 50으로 정해요.</li>
+            <li>x: -140, y: -65 위치로 이동해요.</li>
+        </ol>
+
+        <p style="font-weight: 700; color: #2c3e50; margin-top: 25px; margin-bottom: 10px;">📌 키보드 화살표키를 누르면, 위, 아래, 왼쪽, 오른쪽으로 요리조리 움직여요.</p>
+        <ol class="code-list">
+            <li>위쪽 화살표 키를 누르면 y 좌표를 2만큼 바꿔요.</li>
+            <li>아래쪽 화살표 키를 누르면 y 좌표를 -2만큼 바꿔요.</li>
+            <li>오른쪽 화살표 키를 누르면 x 좌표를 2만큼 바꿔요.</li>
+            <li>왼쪽 화살표 키를 누르면 x 좌표를 -2만큼 바꿔요.</li>
+        </ol>
+        <button class="btn-toggle" onclick="toggleHint('hint-crab')">👀 블록 힌트 보기</button>
+        <div id="hint-crab" class="hint-img-container">
+            <img src="https://happyhyeok.github.io/afterschool/34G_3_02.PNG" alt="꽃게 코딩 블록 힌트">
+        </div>
+        
+        <p style="margin-top: 20px;">🌟 <strong>선생님의 꿀팁:</strong> 꽃게가 움직이는 숫자가 '2'라서 너무 느리게 느껴진다면, 숫자를 '10'이나 '-10'으로 바꿔보세요! 슝슝 빠르게 움직일 거예요.</p>
+    </section>
+
+    <!-- 4. 정리 -->
+    <section>
+        <h2>4. 정리 및 퀴즈 🏆</h2>
+        <p>오늘 우리는 화면 안에서 물건의 위치를 알려주는 'X 좌표(가로)'와 'Y 좌표(세로)'를 배웠어요.</p>
+
+        <h3 style="margin-top: 40px;">🤓 확인 퀴즈 (정답을 클릭해 보세요!)</h3>
+        
+        <div class="quiz-item">
+            <p><strong>Q1. 꽃게가 위, 아래로 움직이려면 어떤 좌표를 바꾸어 주어야 할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(1, false)">X 좌표</button>
+            <button class="btn-quiz" onclick="checkQuiz(1, true)">Y 좌표</button>
+            <div id="quiz-feedback-1" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q2. 꽃게가 오른쪽으로 이동하려면 X 좌표는 어떻게 되어야 할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(2, true)">점점 커져야 해요</button>
+            <button class="btn-quiz" onclick="checkQuiz(2, false)">점점 작아져야 해요</button>
+            <div id="quiz-feedback-2" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q3. 지금 있는 곳에서 계속 앞으로 나아가려면 어떤 블록을 써야 할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(3, true)">~만큼 움직이기</button>
+            <button class="btn-quiz" onclick="checkQuiz(3, false)">~위치로 이동하기</button>
+            <div id="quiz-feedback-3" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q4. 화면 정중앙으로 순간이동하려면 X, Y 좌표를 각각 몇으로 해야 할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(4, true)">X: 0, Y: 0</button>
+            <button class="btn-quiz" onclick="checkQuiz(4, false)">X: 100, Y: 100</button>
+            <div id="quiz-feedback-4" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q5. 고등어가 5초 동안 제자리에서 기다리게 하려면 어떤 블록이 필요할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(5, false)">5초 동안 이동하기</button>
+            <button class="btn-quiz" onclick="checkQuiz(5, true)">5초 기다리기</button>
+            <div id="quiz-feedback-5" class="feedback"></div>
+        </div>
+
+        <h3 style="margin-top: 50px;">🚀 나만의 도전 과제!</h3>
+        <ul>
+            <li>구름이 더 천천히 흘러가게 변경하세요.</li>
+            <li>상어나 갈매기 오브젝트를 추가하고, 나만의 좌표를 입력해서 나타나게 해보세요!</li>
+            <li>꽃게의 크기를 엄청 크게(예: 150) 만들어 볼까요?</li>
+        </ul>
+    </section>
+    
+    <p style="text-align: center; font-weight: 700; color: #a0aec0; margin-top: 50px;">수고했어요 친구들! 다음 시간에 만나요! 💖</p>
+</div>
+
+<!-- 인터랙티브 스크립트 -->
+<script>
+    // ------------------------------------
+    // 1. 자동차 시뮬레이터 로직
+    // ------------------------------------
+    let currentX = 0; // 초기 위치 0 (중앙)
+    const carElement = document.getElementById('car');
+    const xDisplay = document.getElementById('currentXDisplay');
+    const explanation = document.getElementById('simulatorExplanation');
+    
+    function updateCarPosition() {
+        if(currentX > 50) currentX = 50;
+        if(currentX < -50) currentX = -50;
+        
+        xDisplay.innerText = currentX;
+        // 1단위당 2%씩 이동 (가운데가 50%)
+        let leftPercent = 50 + (currentX * 2); 
+        carElement.style.left = leftPercent + '%';
+    }
+
+    function moveBy10() {
+        currentX += 10;
+        updateCarPosition();
+        explanation.innerText = "👉 현재 위치에서 +10만큼 덧셈해서 오른쪽으로 이동했어요! (누를 때마다 가요)";
+        explanation.style.color = "#3182ce";
+    }
+
+    function moveTo10() {
+        currentX = 10;
+        updateCarPosition();
+        explanation.innerText = "👉 내가 어디에 있든 상관없이 딱 '10' 위치로 순간이동 했어요! (한 번만 가요)";
+        explanation.style.color = "#38a169";
+    }
+
+    function resetCar() {
+        currentX = 0;
+        updateCarPosition();
+        explanation.innerText = "가운데(0)로 돌아왔습니다!";
+        explanation.style.color = "#e53e3e";
+    }
+
+    // ------------------------------------
+    // 2. 블록 힌트 토글 로직
+    // ------------------------------------
+    function toggleHint(id) {
+        const container = document.getElementById(id);
+        if (container.style.display === "none" || container.style.display === "") {
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+        }
+    }
+
+    // ------------------------------------
+    // 3. 퀴즈 피드백 로직
+    // ------------------------------------
+    function checkQuiz(qNum, isCorrect) {
+        const feedbackEle = document.getElementById('quiz-feedback-' + qNum);
+        if (isCorrect) {
+            feedbackEle.innerHTML = "정답입니다! 🎉 훌륭해요!";
+            feedbackEle.style.color = "#38a169"; // 초록색
+        } else {
+            feedbackEle.innerHTML = "아쉬워요! 다시 한 번 생각해 볼까요? 🧐";
+            feedbackEle.style.color = "#e53e3e"; // 빨간색
+        }
+    }
+</script>
+
+</body>
+</html>
