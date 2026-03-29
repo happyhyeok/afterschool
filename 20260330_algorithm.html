@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알고리즘 놀이터 - 순서대로 척척!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f0fdf4; /* 연한 초록 배경 */
+            user-select: none;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #1f2937;
+            font-size: 1.2rem; /* 전체 기본 폰트 크기 증가 */
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* 애니메이션 */
+        .pop-in { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .bounce { animation: bounce 1s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .jump { animation: jump 0.3s ease-in-out; }
+        @keyframes jump {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.1) translateY(-15px); }
+        }
+
+        /* 샌드위치 드롭존 */
+        .ingredient { transition: transform 0.2s; cursor: grab; }
+        .ingredient:active { cursor: grabbing; transform: scale(1.05); }
+        .dropzone {
+            border: 4px dashed #a7f3d0;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .dropzone.hover { background-color: #d1fae5; border-color: #34d399; }
+
+        /* 공통 버튼 스타일 */
+        .btn-primary {
+            background: linear-gradient(to bottom, #4ade80, #22c55e);
+            color: white;
+            box-shadow: 0 4px 0 #16a34a;
+            transition: all 0.1s;
+            font-size: 1.5rem; /* 버튼 폰트 크기 증가 */
+        }
+        .btn-primary:active { transform: translateY(4px); box-shadow: 0 0 0 #16a34a; }
+        
+        .btn-action {
+            background: linear-gradient(to bottom, #60a5fa, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 0 #2563eb;
+            transition: all 0.1s;
+            font-size: 1.5rem; /* 버튼 폰트 크기 증가 */
+        }
+        .btn-action:active { transform: translateY(4px); box-shadow: 0 0 0 #2563eb; }
+
+        .cmd-slot {
+            width: 50px; height: 50px; /* 슬롯 크기 증가 */
+            border: 2px solid #93c5fd;
+            border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; /* 아이콘 크기 증가 */
+            background: white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-xl p-6 md:p-10 relative overflow-hidden">
+        
+        <!-- 상단 진행률 바 -->
+        <div class="w-full bg-gray-200 rounded-full h-4 mb-6">
+            <div id="progress-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 5%"></div>
+        </div>
+
+        <!-- ================= 1. 도입 ================= -->
+        <div id="screen-intro" class="flex flex-col items-center text-center pop-in">
+            <h1 class="text-5xl md:text-6xl font-bold text-green-600 mb-4">순서대로 척척!<br>알고리즘 놀이터</h1>
+            <div class="text-7xl mb-6 bounce">🧸</div>
+            <p class="text-3xl mb-4 leading-relaxed">
+                안녕, 친구들! 정보 선생님이에요.<br>
+                컴퓨터는 아주 똑똑하지만, 우리가 <b>순서대로 정확하게</b> 알려주지 않으면 헷갈려 한답니다.
+            </p>
+            <div class="bg-yellow-100 p-6 rounded-xl mb-8 w-full shadow-inner">
+                <p class="text-2xl text-yellow-800 font-bold">
+                    💡 이렇게 순서대로 문제를 해결하는 방법을<br>
+                    <span class="text-4xl text-red-500">'알고리즘(Algorithm)'</span> 이라고 불러요!
+                </p>
+            </div>
+            <p class="text-2xl mb-6">자, 그럼 재미있는 알고리즘 놀이를 시작해 볼까요?</p>
+            <button onclick="nextScreen('screen-intro', 'screen-sandwich', 20)" class="btn-primary px-12 py-5 rounded-2xl font-bold bounce">
+                놀이터로 출발! <i class="fa-solid fa-play ml-2"></i>
+            </button>
+        </div>
+
+        <!-- ================= 2. 샌드위치 알고리즘 ================= -->
+        <div id="screen-sandwich" class="hidden flex flex-col items-center text-center pop-in">
+            <h2 class="text-4xl font-bold text-orange-500 mb-4">1단계: 햄버거 만들기 🍔</h2>
+            <p class="text-2xl mb-6">맛있는 햄버거를 만들려면 <b>순서</b>가 중요해요.<br>아래 순서표를 보고, 재료를 접시 위로 <b>드래그</b> 해보세요!</p>
+            
+            <div class="bg-orange-100 px-6 py-3 rounded-full mb-8 text-xl font-bold text-orange-800 flex items-center gap-3 flex-wrap justify-center">
+                <span>알고리즘:</span>
+                <span class="bg-white px-3 py-1 rounded shadow-sm">1. 빵(아래)</span> ➔
+                <span class="bg-white px-3 py-1 rounded shadow-sm">2. 치즈</span> ➔
+                <span class="bg-white px-3 py-1 rounded shadow-sm">3. 햄</span> ➔
+                <span class="bg-white px-3 py-1 rounded shadow-sm">4. 빵(위)</span>
+            </div>
+
+            <!-- 햄버거 재료들 (측면/얇은 이미지) -->
+            <div class="flex gap-6 mb-10 flex-wrap justify-center items-end" id="ingredients-container">
+                <!-- 치즈 -->
+                <div class="ingredient w-40 h-8 rounded-md overflow-hidden shadow-sm border-2 border-yellow-400 relative flex items-center justify-center bg-yellow-100" draggable="true" id="item-cheese" data-type="cheese">
+                    <img src="" onerror="this.style.display='none';" alt="치즈" class="absolute inset-0 w-full h-full object-cover">
+                    <span class="relative z-10 font-bold text-yellow-900 bg-white/70 px-2 py-1 rounded text-sm">2. 치즈</span>
+                </div>
+                
+                <!-- 식빵(위) -->
+                <div class="ingredient w-40 h-20 rounded-t-[40px] overflow-hidden shadow-md border-2 border-orange-300 relative flex items-center justify-center bg-orange-100" draggable="true" id="item-bread-top" data-type="bread-top">
+                    <img src="" onerror="this.style.display='none';" alt="빵(위)" class="absolute inset-0 w-full h-full object-cover">
+                    <span class="relative z-10 font-bold text-orange-900 bg-white/70 px-2 py-1 rounded text-sm">4. 빵(위)</span>
+                </div>
+                
+                <!-- 햄 -->
+                <div class="ingredient w-40 h-10 rounded-full overflow-hidden shadow-sm border-2 border-pink-400 relative flex items-center justify-center bg-pink-100" draggable="true" id="item-ham" data-type="ham">
+                    <img src="" onerror="this.style.display='none';" alt="햄" class="absolute inset-0 w-full h-full object-cover">
+                    <span class="relative z-10 font-bold text-pink-900 bg-white/70 px-2 py-1 rounded text-sm">3. 햄</span>
+                </div>
+                
+                <!-- 식빵(아래) -->
+                <div class="ingredient w-40 h-12 rounded-b-[20px] overflow-hidden shadow-md border-2 border-orange-300 relative flex items-center justify-center bg-orange-100" draggable="true" id="item-bread-bottom" data-type="bread-bottom">
+                    <img src="" onerror="this.style.display='none';" alt="빵(아래)" class="absolute inset-0 w-full h-full object-cover">
+                    <span class="relative z-10 font-bold text-orange-900 bg-white/70 px-2 py-1 rounded text-sm">1. 빵(아래)</span>
+                </div>
+            </div>
+
+            <!-- 접시 영역을 트레이처럼 넓게 변경 -->
+            <div id="plate" class="dropzone w-full max-w-md h-72 rounded-[40px] flex flex-col-reverse justify-start items-center p-8 relative mb-8">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-3xl -z-10 pointer-events-none">
+                    이곳에 겹쳐주세요
+                </div>
+            </div>
+
+            <p id="sandwich-msg" class="text-3xl font-bold h-10 mb-6"></p>
+
+            <button id="btn-next-sandwich" onclick="nextScreen('screen-sandwich', 'screen-daily', 40)" class="btn-primary px-12 py-5 rounded-2xl font-bold hidden">
+                2단계로 가기 <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- ================= 3. 생활 속 알고리즘 (양치질 & 라면) ================= -->
+        <div id="screen-daily" class="hidden flex flex-col items-center text-center pop-in w-full">
+            <h2 id="daily-title" class="text-4xl font-bold text-teal-500 mb-4">2단계: 생활 속 알고리즘 🪥</h2>
+            <p id="daily-desc" class="text-2xl mb-6">우리 생활 속에도 순서가 숨어있어요.<br>올바른 <b>순서</b>대로 카드를 하나씩 <b>클릭</b>해 보세요!</p>
+
+            <div class="grid grid-cols-2 gap-6 w-full max-w-lg mb-8" id="daily-cards-container">
+                <!-- 카드는 JS로 섞어서 렌더링 -->
+            </div>
+
+            <p id="daily-msg" class="text-3xl font-bold h-10 mb-6 text-gray-600">가장 먼저 해야 할 일은 무엇일까요?</p>
+
+            <button id="btn-next-daily" onclick="handleDailyNext()" class="btn-primary px-12 py-5 rounded-2xl font-bold hidden">
+                다음 예시 보기 <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- ================= 4. 로봇 길 찾기 (3단계, 4단계, 5단계) ================= -->
+        <div id="screen-maze" class="hidden flex flex-col items-center text-center pop-in w-full">
+            <h2 id="maze-title" class="text-4xl font-bold text-blue-500 mb-4">3단계: 로봇 길 찾기 연습 🤖</h2>
+            <p id="maze-desc" class="text-2xl mb-6">로봇이 건전지를 먹을 수 있도록<br><b>화살표 알고리즘</b>을 순서대로 조립해주세요!</p>
+
+            <div class="flex flex-col md:flex-row gap-10 items-center w-full justify-center mb-8">
+                <!-- 동적 미로 보드 -->
+                <div id="maze-board" class="grid gap-2 w-full max-w-[400px] bg-gray-200 p-3 rounded-xl relative">
+                    <!-- JS가 셀과 로봇을 여기에 생성합니다 -->
+                </div>
+
+                <!-- 컨트롤 패널 -->
+                <div class="flex flex-col items-center bg-blue-50 p-6 rounded-2xl border-2 border-blue-200 shadow-sm w-full max-w-[350px]">
+                    <p class="text-xl font-bold mb-4">명령어 버튼</p>
+                    <div class="grid grid-cols-3 gap-3 mb-6">
+                        <div></div>
+                        <button class="btn-action w-16 h-16 rounded-xl" onclick="addCommand('UP')"><i class="fa-solid fa-arrow-up"></i></button>
+                        <div></div>
+                        <button class="btn-action w-16 h-16 rounded-xl" onclick="addCommand('LEFT')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <button class="btn-action w-16 h-16 rounded-xl" onclick="addCommand('DOWN')"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button class="btn-action w-16 h-16 rounded-xl" onclick="addCommand('RIGHT')"><i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                    
+                    <p class="text-xl font-bold mb-4">나의 알고리즘</p>
+                    <div class="flex gap-2 mb-6 flex-wrap justify-center min-h-[60px] w-full bg-white p-3 rounded-lg border-2 border-dashed border-gray-300" id="command-list">
+                    </div>
+                    
+                    <div class="flex gap-4 w-full">
+                        <button onclick="clearCommands()" class="bg-red-400 text-white flex-1 py-3 rounded-lg font-bold shadow-[0_4px_0_#b91c1c] active:translate-y-1 active:shadow-none transition-all text-xl">지우기</button>
+                        <button onclick="runAlgorithm()" class="bg-yellow-400 text-yellow-900 flex-1 py-3 rounded-lg font-bold shadow-[0_4px_0_#a16207] active:translate-y-1 active:shadow-none transition-all text-xl">▶ 실행!</button>
+                    </div>
+                </div>
+            </div>
+
+            <p id="maze-msg" class="text-3xl font-bold h-10 mb-6"></p>
+
+            <button id="btn-next-maze" onclick="handleMazeNext()" class="btn-primary px-12 py-5 rounded-2xl font-bold hidden">
+                도전! 다음 단계로 가기 🔥
+            </button>
+        </div>
+
+        <!-- ================= 5. 확인 학습 (퀴즈) ================= -->
+        <div id="screen-quiz" class="hidden flex flex-col items-center text-center pop-in w-full">
+            <h2 class="text-4xl font-bold text-purple-600 mb-8">마무리 퀴즈 📝</h2>
+            
+            <div class="bg-purple-50 p-8 rounded-2xl border-4 border-purple-200 w-full mb-8 max-w-2xl">
+                <div class="flex justify-between items-center mb-6 text-purple-800 font-bold">
+                    <span id="quiz-progress" class="text-2xl">문제 1 / 3</span>
+                    <span class="text-4xl">🤔</span>
+                </div>
+                <div id="quiz-q" class="text-3xl font-bold mb-8 min-h-[120px] flex flex-col items-center justify-center gap-3 break-keep text-center">문제가 여기에 나옵니다.</div>
+                
+                <!-- O/X -->
+                <div id="quiz-ox-zone" class="flex justify-center gap-10 hidden">
+                    <button onclick="checkQuiz('O')" class="btn-action w-32 h-32 rounded-full text-6xl font-bold bg-blue-400 shadow-[0_8px_0_#1d4ed8]">O</button>
+                    <button onclick="checkQuiz('X')" class="bg-red-400 text-white w-32 h-32 rounded-full text-6xl font-bold shadow-[0_8px_0_#b91c1c] active:translate-y-1 active:shadow-none transition-all">X</button>
+                </div>
+
+                <!-- 초성 입력 -->
+                <div id="quiz-text-zone" class="flex flex-col items-center hidden">
+                    <p id="quiz-hint" class="text-2xl text-gray-500 mb-6 bg-yellow-100 px-6 py-2 rounded-full">힌트: ㅇㄱㄹㅈ</p>
+                    <div class="flex gap-4">
+                        <input type="text" id="quiz-input" class="border-4 border-purple-300 rounded-xl px-6 py-4 text-3xl w-64 text-center outline-none focus:border-purple-500" placeholder="정답 입력">
+                        <button onclick="checkQuizText()" class="btn-action px-8 py-4 rounded-xl text-2xl font-bold">확인</button>
+                    </div>
+                </div>
+            </div>
+
+            <p id="quiz-msg" class="text-3xl font-bold h-10"></p>
+        </div>
+
+        <!-- ================= 6. 수료증 ================= -->
+        <div id="screen-outro" class="hidden flex flex-col items-center text-center pop-in">
+            <h1 class="text-6xl font-bold text-green-600 mb-8 mt-6">최고예요! 🎉</h1>
+            <div class="text-9xl mb-8 bounce">🏆</div>
+            
+            <div class="bg-gradient-to-r from-yellow-100 to-orange-100 border-4 border-yellow-400 p-10 rounded-3xl mb-10 shadow-lg w-full max-w-lg relative">
+                <div class="absolute -top-8 -left-8 text-6xl">✨</div>
+                <div class="absolute -bottom-8 -right-8 text-6xl">✨</div>
+                <h2 class="text-4xl font-bold text-yellow-800 mb-6">알고리즘 마스터 인증서</h2>
+                <p class="text-3xl mb-4">위 학생은 순서의 비밀인</p>
+                <p class="text-5xl font-bold text-red-500 mb-6">'알고리즘'</p>
+                <p class="text-3xl">을 완벽하게 이해하고 모든 관문을<br>통과하였기에 이 증서를 줍니다.</p>
+                <p class="text-2xl font-bold text-gray-500 mt-8">옥계초등학교 정보 선생님</p>
+            </div>
+
+            <p class="text-3xl font-bold text-gray-700">오늘 수업 끝! 다음 시간에 만나요~ 👋</p>
+        </div>
+
+    </div>
+
+    <script>
+        // 공통 화면 전환
+        function nextScreen(hideId, showId, progress) {
+            document.getElementById(hideId).classList.add('hidden');
+            const showEl = document.getElementById(showId);
+            showEl.classList.remove('hidden');
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            if(showId === 'screen-daily') initDaily();
+            if(showId === 'screen-maze') initMaze();
+            if(showId === 'screen-quiz') loadQuiz();
+        }
+
+        /* ================= 1. 샌드위치(햄버거) 로직 ================= */
+        const sandwichTarget = ['bread-bottom', 'cheese', 'ham', 'bread-top'];
+        let sandwichCurrent = [];
+        const ingredients = document.querySelectorAll('.ingredient');
+        const plate = document.getElementById('plate');
+        const sandwichMsg = document.getElementById('sandwich-msg');
+
+        ingredients.forEach(item => {
+            item.addEventListener('click', () => handleIngredientAdd(item));
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', item.id);
+                setTimeout(() => item.style.opacity = '0.5', 0);
+            });
+            item.addEventListener('dragend', () => item.style.opacity = '1');
+        });
+
+        plate.addEventListener('dragover', (e) => { e.preventDefault(); plate.classList.add('hover'); });
+        plate.addEventListener('dragleave', () => plate.classList.remove('hover'));
+        plate.addEventListener('drop', (e) => {
+            e.preventDefault(); plate.classList.remove('hover');
+            handleIngredientAdd(document.getElementById(e.dataTransfer.getData('text/plain')));
+        });
+
+        function handleIngredientAdd(item) {
+            if(!item || item.style.visibility === 'hidden') return;
+            const type = item.getAttribute('data-type');
+            if (type === sandwichTarget[sandwichCurrent.length]) {
+                sandwichCurrent.push(type);
+                const clone = item.cloneNode(true);
+                clone.style.cursor = 'default'; clone.draggable = false;
+                
+                // 햄버거처럼 위아래가 딱 붙어 겹치도록 마진 설정 (밑에서부터 쌓이므로 marginBottom 조절)
+                clone.style.marginBottom = '-8px'; 
+                clone.style.zIndex = sandwichCurrent.length;
+                
+                // 라벨(글자) 숨기고 이미지만 남기기
+                const label = clone.querySelector('span');
+                if(label) label.style.display = 'none';
+
+                plate.appendChild(clone);
+                item.style.visibility = 'hidden';
+                sandwichMsg.innerHTML = `<span class="text-green-500">좋아요! 알맞은 순서예요. 👏</span>`;
+                
+                if (sandwichCurrent.length === sandwichTarget.length) {
+                    sandwichMsg.innerHTML = `<span class="text-green-600">완벽해요! 멋진 햄버거 완성! 🍔</span>`;
+                    document.getElementById('btn-next-sandwich').classList.remove('hidden');
+                    document.getElementById('btn-next-sandwich').classList.add('bounce');
+                }
+            } else {
+                item.classList.add('shake');
+                sandwichMsg.innerHTML = `<span class="text-red-500">앗! 순서가 틀렸어요. 다시 생각해봐요! 🤔</span>`;
+                setTimeout(() => item.classList.remove('shake'), 400);
+            }
+        }
+
+        /* ================= 2. 생활 속 알고리즘 (양치질 & 라면) ================= */
+        const dailyDataSets = [
+            {
+                title: "2단계: 생활 속 알고리즘 🪥 (양치질)",
+                desc: "올바른 <b>양치질 순서</b>대로 카드를 하나씩 <b>클릭</b>해 보세요!",
+                steps: [
+                    { step: 1, icon: '<img src="" alt="칫솔과 치약" class="w-[72px] h-[72px] object-contain">', text: '칫솔에 치약 짜기' },
+                    { step: 2, icon: '🦷', text: '구석구석 이 닦기' },
+                    { step: 3, icon: '💧', text: '물로 입 헹구기' },
+                    { step: 4, icon: '✨', text: '칫솔 깨끗이 씻기' }
+                ]
+            },
+            {
+                title: "2단계: 생활 속 알고리즘 🍜 (라면 끓이기)",
+                desc: "맛있는 <b>라면을 끓이는 순서</b>대로 카드를 <b>클릭</b>해 보세요!",
+                steps: [
+                    { step: 1, icon: '🔥', text: '냄비에 물 끓이기' },
+                    { step: 2, icon: '🍜', text: '면과 스프 넣기' },
+                    { step: 3, icon: '⏱️', text: '3분 동안 기다리기' },
+                    { step: 4, icon: '😋', text: '맛있게 먹기' }
+                ]
+            }
+        ];
+        let currentDailySetIdx = 0;
+        let currentDailyStep = 1;
+
+        function initDaily() {
+            const dataSet = dailyDataSets[currentDailySetIdx];
+            document.getElementById('daily-title').innerHTML = dataSet.title;
+            document.getElementById('daily-desc').innerHTML = dataSet.desc;
+            
+            const container = document.getElementById('daily-cards-container');
+            container.innerHTML = '';
+            currentDailyStep = 1;
+            document.getElementById('daily-msg').innerHTML = "가장 먼저 해야 할 일은 무엇일까요?";
+            document.getElementById('btn-next-daily').classList.add('hidden');
+            
+            const shuffled = [...dataSet.steps].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-white p-6 rounded-2xl border-4 border-gray-200 shadow-sm flex flex-col items-center gap-3 relative transition-all active:scale-95';
+                btn.innerHTML = `
+                    <span class="text-6xl flex items-center justify-center min-h-[72px]">${item.icon}</span>
+                    <span class="font-bold text-2xl">${item.text}</span>
+                    <div class="badge hidden absolute -top-4 -right-4 bg-teal-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-3xl border-4 border-white"></div>
+                `;
+                btn.onclick = () => handleDailyClick(item.step, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleDailyClick(step, btn) {
+            if(btn.classList.contains('pointer-events-none')) return;
+
+            const msg = document.getElementById('daily-msg');
+            if(step === currentDailyStep) {
+                btn.classList.add('border-teal-400', 'bg-teal-50', 'pointer-events-none');
+                btn.classList.remove('border-gray-200');
+                const badge = btn.querySelector('.badge');
+                badge.innerText = step;
+                badge.classList.remove('hidden');
+                badge.classList.add('pop-in');
+                
+                currentDailyStep++;
+                msg.innerHTML = `<span class="text-green-500">맞아요! 그 다음엔 무엇을 할까요?</span>`;
+
+                if(currentDailyStep > 4) {
+                    msg.innerHTML = `<span class="text-green-600 font-bold">완벽해요! 순서 알고리즘 완성! 🌟</span>`;
+                    document.getElementById('btn-next-daily').classList.remove('hidden');
+                    document.getElementById('btn-next-daily').classList.add('bounce');
+                    
+                    if(currentDailySetIdx === 0) {
+                        document.getElementById('btn-next-daily').innerHTML = '다음 예시 보기 <i class="fa-solid fa-arrow-right ml-2"></i>';
+                    } else {
+                        document.getElementById('btn-next-daily').innerHTML = '3단계로 가기 <i class="fa-solid fa-robot ml-2"></i>';
+                    }
+                }
+            } else {
+                btn.classList.add('shake');
+                msg.innerHTML = `<span class="text-red-500">앗, 아직 그 순서가 아니에요! 처음부터 다시 해볼까요?</span>`;
+                setTimeout(() => {
+                    btn.classList.remove('shake');
+                    initDaily();
+                }, 1000);
+            }
+        }
+
+        function handleDailyNext() {
+            if(currentDailySetIdx === 0) {
+                currentDailySetIdx++;
+                initDaily();
+                document.getElementById('progress-bar').style.width = '50%';
+            } else {
+                nextScreen('screen-daily', 'screen-maze', 60);
+            }
+        }
+
+        /* ================= 3. 미로 게임 로직 (3단계) ================= */
+        const mazeLevels = [
+            {
+                level: 1, cols: 3, rows: 3,
+                obstacles: [[1,1]], goal: [2,2],
+                title: "3단계: 로봇 길 찾기 연습 🤖 (초급)",
+                desc: "로봇이 건전지를 먹을 수 있도록<br><b>화살표 알고리즘</b>을 순서대로 조립해주세요!",
+                maxCmds: 8
+            },
+            {
+                level: 2, cols: 4, rows: 4,
+                obstacles: [[1,2], [2,1], [3,0]], goal: [3,3],
+                title: "4단계: 길 찾기 도전 과제 🔥 (중급)",
+                desc: "우와, 미로가 더 커졌어요!<br>장애물(🧱)을 피해서 배터리(🔋)까지 가볼까요?",
+                maxCmds: 10
+            },
+            {
+                level: 3, cols: 6, rows: 6,
+                obstacles: [[1,1], [1,4], [2,2], [3,5], [4,0], [4,3], [5,1]], goal: [5,5],
+                title: "5단계: 최고의 알고리즘 마스터 🏆 (고급)",
+                desc: "가장 어렵고 큰 미로예요!<br>신중하게 순서를 생각해서 로봇을 탈출시켜주세요!",
+                maxCmds: 16
+            }
+        ];
+        
+        let currentMazeIdx = 0;
+        let commands = [];
+        let playerPos = { r: 0, c: 0 };
+        let isRunning = false;
+
+        function initMaze() {
+            // 첫 진입 시 초기화
+            if(currentMazeIdx === 0 && commands.length > 0) clearCommands();
+            renderMazeBoard();
+        }
+
+        function renderMazeBoard() {
+            const levelData = mazeLevels[currentMazeIdx];
+            document.getElementById('maze-title').innerHTML = levelData.title;
+            document.getElementById('maze-desc').innerHTML = levelData.desc;
+            document.getElementById('btn-next-maze').classList.add('hidden');
+            
+            const board = document.getElementById('maze-board');
+            board.style.gridTemplateColumns = `repeat(${levelData.cols}, 1fr)`;
+            board.innerHTML = '';
+            
+            for(let r=0; r<levelData.rows; r++) {
+                for(let c=0; c<levelData.cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'bg-white rounded-lg aspect-square flex items-center justify-center text-4xl relative border-2 border-gray-100';
+                    cell.dataset.r = r; cell.dataset.c = c;
+                    
+                    if(levelData.obstacles.some(obs => obs[0]===r && obs[1]===c)) {
+                        cell.classList.add('bg-red-100'); cell.innerHTML = '🧱';
+                    }
+                    if(levelData.goal[0]===r && levelData.goal[1]===c) {
+                        cell.classList.add('bg-yellow-100'); cell.innerHTML = '🔋';
+                    }
+                    board.appendChild(cell);
+                }
+            }
+            clearCommands();
+        }
+
+        function updateRobotPos(animate = false) {
+            const board = document.getElementById('maze-board');
+            let robot = document.getElementById('robot');
+            if(!robot) {
+                robot = document.createElement('div');
+                robot.id = 'robot';
+                robot.className = 'absolute inset-0 flex items-center justify-center text-5xl z-10 transition-all duration-300';
+                robot.innerHTML = '🤖';
+            }
+            
+            const targetCell = board.querySelector(`[data-r="${playerPos.r}"][data-c="${playerPos.c}"]`);
+            if(targetCell) {
+                targetCell.appendChild(robot);
+                if(animate) {
+                    robot.classList.remove('jump');
+                    void robot.offsetWidth;
+                    robot.classList.add('jump');
+                }
+            }
+        }
+
+        const icons = { 'UP': 'fa-arrow-up', 'DOWN': 'fa-arrow-down', 'LEFT': 'fa-arrow-left', 'RIGHT': 'fa-arrow-right' };
+
+        function addCommand(cmd) {
+            if (isRunning || commands.length >= mazeLevels[currentMazeIdx].maxCmds) return;
+            commands.push(cmd);
+            renderCommands();
+        }
+
+        function clearCommands() {
+            if (isRunning) return;
+            commands = [];
+            renderCommands();
+            document.getElementById('maze-msg').innerText = "";
+            playerPos = { r: 0, c: 0 };
+            updateRobotPos();
+        }
+
+        function renderCommands() {
+            const list = document.getElementById('command-list');
+            list.innerHTML = '';
+            commands.forEach(cmd => {
+                const div = document.createElement('div');
+                div.className = 'cmd-slot pop-in';
+                div.innerHTML = `<i class="fa-solid ${icons[cmd]}"></i>`;
+                list.appendChild(div);
+            });
+        }
+
+        function runAlgorithm() {
+            if (isRunning || commands.length === 0) return;
+            isRunning = true;
+            playerPos = { r: 0, c: 0 };
+            updateRobotPos();
+            const msg = document.getElementById('maze-msg');
+            msg.innerHTML = `<span class="text-blue-500">명령을 실행합니다... 삐리빅!</span>`;
+            
+            let step = 0;
+            const levelData = mazeLevels[currentMazeIdx];
+            
+            function nextStep() {
+                if (step >= commands.length) {
+                    checkWin();
+                    return;
+                }
+
+                const cmd = commands[step];
+                let nextR = playerPos.r;
+                let nextC = playerPos.c;
+
+                if(cmd === 'UP') nextR--;
+                if(cmd === 'DOWN') nextR++;
+                if(cmd === 'LEFT') nextC--;
+                if(cmd === 'RIGHT') nextC++;
+
+                const isObstacle = levelData.obstacles.some(obs => obs[0]===nextR && obs[1]===nextC);
+                if (nextR < 0 || nextR >= levelData.rows || nextC < 0 || nextC >= levelData.cols || isObstacle) {
+                    document.getElementById('robot').classList.add('shake');
+                    msg.innerHTML = `<span class="text-red-500">쿵! 벽이나 장애물에 부딪혔어요. 💥</span>`;
+                    setTimeout(() => {
+                        document.getElementById('robot').classList.remove('shake');
+                        isRunning = false;
+                    }, 500);
+                    return;
+                }
+
+                playerPos.r = nextR;
+                playerPos.c = nextC;
+                updateRobotPos(true);
+
+                step++;
+                setTimeout(nextStep, 500);
+            }
+            setTimeout(nextStep, 300);
+        }
+
+        function checkWin() {
+            const levelData = mazeLevels[currentMazeIdx];
+            const msg = document.getElementById('maze-msg');
+            const btnNext = document.getElementById('btn-next-maze');
+
+            if (playerPos.r === levelData.goal[0] && playerPos.c === levelData.goal[1]) {
+                msg.innerHTML = `<span class="text-green-500">성공! 알고리즘이 완벽해요! ⚡</span>`;
+                btnNext.classList.remove('hidden');
+                btnNext.classList.add('bounce');
+                
+                if(currentMazeIdx < 2) {
+                    btnNext.innerHTML = '도전! 다음 단계로 가기 🔥';
+                } else {
+                    btnNext.innerHTML = '확인 퀴즈 풀기! <i class="fa-solid fa-pencil ml-2"></i>';
+                }
+            } else {
+                msg.innerHTML = `<span class="text-orange-500">도착점에 가지 못했어요. 명령어를 다시 확인해봐요!</span>`;
+            }
+            isRunning = false;
+        }
+
+        function handleMazeNext() {
+            if(currentMazeIdx < 2) {
+                currentMazeIdx++;
+                renderMazeBoard();
+                document.getElementById('progress-bar').style.width = `${70 + (currentMazeIdx * 10)}%`;
+            } else {
+                nextScreen('screen-maze', 'screen-quiz', 95);
+            }
+        }
+
+        /* ================= 4. 퀴즈 로직 ================= */
+        const quizData = [
+            {
+                type: 'ox',
+                q: '<span>컴퓨터에게</span><span>일을 시킬 때는</span><span><b class="text-red-500">순서</b>가 무척 중요하다.</span>',
+                a: 'O', correctMsg: '맞아요! 순서가 틀리면 엉뚱한 결과가 나와요.'
+            },
+            {
+                type: 'ox',
+                q: '<span>우리가 양치질을 할 때</span><span>정해진 순서대로 하는 것은</span><span>알고리즘이 아니다.</span>',
+                a: 'X', correctMsg: '딩동댕! 일상 생활 속 모든 순서와 방법이 알고리즘이에요.'
+            },
+            {
+                type: 'text',
+                q: '<span>컴퓨터에게 명령을 내릴 때,</span><span><b>어떤 문제를 해결하기 위한 순서와 방법</b>을</span><span>무엇이라고 할까요?</span>',
+                hint: 'ㅇㄱㄹㅈ', a: '알고리즘', correctMsg: '최고예요! 오늘의 핵심 단어입니다.'
+            }
+        ];
+        
+        let currentQuiz = 0;
+
+        function loadQuiz() {
+            const data = quizData[currentQuiz];
+            document.getElementById('quiz-progress').innerText = `문제 ${currentQuiz + 1} / ${quizData.length}`;
+            document.getElementById('quiz-q').innerHTML = data.q;
+            document.getElementById('quiz-msg').innerText = '';
+
+            const oxZone = document.getElementById('quiz-ox-zone');
+            const textZone = document.getElementById('quiz-text-zone');
+            const inputEl = document.getElementById('quiz-input');
+
+            if (data.type === 'ox') {
+                oxZone.classList.remove('hidden'); textZone.classList.add('hidden');
+            } else {
+                oxZone.classList.add('hidden'); textZone.classList.remove('hidden');
+                document.getElementById('quiz-hint').innerText = `힌트: ${data.hint}`;
+                inputEl.value = ''; inputEl.focus();
+            }
+        }
+
+        function checkQuiz(answer) { processAnswer(answer === quizData[currentQuiz].a); }
+        function checkQuizText() {
+            const input = document.getElementById('quiz-input').value.replace(/\s+/g, '');
+            processAnswer(input === quizData[currentQuiz].a);
+        }
+
+        function processAnswer(isCorrect) {
+            const msgEl = document.getElementById('quiz-msg');
+            if (isCorrect) {
+                msgEl.innerHTML = `<span class="text-green-500">${quizData[currentQuiz].correctMsg} 🎉</span>`;
+                setTimeout(() => {
+                    currentQuiz++;
+                    if (currentQuiz < quizData.length) {
+                        loadQuiz();
+                    } else {
+                        nextScreen('screen-quiz', 'screen-outro', 100);
+                        triggerConfetti();
+                    }
+                }, 2000);
+            } else {
+                msgEl.innerHTML = `<span class="text-red-500">다시 한 번 잘 생각해 볼까요? 🤔</span>`;
+                const qBox = document.querySelector('#screen-quiz .bg-purple-50');
+                qBox.classList.add('shake');
+                setTimeout(() => qBox.classList.remove('shake'), 400);
+            }
+        }
+
+        function triggerConfetti() {
+            for(let i=0; i<30; i++) {
+                let conf = document.createElement('div');
+                conf.innerText = ['🎉','✨','🎊','🎈','🌟'][Math.floor(Math.random()*5)];
+                conf.style.position = 'absolute';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-50px';
+                conf.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                conf.style.transition = 'transform 2s ease-in, top 2s ease-in';
+                document.body.appendChild(conf);
+                
+                setTimeout(() => {
+                    conf.style.top = '100vh';
+                    conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }, 50);
+
+                setTimeout(() => conf.remove(), 2100);
+            }
+        }
+    </script>
+</body>
+</html>
