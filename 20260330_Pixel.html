@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4회차: 규칙대로 쓱쓱! 비밀 그림 탐험대</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        bgLight: '#FFF9E6'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: var(--bgLight);
+            word-break: keep-all;
+        }
+        .font-gaegu { font-family: 'Gaegu', cursive; }
+        
+        .card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 10px 0px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: white;
+            transform: translateY(-2rem);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 3.html 네비게이션 버튼 스타일 반영 */
+        .nav-btn {
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #855d00;
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 픽셀 관련 스타일 */
+        .pixel-cell {
+            aspect-ratio: 1 / 1;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        .pixel-cell:hover {
+            background-color: #F3F4F6;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .animate-pop { animation: pop 0.3s ease-out; }
+
+        .color-chip {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            cursor: pointer;
+            border: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-chip.active {
+            border-color: #333;
+            transform: scale(1.15);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 돋보기 효과 캔버스 */
+        #zoom-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 2rem;
+            background: white;
+            border: 8px solid #E2E8F0;
+        }
+        
+        #smooth-img {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 140px; /* 크기 조정 */
+            transition: all 0.1s;
+        }
+        
+        #pixel-img {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .p-block { border: 1px solid rgba(0,0,0,0.05); }
+
+        /* 자동 칠하기 애니메이션 용 */
+        .demo-cell {
+            transition: background-color 0.5s ease;
+        }
+
+        /* 이모지 폭죽 효과 */
+        .emoji-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            animation: fall 1.5s ease-out forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 36px;
+            width: 36px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: pointer;
+            margin-top: -14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 4px solid white;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            cursor: pointer;
+            background: #E2E8F0;
+            border-radius: 6px;
+        }
+
+        /* 난이도 버튼 애니메이션 */
+        .level-btn.active {
+            transform: scale(1.05);
+            border-color: #333;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- 헤더 (3.html 디자인 적용) -->
+    <header class="bg-white border-b-8 border-primary p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary p-3 rounded-2xl shadow-inner">
+                    <i data-lucide="palette" class="w-10 h-10 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">4회차: 비밀 그림 탐험대!</h1>
+                    <p class="text-lg md:text-xl text-yellow-700 font-bold">규칙대로 쓱쓱! 컴퓨터 그림의 비밀</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex gap-2">
+                <button onclick="showTab(1)" id="tab-1" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 관찰</button>
+                <button onclick="showTab(2)" id="tab-2" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">2. 규칙</button>
+                <button onclick="showTab(3)" id="tab-3" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">3. 미션</button>
+                <button onclick="showTab(4)" id="tab-4" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">4. 자유그리기</button>
+                <button onclick="showTab(5)" id="tab-5" class="nav-btn bg-white border-4 border-gray-200 px-4 py-2 rounded-full font-bold">5. 확인학습</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-5xl p-6 mt-4">
+
+        <!-- ==========================================
+             1단계: 돋보기로 컴퓨터 화면 관찰하기 
+             ========================================== -->
+        <section id="section-1" class="tab-section card px-6 md:px-10 pb-10 border-4 border-primary fade-in block">
+            <div class="bg-primary step-badge flex">1</div>
+            
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">컴퓨터 그림의 비밀, '픽셀'</h2>
+                <div class="bg-yellow-50 p-6 rounded-3xl border-2 border-yellow-100 text-center space-y-3 max-w-3xl mx-auto">
+                    <p class="text-lg font-bold text-slate-700 leading-relaxed">
+                        텔레비전이나 스마트폰 화면을 아주 가까이서 본 적 있나요?<br>
+                        놀랍게도 컴퓨터가 보여주는 모든 그림과 글자는 <span class="bg-primary text-white px-2 py-1 rounded-lg">작은 네모칸</span>들이 모여서 만들어진답니다.<br>
+                        이 작은 네모칸 하나하나를 <strong class="text-2xl text-accent">'픽셀(Pixel)'</strong>이라고 불러요!
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 아래로 늘어뜨린 세로형 레이아웃 적용 -->
+            <div class="flex flex-col gap-10 items-center bg-slate-50 p-8 md:p-12 rounded-3xl border-2 border-slate-100 w-full max-w-2xl mx-auto">
+                
+                <!-- 사과 돋보기 컨테이너 -->
+                <div class="text-center w-full">
+                    <p class="font-bold text-xl text-secondary bg-white py-3 px-6 rounded-xl shadow-sm mb-6 inline-block">슬라이더를 오른쪽으로 당겨 사과를 확대해 보세요!</p>
+                    <div id="zoom-container" class="shadow-inner mx-auto w-64 h-64 md:w-80 md:h-80">
+                        <div id="smooth-img">🍎</div>
+                        <div id="pixel-img">
+                            <!-- 8x8 사과 픽셀 -->
+                            <div class="p-block"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block bg-green-500"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block"></div>
+                            <div class="p-block"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block bg-green-600"></div><div class="p-block bg-green-500"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block"></div>
+                            <div class="p-block"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div><div class="p-block"></div>
+                            <div class="p-block bg-red-500"></div><div class="p-block bg-red-400"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div>
+                            <div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div>
+                            <div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div>
+                            <div class="p-block"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-500"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div><div class="p-block"></div>
+                            <div class="p-block"></div><div class="p-block"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block bg-red-600"></div><div class="p-block"></div><div class="p-block"></div><div class="p-block"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 조작부 및 퀴즈 -->
+                <div class="w-full space-y-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex justify-center mb-4">
+                            <span class="bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+                                <span class="text-xl">🔍</span> 
+                                <span id="zoom-text" class="font-bold ml-2">조금 더 확대해 볼까요?</span>
+                            </span>
+                        </div>
+                        <input type="range" min="1" max="100" value="1" id="zoom-slider" oninput="updateZoom(this.value)" class="w-full">
+                        <div class="flex justify-between text-slate-400 font-bold text-sm px-2 mt-3">
+                            <span>멀리서 보기</span>
+                            <span>아주 가까이서 보기</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 깜짝 퀴즈 -->
+                    <div class="bg-white p-6 rounded-2xl border-2 border-secondary shadow-sm">
+                        <h4 class="font-black text-secondary mb-3 flex items-center justify-center gap-2 text-xl">
+                            <i data-lucide="help-circle"></i> 깜짝 퀴즈!
+                        </h4>
+                        <p class="font-bold text-slate-700 mb-4 text-center text-lg">화면을 이루는 이 작은 네모칸의 이름은 무엇일까요?</p>
+                        <div class="flex gap-4">
+                            <button onclick="quizAnswer(false, this)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-xl transition btn-bounce border border-slate-200 text-lg">햄버거 🍔</button>
+                            <button onclick="quizAnswer(true, this)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-xl transition btn-bounce border border-slate-200 text-lg">픽셀 🟦</button>
+                        </div>
+                        <p id="quiz-feedback" class="text-center font-bold mt-4 h-6 opacity-0 text-success transition-opacity"></p>
+                    </div>
+
+                    <div id="pixel-explanation" class="hidden bg-yellow-100 p-5 rounded-2xl shadow-md animate-pop text-center">
+                        <p class="font-black text-yellow-800 text-xl">
+                            🎉 맞아요! 네모난 색종이(픽셀) 수천 개가 모여서 아름다운 그림을 완성해요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <button onclick="showTab(2)" class="bg-primary text-slate-800 px-10 py-5 rounded-full font-black text-2xl shadow-lg hover:-translate-y-1 transition-all">
+                    픽셀 규칙 배우러 가기 ▶
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             2단계: 컴퓨터에게 명령하는 방법 (규칙)
+             ========================================== -->
+        <section id="section-2" class="tab-section hidden card px-6 md:px-10 pb-8 border-4 border-success fade-in">
+            <div class="bg-success step-badge flex">2</div>
+            
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">어떻게 색을 칠할까요? '명령' 내리기!</h2>
+                <p class="text-lg font-bold text-slate-600 leading-relaxed bg-slate-50 p-5 rounded-2xl">
+                    컴퓨터는 사람처럼 마음대로 색칠할 수 없어요. 항상 <strong class="text-success text-xl">정확한 규칙(명령)</strong>이 필요해요.<br>
+                    <span class="bg-green-100 px-2 py-1 rounded-lg border-2 border-green-200">"1번부터 3번까지 빨간색으로 칠해!"</span> 라고 알려주면, 컴퓨터는 실수 없이 똑같이 칠한답니다.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border-4 border-slate-100 shadow-sm">
+                <div class="flex-1 space-y-6 w-full">
+                    <h3 class="font-black text-2xl text-slate-700 flex items-center gap-2">
+                        <i data-lucide="terminal"></i> 컴퓨터에게 명령을 내려보세요!
+                    </h3>
+                    
+                    <button onclick="playDemo('red')" class="w-full bg-red-50 hover:bg-red-100 border-2 border-red-200 text-red-700 py-4 px-6 rounded-2xl font-black text-lg transition btn-bounce shadow-sm text-left flex justify-between items-center group">
+                        <span>명령 A: "1, 3, 5번 칸을 <span class="text-red-500">빨간색</span>으로 칠해줘!"</span>
+                        <span class="bg-white rounded-full p-2 group-hover:bg-red-500 group-hover:text-white transition">▶</span>
+                    </button>
+
+                    <button onclick="playDemo('blue')" class="w-full bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-700 py-4 px-6 rounded-2xl font-black text-lg transition btn-bounce shadow-sm text-left flex justify-between items-center group">
+                        <span>명령 B: "2, 4번 칸을 <span class="text-blue-500">파란색</span>으로 칠해줘!"</span>
+                        <span class="bg-white rounded-full p-2 group-hover:bg-blue-500 group-hover:text-white transition">▶</span>
+                    </button>
+                    
+                    <button onclick="resetDemo()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-600 py-3 rounded-xl font-bold transition btn-bounce flex justify-center items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i> 깨끗하게 지우기
+                    </button>
+                </div>
+
+                <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 w-full rounded-3xl p-8 border-2 border-slate-200 h-full">
+                    <p class="font-black text-slate-500 mb-6">💻 컴퓨터의 그림판</p>
+                    <div class="flex gap-3 bg-white p-5 rounded-2xl shadow-inner border-4 border-slate-200">
+                        <div id="demo-cell-1" class="demo-cell w-14 h-14 md:w-16 md:h-16 border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-400 font-black text-xl bg-slate-50">1</div>
+                        <div id="demo-cell-2" class="demo-cell w-14 h-14 md:w-16 md:h-16 border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-400 font-black text-xl bg-slate-50">2</div>
+                        <div id="demo-cell-3" class="demo-cell w-14 h-14 md:w-16 md:h-16 border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-400 font-black text-xl bg-slate-50">3</div>
+                        <div id="demo-cell-4" class="demo-cell w-14 h-14 md:w-16 md:h-16 border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-400 font-black text-xl bg-slate-50">4</div>
+                        <div id="demo-cell-5" class="demo-cell w-14 h-14 md:w-16 md:h-16 border-2 border-slate-200 rounded-lg flex items-center justify-center text-slate-400 font-black text-xl bg-slate-50">5</div>
+                    </div>
+                    <p id="demo-result" class="mt-8 font-black text-xl text-success h-8 opacity-0 transition-opacity">
+                        성공! 컴퓨터가 규칙대로 칠했어요! ✨
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <button onclick="showTab(3)" class="bg-success text-white px-10 py-5 rounded-full font-black text-2xl shadow-lg hover:-translate-y-1 transition-all border-b-4 border-green-600">
+                    직접 미션 도전하기 ▶
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             3단계: 미션! 규칙대로 비밀 그림 완성하기
+             ========================================== -->
+        <section id="section-3" class="tab-section hidden card px-4 md:px-8 pb-8 border-4 border-secondary bg-blue-50 fade-in">
+            <div class="bg-secondary step-badge flex">3</div>
+            
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-black text-slate-800 mb-2">미션: 숨겨진 비밀 그림을 찾아라!</h2>
+                <p class="text-slate-600 font-bold text-lg">
+                    여러분이 컴퓨터가 되어볼 차례예요. 명령서의 규칙을 읽고 네모(픽셀)를 칠해보세요!
+                </p>
+            </div>
+
+            <!-- 난이도 선택 버튼 -->
+            <div class="flex flex-wrap justify-center gap-3 md:gap-6 mb-6">
+                <button onclick="loadMission(1)" id="btn-level-1" class="level-btn active bg-white border-4 border-green-200 text-green-700 px-6 py-3 rounded-2xl font-black text-lg transition shadow-sm flex items-center gap-2">
+                    🟢 초급: 예쁜 나무
+                </button>
+                <button onclick="loadMission(2)" id="btn-level-2" class="level-btn bg-white border-4 border-red-200 text-red-700 px-6 py-3 rounded-2xl font-black text-lg transition shadow-sm flex items-center gap-2">
+                    ❤️ 중급: 사랑의 하트
+                </button>
+                <button onclick="loadMission(3)" id="btn-level-3" class="level-btn bg-white border-4 border-blue-200 text-blue-700 px-6 py-3 rounded-2xl font-black text-lg transition shadow-sm flex items-center gap-2">
+                    🏠 고급: 튼튼한 집
+                </button>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-6 bg-white p-5 md:p-8 rounded-3xl shadow-sm border-2 border-slate-200">
+                <!-- 규칙판 & 도구 -->
+                <div class="lg:col-span-2 space-y-5">
+                    <div class="bg-slate-50 border-4 border-dashed border-secondary p-5 md:p-6 rounded-3xl min-h-[220px]">
+                        <h3 class="text-xl font-black text-secondary mb-4 flex items-center gap-2">
+                            <i data-lucide="scroll-text"></i> 비밀 명령서 (규칙)
+                        </h3>
+                        <ul id="mission-instruction-list" class="space-y-3">
+                            <!-- JS에서 렌더링 -->
+                        </ul>
+                    </div>
+
+                    <!-- 도구 상자 -->
+                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 text-center shadow-sm">
+                        <p class="font-black text-slate-700 mb-4">🎨 사용할 색연필</p>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <div onclick="selectMissionColor('#EF476F', this)" class="color-chip bg-[#EF476F]" title="빨강"></div>
+                            <div onclick="selectMissionColor('#FFD166', this)" class="color-chip bg-[#FFD166]" title="노랑"></div>
+                            <div onclick="selectMissionColor('#06D6A0', this)" class="color-chip bg-[#06D6A0]" title="초록"></div>
+                            <div onclick="selectMissionColor('#4EA8DE', this)" class="color-chip bg-[#4EA8DE]" title="파랑"></div>
+                            <div onclick="selectMissionColor('white', this)" id="mission-eraser" class="color-chip bg-white border-2 border-slate-300 shadow-sm flex items-center justify-center active" title="지우개">
+                                <i data-lucide="eraser" class="text-slate-400 w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-slate-50 py-2 px-4 rounded-xl inline-block border border-slate-100">
+                            <p id="mission-tool-text" class="text-sm font-black text-slate-600">선택한 도구: 🧹 지우개</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 픽셀 캔버스 (미션용) -->
+                <div class="lg:col-span-3 flex flex-col items-center justify-center gap-6 pt-2">
+                    <div class="relative bg-slate-100 p-2 md:p-4 rounded-3xl border-2 border-slate-200 shadow-inner">
+                        <!-- 행/열 번호 표시 -->
+                        <div class="absolute -top-6 left-0 right-0 flex justify-around px-4 md:px-6 text-slate-400 font-black text-sm md:text-base">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+                        </div>
+                        <div class="absolute -left-6 top-0 bottom-0 flex flex-col justify-around py-4 md:py-6 text-slate-400 font-black text-sm md:text-base">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+                        </div>
+                        
+                        <div id="mission-pixel-grid" class="grid grid-cols-7 bg-white p-2 border-8 border-slate-700 rounded-2xl shadow-xl relative z-10 gap-[1px] md:gap-1 bg-slate-200">
+                            <!-- 7x7 그리드 생성됨 -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-3 w-full max-w-[300px]">
+                        <button onclick="checkMission()" class="flex-1 bg-secondary hover:bg-blue-500 text-white px-4 py-4 rounded-2xl font-black text-lg shadow-lg transition btn-bounce flex items-center justify-center gap-2 border-b-4 border-blue-600">
+                            <i data-lucide="check-circle"></i> 확인하기!
+                        </button>
+                        <button onclick="resetGrid('mission-pixel-grid')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-4 rounded-2xl font-black shadow-md transition btn-bounce flex items-center justify-center">
+                            <i data-lucide="rotate-ccw"></i> 지우기
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-10">
+                <button onclick="showTab(4)" class="bg-accent text-white px-10 py-5 rounded-full font-black text-2xl shadow-lg hover:-translate-y-1 transition-all border-b-4 border-pink-700">
+                    모든 미션 끝! 자유 그리기로 ▶
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             4단계: 자유 시간
+             ========================================== -->
+        <section id="section-4" class="tab-section hidden card px-4 md:px-8 pb-8 border-4 border-accent bg-pink-50 fade-in">
+            <div class="bg-accent step-badge flex">4</div>
+            
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">창의력 대장! 나만의 그림 규칙 만들기</h2>
+                <p class="text-lg font-bold text-slate-600 bg-white p-4 rounded-2xl border-2 border-pink-100 shadow-sm inline-block">
+                    미션을 멋지게 성공했군요! 이번에는 <span class="text-accent">내가 그리고 싶은 것</span>을 마음껏 그려보세요.<br>
+                    꽃, 로봇, 동물... 무엇이든 좋아요! <br>다 그린 후 짝꿍에게 "내 그림의 규칙"을 설명해 볼까요?
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-5 gap-6 bg-white p-5 md:p-8 rounded-3xl shadow-sm border-2 border-slate-200 mt-6">
+                <!-- 도구 상자 -->
+                <div class="lg:col-span-2 space-y-5">
+                    <div class="bg-pink-100 p-6 rounded-3xl text-center border-4 border-white shadow-sm h-full flex flex-col justify-center">
+                        <p class="font-black text-slate-800 mb-6 text-xl">🎨 마음대로 골라 쓰는 도구상자</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <div onclick="selectFreeColor('#EF476F', this)" class="color-chip bg-[#EF476F]" title="빨강"></div>
+                            <div onclick="selectFreeColor('#FFD166', this)" class="color-chip bg-[#FFD166]" title="노랑"></div>
+                            <div onclick="selectFreeColor('#06D6A0', this)" class="color-chip bg-[#06D6A0]" title="초록"></div>
+                            <div onclick="selectFreeColor('#4EA8DE', this)" class="color-chip bg-[#4EA8DE]" title="파랑"></div>
+                            <div onclick="selectFreeColor('#111827', this)" class="color-chip bg-gray-900" title="검정"></div>
+                            <div onclick="selectFreeColor('#D946EF', this)" class="color-chip bg-fuchsia-500" title="보라"></div>
+                            <div onclick="selectFreeColor('white', this)" id="free-eraser" class="color-chip bg-white border-2 border-slate-300 shadow-sm flex items-center justify-center active" title="지우개">
+                                <i data-lucide="eraser" class="text-slate-400 w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-8 bg-white py-3 px-6 rounded-2xl inline-block shadow-sm">
+                            <p id="free-tool-text" class="text-base font-black text-slate-600">선택한 도구: 🧹 지우개</p>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500 mt-4">💡 꿀팁: 도화지를 꾹 누르고 쓱~ 움직이면 한 번에 칠해져요!</p>
+                    </div>
+                </div>
+
+                <!-- 픽셀 캔버스 (자유용) -->
+                <div class="lg:col-span-3 flex flex-col items-center justify-center gap-6">
+                    <div class="relative bg-white p-2 md:p-4 rounded-3xl border-2 border-slate-200 shadow-sm">
+                        <div id="free-pixel-grid" class="grid grid-cols-7 bg-white p-2 border-8 border-slate-800 rounded-2xl shadow-xl relative z-10 gap-[1px] md:gap-1 bg-slate-200">
+                            <!-- 7x7 그리드 생성됨 -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-4 w-full">
+                        <button onclick="saveFreeDraw()" class="bg-accent hover:bg-pink-600 text-white px-8 py-4 rounded-2xl font-black text-xl shadow-lg transition btn-bounce flex items-center justify-center gap-2 border-b-4 border-pink-700">
+                            <i data-lucide="download"></i> 그림 저장하기!
+                        </button>
+                        <button onclick="resetGrid('free-pixel-grid')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-4 rounded-2xl font-black text-lg shadow-md transition btn-bounce flex items-center justify-center gap-2">
+                            <i data-lucide="trash-2"></i> 새 도화지
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-10">
+                <button onclick="showTab(5)" class="bg-purple-500 text-white px-10 py-5 rounded-full font-black text-2xl shadow-lg hover:-translate-y-1 transition-all border-b-4 border-purple-700">
+                    마무리 퀴즈 풀러 가기 ▶
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             5단계: 확인학습 (퀴즈)
+             ========================================== -->
+        <section id="section-5" class="tab-section hidden card px-6 md:px-10 pb-10 border-4 border-purple-500 fade-in bg-purple-50">
+            <div class="bg-purple-500 step-badge flex">5</div>
+            
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">마무리 확인학습 📝</h2>
+                <p class="text-lg font-bold text-slate-600 bg-white p-4 rounded-2xl border-2 border-purple-200 shadow-sm inline-block">
+                    오늘 배운 내용을 퀴즈로 복습해 볼까요?<br>정답을 맞히면 멋진 폭죽이 터져요!
+                </p>
+            </div>
+
+            <div class="space-y-6 max-w-3xl mx-auto">
+                <!-- 퀴즈 1 -->
+                <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-slate-200 shadow-sm">
+                    <h3 class="text-xl font-black text-purple-700 mb-4 flex items-center gap-2">
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">문제 1</span>
+                        컴퓨터 화면을 이루는 아주 작은 네모칸의 이름은 무엇일까요?
+                    </h3>
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <button onclick="solveQuiz(1, 1, false, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">1. 햄버거</button>
+                        <button onclick="solveQuiz(1, 2, true, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">2. 픽셀 (Pixel)</button>
+                        <button onclick="solveQuiz(1, 3, false, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">3. 마우스</button>
+                    </div>
+                    <p id="quiz1-msg" class="text-center font-bold mt-4 h-6 opacity-0 transition-opacity"></p>
+                </div>
+
+                <!-- 퀴즈 2 -->
+                <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-slate-200 shadow-sm">
+                    <h3 class="text-xl font-black text-purple-700 mb-4 flex items-center gap-2">
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">문제 2</span>
+                        컴퓨터에게 그림을 똑같이 그리게 하려면 가장 필요한 것은 무엇일까요?
+                    </h3>
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <button onclick="solveQuiz(2, 1, false, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">1. 달콤한 간식</button>
+                        <button onclick="solveQuiz(2, 2, false, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">2. 큰 목소리</button>
+                        <button onclick="solveQuiz(2, 3, true, this)" class="quiz-btn flex-1 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-100 transition">3. 정확한 규칙(명령)</button>
+                    </div>
+                    <p id="quiz2-msg" class="text-center font-bold mt-4 h-6 opacity-0 transition-opacity"></p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 bg-white p-8 rounded-3xl border-4 border-dashed border-purple-300 max-w-3xl mx-auto shadow-sm">
+                <p class="text-2xl font-bold text-purple-800 mb-6">모든 미션과 퀴즈를 완료했다면, 선생님께 손을 번쩍 들어주세요! 🙋‍♂️🙋‍♀️</p>
+                <button onclick="location.reload()" class="bg-slate-200 text-slate-700 px-8 py-3 rounded-full font-bold hover:bg-slate-300 transition-colors">
+                    처음부터 다시 보기
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 하단 내비게이션 (모바일용) -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="showTab(prevTab())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showTab(nextTab())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md">다음으로</button>
+    </div>
+
+    <!-- 성공 축하 모달 -->
+    <div id="success-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4">
+        <div id="modal-content" class="bg-white p-10 rounded-[3rem] max-w-sm w-full text-center border-8 border-secondary transform scale-90 transition-transform shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+            
+            <div class="text-8xl mb-6 relative z-10 animate-bounce">🏆</div>
+            <h3 class="text-4xl font-black text-slate-800 mb-3 font-gaegu relative z-10">미션 성공!</h3>
+            <p id="modal-msg" class="text-xl font-bold text-slate-600 mb-8 relative z-10 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                정확하게 규칙을 지켰어요!<br>완벽한 꼬마 프로그래머네요!
+            </p>
+            <button onclick="closeModal()" class="w-full bg-secondary text-white py-5 rounded-2xl font-black text-2xl shadow-lg hover:bg-blue-500 transition btn-bounce border-b-4 border-blue-600 relative z-10">
+                최고예요! 👍
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 전역 상태 변수
+        let currentMissionLevel = 1;
+        let missionSelectedColor = 'white';
+        let freeSelectedColor = 'white';
+        let isDrawing = false; // 드래그 상태 확인용
+        
+        // 네비게이션용 상태
+        let currentTab = 1;
+
+        // ----------------------------------------------------
+        // 초기화
+        // ----------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // 두 개의 독립된 그리드 생성
+            createGrid('mission-pixel-grid', 'mission');
+            createGrid('free-pixel-grid', 'free');
+            
+            // 초기 미션 로드
+            loadMission(1);
+
+            // 문서 전체에서 마우스/터치가 끝났을 때 드래그 상태 해제
+            document.addEventListener('mouseup', () => isDrawing = false);
+            document.addEventListener('touchend', () => isDrawing = false);
+        });
+
+        // ----------------------------------------------------
+        // 탭(네비게이션) 전환 로직
+        // ----------------------------------------------------
+        function nextTab() { return Math.min(currentTab + 1, 5); } // 총 5개 탭으로 변경
+        function prevTab() { return Math.max(currentTab - 1, 1); }
+
+        function showTab(tabIndex) {
+            currentTab = tabIndex;
+            
+            // 모든 섹션 숨기기
+            document.querySelectorAll('.tab-section').forEach(sec => {
+                sec.classList.remove('block');
+                sec.classList.add('hidden');
+            });
+            // 선택된 섹션 보이기
+            const targetSection = document.getElementById(`section-${tabIndex}`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('block');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // 네비게이션 버튼 스타일 업데이트
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === tabIndex);
+                btn.classList.toggle('border-primary', idx + 1 === tabIndex);
+                btn.classList.toggle('border-gray-200', idx + 1 !== tabIndex);
+            });
+        }
+
+        // ----------------------------------------------------
+        // 1단계: 돋보기 및 퀴즈 로직
+        // ----------------------------------------------------
+        function updateZoom(value) {
+            const smoothImg = document.getElementById('smooth-img');
+            const pixelImg = document.getElementById('pixel-img');
+            const explanation = document.getElementById('pixel-explanation');
+            const zoomText = document.getElementById('zoom-text');
+            
+            const scale = 1 + (value / 100) * 15; 
+            
+            smoothImg.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            
+            if (value < 30) {
+                smoothImg.style.opacity = 1;
+                pixelImg.style.opacity = 0;
+                explanation.classList.add('hidden');
+                zoomText.innerText = "조금 더 확대해 볼까요?";
+            } else if (value < 60) {
+                smoothImg.style.opacity = 1 - ((value - 30) / 30);
+                pixelImg.style.opacity = (value - 30) / 30;
+                explanation.classList.add('hidden');
+                zoomText.innerText = "어? 모양이 네모낳게 변하고 있어요!";
+            } else {
+                smoothImg.style.opacity = 0;
+                pixelImg.style.opacity = 1;
+                explanation.classList.remove('hidden');
+                zoomText.innerText = "네모칸(픽셀)이 선명하게 보여요!";
+            }
+        }
+
+        function quizAnswer(isCorrect, btn) {
+            const feedback = document.getElementById('quiz-feedback');
+            
+            // 모든 퀴즈 버튼 초기화
+            btn.parentElement.querySelectorAll('button').forEach(b => {
+                b.classList.remove('bg-green-100', 'border-green-400', 'text-green-800', 'bg-red-100', 'border-red-400', 'text-red-800');
+                b.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+            });
+
+            if(isCorrect) {
+                btn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+                btn.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                feedback.innerHTML = "정답이에요! 🎉 화면은 <span class='text-accent'>'픽셀'</span>로 이루어져 있어요.";
+                feedback.className = "text-center font-black mt-4 h-6 text-success opacity-100 transition-opacity text-lg";
+                createEmoji(btn.getBoundingClientRect().left + 50, btn.getBoundingClientRect().top, '🎉');
+            } else {
+                btn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+                btn.classList.add('bg-red-100', 'border-red-400', 'text-red-800');
+                feedback.innerText = "앗, 다시 한 번 생각해 볼까요? 🤔";
+                feedback.className = "text-center font-bold mt-4 h-6 text-red-500 opacity-100 transition-opacity text-lg";
+            }
+        }
+
+        // ----------------------------------------------------
+        // 2단계: 명령 데모 로직
+        // ----------------------------------------------------
+        let isDemoPlaying = false;
+        function playDemo(type) {
+            if(isDemoPlaying) return;
+            isDemoPlaying = true;
+            
+            const resultText = document.getElementById('demo-result');
+            resultText.style.opacity = 0;
+            
+            // 모든 셀 초기화
+            document.querySelectorAll('.demo-cell').forEach(c => {
+                c.style.backgroundColor = '';
+                c.classList.remove('bg-red-500', 'bg-blue-500', 'text-white', 'border-red-600', 'border-blue-600');
+                c.classList.add('bg-slate-50', 'text-slate-400');
+            });
+
+            // 명령에 따라 칠할 대상 선택
+            let targetIndices = [];
+            let colorClass = '';
+            let borderClass = '';
+            
+            if(type === 'red') {
+                targetIndices = [1, 3, 5]; // 1, 3, 5번 칸
+                colorClass = 'bg-red-500';
+                borderClass = 'border-red-600';
+            } else if(type === 'blue') {
+                targetIndices = [2, 4]; // 2, 4번 칸
+                colorClass = 'bg-blue-500';
+                borderClass = 'border-blue-600';
+            }
+
+            // 순차적 애니메이션
+            targetIndices.forEach((num, index) => {
+                setTimeout(() => {
+                    const cell = document.getElementById(`demo-cell-${num}`);
+                    cell.classList.remove('bg-slate-50', 'text-slate-400');
+                    cell.classList.add(colorClass, 'text-white', borderClass);
+                    cell.classList.add('animate-pop');
+                    setTimeout(() => cell.classList.remove('animate-pop'), 300);
+                    
+                    if (index === targetIndices.length - 1) {
+                        setTimeout(() => {
+                            resultText.innerText = type === 'red' ? "성공! 빨간색으로 칠했어요! 🔴" : "성공! 파란색으로 칠했어요! 🔵";
+                            resultText.style.opacity = 1;
+                            createEmoji(cell.getBoundingClientRect().left, cell.getBoundingClientRect().top, '✨');
+                            isDemoPlaying = false;
+                        }, 500);
+                    }
+                }, index * 500);
+            });
+        }
+
+        function resetDemo() {
+            if(isDemoPlaying) return;
+            document.querySelectorAll('.demo-cell').forEach(c => {
+                c.style.backgroundColor = '';
+                c.classList.remove('bg-red-500', 'bg-blue-500', 'text-white', 'border-red-600', 'border-blue-600');
+                c.classList.add('bg-slate-50', 'text-slate-400');
+            });
+            document.getElementById('demo-result').style.opacity = 0;
+            createEmoji(window.innerWidth/2, window.innerHeight/2, '🧹');
+        }
+
+        // ----------------------------------------------------
+        // 그리드 생성 (미션 & 자유 공통 로직)
+        // ----------------------------------------------------
+        function createGrid(gridId, contextType) {
+            const gridElement = document.getElementById(gridId);
+            gridElement.innerHTML = '';
+            
+            for (let i = 0; i < 49; i++) { // 7x7 = 49
+                const cell = document.createElement('div');
+                cell.className = 'pixel-cell w-9 h-9 md:w-12 md:h-12 bg-white rounded-sm';
+                cell.dataset.index = i;
+                
+                // 마우스 이벤트
+                cell.addEventListener('mousedown', (e) => {
+                    isDrawing = true;
+                    colorCell(cell, contextType);
+                    e.preventDefault();
+                });
+                cell.addEventListener('mouseenter', () => {
+                    if (isDrawing) colorCell(cell, contextType);
+                });
+                
+                // 터치 이벤트
+                cell.addEventListener('touchstart', (e) => {
+                    isDrawing = true;
+                    colorCell(cell, contextType);
+                    e.preventDefault();
+                }, {passive: false});
+                
+                gridElement.appendChild(cell);
+            }
+            
+            // 모바일 터치 드래그 지원 (컨테이너 레벨)
+            gridElement.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const touch = e.touches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('pixel-cell') && target.parentElement.id === gridId) {
+                    colorCell(target, contextType);
+                }
+            }, {passive: false});
+        }
+
+        function colorCell(cell, contextType) {
+            const selectedColor = contextType === 'mission' ? missionSelectedColor : freeSelectedColor;
+            if (cell.style.backgroundColor !== selectedColor) {
+                cell.style.backgroundColor = selectedColor;
+                cell.classList.add('animate-pop');
+                setTimeout(() => cell.classList.remove('animate-pop'), 200);
+            }
+        }
+
+        function resetGrid(gridId) {
+            const cells = document.querySelectorAll(`#${gridId} .pixel-cell`);
+            cells.forEach((cell, idx) => {
+                setTimeout(() => {
+                    cell.style.backgroundColor = 'white';
+                }, (idx % 7) * 15 + Math.floor(idx/7) * 15);
+            });
+            
+            const rect = document.getElementById(gridId).getBoundingClientRect();
+            createEmoji(rect.left + rect.width/2, rect.top + rect.height/2, '🧹');
+        }
+
+        // ----------------------------------------------------
+        // 3단계: 미션 로직 (초급: 나무, 중급: 하트, 고급: 집)
+        // ----------------------------------------------------
+        // 중복 번호 표시 문제 해결: 텍스트 앞의 "1. ", "2. ", "3. " 제거
+        const missions = {
+            1: {
+                title: "초급: 예쁜 나무",
+                rules: [
+                    "<span class='bg-yellow-100 px-1 rounded font-black'>5, 6, 7번째 줄</span>의 가운데(4번째 칸)를 <span class='text-yellow-500 font-black'>노란색</span>으로 칠해요. (기둥)",
+                    "<span class='bg-green-100 px-1 rounded font-black'>3번째와 4번째 줄</span>은 양쪽 끝을 빼고 가운데 5칸을 <span class='text-green-500 font-black'>초록색</span>으로 칠해요. (잎)",
+                    "<span class='bg-green-100 px-1 rounded font-black'>2번째 줄</span>은 가운데 3칸을 <span class='text-green-500 font-black'>초록색</span>으로 칠해요."
+                ],
+                ringColor: "ring-green-200"
+            },
+            2: {
+                title: "중급: 사랑의 하트",
+                rules: [
+                    "<span class='bg-red-100 px-1 rounded font-black'>2번째 줄</span>의 2, 3번째 칸과 5, 6번째 칸을 <span class='text-red-500 font-black'>빨간색</span>으로 칠해요.",
+                    "<span class='bg-red-100 px-1 rounded font-black'>3번째 줄</span>은 양쪽 끝을 빼고 가운데 5칸을 <span class='text-red-500 font-black'>빨간색</span>으로 칠해요.",
+                    "<span class='bg-red-100 px-1 rounded font-black'>4번째 줄</span>은 가운데 3칸, <span class='bg-red-100 px-1 rounded font-black'>5번째 줄</span>은 정중앙 1칸을 칠해요."
+                ],
+                ringColor: "ring-red-200"
+            },
+            3: {
+                title: "고급: 튼튼한 집",
+                rules: [
+                    "2번째 줄 가운데 1칸, 3번째 줄 3칸, 4번째 줄 5칸을 <span class='text-red-500 font-black'>빨간색</span>으로 칠해서 지붕을 만들어요.",
+                    "5, 6번째 줄의 가운데 3칸을 <span class='text-blue-500 font-black'>파란색</span>으로 칠해서 벽을 세워요.",
+                    "마지막으로 벽 한가운데(6번째 줄 4번째 칸)를 <span class='text-yellow-500 font-black'>노란색</span> 문으로 바꿔주세요!"
+                ],
+                ringColor: "ring-blue-200"
+            }
+        };
+
+        function loadMission(level) {
+            currentMissionLevel = level;
+            
+            // 버튼 스타일 업데이트
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-green-200', 'ring-red-200', 'ring-blue-200'));
+            document.getElementById(`btn-level-${level}`).classList.add('active', 'ring-4', missions[level].ringColor);
+
+            // 명령서 텍스트 업데이트
+            const list = document.getElementById('mission-instruction-list');
+            list.innerHTML = '';
+            missions[level].rules.forEach((rule, idx) => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 fade-in";
+                li.style.animationDelay = `${idx * 0.1}s`;
+                li.innerHTML = `
+                    <span class="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-secondary text-white rounded-full font-black mt-1">${idx + 1}</span>
+                    <span class="text-lg font-bold text-slate-700 leading-relaxed">${rule}</span>
+                `;
+                list.appendChild(li);
+            });
+
+            // 그리드 및 도구 초기화
+            resetGrid('mission-pixel-grid');
+            
+            // 기본 도구 지우개 세팅
+            const eraser = document.getElementById('mission-eraser');
+            if(eraser) selectMissionColor('white', eraser);
+        }
+
+        function selectMissionColor(color, el) {
+            missionSelectedColor = color;
+            document.getElementById('section-3').querySelectorAll('.color-chip').forEach(chip => chip.classList.remove('active'));
+            el.classList.add('active');
+            
+            const toolText = document.getElementById('mission-tool-text');
+            if(color === 'white') toolText.innerHTML = "선택한 도구: 🧹 <span class='font-black'>지우개</span>";
+            else if(color === '#EF476F') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-red-500 font-black'>빨강색</span>";
+            else if(color === '#FFD166') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-yellow-500 font-black'>노랑색</span>";
+            else if(color === '#06D6A0') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-green-500 font-black'>초록색</span>";
+            else if(color === '#4EA8DE') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-blue-500 font-black'>파랑색</span>";
+        }
+
+        function checkMission() {
+            const cells = document.querySelectorAll('#mission-pixel-grid .pixel-cell');
+            let isSuccess = true;
+            let targetCount = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            cells.forEach((cell, idx) => {
+                const bgColor = cell.style.backgroundColor;
+                const isColored = bgColor && bgColor !== 'white' && bgColor !== 'rgb(255, 255, 255)' && bgColor !== 'transparent';
+                
+                const row = Math.floor(idx / 7);
+                const col = idx % 7;
+                
+                let shouldBeColored = false;
+                let expectedColor = '';
+
+                if (currentMissionLevel === 1) { // 초급: 나무
+                    if ((row >= 4 && row <= 6) && col === 3) {
+                        shouldBeColored = true; expectedColor = '209'; // 노랑 (FFD166: 255,209,102)
+                    } else if ((row === 2 || row === 3) && (col >= 1 && col <= 5)) {
+                        shouldBeColored = true; expectedColor = '214'; // 초록 (06D6A0: 6,214,160)
+                    } else if (row === 1 && (col >= 2 && col <= 4)) {
+                        shouldBeColored = true; expectedColor = '214'; 
+                    }
+                } else if (currentMissionLevel === 2) { // 중급: 하트
+                    if (row === 1 && (col === 1 || col === 2 || col === 4 || col === 5)) {
+                        shouldBeColored = true; expectedColor = '239'; // 빨강 (EF476F: 239,71,111)
+                    } else if (row === 2 && (col >= 1 && col <= 5)) {
+                        shouldBeColored = true; expectedColor = '239';
+                    } else if (row === 3 && (col >= 2 && col <= 4)) {
+                        shouldBeColored = true; expectedColor = '239';
+                    } else if (row === 4 && col === 3) {
+                        shouldBeColored = true; expectedColor = '239';
+                    }
+                } else if (currentMissionLevel === 3) { // 고급: 집
+                    if (row === 1 && col === 3) {
+                        shouldBeColored = true; expectedColor = '239'; // 지붕(빨강)
+                    } else if (row === 2 && (col >= 2 && col <= 4)) {
+                        shouldBeColored = true; expectedColor = '239'; 
+                    } else if (row === 3 && (col >= 1 && col <= 5)) {
+                        shouldBeColored = true; expectedColor = '239'; 
+                    } else if (row === 4 && (col >= 2 && col <= 4)) {
+                        shouldBeColored = true; expectedColor = '168'; // 벽(파랑: 4EA8DE: 78,168,222)
+                    } else if (row === 5 && (col === 2 || col === 4)) {
+                        shouldBeColored = true; expectedColor = '168'; // 벽(파랑)
+                    } else if (row === 5 && col === 3) {
+                        shouldBeColored = true; expectedColor = '209'; // 문(노랑)
+                    }
+                }
+
+                if (shouldBeColored) {
+                    targetCount++;
+                    // bgColor.includes()를 사용하여 rgb 포맷에서 특정 숫자가 있는지 확인하여 색상 판별
+                    if (bgColor.includes(expectedColor)) {
+                        correctCount++;
+                    } else {
+                        isSuccess = false; 
+                    }
+                } else {
+                    if (isColored) {
+                        wrongCount++; 
+                    }
+                }
+            });
+
+            if (isSuccess && correctCount === targetCount && wrongCount === 0) {
+                showSuccessModal(currentMissionLevel);
+            } else {
+                alert("앗! 모양이나 색깔이 조금 다른 것 같아요. 명령서를 다시 한 번 꼼꼼히 읽어볼까요? 🤔");
+            }
+        }
+
+        function showSuccessModal(level) {
+            const modal = document.getElementById('success-modal');
+            const msg = document.getElementById('modal-msg');
+            
+            if(level === 1) msg.innerHTML = "초급 미션 성공!<br>푸릇푸릇 예쁜 나무를 완성했어요! 🌳";
+            else if(level === 2) msg.innerHTML = "중급 미션 성공!<br>사랑스러운 빨간색 하트 완벽해요! ❤️";
+            else if(level === 3) msg.innerHTML = "고급 미션 성공!<br>알록달록 튼튼한 우리 집을 지었군요! 🏠";
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modal-content').classList.remove('scale-90');
+                document.getElementById('modal-content').classList.add('scale-100');
+            }, 10);
+
+            for(let i=0; i<40; i++) {
+                setTimeout(() => {
+                    createEmoji(Math.random() * window.innerWidth, Math.random() * window.innerHeight, ['🎉', '✨', '🎈', '🎨'][Math.floor(Math.random()*4)]);
+                }, i * 40);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-content').classList.add('scale-90');
+            setTimeout(() => {
+                document.getElementById('success-modal').classList.add('hidden');
+            }, 200);
+        }
+
+        // ----------------------------------------------------
+        // 4단계: 자유 시간 로직 (그림 저장하기 기능 포함)
+        // ----------------------------------------------------
+        function selectFreeColor(color, el) {
+            freeSelectedColor = color;
+            document.getElementById('section-4').querySelectorAll('.color-chip').forEach(chip => chip.classList.remove('active'));
+            el.classList.add('active');
+            
+            const toolText = document.getElementById('free-tool-text');
+            if(color === 'white') toolText.innerHTML = "선택한 도구: 🧹 <span class='font-black'>지우개</span>";
+            else if(color === '#EF476F') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-red-500 font-black'>빨강색</span>";
+            else if(color === '#FFD166') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-yellow-500 font-black'>노랑색</span>";
+            else if(color === '#06D6A0') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-green-500 font-black'>초록색</span>";
+            else if(color === '#4EA8DE') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-blue-500 font-black'>파랑색</span>";
+            else if(color === '#111827') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-gray-900 font-black'>검정색</span>";
+            else if(color === '#D946EF') toolText.innerHTML = "선택한 도구: 🖍️ <span class='text-fuchsia-500 font-black'>보라색</span>";
+        }
+
+        function saveFreeDraw() {
+            // 숨겨진 canvas를 생성하여 현재 7x7 그리드의 색상을 그려 이미지로 다운로드합니다.
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const cellSize = 50; 
+            canvas.width = 7 * cellSize;
+            canvas.height = 7 * cellSize;
+
+            const cells = document.querySelectorAll('#free-pixel-grid .pixel-cell');
+            cells.forEach((cell, idx) => {
+                const row = Math.floor(idx / 7);
+                const col = idx % 7;
+                let bgColor = cell.style.backgroundColor;
+                
+                // 빈 칸이거나 투명한 경우 흰색으로 처리
+                if (!bgColor || bgColor === 'transparent' || bgColor === 'rgba(0, 0, 0, 0)') {
+                    bgColor = 'white';
+                }
+                
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                
+                // 픽셀 테두리 선 그리기
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            });
+
+            // 생성된 canvas를 이미지(PNG)로 변환하여 다운로드
+            const link = document.createElement('a');
+            link.download = '나만의_비밀그림.png';
+            link.href = canvas.toDataURL();
+            link.click();
+
+            alert("멋진 그림이 컴퓨터에 저장되었어요! 🎨");
+            for(let i=0; i<15; i++) { 
+                setTimeout(() => createEmoji(Math.random() * window.innerWidth, Math.random() * window.innerHeight, '💖'), i*100); 
+            }
+        }
+
+        // ----------------------------------------------------
+        // 5단계: 퀴즈 로직
+        // ----------------------------------------------------
+        function solveQuiz(quizNum, choiceNum, isCorrect, btnElement) {
+            // 버튼들 초기화
+            const buttons = btnElement.parentElement.querySelectorAll('.quiz-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-green-100', 'border-green-400', 'text-green-800', 'bg-red-100', 'border-red-400', 'text-red-800');
+                btn.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            });
+
+            const msgElement = document.getElementById(`quiz${quizNum}-msg`);
+
+            if (isCorrect) {
+                btnElement.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-700');
+                btnElement.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                msgElement.innerText = "정답이에요! 🎉 참 잘했어요!";
+                msgElement.className = "text-center font-black mt-4 h-6 text-success opacity-100 transition-opacity text-lg";
+                
+                // 폭죽 효과
+                const rect = btnElement.getBoundingClientRect();
+                createEmoji(rect.left + rect.width / 2, rect.top, '🎉');
+            } else {
+                btnElement.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-700');
+                btnElement.classList.add('bg-red-100', 'border-red-400', 'text-red-800');
+                msgElement.innerText = "앗, 아쉽지만 다시 한 번 생각해 볼까요? 🤔";
+                msgElement.className = "text-center font-bold mt-4 h-6 text-red-500 opacity-100 transition-opacity text-lg";
+            }
+        }
+
+        // ----------------------------------------------------
+        // 유틸리티
+        // ----------------------------------------------------
+        function createEmoji(x, y, char) {
+            const e = document.createElement('div');
+            e.className = 'emoji-particle text-4xl';
+            e.style.left = x + 'px';
+            e.style.top = y + 'px';
+            e.innerText = char;
+            document.body.appendChild(e);
+            setTimeout(() => e.remove(), 1500);
+        }
+
+    </script>
+</body>
+</html>
