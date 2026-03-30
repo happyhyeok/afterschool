@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3학년 정보: 마법의 방, 폴더와 친해지기!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',    /* 따뜻한 노란색 */
+                        secondary: '#4EA8DE',  /* 밝은 파란색 */
+                        accent: '#EF476F',     /* 포인트 핑크 */
+                        success: '#06D6A0',    /* 성공 초록 */
+                        warning: '#FF9F1C',    /* 주황색 */
+                        bgLight: '#F8F9FA',
+                        desktop: '#2B5A84'     /* 가상 바탕화면 색상 */
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard"', '"Malgun Gothic"', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0;
+            word-break: keep-all;
+        }
+
+        /* 가상 바탕화면 우클릭 메뉴 스타일 */
+        #context-menu {
+            display: none;
+            position: absolute;
+            z-index: 50;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            width: 150px;
+        }
+        .context-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .context-item:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+        }
+
+        /* 가상 폴더 아이콘 스타일 */
+        .virtual-folder {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: absolute;
+            transition: background-color 0.2s;
+        }
+        .virtual-folder:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .virtual-folder.selected {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 1px dotted rgba(255, 255, 255, 0.8);
+        }
+        .folder-name-input {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px;
+            margin-top: 4px;
+            border-radius: 4px;
+            border: 2px solid #3b82f6;
+            outline: none;
+            display: none;
+        }
+        .folder-name-text {
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 4px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            word-break: break-all;
+        }
+
+        /* 드래그 앤 드롭 및 애니메이션 */
+        .draggable { cursor: grab; }
+        .draggable:active { cursor: grabbing; }
+        .dropzone { transition: all 0.2s ease; }
+        .dropzone.dragover {
+            background-color: rgba(255, 209, 102, 0.4);
+            border-color: #FFD166;
+            transform: scale(1.05);
+        }
+        .matryoshka-box:hover .inner-box { transform: scale(1.1); }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            75% { transform: translateX(5px) rotate(5deg); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- [도입] 헤더 영역 -->
+        <header class="bg-white rounded-3xl p-8 shadow-sm border border-orange-100 flex items-center gap-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-10 -mt-10"></div>
+            
+            <div class="bg-primary/20 p-4 rounded-2xl flex-shrink-0">
+                <i data-lucide="folder-open" class="w-12 h-12 text-warning animate-bounce-slow"></i>
+            </div>
+            <div>
+                <h2 class="text-accent font-bold text-lg mb-1 tracking-wide">4주차 미션</h2>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 drop-shadow-sm">마법의 방, '폴더'와 친해지기! 📁</h1>
+                <p class="mt-3 text-gray-600 text-lg font-medium">컴퓨터 안의 수많은 자료를 깔끔하게 정리하는 마법의 상자를 만들어 볼까요?</p>
+            </div>
+        </header>
+
+        <!-- [전개 1] 개념 설명 및 계층 구조 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-secondary/20 text-secondary w-10 h-10 rounded-full flex items-center justify-center">1</span>
+                파일과 폴더? 폴더 안에 또 폴더가?!
+            </h3>
+            
+            <div class="space-y-6">
+                <p class="text-lg leading-relaxed text-gray-700 font-medium">
+                    사진이나 글 등 <b>각각의 자료들을 '파일'</b>이라고 해요. 그리고 이런 <b>파일들을 담는 예쁜 상자가 '폴더'</b>랍니다. 놀랍게도 <b>'폴더 안에 다른 폴더'</b>를 넣을 수도 있어요! 가방 안에 필통을 넣고, 필통 안에 연필을 넣는 것과 똑같아요.
+                </p>
+
+                <!-- 시각적 비유 (가방 > 필통 > 연필) -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 matryoshka-box">
+                    
+                    <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-md border-2 border-blue-300 w-full sm:w-1/3 z-10 transition-transform">
+                        <i data-lucide="backpack" class="w-16 h-16 text-blue-500 mb-2"></i>
+                        <span class="font-bold text-lg text-blue-900">학교 가방</span>
+                        <span class="text-xs text-blue-600 mt-1">(가장 큰 폴더)</span>
+                    </div>
+                    
+                    <i data-lucide="arrow-right" class="w-8 h-8 text-blue-300 hidden sm:block"></i>
+                    <i data-lucide="arrow-down" class="w-8 h-8 text-blue-300 sm:hidden"></i>
+                    
+                    <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-md border-2 border-green-300 w-full sm:w-1/3 z-20 inner-box transition-transform">
+                        <i data-lucide="pen-tool" class="w-12 h-12 text-green-500 mb-2"></i>
+                        <span class="font-bold text-lg text-green-900">필통</span>
+                        <span class="text-xs text-green-600 mt-1">(폴더 안의 폴더)</span>
+                    </div>
+
+                    <i data-lucide="arrow-right" class="w-8 h-8 text-blue-300 hidden sm:block"></i>
+                    <i data-lucide="arrow-down" class="w-8 h-8 text-blue-300 sm:hidden"></i>
+
+                    <div class="flex flex-col items-center bg-white p-4 rounded-xl shadow-md border-2 border-accent w-full sm:w-1/3 z-30 inner-box transition-transform" style="transition-delay: 50ms;">
+                        <i data-lucide="pencil" class="w-10 h-10 text-accent mb-2"></i>
+                        <span class="font-bold text-lg text-red-900">연필, 지우개</span>
+                        <span class="text-xs text-red-500 mt-1">(파일들)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [전개 2] 확장자 개념 설명 (신규) -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-primary/30 text-yellow-600 w-10 h-10 rounded-full flex items-center justify-center">2</span>
+                파일의 가족을 알려주는 꼬리표, '확장자'
+            </h3>
+            
+            <div class="space-y-6">
+                <p class="text-lg leading-relaxed text-gray-700 font-medium">
+                    우리 반 친구들에게 '김'민수, '이'지은 처럼 <b>성씨</b>가 있는 것을 알고 있죠? 파일들에게도 어떤 가족인지 알려주는 꼬리표가 있는데, 이것을 <b>'확장자'</b>라고 불러요!<br>
+                    확장자는 <b>파일 이름 맨 뒤에 점( . )과 함께</b> 붙어있답니다.
+                </p>
+
+                <!-- 확장자 예시 카드 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-pink-50 rounded-xl p-5 border border-pink-100 flex flex-col items-center text-center">
+                        <i data-lucide="image" class="w-12 h-12 text-accent mb-3"></i>
+                        <span class="font-bold text-gray-800 text-lg">그림 가족</span>
+                        <span class="text-accent font-black text-xl mt-1">.jpg .png</span>
+                        <span class="text-sm text-gray-600 mt-2 bg-white px-3 py-1 rounded-full shadow-sm">강아지<b>.jpg</b></span>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex flex-col items-center text-center">
+                        <i data-lucide="music" class="w-12 h-12 text-purple-500 mb-3"></i>
+                        <span class="font-bold text-gray-800 text-lg">음악 가족</span>
+                        <span class="text-purple-600 font-black text-xl mt-1">.mp3 .wav</span>
+                        <span class="text-sm text-gray-600 mt-2 bg-white px-3 py-1 rounded-full shadow-sm">동요모음<b>.mp3</b></span>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-5 border border-blue-100 flex flex-col items-center text-center">
+                        <i data-lucide="file-text" class="w-12 h-12 text-blue-500 mb-3"></i>
+                        <span class="font-bold text-gray-800 text-lg">문서 가족</span>
+                        <span class="text-blue-600 font-black text-xl mt-1">.hwp .txt</span>
+                        <span class="text-sm text-gray-600 mt-2 bg-white px-3 py-1 rounded-full shadow-sm">독후감<b>.hwp</b></span>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 p-4 rounded-xl border border-primary text-center">
+                    <p class="text-yellow-800 font-bold flex items-center justify-center gap-2 text-lg">
+                        <i data-lucide="bot" class="w-6 h-6 text-primary"></i> 똑똑한 인공지능을 위한 준비!
+                    </p>
+                    <p class="text-lg text-gray-800 font-medium mt-2 leading-relaxed">
+                        인공지능(AI)은 이 <b>'확장자'</b> 꼬리표를 보고 "아! 이건 그림이구나!", "이건 노래구나!" 하고 1초 만에 파일의 종류를 알아챈답니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [전개 3] 가상 바탕화면 시뮬레이터 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-4">
+                <span class="bg-secondary/20 text-secondary w-10 h-10 rounded-full flex items-center justify-center">3</span>
+                가상 바탕화면에서 직접 만들어보기! 💻
+            </h3>
+            
+            <p class="text-gray-700 font-medium mb-4 text-center">
+                아래 파란색 화면(가상 바탕화면)에서 순서대로 미션을 수행해 보세요!
+            </p>
+
+            <!-- 미션 안내바 -->
+            <div class="flex flex-col md:flex-row gap-2 mb-4">
+                <div id="mission1" class="flex-1 bg-white border border-primary rounded-lg p-3 text-center shadow-sm transition-colors">
+                    <span class="bg-primary text-white text-xs font-bold px-2 py-1 rounded-full mr-1">미션1</span> <span class="font-bold text-gray-800 text-sm">마우스 우클릭 ➔ 새 폴더</span>
+                </div>
+                <div id="mission2" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-center shadow-sm transition-colors">
+                    <span class="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full mr-1">미션2</span> <span class="font-bold text-gray-500 text-sm">새 폴더 클릭 ➔ 키보드 [F2]</span>
+                </div>
+                <div id="mission3" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-center shadow-sm transition-colors">
+                    <span class="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full mr-1">미션3</span> <span class="font-bold text-gray-500 text-sm">내 이름 적고 ➔ [Enter]</span>
+                </div>
+            </div>
+
+            <!-- 가상 바탕화면 컨테이너 -->
+            <div id="virtual-desktop" class="relative w-full h-[350px] bg-desktop rounded-2xl shadow-inner border-[6px] border-gray-800 overflow-hidden cursor-crosshair select-none" oncontextmenu="showContextMenu(event)">
+                
+                <!-- 바탕화면 기본 아이콘 -->
+                <div class="absolute top-4 left-4 flex flex-col items-center p-2">
+                    <i data-lucide="trash-2" class="w-10 h-10 text-white/80"></i>
+                    <span class="text-white text-xs font-bold mt-1 text-shadow">휴지통</span>
+                </div>
+
+                <!-- 우클릭 컨텍스트 메뉴 -->
+                <div id="context-menu">
+                    <div class="context-item border-b border-gray-100 text-gray-400 cursor-not-allowed">보기(V)</div>
+                    <div class="context-item border-b border-gray-100 text-gray-400 cursor-not-allowed">정렬 기준(O)</div>
+                    <div class="context-item text-primary" onclick="createVirtualFolder()">새 폴더 만들기 📁</div>
+                </div>
+            </div>
+
+            <!-- 성공 메시지 -->
+            <div id="sim-success-msg" class="hidden mt-6 bg-success/10 text-success p-4 rounded-xl text-center border border-success animate-pop-in">
+                <h4 class="font-bold text-xl flex items-center justify-center gap-2">
+                    <i data-lucide="party-popper" class="w-6 h-6"></i> 짜잔! 나만의 폴더가 바탕화면에 생겼어요!
+                </h4>
+            </div>
+        </section>
+
+        <!-- [전개 4] 파일 탐색기 실습 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-secondary/20 text-secondary w-10 h-10 rounded-full flex items-center justify-center">4</span>
+                파일 탐색기로 내 폴더 방 꾸미기! 🔍
+            </h3>
+            <p class="text-gray-700 font-medium mb-4">
+                바탕화면에 만든 내 폴더를 찾아서, 그 안에 '그림'과 '문서' 방(폴더)을 더 만들어 보아요!
+            </p>
+            
+            <!-- 파일 탐색기 UI -->
+            <div class="border border-gray-300 rounded-lg overflow-hidden flex flex-col shadow-sm bg-white">
+                 <!-- Header -->
+                 <div class="bg-gray-100 px-4 py-3 border-b border-gray-300 flex items-center gap-2">
+                     <i data-lucide="folder-search" class="w-5 h-5 text-gray-600"></i>
+                     <span class="text-sm font-bold text-gray-700">파일 탐색기 연습</span>
+                 </div>
+                 
+                 <!-- Body -->
+                 <div class="flex h-64">
+                     <!-- Sidebar -->
+                     <div class="w-1/3 bg-gray-50 border-r border-gray-200 p-2 text-sm flex flex-col gap-1">
+                          <button id="fe-desktop-btn" class="flex items-center gap-2 w-full px-2 py-2 hover:bg-gray-200 rounded text-left font-bold text-gray-700 transition-colors focus:bg-blue-100 focus:text-blue-700 outline-none">
+                              <i data-lucide="monitor" class="w-4 h-4 text-blue-500"></i> 바탕화면
+                          </button>
+                          <button class="flex items-center gap-2 w-full px-2 py-2 text-gray-400 cursor-not-allowed text-left">
+                              <i data-lucide="download" class="w-4 h-4"></i> 다운로드
+                          </button>
+                          <button class="flex items-center gap-2 w-full px-2 py-2 text-gray-400 cursor-not-allowed text-left">
+                              <i data-lucide="file-text" class="w-4 h-4"></i> 문서
+                          </button>
+                     </div>
+                     
+                     <!-- Main Content -->
+                     <div class="w-2/3 p-4 bg-white relative">
+                          <!-- 단계 1: 안내 -->
+                          <div id="fe-step1" class="text-blue-500 font-bold flex flex-col items-center justify-center h-full text-base animate-bounce">
+                              👈 왼쪽 메뉴에서 [바탕화면]을 클릭하세요!
+                          </div>
+                          
+                          <!-- 단계 2: 바탕화면 보기 -->
+                          <div id="fe-step2" class="hidden flex-wrap gap-4 items-start">
+                              <div class="flex flex-col items-center p-2 rounded opacity-50 cursor-not-allowed">
+                                  <i data-lucide="file" class="w-12 h-12 text-gray-400"></i>
+                                  <span class="text-xs mt-1 font-bold text-gray-500">안내장.hwp</span>
+                              </div>
+                              <div id="fe-my-folder" class="flex flex-col items-center p-2 rounded hover:bg-blue-50 cursor-pointer border-2 border-transparent hover:border-blue-300 group transition-all" title="빠르게 두 번 클릭(더블클릭) 하세요!">
+                                  <i data-lucide="folder" class="w-12 h-12 text-primary fill-primary/30 group-hover:scale-110 transition-transform"></i>
+                                  <span class="text-xs mt-1 font-bold text-gray-800 bg-blue-100 px-2 py-0.5 rounded">내 이름 폴더</span>
+                                  <span class="text-[10px] text-accent font-bold mt-1 opacity-0 group-hover:opacity-100">더블클릭!</span>
+                              </div>
+                          </div>
+                          
+                          <!-- 단계 3: 내 폴더 안 -->
+                          <div id="fe-step3" class="hidden h-full flex flex-col">
+                              <div class="mb-4 flex gap-2 pb-2 border-b border-gray-100">
+                                  <button id="fe-new-folder-btn" class="px-3 py-1.5 bg-white border border-gray-300 shadow-sm rounded text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-primary flex items-center gap-1 transition-colors">
+                                      <i data-lucide="folder-plus" class="w-4 h-4 text-warning"></i> 새 폴더 만들기
+                                  </button>
+                              </div>
+                              <div id="fe-inner-folders" class="flex flex-wrap gap-4 items-start content-start flex-1 relative">
+                                  <p class="text-gray-400 text-sm w-full text-center mt-6" id="fe-empty-msg">이 폴더는 비어 있습니다.<br><span class="text-primary font-bold">새 폴더 만들기</span>를 눌러 방을 만들어주세요.</p>
+                              </div>
+                          </div>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- [전개 5] 폴더 꾸미기 & 분류 게임 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-accent/20 text-accent w-10 h-10 rounded-full flex items-center justify-center">5</span>
+                내 맘대로 꾸미고, 예쁘게 정리하기!
+            </h3>
+            
+            <!-- 드래그 앤 드롭 정리 게임 -->
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 relative overflow-hidden mb-8">
+                <p class="font-bold text-lg text-center text-gray-700 mb-6">
+                    <i data-lucide="bot" class="inline-block w-6 h-6 text-secondary -mt-1 mr-1"></i> <b>확장자 꼬리표</b>를 보고 파일들을 알맞은 폴더에 드래그 해주세요!
+                </p>
+
+                <!-- 폴더들 (Dropzones) -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-8" id="folders-container">
+                    <div class="dropzone bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center h-28 sm:h-32 shadow-sm" data-accept="image">
+                        <i data-lucide="image" class="w-8 h-8 sm:w-10 sm:h-10 text-accent mb-2"></i>
+                        <span class="font-bold text-gray-700 text-sm sm:text-base">그림 (.jpg)</span>
+                    </div>
+                    <div class="dropzone bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center h-28 sm:h-32 shadow-sm" data-accept="music">
+                        <i data-lucide="music" class="w-8 h-8 sm:w-10 sm:h-10 text-purple-500 mb-2"></i>
+                        <span class="font-bold text-gray-700 text-sm sm:text-base">음악 (.mp3)</span>
+                    </div>
+                    <div class="dropzone bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center h-28 sm:h-32 shadow-sm" data-accept="document">
+                        <i data-lucide="file-text" class="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 mb-2"></i>
+                        <span class="font-bold text-gray-700 text-sm sm:text-base">문서 (.hwp)</span>
+                    </div>
+                </div>
+
+                <!-- 흩어진 파일들 (Draggables) -->
+                <div class="min-h-[120px] flex flex-wrap gap-3 justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-inner" id="files-container">
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="image">
+                        <i data-lucide="camera" class="w-5 h-5 text-accent"></i> 강아지.jpg
+                    </div>
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="music">
+                        <i data-lucide="headphones" class="w-5 h-5 text-purple-500"></i> 동요.mp3
+                    </div>
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="document">
+                        <i data-lucide="book" class="w-5 h-5 text-blue-500"></i> 독후감.hwp
+                    </div>
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="image">
+                        <i data-lucide="image" class="w-5 h-5 text-accent"></i> 가족여행.png
+                    </div>
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="music">
+                        <i data-lucide="mic" class="w-5 h-5 text-purple-500"></i> 피아노.wav
+                    </div>
+                    <div class="draggable bg-white px-3 py-2 rounded-lg shadow border border-gray-200 flex items-center gap-2 hover:bg-gray-50 hover:-translate-y-1 transition-transform" draggable="true" data-type="document">
+                        <i data-lucide="clipboard" class="w-5 h-5 text-blue-500"></i> 시간표.txt
+                    </div>
+                </div>
+                
+                <!-- 게임 성공 메시지 -->
+                <div id="game-success-msg" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center animate-pop-in">
+                    <div class="text-6xl mb-4 animate-bounce">🏆</div>
+                    <h4 class="font-black text-3xl text-gray-800 mb-2">정리 대장 등극!</h4>
+                    <p class="text-lg text-gray-600 font-medium bg-primary/20 px-4 py-1 rounded-full">모든 파일이 알맞은 폴더로 들어갔어요.</p>
+                </div>
+            </div>
+
+            <!-- 폴더 커스텀 체험 -->
+            <div class="bg-pink-50 rounded-2xl p-6 border border-pink-100 mb-6">
+                <p class="font-bold text-gray-800 mb-4 text-center">웹 페이지의 마법! 아래 버튼을 눌러 내 마음대로 폴더 모양을 바꿔보세요.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-8">
+                    <div id="custom-folder-target" class="flex flex-col items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 transform">
+                        <i id="custom-folder-icon" data-lucide="folder" class="w-20 h-20 text-primary fill-primary/30 transition-colors"></i>
+                        <span class="font-bold mt-2 text-gray-700">비밀상자</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="changeFolderStyle('folder-heart', 'text-accent', 'fill-accent/30')" class="px-4 py-2 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-accent hover:text-white hover:border-accent transition-colors flex items-center gap-2 shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4"></i> 하트 폴더
+                        </button>
+                        <button onclick="changeFolderStyle('folder-music', 'text-purple-500', 'fill-purple-500/30')" class="px-4 py-2 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-colors flex items-center gap-2 shadow-sm">
+                            <i data-lucide="music" class="w-4 h-4"></i> 음악 폴더
+                        </button>
+                        <button onclick="changeFolderStyle('star', 'text-warning', 'fill-warning/30')" class="px-4 py-2 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-warning hover:text-white hover:border-warning transition-colors flex items-center gap-2 shadow-sm">
+                            <i data-lucide="star" class="w-4 h-4"></i> 별모양
+                        </button>
+                        <button onclick="changeFolderStyle('folder-open', 'text-success', 'fill-success/30')" class="px-4 py-2 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-success hover:text-white hover:border-success transition-colors flex items-center gap-2 shadow-sm">
+                            <i data-lucide="folder-open" class="w-4 h-4"></i> 초록 폴더
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 진짜 컴퓨터 속성창 설명 (신규) -->
+            <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200 shadow-inner">
+                <h4 class="font-black text-xl text-blue-800 flex items-center gap-2 mb-3">
+                    <i data-lucide="monitor" class="w-6 h-6"></i> 진짜 컴퓨터에서 폴더 모양을 바꾸려면? (속성창)
+                </h4>
+                <p class="text-gray-800 font-medium mb-4 leading-relaxed">
+                    폴더의 <b>'속성'</b>은 폴더가 언제 태어났는지, 크기가 얼마인지 적어둔 <b>'비밀 프로필 카드'</b>예요.<br>이 프로필 카드를 열면 폴더의 옷(아이콘)도 예쁘게 갈아입힐 수 있답니다!
+                </p>
+                <div class="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700 font-bold">
+                        <li>바꾸고 싶은 폴더 위에서 <span class="text-blue-600">마우스 오른쪽 버튼</span>을 클릭해요.</li>
+                        <li>메뉴 맨 아래에 있는 <span class="bg-gray-100 px-2 py-1 rounded">속성</span>을 눌러서 비밀 카드를 열어요.</li>
+                        <li>창 위쪽에서 <span class="bg-gray-100 px-2 py-1 rounded">사용자 지정</span>을 누르고, 아래쪽의 <span class="text-accent">아이콘 변경</span> 버튼 클릭!</li>
+                        <li>별, 나무, 자물쇠 등 원하는 예쁜 모양을 고르고 [확인]을 누르면 짠! ✨</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- [정리 1] 마무리 확인 퀴즈 (6문제) -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-success/20 text-success w-10 h-10 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-6 h-6"></i></span>
+                오늘 배운 내용 확인하기!
+            </h3>
+            
+            <p class="text-gray-700 font-medium mb-6">빈칸에 알맞은 말을 초성을 보고 적어보세요. 6문제를 모두 맞추면 폭죽이 터져요!</p>
+
+            <div class="space-y-4">
+                <!-- 문제 1 -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q1</div>
+                    <p class="text-lg flex-1">사진, 음악, 문서 등 컴퓨터에 저장되는 자료 하나하나를 <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-24 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors" data-answer="파일">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-[0.3em]">ㅍㅇ</span>
+                        </span>
+                        (이)라고 부른다.
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+
+                <!-- 문제 2 -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q2</div>
+                    <p class="text-lg flex-1">이런 여러 가지 자료들을 깨끗하게 정리해서 모아두는 상자는 <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-24 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors" data-answer="폴더">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-[0.3em]">ㅍㄷ</span>
+                        </span>
+                        (이)다.
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+                
+                <!-- 문제 3 (신규: 확장자) -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q3</div>
+                    <p class="text-lg flex-1">파일 이름 맨 뒤에 점( . )과 함께 붙어서 그림인지 음악인지 알려주는 꼬리표는 <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-24 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors" data-answer="확장자">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-[0.3em]">ㅎㅈㅈ</span>
+                        </span>
+                        이다.
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+
+                <!-- 문제 4 -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q4</div>
+                    <p class="text-lg flex-1">새로운 폴더를 만들 때는 바탕화면에서 마우스의 <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-24 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors" data-answer="오른쪽">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-[0.3em]">ㅇㄹㅉ</span>
+                        </span>
+                        버튼을 누른다.
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+
+                <!-- 문제 5 -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q5</div>
+                    <p class="text-lg flex-1">폴더 안으로 쏙! 들어가거나 파일을 열 때 마우스 왼쪽 버튼을 빠르게 두 번 누르는 행동은? <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-28 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors" data-answer="더블클릭">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-[0.2em]">ㄷㅂㅋㄹ</span>
+                        </span>
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+
+                <!-- 문제 6 -->
+                <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 transition-colors">
+                    <div class="bg-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-sm shrink-0">Q6</div>
+                    <p class="text-lg flex-1">폴더의 이름을 내 마음대로 바꾸고 싶을 때 누르는 마법의 키보드 단축키는 <br class="sm:hidden">
+                        <span class="relative inline-block mt-2 sm:mt-0">
+                            <input type="text" class="quiz-input w-20 px-3 py-1 border-b-2 border-gray-300 bg-gray-50 text-center font-bold text-gray-700 focus:outline-none focus:border-primary transition-colors uppercase" data-answer="f2">
+                            <span class="initial-hint absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 tracking-widest">영어+숫자</span>
+                        </span>
+                        이다.
+                    </p>
+                    <i data-lucide="check-circle" class="quiz-feedback w-6 h-6 text-success hidden shrink-0"></i>
+                </div>
+            </div>
+
+            <!-- 축하 메시지 -->
+            <div id="quiz-success-msg" class="hidden mt-8 text-center bg-yellow-100/50 p-6 rounded-2xl border border-primary animate-fade-in-up">
+                <i data-lucide="award" class="w-16 h-16 text-warning mx-auto mb-3 animate-bounce"></i>
+                <h4 class="text-2xl font-black text-yellow-800 mb-2">대단해요! 폴더 마스터 자격 획득! 🎓</h4>
+                <p class="text-gray-700 font-medium">이제 파일, 폴더, 확장자까지 완벽하게 이해했어요!</p>
+            </div>
+        </section>
+
+        <!-- [정리 2] 마무리 실습: 실제 컴퓨터에서 적용하기 -->
+        <section class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 shadow-sm border border-blue-100 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 text-9xl opacity-10 select-none pointer-events-none">🖥️</div>
+            <h3 class="text-2xl font-black text-blue-800 flex items-center gap-3 mb-4">
+                🚀 마무리 실습: 진짜 내 컴퓨터에서 해보기!
+            </h3>
+            <p class="text-blue-900 font-medium mb-6 text-lg">오늘 배운 마법을 <b>진짜 컴퓨터</b>에서 사용해 볼 시간이에요! <br class="hidden sm:block">아래 미션을 순서대로 하나씩 완료하고 체크해 보세요.</p>
+            
+            <div class="space-y-3 relative z-10">
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">1. 바탕화면 빈 곳에 마우스 오른쪽 버튼을 눌러 '내 이름' 폴더 만들기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">2. '파일 탐색기'를 열거나, 폴더를 더블클릭해서 들어가기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">3. 내 이름 폴더 안에 '그림', '문서' 폴더 2개 새롭게 더 만들기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">4. 내 이름 폴더를 마우스 오른쪽 버튼으로 누르고 [속성]에서 아이콘 모양 바꾸기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">5. 연습용으로 만든 폴더를 '휴지통'에 버리고, 휴지통 비우기 🗑️</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-blue-700 transition-colors">6. 모든 미션을 완료했다면 씩씩하게 손 번쩍 들기! 🙋‍♂️🙋‍♀️</span>
+                </label>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // 아이콘 초기화
+        lucide.createIcons();
+
+        // --------------------------------------------------
+        // [전개 3] 가상 바탕화면 시뮬레이터 로직
+        // --------------------------------------------------
+        const desktop = document.getElementById('virtual-desktop');
+        const contextMenu = document.getElementById('context-menu');
+        let currentFolder = null;
+
+        function showContextMenu(e) {
+            e.preventDefault();
+            const rect = desktop.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            if (x + 150 > rect.width) x = rect.width - 150;
+            if (y + 120 > rect.height) y = rect.height - 120;
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.style.display = 'block';
+            
+            highlightMission(1);
+        }
+
+        desktop.addEventListener('click', (e) => {
+            contextMenu.style.display = 'none';
+            if (e.target === desktop) {
+                if (currentFolder) currentFolder.classList.remove('selected');
+            }
+        });
+
+        function createVirtualFolder() {
+            contextMenu.style.display = 'none';
+            if (currentFolder) currentFolder.remove();
+
+            const folder = document.createElement('div');
+            folder.className = 'virtual-folder animate-pop-in';
+            
+            const leftPos = parseInt(contextMenu.style.left) || 100;
+            const topPos = parseInt(contextMenu.style.top) || 100;
+            folder.style.left = `${leftPos}px`;
+            folder.style.top = `${topPos}px`;
+
+            folder.innerHTML = `
+                <i data-lucide="folder" class="w-12 h-12 text-primary fill-primary/50"></i>
+                <span class="folder-name-text">새 폴더</span>
+                <input type="text" class="folder-name-input" value="새 폴더" autocomplete="off" maxlength="8">
+            `;
+
+            desktop.appendChild(folder);
+            lucide.createIcons();
+            currentFolder = folder;
+
+            highlightMission(2);
+
+            folder.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.virtual-folder').forEach(f => f.classList.remove('selected'));
+                folder.classList.add('selected');
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F2' && currentFolder && currentFolder.classList.contains('selected')) {
+                e.preventDefault();
+                const textSpan = currentFolder.querySelector('.folder-name-text');
+                const inputFld = currentFolder.querySelector('.folder-name-input');
+                
+                textSpan.style.display = 'none';
+                inputFld.style.display = 'block';
+                inputFld.focus();
+                inputFld.select();
+                
+                highlightMission(3);
+            }
+        });
+
+        desktop.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('folder-name-input') && e.key === 'Enter') {
+                const inputFld = e.target;
+                const textSpan = inputFld.previousElementSibling;
+                const newName = inputFld.value.trim() || '새 폴더';
+                
+                textSpan.textContent = newName;
+                inputFld.style.display = 'none';
+                textSpan.style.display = 'block';
+                
+                document.getElementById('sim-success-msg').classList.remove('hidden');
+                
+                const m3 = document.getElementById('mission3');
+                m3.className = 'flex-1 bg-white border border-success rounded-lg p-3 text-center shadow-sm';
+                m3.innerHTML = '<span class="bg-success text-white text-xs font-bold px-2 py-1 rounded-full mr-1">완료</span> <span class="font-bold text-success text-sm">참 잘했어요!</span>';
+            }
+        });
+
+        function highlightMission(step) {
+            const m1 = document.getElementById('mission1');
+            const m2 = document.getElementById('mission2');
+            const m3 = document.getElementById('mission3');
+
+            if (step === 2) {
+                m1.className = 'flex-1 bg-green-50 border border-success rounded-lg p-3 text-center shadow-sm opacity-50';
+                m1.querySelector('span:first-child').className = 'bg-success text-white text-xs font-bold px-2 py-1 rounded-full mr-1';
+                m2.className = 'flex-1 bg-white border border-primary rounded-lg p-3 text-center shadow-sm transform scale-105';
+                m2.querySelector('span:first-child').className = 'bg-primary text-white text-xs font-bold px-2 py-1 rounded-full mr-1';
+                m2.querySelector('span:last-child').className = 'font-bold text-gray-800 text-sm';
+            } else if (step === 3) {
+                m2.className = 'flex-1 bg-green-50 border border-success rounded-lg p-3 text-center shadow-sm opacity-50 transform scale-100';
+                m2.querySelector('span:first-child').className = 'bg-success text-white text-xs font-bold px-2 py-1 rounded-full mr-1';
+                m3.className = 'flex-1 bg-white border border-primary rounded-lg p-3 text-center shadow-sm transform scale-105';
+                m3.querySelector('span:first-child').className = 'bg-primary text-white text-xs font-bold px-2 py-1 rounded-full mr-1';
+                m3.querySelector('span:last-child').className = 'font-bold text-gray-800 text-sm';
+            }
+        }
+
+        // --------------------------------------------------
+        // [전개 4] 파일 탐색기 시뮬레이터 로직
+        // --------------------------------------------------
+        const feDesktopBtn = document.getElementById('fe-desktop-btn');
+        const feStep1 = document.getElementById('fe-step1');
+        const feStep2 = document.getElementById('fe-step2');
+        const feStep3 = document.getElementById('fe-step3');
+        const feMyFolder = document.getElementById('fe-my-folder');
+        const feNewFolderBtn = document.getElementById('fe-new-folder-btn');
+        const feInnerFolders = document.getElementById('fe-inner-folders');
+        const feEmptyMsg = document.getElementById('fe-empty-msg');
+        let createdInnerFolders = 0;
+        const innerFolderNames = ['그림', '문서'];
+
+        feDesktopBtn.addEventListener('click', () => {
+            feStep1.classList.add('hidden');
+            feStep2.classList.remove('hidden');
+            feStep2.classList.add('flex');
+            feDesktopBtn.classList.replace('text-gray-700', 'text-blue-700');
+            feDesktopBtn.classList.add('bg-blue-50');
+        });
+
+        feMyFolder.addEventListener('dblclick', () => {
+            feStep2.classList.remove('flex');
+            feStep2.classList.add('hidden');
+            feStep3.classList.remove('hidden');
+        });
+
+        feNewFolderBtn.addEventListener('click', () => {
+            if (createdInnerFolders >= 2) return; 
+            
+            feEmptyMsg.classList.add('hidden'); 
+            
+            const newFolderDiv = document.createElement('div');
+            newFolderDiv.className = 'flex flex-col items-center p-2 animate-pop-in';
+            newFolderDiv.innerHTML = `
+                <i data-lucide="folder" class="w-12 h-12 text-warning fill-warning/30"></i>
+                <span class="text-xs mt-1 font-bold text-gray-700 bg-white px-2 py-0.5 rounded shadow-sm border border-gray-100">${innerFolderNames[createdInnerFolders]}</span>
+            `;
+            
+            const successMsgDiv = feInnerFolders.querySelector('.fe-success-msg');
+            if (successMsgDiv) {
+                feInnerFolders.insertBefore(newFolderDiv, successMsgDiv);
+            } else {
+                feInnerFolders.appendChild(newFolderDiv);
+            }
+            
+            lucide.createIcons();
+            createdInnerFolders++;
+
+            if (createdInnerFolders === 2) {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fe-success-msg absolute bottom-4 left-0 w-full text-center text-success font-bold text-sm bg-success/10 py-2 rounded-lg border border-success/30 animate-fade-in-up';
+                successDiv.innerHTML = '<i data-lucide="check-circle" class="inline w-4 h-4 mb-1"></i> 그림, 문서 방 만들기 성공! 폴더 정리를 아주 잘했어요.';
+                feInnerFolders.appendChild(successDiv);
+                lucide.createIcons();
+            }
+        });
+
+
+        // --------------------------------------------------
+        // [전개 5] 폴더 꾸미기 로직
+        // --------------------------------------------------
+        function changeFolderStyle(iconName, strokeClass, fillClass) {
+            const targetDiv = document.getElementById('custom-folder-target');
+            targetDiv.innerHTML = `
+                <i data-lucide="${iconName}" class="w-20 h-20 ${strokeClass} ${fillClass} transition-colors animate-pop-in"></i>
+                <span class="font-bold mt-2 text-gray-700">비밀상자</span>
+            `;
+            targetDiv.classList.add('scale-110');
+            setTimeout(() => targetDiv.classList.remove('scale-110'), 200);
+            lucide.createIcons();
+        }
+
+        // --------------------------------------------------
+        // [전개 5] 드래그 앤 드롭 게임 로직
+        // --------------------------------------------------
+        const draggables = document.querySelectorAll('.draggable');
+        const dropzones = document.querySelectorAll('.dropzone');
+        const gameSuccessMsg = document.getElementById('game-success-msg');
+        let sortedCount = 0;
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('opacity-50', 'scale-95');
+                draggable.id = 'dragging-item'; 
+            });
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('opacity-50', 'scale-95');
+                draggable.removeAttribute('id');
+            });
+        });
+
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => { zone.classList.remove('dragover'); });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                
+                const draggingItem = document.getElementById('dragging-item');
+                if (!draggingItem) return;
+
+                const itemType = draggingItem.getAttribute('data-type');
+                const zoneType = zone.getAttribute('data-accept');
+
+                if (itemType === zoneType) {
+                    draggingItem.classList.remove('px-3', 'py-2', 'bg-white', 'border', 'shadow');
+                    draggingItem.classList.add('text-[10px]', 'sm:text-xs', 'bg-gray-100', 'px-2', 'py-1', 'mt-1', 'w-full', 'justify-center', 'rounded');
+                    draggingItem.draggable = false; 
+                    zone.appendChild(draggingItem);
+                    
+                    sortedCount++;
+                    if(sortedCount === draggables.length) {
+                        gameSuccessMsg.classList.remove('hidden');
+                    }
+                } else {
+                    draggingItem.classList.add('animate-shake');
+                    setTimeout(() => draggingItem.classList.remove('animate-shake'), 400);
+                }
+            });
+        });
+
+        // --------------------------------------------------
+        // [정리 1] 퀴즈 채점 로직 (6문제 대응)
+        // --------------------------------------------------
+        const quizInputs = document.querySelectorAll('.quiz-input');
+        const successMsg = document.getElementById('quiz-success-msg');
+        
+        quizInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const answer = input.getAttribute('data-answer').replace(/\s/g, '').toLowerCase();
+                const val = e.target.value.trim().replace(/\s/g, '').toLowerCase();
+                const feedback = input.nextElementSibling;
+                const hintEl = input.closest('span.relative').querySelector('.initial-hint');
+
+                if (val === answer) {
+                    // 정답 시 스타일 추가
+                    input.classList.remove('bg-gray-50', 'border-gray-300', 'text-gray-700', 'border-b-2');
+                    input.classList.add('bg-success/10', 'border-transparent', 'text-success', 'rounded');
+                    input.disabled = true; 
+                    input.value = input.getAttribute('data-answer').toUpperCase(); 
+                    
+                    if(feedback) feedback.classList.remove('hidden'); 
+                    if(hintEl) hintEl.classList.add('opacity-20'); 
+                    
+                    checkAllQuiz();
+                }
+            });
+        });
+
+        function checkAllQuiz() {
+            const allSolved = Array.from(quizInputs).every(input => input.disabled === true);
+            if (allSolved) {
+                successMsg.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
