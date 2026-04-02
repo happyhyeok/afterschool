@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5회차: 나는야 척척박사 정리 대장</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        bgLight: '#FFF9E6'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F8FAFC;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .font-gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-btn.active {
+            background-color: var(--primary);
+            font-weight: 800;
+            color: #713f12;
+            box-shadow: 0 4px 0 #d97706;
+            transform: translateY(-2px);
+        }
+        .tab-btn {
+            background-color: #e2e8f0;
+            color: #64748b;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 transparent;
+        }
+        .tab-btn:hover:not(.active) {
+            background-color: #cbd5e1;
+        }
+        .emoji-item {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .drag-item {
+            /* 터치 스크롤 방지 (드래그 시 필수) */
+            touch-action: none; 
+        }
+        /* 축하 이모지 애니메이션 */
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            animation: fall 2s linear forwards;
+            z-index: 9999;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .bounce-hover:hover {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        /* 어질러진 방 애니메이션 */
+        .messy-shake {
+            animation: shake 3s infinite ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-20">
+
+    <!-- 상단 타이틀 -->
+    <header class="bg-white shadow-sm border-b-4 border-primary py-8 mb-6 text-center rounded-b-3xl">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="font-gaegu text-4xl sm:text-5xl font-bold text-slate-800 mb-3">5회차: 나는야 척척박사 정리 대장 ✨</h1>
+            <p class="text-xl text-secondary font-bold">어지러운 물건들을 규칙에 맞게 예쁘게 정리해 보아요!</p>
+        </div>
+    </header>
+
+    <!-- 탭 버튼들 -->
+    <nav class="flex flex-wrap justify-center gap-3 px-4 mb-8 max-w-4xl mx-auto">
+        <button onclick="switchTab('intro')" id="tab-intro" class="tab-btn active px-6 py-2 rounded-full font-bold text-lg transition-all shadow-sm flex flex-col items-center justify-center leading-tight">
+            <span>1. 오늘의 배움</span>
+        </button>
+        <button onclick="switchTab('touch-sort')" id="tab-touch-sort" class="tab-btn px-6 py-2 rounded-full font-bold text-lg transition-all shadow-sm flex flex-col items-center justify-center leading-tight">
+            <span>2. 비슷한 것끼리</span>
+            <span>모으기</span>
+        </button>
+        <button onclick="switchTab('drag-sort')" id="tab-drag-sort" class="tab-btn px-6 py-2 rounded-full font-bold text-lg transition-all shadow-sm flex flex-col items-center justify-center leading-tight">
+            <span>3. 스스로</span>
+            <span>분류하기</span>
+        </button>
+        <button onclick="switchTab('custom-sort')" id="tab-custom-sort" class="tab-btn px-6 py-2 rounded-full font-bold text-lg transition-all shadow-sm flex flex-col items-center justify-center leading-tight">
+            <span>4. 나만의 기준</span>
+            <span>만들기</span>
+        </button>
+        <button onclick="switchTab('wrapup')" id="tab-wrapup" class="tab-btn px-6 py-2 rounded-full font-bold text-lg transition-all shadow-sm flex flex-col items-center justify-center leading-tight">
+            <span>5. 배움 마무리</span>
+        </button>
+    </nav>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="max-w-4xl mx-auto px-4 space-y-8">
+
+        <!-- 탭 1: 오늘의 배움 -->
+        <section id="content-intro" class="tab-content active">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border-2 border-slate-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-bl-full -z-10"></div>
+                
+                <h2 class="font-gaegu text-4xl font-bold mb-6 text-slate-800">
+                    어지러운 방을 <span class="text-accent">정리</span>해 볼까요?
+                </h2>
+                
+                <!-- 어질러진 방 시각적 표현 -->
+                <div class="relative w-full h-56 sm:h-64 bg-slate-100 rounded-3xl border-4 border-dashed border-slate-300 overflow-hidden flex items-center justify-center shadow-inner">
+                    <!-- 흩어진 물건들 (호환성을 위해 기본 이모지로 변경) -->
+                    <div class="absolute top-4 left-6 text-5xl sm:text-6xl rotate-[15deg] messy-shake" style="animation-delay: 0s;">🐻</div>
+                    <div class="absolute top-8 right-10 text-5xl sm:text-6xl -rotate-[20deg] messy-shake" style="animation-delay: 0.5s;">📚</div>
+                    <div class="absolute bottom-6 left-1/4 text-5xl sm:text-6xl rotate-[45deg] messy-shake" style="animation-delay: 1s;">🚗</div>
+                    <div class="absolute bottom-10 right-1/4 text-5xl sm:text-6xl -rotate-[10deg] messy-shake" style="animation-delay: 1.5s;">⚽</div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl sm:text-6xl rotate-[70deg] messy-shake" style="animation-delay: 0.2s;">🎨</div>
+                </div>
+
+                <!-- 어질러진 방 경고 문구 -->
+                <div class="text-center mt-6 mb-10">
+                    <span class="inline-block bg-red-500 text-white font-gaegu text-2xl sm:text-3xl font-bold px-8 py-4 rounded-full shadow-[0_4px_0_#b91c1c] animate-pulse">
+                        앗! 방이 너무 어질러져 있어요! 😱
+                    </span>
+                </div>
+
+                <div class="bg-blue-50 rounded-2xl p-6 mb-8 border-2 border-blue-100 text-center">
+                    <p class="text-xl text-slate-700 font-bold leading-relaxed">
+                        장난감, 책, 학용품이 모두 섞여 있어서 물건을 찾기가 힘들어요.<br>
+                        어떻게 정리하면 우리가 물건을 찾기 쉬울까요?<br>
+                        오늘은 <strong>"비슷한 것끼리 모으는 방법"</strong>을 배워볼 거예요!
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                    <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-200 text-center">
+                        <div class="text-4xl mb-2">🎨</div>
+                        <h3 class="text-lg font-bold text-green-700">색깔끼리 모으기</h3>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-2xl border-2 border-purple-200 text-center">
+                        <div class="text-4xl mb-2">⭐</div>
+                        <h3 class="text-lg font-bold text-purple-700">모양끼리 모으기</h3>
+                    </div>
+                    <div class="bg-rose-50 p-6 rounded-2xl border-2 border-rose-200 text-center">
+                        <div class="text-4xl mb-2">🐶</div>
+                        <h3 class="text-lg font-bold text-rose-700">종류끼리 모으기</h3>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <p class="text-xl font-bold text-slate-700 mb-2">
+                        이렇게 약속(기준)을 정해서 끼리끼리 모으는 것을<br>
+                        <span class="text-2xl text-accent font-black bg-yellow-100 px-2 rounded">분류</span> 라고 해요!
+                    </p>
+                    <p class="text-gray-500 mt-2">컴퓨터도 이런 분류를 아주 잘한답니다. 자, 이제 직접 해볼까요?</p>
+                </div>
+                
+                <div class="mt-8 text-center sm:text-right">
+                    <button onclick="switchTab('touch-sort')" class="w-full sm:w-auto bg-secondary hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-2xl text-xl shadow-[0_6px_0_#0284c7] hover:shadow-[0_4px_0_#0284c7] hover:translate-y-[2px] transition-all">
+                        시작하기 🚀
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 탭 2: 터치로 분류하기 (통합) -->
+        <section id="content-touch-sort" class="tab-content">
+            <div class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-yellow-900 rounded-full font-bold mb-6 text-xl shadow-sm">
+                <span>👆</span> 톡톡! 터치로 쏙쏙!
+            </div>
+            <!-- 터치 게임들이 여기에 생성됨 -->
+            <div id="touch-games-wrapper"></div>
+            
+            <div class="text-right mt-4">
+                <button onclick="switchTab('drag-sort')" class="bg-success hover:bg-green-500 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-[0_6px_0_#047857] hover:shadow-[0_4px_0_#047857] hover:translate-y-[2px] transition-all">
+                    스스로 분류하러 가기 ➡️
+                </button>
+            </div>
+        </section>
+
+        <!-- 탭 3: 드래그로 분류하기 -->
+        <section id="content-drag-sort" class="tab-content">
+            <div class="inline-flex items-center gap-2 px-6 py-3 bg-purple-200 text-purple-900 rounded-full font-bold mb-6 text-xl shadow-sm">
+                <span>✋</span> 쭉~ 끌어서 쏙쏙! (드래그 앤 드롭)
+            </div>
+            <!-- 드래그 게임들이 여기에 생성됨 -->
+            <div id="drag-games-wrapper"></div>
+
+            <div class="text-right mt-4">
+                <button onclick="switchTab('custom-sort')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-[0_6px_0_#4338ca] hover:shadow-[0_4px_0_#4338ca] hover:translate-y-[2px] transition-all">
+                    나만의 기준 만들러 가기 ➡️
+                </button>
+            </div>
+        </section>
+
+        <!-- 탭 4: 어려운 분류 (나만의 기준 세우기) -->
+        <section id="content-custom-sort" class="tab-content">
+            <div class="inline-flex items-center gap-2 px-6 py-3 bg-pink-200 text-pink-900 rounded-full font-bold mb-6 text-xl shadow-sm">
+                <span>❓</span> 이쪽일까? 저쪽일까?
+            </div>
+            <!-- 커스텀 드래그 게임이 여기에 생성됨 -->
+            <div id="custom-games-wrapper"></div>
+
+            <div class="text-right mt-4">
+                <button onclick="switchTab('wrapup')" class="bg-success hover:bg-green-500 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-[0_6px_0_#047857] hover:shadow-[0_4px_0_#047857] hover:translate-y-[2px] transition-all">
+                    마무리하기 🏁
+                </button>
+            </div>
+        </section>
+
+        <!-- 탭 5: 배움 마무리 -->
+        <section id="content-wrapup" class="tab-content">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border-2 border-slate-100 text-center">
+                <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-5xl">🏆</span>
+                </div>
+                
+                <h2 class="font-gaegu text-4xl font-bold mb-6 text-slate-800">오늘의 <span class="text-success">척척박사</span> 메달!</h2>
+                
+                <p class="text-xl font-bold text-gray-700 mb-8 leading-relaxed">
+                    오늘 우리는 아주 중요한 것을 배웠어요.<br>
+                    규칙(기준)을 정해서 끼리끼리 모으는 <span class="text-accent text-2xl font-black">분류</span>를 해보았죠!<br>
+                    컴퓨터와 로봇들도 이렇게 규칙을 알려주면 일을 아주 잘 한답니다.
+                </p>
+
+                <div class="bg-orange-50 p-8 rounded-3xl border-4 border-orange-200 max-w-2xl mx-auto text-left">
+                    <h3 class="font-bold text-xl text-orange-800 mb-4 flex items-center gap-2">
+                        <span class="text-2xl">💭</span> 짝꿍과 이야기해 보아요
+                    </h3>
+                    <p class="text-lg text-slate-700 font-medium">
+                        "우리 반 친구들을 두 모둠으로 나눈다면, <br>
+                        나는 어떤 규칙(기준)으로 끼리끼리 모아볼까요?"
+                    </p>
+                    <ul class="mt-4 space-y-2 text-slate-600">
+                        <li>👉 예: 안경을 쓴 친구 / 안경을 쓰지 않은 친구</li>
+                        <li>👉 예: 머리가 긴 친구 / 머리가 짧은 친구</li>
+                        <li>👉 내가 정한 규칙은: ____________________</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-12">
+                    <button onclick="shootConfetti(); alert('다음 시간: 지워지지 않는 나의 인터넷 발자국 🚀\n\n기대해 주세요!')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-10 rounded-2xl text-xl shadow-[0_6px_0_#4338ca] hover:shadow-[0_4px_0_#4338ca] hover:translate-y-[2px] transition-all">
+                        다음 시간: 지워지지 않는 나의 인터넷 발자국 📢
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 데이터 정의 (색깔, 모양, 종류, 커스텀) ---
+        // 구형 윈도우/태블릿 엑박(깨짐) 현상 방지를 위해 모든 이모지를 호환성 100% 클래식 이모지로 변경
+        const gameData = {
+            color: {
+                title: "색깔", titleColor: "text-red-500",
+                boxes: [
+                    { id: 'red', name: '빨강 ❤️', bg: 'bg-red-50', border: 'border-red-300', text: 'text-red-600' },
+                    { id: 'blue', name: '파랑 💙', bg: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-600' },
+                    { id: 'yellow', name: '노랑 💛', bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-600' }
+                ],
+                items: [
+                    { id: 'c1', emoji: '🍎', target: 'red' }, { id: 'c2', emoji: '🚗', target: 'red' }, { id: 'c3', emoji: '🎈', target: 'red' },
+                    { id: 'c4', emoji: '🐳', target: 'blue' }, { id: 'c5', emoji: '📘', target: 'blue' }, { id: 'c6', emoji: '💎', target: 'blue' },
+                    { id: 'c7', emoji: '🍌', target: 'yellow' }, { id: 'c8', emoji: '🌻', target: 'yellow' }, { id: 'c9', emoji: '🐥', target: 'yellow' }
+                ]
+            },
+            shape: {
+                title: "모양", titleColor: "text-purple-600",
+                boxes: [
+                    { id: 'circle', name: '동그라미 ⭕', bg: 'bg-green-50', border: 'border-green-300', text: 'text-green-700' },
+                    { id: 'square', name: '네모 🔲', bg: 'bg-orange-50', border: 'border-orange-300', text: 'text-orange-700' },
+                    { id: 'star', name: '별 ⭐', bg: 'bg-indigo-50', border: 'border-indigo-300', text: 'text-indigo-700' }
+                ],
+                items: [
+                    { id: 's1', emoji: '⚽', target: 'circle' }, { id: 's2', emoji: '🍪', target: 'circle' }, { id: 's3', emoji: '🎯', target: 'circle' },
+                    { id: 's4', emoji: '📺', target: 'square' }, { id: 's5', emoji: '🎁', target: 'square' }, { id: 's6', emoji: '📦', target: 'square' },
+                    { id: 's7', emoji: '⭐', target: 'star' }, { id: 's8', emoji: '🌟', target: 'star' }, { id: 's9', emoji: '🌠', target: 'star' }
+                ]
+            },
+            type: {
+                title: "종류", titleColor: "text-teal-600",
+                boxes: [
+                    { id: 'animal', name: '동물 🐶', bg: 'bg-rose-50', border: 'border-rose-300', text: 'text-rose-700' },
+                    { id: 'fruit', name: '과일 🍎', bg: 'bg-lime-50', border: 'border-lime-300', text: 'text-lime-700' },
+                    { id: 'vehicle', name: '탈것 🚗', bg: 'bg-cyan-50', border: 'border-cyan-300', text: 'text-cyan-700' }
+                ],
+                items: [
+                    { id: 't1', emoji: '🐶', target: 'animal' }, { id: 't2', emoji: '🐱', target: 'animal' }, { id: 't3', emoji: '🐰', target: 'animal' },
+                    { id: 't4', emoji: '🍎', target: 'fruit' }, { id: 't5', emoji: '🍌', target: 'fruit' }, { id: 't6', emoji: '🍇', target: 'fruit' },
+                    { id: 't7', emoji: '🚗', target: 'vehicle' }, { id: 't8', emoji: '🚌', target: 'vehicle' }, { id: 't9', emoji: '✈️', target: 'vehicle' }
+                ]
+            },
+            custom: { // 4번째 탭을 위한 어려운 분류 데이터
+                title: "고민고민", titleColor: "text-pink-600",
+                boxes: [
+                    { id: 'summer', name: '여름 ☀️', bg: 'bg-red-50', border: 'border-red-300', text: 'text-red-700' },
+                    { id: 'winter', name: '겨울 ⛄', bg: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-700' },
+                    { id: 'anytime', name: '언제나 🌟', bg: 'bg-green-50', border: 'border-green-300', text: 'text-green-700' }
+                ],
+                // target: 'any' 이면 어느 상자에 넣어도 정답으로 인정됩니다. (나만의 기준)
+                items: [
+                    { id: 'u1', emoji: '🍉', target: 'any' }, 
+                    { id: 'u2', emoji: '❄️', target: 'any' }, 
+                    { id: 'u3', emoji: '👟', target: 'any' }, 
+                    { id: 'u4', emoji: '🌂', target: 'any' }, 
+                    { id: 'u5', emoji: '👓', target: 'any' }, 
+                    { id: 'u6', emoji: '☕', target: 'any' }
+                ]
+            }
+        };
+
+        // 진행 상태 관리
+        let progress = {
+            touch: { color: 0, shape: 0, type: 0 },
+            drag: { color: 0, shape: 0, type: 0, custom: 0 }
+        };
+
+        // 탭 전환 함수
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('content-' + tabId).classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 공통 게임 렌더링 함수 ---
+        function generateGameHTML(mode, categoryKey) {
+            const data = gameData[categoryKey];
+            const gameId = `${mode}-${categoryKey}`; 
+            
+            let instruction = '';
+            if(categoryKey === 'custom') {
+                 instruction = '어디에 넣을지 헷갈리는 물건들이에요! 나만의 기준을 세워 <strong>드래그</strong>로 자유롭게 나누어 보세요.';
+            } else {
+                 instruction = mode === 'touch' 
+                     ? '물건들을 <strong>선택</strong>해서 알맞은 곳에 넣어주세요.' 
+                     : '물건들을 <strong>드래그(끌어다 놓기)</strong>해서 알맞은 상자에 넣어주세요.';
+            }
+
+            // 성공 메시지도 커스텀 분류일 때 다르게 설정
+            const successMessage = categoryKey === 'custom' 
+                ? '🎉 정말 멋진 기준이에요! 사람마다 생각하는 기준이 다를 수 있답니다! 🎉'
+                : '🎉 와아! 최고예요! 모두 정리되었어요! 🎉';
+
+            return `
+            <div class="mb-12 bg-white rounded-3xl p-6 sm:p-10 shadow-sm border-2 border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-gaegu text-3xl sm:text-4xl font-bold">
+                        <span class="${data.titleColor}">${data.title}</span> 친구들 모여라!
+                    </h3>
+                    <button onclick="resetGame('${mode}', '${categoryKey}')" class="text-slate-500 font-bold hover:bg-slate-100 px-3 py-2 rounded-xl transition-colors text-sm sm:text-base">
+                        <span class="mr-1">🔄</span>다시 하기
+                    </button>
+                </div>
+                <p class="text-gray-600 font-medium mb-6 text-lg">${instruction}</p>
+                
+                <!-- 섞인 영역 (Source) -->
+                <div class="bg-slate-100 p-6 rounded-2xl border-4 border-dashed border-slate-300 min-h-[140px] mb-8 relative select-none">
+                    <div id="${gameId}-source" class="flex flex-wrap gap-3 sm:gap-4 justify-center items-center">
+                        <!-- JS로 아이템 생성됨 -->
+                    </div>
+                </div>
+
+                <!-- 분류 상자 영역 (Drop Zones) -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-6">
+                    ${data.boxes.map(box => `
+                        <div class="${box.bg} p-3 sm:p-4 rounded-2xl border-4 ${box.border} flex flex-col drop-zone transition-colors duration-200" data-target="${box.id}" data-game-id="${gameId}">
+                            <div class="text-center font-bold ${box.text} text-base sm:text-xl mb-3 pb-2 border-b-2 border-black/10 select-none">${box.name}</div>
+                            <div class="items-container flex-1 flex flex-wrap gap-2 justify-center content-start min-h-[100px]" id="${gameId}-box-${box.id}"></div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- 성공 메시지 -->
+                <div id="${gameId}-success" class="hidden mt-8 bg-green-100 p-6 rounded-2xl text-center border-4 border-green-300 animate-bounce">
+                    <h3 class="text-xl sm:text-2xl font-gaegu font-bold text-green-800">${successMessage}</h3>
+                </div>
+            </div>`;
+        }
+
+        // --- 초기화 및 아이템 생성 ---
+        function initGames() {
+            // HTML 생성 및 삽입
+            const standardCategories = ['color', 'shape', 'type'];
+            
+            document.getElementById('touch-games-wrapper').innerHTML = standardCategories.map(cat => generateGameHTML('touch', cat)).join('');
+            document.getElementById('drag-games-wrapper').innerHTML = standardCategories.map(cat => generateGameHTML('drag', cat)).join('');
+            
+            // 4번 탭 (커스텀 분류) 추가
+            document.getElementById('custom-games-wrapper').innerHTML = generateGameHTML('drag', 'custom');
+
+            // 아이템 배치
+            standardCategories.forEach(cat => {
+                populateItems('touch', cat);
+                populateItems('drag', cat);
+            });
+            populateItems('drag', 'custom');
+            
+            // 드래그 이벤트 활성화
+            setupDragEvents();
+        }
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function populateItems(mode, cat) {
+            const container = document.getElementById(`${mode}-${cat}-source`);
+            const items = shuffle([...gameData[cat].items]);
+            
+            items.forEach(item => {
+                const el = document.createElement('div');
+                el.className = `emoji-item text-5xl sm:text-6xl bg-white shadow-sm border border-slate-200 p-2 rounded-2xl flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 select-none relative`;
+                el.innerHTML = item.emoji;
+                el.dataset.target = item.target;
+                el.dataset.gameId = `${mode}-${cat}`;
+                
+                if (mode === 'touch') {
+                    // 터치 모드 설정
+                    el.classList.add('cursor-pointer', 'hover:scale-110');
+                    el.onclick = () => handleTouchMove(el, item.target, mode, cat);
+                } else {
+                    // 드래그 모드 설정
+                    el.classList.add('drag-item', 'cursor-grab');
+                }
+                
+                container.appendChild(el);
+            });
+        }
+
+        function resetGame(mode, cat) {
+            progress[mode][cat] = 0;
+            const gameId = `${mode}-${cat}`;
+            document.getElementById(`${gameId}-success`).classList.add('hidden');
+            
+            gameData[cat].boxes.forEach(box => {
+                document.getElementById(`${gameId}-box-${box.id}`).innerHTML = '';
+            });
+            
+            const source = document.getElementById(`${gameId}-source`);
+            source.innerHTML = '';
+            populateItems(mode, cat);
+        }
+
+        // --- 승리 확인 로직 ---
+        function checkWinCondition(gameId) {
+            const [mode, cat] = gameId.split('-');
+            progress[mode][cat]++;
+            
+            const totalItems = gameData[cat].items.length;
+            if (progress[mode][cat] === totalItems) {
+                document.getElementById(`${gameId}-success`).classList.remove('hidden');
+                shootConfetti();
+            }
+        }
+
+        // 말풍선 대사 모음
+        const speechMap = {
+            red: "빨간색이네요.<br>빨강 상자로 가요!",
+            blue: "파란색이네요.<br>파랑 상자로 가요!",
+            yellow: "노란색이네요.<br>노랑 상자로 가요!",
+            circle: "동그라미네요.<br>동그라미 상자로 가요!",
+            square: "네모네요.<br>네모 상자로 가요!",
+            star: "별 모양이네요.<br>별 상자로 가요!",
+            animal: "동물이네요.<br>동물 상자로 가요!",
+            fruit: "과일이네요.<br>과일 상자로 가요!",
+            vehicle: "탈것이네요.<br>탈것 상자로 가요!"
+        };
+
+        // --- 터치 모드 로직 ---
+        function handleTouchMove(el, targetType, mode, cat) {
+            // 이미 애니메이션 중이면 중복 실행 방지
+            if (el.dataset.moving === "true") return; 
+            el.dataset.moving = "true";
+
+            // 터치한 아이템이 다른 아이템 위로 올라오도록 설정
+            el.style.zIndex = "50";
+
+            // 말풍선 엘리먼트 생성
+            const speechText = speechMap[targetType] || "이쪽으로 갈게요!";
+            const bubble = document.createElement('div');
+            bubble.className = "absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-white border-4 border-primary rounded-2xl px-4 py-2 text-base sm:text-lg whitespace-nowrap z-50 shadow-xl font-bold text-slate-800 animate-bounce font-gaegu text-center leading-tight";
+            bubble.innerHTML = `${speechText}<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-b-4 border-r-4 border-primary rotate-45"></div>`;
+            el.appendChild(bubble);
+
+            const gameId = `${mode}-${cat}`;
+            const targetBox = document.getElementById(`${gameId}-box-${targetType}`);
+            
+            // 1.2초 대기 (말풍선을 읽을 시간) 후 이동 애니메이션 시작
+            setTimeout(() => {
+                // 말풍선 지우기
+                if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
+
+                // 크기 축소 애니메이션 후 이동
+                el.style.transform = 'scale(0)';
+                el.style.opacity = '0';
+                
+                setTimeout(() => {
+                    // 박스 안에 들어갈 때 스타일 변경
+                    el.className = 'text-4xl sm:text-5xl bg-white/50 border border-slate-200 p-2 rounded-xl flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 select-none transition-all duration-300 relative';
+                    el.style.transform = 'scale(1)';
+                    el.style.opacity = '1';
+                    el.style.zIndex = "1";
+                    el.onclick = null; // 터치 기능 해제
+                    delete el.dataset.moving; // 이동 상태 해제
+                    targetBox.appendChild(el);
+                    
+                    checkWinCondition(gameId);
+                }, 200);
+            }, 1200);
+        }
+
+        // --- 드래그 앤 드롭 모드 로직 (Pointer Events) ---
+        let activeDragEl = null;
+        let dragOffset = { x: 0, y: 0 };
+        let originalParent = null;
+
+        function setupDragEvents() {
+            document.addEventListener('pointerdown', (e) => {
+                const item = e.target.closest('.drag-item');
+                if (!item) return;
+
+                activeDragEl = item;
+                originalParent = item.parentElement;
+                
+                const rect = activeDragEl.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+
+                // 드래그 중인 요소를 body로 이동시켜 짤림 현상 방지
+                document.body.appendChild(activeDragEl);
+                
+                activeDragEl.style.position = 'fixed';
+                activeDragEl.style.zIndex = '9999';
+                activeDragEl.style.left = `${e.clientX - dragOffset.x}px`;
+                activeDragEl.style.top = `${e.clientY - dragOffset.y}px`;
+                activeDragEl.style.transform = 'scale(1.1)';
+                activeDragEl.style.cursor = 'grabbing';
+                
+                activeDragEl.setPointerCapture(e.pointerId);
+            });
+
+            document.addEventListener('pointermove', (e) => {
+                if (!activeDragEl) return;
+                activeDragEl.style.left = `${e.clientX - dragOffset.x}px`;
+                activeDragEl.style.top = `${e.clientY - dragOffset.y}px`;
+            });
+
+            document.addEventListener('pointerup', (e) => {
+                if (!activeDragEl) return;
+                
+                activeDragEl.releasePointerCapture(e.pointerId);
+                
+                // 마우스 포인트 아래에 있는 요소 찾기 (자신은 일시적으로 무시)
+                activeDragEl.style.pointerEvents = 'none';
+                const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+                activeDragEl.style.pointerEvents = 'auto';
+                
+                const dropzone = elemBelow ? elemBelow.closest('.drop-zone') : null;
+                const itemTarget = activeDragEl.dataset.target;
+                const gameId = activeDragEl.dataset.gameId;
+
+                if (dropzone && dropzone.dataset.gameId === gameId) {
+                    // 놓은 곳이 올바른 상자인지 확인 (target이 'any'이면 어느 상자든 허용)
+                    if (itemTarget === 'any' || dropzone.dataset.target === itemTarget) {
+                        const container = dropzone.querySelector('.items-container');
+                        container.appendChild(activeDragEl);
+                        
+                        // 정답 박스 안에 맞게 스타일 조정
+                        activeDragEl.removeAttribute('style'); // inline style 초기화
+                        activeDragEl.className = 'text-4xl sm:text-5xl bg-white/50 border border-slate-200 p-2 rounded-xl flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 select-none transition-all duration-300';
+                        activeDragEl.classList.remove('drag-item'); // 더 이상 드래그 불가
+                        
+                        checkWinCondition(gameId);
+                    } else {
+                        // 다른 상자에 잘못 넣었을 때 알림 말풍선 띄우기
+                        const bubble = document.createElement('div');
+                        bubble.className = "fixed bg-rose-500 text-white border-4 border-rose-300 px-6 py-3 rounded-full text-xl sm:text-2xl font-bold z-[10000] shadow-xl animate-bounce font-gaegu whitespace-nowrap";
+                        bubble.innerHTML = "다시 생각해 봐요! 🤔";
+                        bubble.style.left = `${e.clientX}px`;
+                        bubble.style.top = `${e.clientY - 60}px`;
+                        bubble.style.transform = "translateX(-50%)";
+                        document.body.appendChild(bubble);
+
+                        setTimeout(() => {
+                            if (bubble.parentNode) bubble.remove();
+                        }, 1500);
+
+                        // 제자리로 복구
+                        originalParent.appendChild(activeDragEl);
+                        activeDragEl.removeAttribute('style'); 
+                    }
+                } else {
+                    // 허공에 놓으면 제자리로
+                    originalParent.appendChild(activeDragEl);
+                    activeDragEl.removeAttribute('style'); // 제자리 복구
+                }
+                
+                activeDragEl = null;
+            });
+        }
+
+        // 폭죽 효과 함수
+        function shootConfetti() {
+            const emojis = ['🎉', '✨', '🎈', '🎊', '⭐️'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.className = 'confetti text-2xl sm:text-4xl';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 2000);
+                }, i * 50);
+            }
+        }
+
+        // 페이지 로드 시 게임 생성
+        window.onload = initGames;
+
+    </script>
+</body>
+</html>
