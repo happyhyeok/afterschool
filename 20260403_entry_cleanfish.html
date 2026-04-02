@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엔트리 코딩 교실 - 바다 쓰레기 청소하는 꽃게</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f0f9ff;
+            font-size: 1.1rem;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 35px;
+            overflow: hidden;
+            border: 1px solid #bae6fd;
+        }
+
+        .step-header {
+            background: #0284c7; /* Ocean Blue */
+            color: white;
+            padding: 20px 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+        }
+
+        .content-body {
+            padding: 30px;
+        }
+
+        #gameCanvas {
+            background-color: #0c4a6e; /* Deep ocean */
+            border: 6px solid #1e293b;
+            border-radius: 16px;
+            width: 100%;
+            height: auto;
+            max-width: 480px;
+            display: block;
+            margin: 0 auto;
+            image-rendering: pixelated;
+        }
+
+        .status-bubble {
+            position: absolute;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 24px;
+            border: 3px solid #0284c7;
+            font-weight: bold;
+            display: none;
+            pointer-events: none;
+            z-index: 50;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 22px;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            margin: 18px 0;
+            white-space: pre-wrap;
+            border-left: 8px solid #38bdf8;
+            line-height: 1.6;
+        }
+
+        .code-block b { color: #38bdf8; }
+        .pseudo-num { color: #facc15; font-weight: bold; margin-right: 6px; }
+        .indent-1 { padding-left: 1.5rem; display: block; }
+        .indent-2 { padding-left: 3.0rem; display: block; color: #cbd5e1; }
+
+        .btn-hint {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-hint:hover { background: #e2e8f0; }
+
+        .hint-box {
+            display: none;
+            background: #f0f9ff;
+            border: 2px dashed #0284c7;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        /* Quiz Design */
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 18px 22px;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: #0284c7;
+            background-color: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.correct {
+            background-color: #e0f2fe !important;
+            border-color: #0284c7 !important;
+            color: #0369a1 !important;
+        }
+
+        .quiz-option.wrong {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .option-index {
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 800;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-12 text-center">
+        <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">🦀 바다 쓰레기 청소하는 꽃게</h1>
+        <p class="text-slate-600 mt-4 text-lg max-w-2xl mx-auto">꽃게, 바구니, 쓰레기, 물고기 친구들이 어떻게 움직이는지 쉽게 알아볼까요?</p>
+    </header>
+
+    <!-- Project Simulation -->
+    <div class="step-card">
+        <div class="step-header"><span>🎮</span> 완성 작품 미리보기</div>
+        <div class="content-body bg-slate-50">
+            <div class="relative w-full overflow-hidden mb-8 flex justify-center">
+                <canvas id="gameCanvas" width="480" height="360"></canvas>
+                <div id="speechBubble" class="status-bubble">시작할까요?(예/아니오)</div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="startBtn" class="bg-sky-600 hover:bg-sky-700 text-white px-10 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 text-lg">
+                    '예' 대답하고 시작하기
+                </button>
+            </div>
+            
+            <p class="text-center mt-6 text-slate-500 font-medium leading-relaxed">
+                [방향키 ⬅️➡️⬆️⬇️] 를 누르세요.<br>
+                꽃게는 가만히 있으면 바닥으로 <b>가라앉아요.</b> <br>
+                위쪽 화살표(⬆️)를 연타하여 헤엄치고, 등에 엎은 <b>통(바구니)</b>으로 쓰레기를 수거하세요!
+            </p>
+        </div>
+    </div>
+
+    <!-- 🎯 게임 규칙 (조건) -->
+    <div class="step-card">
+        <div class="step-header"><span>🎯</span> 핵심 게임 규칙 알아보기</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">코딩을 시작하기 전, 어떻게 하면 이기고 지는지 확실히 알아볼까요?</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 bg-blue-50 border border-blue-200 rounded-2xl">
+                    <h3 class="font-bold text-blue-800 text-lg mb-2">🏆 승리 조건 (시간 버티기)</h3>
+                    <p class="text-slate-600">게임 시작 후 <b>30초</b> 동안 기회를 모두 잃지 않고 버티면 <span class="font-bold text-blue-600">미션 성공!</span></p>
+                </div>
+                <div class="p-5 bg-rose-50 border border-rose-200 rounded-2xl">
+                    <h3 class="font-bold text-rose-800 text-lg mb-2">💔 패배 조건 (기회 모두 잃음)</h3>
+                    <p class="text-slate-600">5개로 시작한 <b>기회(하트)가 0</b>이 되면 그 즉시 <span class="font-bold text-rose-600">미션 실패!</span></p>
+                </div>
+                <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl">
+                    <h3 class="font-bold text-emerald-800 text-lg mb-2">🌟 점수 얻는 방법</h3>
+                    <p class="text-slate-600">위에서 떨어지는 <b>쓰레기</b>가 꽃게가 들고 있는 <b>통(바구니)</b>에 쏙 들어가면 <span class="font-bold text-emerald-600">점수 +1</span></p>
+                </div>
+                <div class="p-5 bg-amber-50 border border-amber-200 rounded-2xl">
+                    <h3 class="font-bold text-amber-800 text-lg mb-2">⚠️ 기회를 잃는 조건</h3>
+                    <p class="text-slate-600">쓰레기를 놓쳐서 <b>바닥(벽)에 닿거나</b>, 헤엄치는 <b>물고기에 꽃게가 부딪히면</b> <span class="font-bold text-amber-600">기회 -1</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. 통 (Trash Can) Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>1</span> [통] 꽃게를 졸졸 따라다니는 바구니</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">통(바구니)은 항상 꽃게 등에 딱 붙어서 따라다녀요.<br>만약 쓰레기에 닿았을 때 색깔이 잠깐 바뀝니다!</p>
+            <div class="code-block"><b>[통 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>시작하기 버튼을 클릭했을 때</b>
+<span class="indent-1">└ 준비 위치로 먼저 이동해요.</span>
+<span class="indent-1">└ <b>계속 반복하기 (쉬지 않고 계속할 일)</b></span>
+<span class="indent-2">└ <b>꽃게 위치로 이동하기</b> (이 블록 덕분에 꽃게를 따라가요!)</span>
+<span class="indent-2">└ 그림을 화면 <b>맨 앞으로</b> 가져와요.</span>
+<span class="indent-2">└ 만약 <b>쓰레기에 닿았나요?</b> 그렇다면,</span>
+<span class="indent-2">  └ 색깔을 잠깐 바꿔서 "수거했다!"는 걸 보여줘요.</span></div>
+        </div>
+    </div>
+
+    <!-- 2. Crab Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>2</span> [꽃게] 바다를 누비는 청소부 주인공</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">꽃게는 가만히 있으면 물속으로 스르륵 가라앉아요.<br>키보드 방향키를 눌러서 이리저리 헤엄치며 물고기를 피해야 한답니다!</p>
+            <div class="code-block"><b>[꽃게 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>"시작" 신호를 받았을 때</b>: 계속 반복하기
+<span class="indent-1">└ 만약 <b>너무 위로 떠 있지 않다면?</b>: y좌표를 -3만큼 바꿔서 <b>아래로 가라앉게 해요.</b></span>
+<span class="indent-1">└ 만약 <b>왼쪽 화살표</b>를 누르면?: x좌표를 -5만큼 바꿔서 <b>왼쪽으로 이동!</b></span>
+<span class="indent-1">└ 만약 <b>오른쪽 화살표</b>를 누르면?: x좌표를 5만큼 바꿔서 <b>오른쪽으로 이동!</b></span>
+<span class="indent-1">└ 만약 <b>위쪽 화살표</b>를 누르면?: y좌표를 6만큼 바꿔서 <b>위로 헤엄쳐요!</b></span>
+<br>
+<span class="pseudo-num">②</span> <b>"미션확인" 신호를 받았을 때 (아프면 안 돼!)</b>: 계속 반복하기
+<span class="indent-1">└ 만약 <b>물고기에 닿았나요?</b> 그렇다면,</span>
+<span class="indent-2">└ <b>기회</b>를 1개 빼고, 너무 빨리 줄어들지 않게 0.1초 잠깐 쉬어요.</span></div>
+        </div>
+    </div>
+
+    <!-- 3. Trash Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>3</span> [쓰레기] 바다로 떨어지는 쓰레기와 심판 선생님</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">쓰레기는 무작위로 복제되어 위에서 아래로 떨어져요.<br>그리고 게임이 몇 초나 지났는지, 성공인지 실패인지 알려주는 <b>심판 역할</b>도 맡고 있어요!</p>
+            <div class="code-block"><b>[쓰레기 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>도장 찍듯 복제본이 처음 만들어졌을 때</b>: 화면 위쪽에 뿅 나타나기
+<span class="indent-1">└ 계속 반복하기: y좌표를 -3만큼 바꿔서 <b>바닥으로 떨어져요.</b></span>
+<span class="indent-1">└ 만약 <b>통에 들어갔나요?</b>: 앗싸! <b>점수</b> 1점 올리고 복제본은 사라져요.</span>
+<span class="indent-1">└ 만약 통에 못 들어가고 <b>벽(바닥)에 닿았나요?</b>: 앗, <b>기회</b> 1개를 잃고 복제본은 사라져요.</span>
+<br>
+<span class="pseudo-num">②</span> <b>"시간체크" 신호를 받았을 때 (타이머)</b>
+<span class="indent-1">└ 계속 반복하기: 1초마다 <b>시간</b>을 1씩 올려요.</span>
+<span class="indent-1">└ 만약 <b>시간이 30초가 되었나요?</b>: 하던 일을 멈추고 <b>"성공" 신호를 외쳐요!</b></span>
+<br>
+<span class="pseudo-num">③</span> <b>"미션확인" 신호를 받았을 때 (게임오버 감지)</b>
+<span class="indent-1">└ 계속 반복하기: 만약 <b>기회가 0이 되었나요?</b>: 하던 일을 멈추고 <b>"실패" 신호를 외쳐요!</b></span></div>
+        </div>
+    </div>
+
+    <!-- 4. Fish Logic -->
+    <div class="step-card">
+        <div class="step-header"><span>4</span> [물고기] 질문하는 방해꾼</div>
+        <div class="content-body">
+            <p class="text-gray-700 mb-4 font-medium">물고기는 가장 먼저 다가와서 게임을 시작할지 물어봐요.<br>그리고 게임이 시작되면 꽃게를 방해하기 위해 헤엄쳐 온답니다.</p>
+            <div class="code-block"><b>[물고기 오브젝트]</b>
+<span class="pseudo-num">①</span> <b>시작하기 버튼을 클릭했을 때</b>
+<span class="indent-1">└ "시작할까요?(예, 아니오)" 라고 물어봐요.</span>
+<span class="indent-1">└ 만약 대답이 <b>"예"</b> 라면: <b>"시작" 신호</b>를 보내서 게임을 출발시켜요.</span>
+<span class="indent-1">└ "예"가 아니라면: "휴식" 신호를 보내고 <b>"알았어."</b> 라고 말해요.</span>
+<br>
+<span class="pseudo-num">②</span> <b>물고기 복제본이 나타났을 때</b> (방해꾼 등장!)
+<span class="indent-1">└ 오른쪽에서 나타난 다음, 왼쪽 끝(벽)에 닿을 때까지 왼쪽으로 계속 헤엄쳐요.</span>
+<span class="indent-1">└ 벽에 닿으면 뿅 사라진답니다.</span></div>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <section class="mt-16 mb-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-slate-800">✍️ 오늘의 코딩 퀴즈</h2>
+            <p class="text-slate-500 mt-3 font-medium">배운 내용을 떠올리며 재미있게 퀴즈를 풀어봐요!</p>
+        </div>
+        <div id="quiz-container"></div>
+    </section>
+
+    <script>
+        // --- Simulation Logic ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const speechBubble = document.getElementById('speechBubble');
+
+        let isRunning = false;
+        let animationId;
+        
+        // Game Variables
+        let gameTime = 0;
+        let score = 0;
+        let chances = 5;
+        let timeCounter = 0; // For actual 1 second ticks
+
+        // Crab Object (Y axis inverted in Canvas: Top is 0, Bottom is 360. Crab floats if y > -100 in Entry, meaning it sinks if it's high up. Here we simulate sinking towards bottom)
+        const crab = { 
+            x: 240, y: 180, w: 40, h: 30, 
+            color: '#ef4444', effect: 0 
+        };
+        
+        // Tong Effect
+        let tongEffectFrames = 0;
+
+        let trashes = [];
+        let fishes = [];
+        let keys = {};
+
+        window.addEventListener('keydown', e => { keys[e.code] = true; });
+        window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+        function drawBackground() {
+            // Gradient Ocean
+            let grd = ctx.createLinearGradient(0, 0, 0, 360);
+            grd.addColorStop(0, "#0284c7");
+            grd.addColorStop(1, "#082f49");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 480, 360);
+            
+            // Sand bottom (Visual representation of Wall/Bottom)
+            ctx.fillStyle = '#d4d4d8'; 
+            ctx.beginPath();
+            ctx.moveTo(0, 330);
+            ctx.quadraticCurveTo(240, 310, 480, 330);
+            ctx.lineTo(480, 360);
+            ctx.lineTo(0, 360);
+            ctx.fill();
+        }
+
+        function drawCrabAndCan() {
+            ctx.save();
+            if (crab.effect > 0) ctx.globalAlpha = 0.5; // Blink effect on hit
+            
+            // --- Draw Trash Can (Tong) at Crab's Position ---
+            // If tong effect is active, change color to bright cyan briefly
+            ctx.fillStyle = tongEffectFrames > 0 ? '#06b6d4' : '#1e40af'; 
+            ctx.beginPath();
+            ctx.moveTo(crab.x - 20, crab.y - 30); // Top left
+            ctx.lineTo(crab.x + 20, crab.y - 30); // Top right
+            ctx.lineTo(crab.x + 15, crab.y - 5);  // Bottom right
+            ctx.lineTo(crab.x - 15, crab.y - 5);  // Bottom left
+            ctx.fill();
+            // Grid lines on bin
+            ctx.strokeStyle = tongEffectFrames > 0 ? '#164e63' : '#1e3a8a';
+            ctx.lineWidth = 2;
+            for(let i=1; i<4; i++) {
+                ctx.beginPath(); ctx.moveTo(crab.x - 20 + (i*10), crab.y - 30); ctx.lineTo(crab.x - 15 + (i*7.5), crab.y - 5); ctx.stroke();
+            }
+
+            // Decrease tong effect timer
+            if (tongEffectFrames > 0) tongEffectFrames--;
+
+            // --- Draw Crab ---
+            ctx.fillStyle = crab.color;
+            ctx.beginPath();
+            ctx.ellipse(crab.x, crab.y, 20, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(crab.x - 8, crab.y - 12, 5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(crab.x + 8, crab.y - 12, 5, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'black';
+            ctx.beginPath(); ctx.arc(crab.x - 8, crab.y - 12, 2, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(crab.x + 8, crab.y - 12, 2, 0, Math.PI*2); ctx.fill();
+            
+            // Claws
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath(); ctx.arc(crab.x - 25, crab.y - 5, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(crab.x + 25, crab.y - 5, 8, 0, Math.PI*2); ctx.fill();
+            
+            ctx.restore();
+            if(crab.effect > 0) crab.effect--;
+        }
+
+        function drawTrash(t) {
+            ctx.fillStyle = '#e2e8f0'; // Bottle color
+            ctx.beginPath();
+            ctx.fillRect(t.x - 6, t.y - 15, 12, 20); // body
+            ctx.fillRect(t.x - 3, t.y - 22, 6, 7);  // neck
+            ctx.fillStyle = '#38bdf8'; // Label
+            ctx.fillRect(t.x - 6, t.y - 5, 12, 6);
+        }
+
+        function drawFish(f) {
+            ctx.fillStyle = '#fbbf24'; // Yellow fish
+            ctx.beginPath();
+            ctx.ellipse(f.x, f.y, 15, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Tail
+            ctx.beginPath();
+            ctx.moveTo(f.x + 10, f.y);
+            ctx.lineTo(f.x + 25, f.y - 10);
+            ctx.lineTo(f.x + 25, f.y + 10);
+            ctx.fill();
+            ctx.fillStyle = 'black'; // Eye
+            ctx.beginPath(); ctx.arc(f.x - 8, f.y - 2, 2, 0, Math.PI*2); ctx.fill();
+        }
+
+        function update() {
+            if (!isRunning) return;
+
+            // Crab Movement Logic (Canvas Y is top-down)
+            // 1. Gravity
+            if (crab.y < 310) crab.y += 3;
+
+            // 2. Key Controls: Up is Y-6 in Canvas (Swim up)
+            if (keys['ArrowLeft'] && crab.x > 20) crab.x -= 5;
+            if (keys['ArrowRight'] && crab.x < 460) crab.x += 5;
+            if (keys['ArrowUp'] && crab.y > 40) crab.y -= 6; // 헤엄쳐 오르기
+            if (keys['ArrowDown'] && crab.y < 310) crab.y += 5; 
+
+            // Spawn Trash
+            if (Math.random() < 0.02) {
+                trashes.push({ x: Math.random() * 400 + 40, y: -20 });
+            }
+
+            // Spawn Fish
+            if (Math.random() < 0.015) {
+                fishes.push({ x: 500, y: Math.random() * 200 + 50 });
+            }
+
+            // Update Trash
+            for (let i = trashes.length - 1; i >= 0; i--) {
+                trashes[i].y += 3; // Fall down (y +3 in Canvas, -3 in Entry)
+                
+                // Collision with Trash Can (Basket is slightly above crab center)
+                const dx = crab.x - trashes[i].x;
+                const dy = (crab.y - 20) - trashes[i].y; 
+                if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                    score++;
+                    tongEffectFrames = 15; // Set color change effect for 15 frames
+                    trashes.splice(i, 1);
+                    continue;
+                }
+
+                // Hit Bottom (Wall) -> Fail to catch
+                if (trashes[i].y > 330) {
+                    chances--;
+                    trashes.splice(i, 1);
+                }
+            }
+
+            // Update Fish
+            for (let i = fishes.length - 1; i >= 0; i--) {
+                fishes[i].x -= 5; // Move left (x -5)
+                
+                // Collision with Crab
+                const dx = crab.x - fishes[i].x;
+                const dy = crab.y - fishes[i].y;
+                if (Math.sqrt(dx*dx + dy*dy) < 30 && crab.effect === 0) {
+                    chances--;
+                    crab.effect = 30; // Blink frames (0.1 sec delay equivalent)
+                }
+
+                // Hit left wall
+                if (fishes[i].x < -30) fishes.splice(i, 1);
+            }
+
+            // Time Tracking
+            timeCounter++;
+            if (timeCounter >= 60) {
+                gameTime++;
+                timeCounter = 0;
+            }
+
+            // Win / Lose Conditions
+            if (gameTime >= 30) endGame(true);
+            if (chances <= 0) endGame(false);
+
+            // Drawing
+            ctx.clearRect(0, 0, 480, 360);
+            drawBackground();
+            trashes.forEach(drawTrash);
+            fishes.forEach(drawFish);
+            drawCrabAndCan(); 
+
+            // UI HUD
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`시간: ${gameTime}`, 20, 30);
+            ctx.fillText(`점수: ${score}`, 200, 30);
+            ctx.fillStyle = '#fca5a5';
+            ctx.fillText(`기회: ${chances}`, 400, 30);
+
+            if(isRunning) animationId = requestAnimationFrame(update);
+        }
+
+        function endGame(success) {
+            isRunning = false;
+            cancelAnimationFrame(animationId);
+            const rect = canvas.getBoundingClientRect();
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = (crab.x / 480 * rect.width) + 'px';
+            speechBubble.style.top = (crab.y / 360 * rect.height - 40) + 'px';
+
+            if (success) {
+                speechBubble.innerText = "오늘도 고생했어 꽃게야!";
+                speechBubble.style.borderColor = "#0284c7";
+            } else {
+                speechBubble.innerText = "조금만 더 노력해봐 꽃게야!";
+                speechBubble.style.borderColor = "#ef4444";
+            }
+        }
+
+        // Show initial prompt bubble
+        const initRect = canvas.getBoundingClientRect();
+        speechBubble.style.display = 'block';
+        speechBubble.style.left = '50%';
+        speechBubble.style.transform = 'translateX(-50%)';
+        speechBubble.style.top = '100px';
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (isRunning) return;
+            trashes = []; fishes = [];
+            gameTime = 0; score = 0; chances = 5; timeCounter = 0;
+            crab.x = 240; crab.y = 150; crab.effect = 0;
+            tongEffectFrames = 0;
+            speechBubble.style.display = 'none';
+            speechBubble.style.transform = 'none'; // reset centered transform
+            isRunning = true;
+            update();
+            document.getElementById('startBtn').innerText = '다시 하기';
+            document.getElementById('startBtn').classList.replace('bg-sky-600', 'bg-slate-500');
+            document.getElementById('startBtn').classList.replace('hover:bg-sky-700', 'hover:bg-slate-600');
+            // If already playing, reload instead
+            document.getElementById('startBtn').onclick = () => location.reload();
+        });
+
+        // --- Quiz Setup ---
+        const quizzes = [
+            {
+                q: "꽃게가 아무 키도 누르지 않을 때 물 아래로 가라앉게(중력) 만드는 코드는 무엇인가요?",
+                a: ["만일 위쪽 화살표가 눌려져 있는가? 라면", "만일 너무 높이 떠있지 않다면(y좌표 조건)", "만일 벽에 닿았는가? 라면", "만일 기회가 0이라면"],
+                correct: 1,
+                hint: "꽃게가 공중에 둥둥 떠 있는 게 아니라면, y좌표를 조금씩 마이너스(-)로 바꿔서 바닥으로 떨어지게 하는 비밀 조건이 있어요!"
+            },
+            {
+                q: "통이 꽃게 등에서 떨어지지 않고 졸졸 따라다니게 하려면 어떻게 해야 할까요?",
+                a: ["자기 복제본을 계속 만들기", "오른쪽 화살표 누르기", "무한 반복해서 '꽃게 위치로 이동하기'", "가만히 기다리기"],
+                correct: 2,
+                hint: "통의 위치를 쉬지 않고(계속 반복하기) 꽃게의 위치와 똑같이 맞춰주면, 꼭 꽃게가 통을 짊어지고 다니는 것처럼 보인답니다."
+            },
+            {
+                q: "점수 1점을 얻으려면 떨어지는 '쓰레기'가 어디에 쏙 들어가야 할까요?",
+                a: ["꽃게의 집게발", "바다(배경)", "헤엄치는 물고기", "꽃게가 들고 있는 통(바구니)"],
+                correct: 3,
+                hint: "꽃게 몸통이 아니라 꽃게가 등에 메고 있는 '통'에 쓰레기가 닿아야 점수가 올라가면서 통 색깔이 잠깐 변해요."
+            },
+            {
+                q: "게임이 시작된 후, 시간이 30초가 되었는지 검사하고 '성공!'을 외쳐주는 심판 역할은 누가 하고 있나요?",
+                a: ["꽃게", "바구니(통)", "쓰레기", "물고기"],
+                correct: 2,
+                hint: "쓰레기 오브젝트의 코드를 잘 보면, 1초마다 시간을 올리고 30초가 되면 성공을 알려주는 블록들이 숨어있답니다."
+            }
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            quizzes.forEach((quiz, qIdx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mb-10 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md';
+                
+                let optionsHtml = quiz.a.map((opt, oIdx) => `
+                    <button class="quiz-option" data-q="${qIdx}" data-o="${oIdx}">
+                        <span class="option-index">${oIdx + 1}</span>
+                        <span class="option-text">${opt}</span>
+                    </button>
+                `).join('');
+
+                qDiv.innerHTML = `
+                    <h3 class="font-bold mb-6 text-slate-800 text-xl flex items-start">
+                        <span class="bg-sky-100 text-sky-700 w-9 h-9 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 text-sm font-black">Q${qIdx+1}</span>
+                        <span class="pt-1">${quiz.q}</span>
+                    </h3>
+                    <div class="options-wrapper">${optionsHtml}</div>
+                    <div id="q-hint-${qIdx}" class="hidden mt-6 p-5 bg-sky-50 text-sky-800 rounded-2xl text-sm border border-sky-100 animate-pulse">
+                        💡 <b>도움말:</b> ${quiz.hint}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const qIdx = parseInt(this.getAttribute('data-q'));
+                    const oIdx = parseInt(this.getAttribute('data-o'));
+                    const correctIdx = quizzes[qIdx].correct;
+                    const options = this.closest('.options-wrapper').querySelectorAll('.quiz-option');
+                    
+                    if (oIdx === correctIdx) {
+                        this.classList.add('correct');
+                        this.querySelector('.option-text').innerHTML += " <strong>(정답입니다!)</strong>";
+                        options.forEach(b => b.disabled = true);
+                    } else {
+                        this.classList.add('wrong');
+                        this.disabled = true;
+                        document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>
