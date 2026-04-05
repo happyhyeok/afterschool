@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5차시: 변수 1 - 신비한 알 키우기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 타이포그래피 및 레이아웃 설정 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f6f9;
+            color: #2c3e50;
+            margin: 0;
+            padding: 30px 15px;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 50px 60px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        }
+
+        h1 {
+            font-size: 34px;
+            font-weight: 900;
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 50px;
+            letter-spacing: -0.5px;
+        }
+        h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2b6cb0;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 12px;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+        h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-top: 35px;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: #fefcbf;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #b7791f;
+        }
+        .guide-text {
+            color: #319795;
+            font-weight: 700;
+            background-color: #e6fffa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        ul { padding-left: 25px; margin-bottom: 20px; }
+        ol.code-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            counter-reset: step-counter;
+            list-style-type: none;
+        }
+        ol.code-list li {
+            position: relative;
+            margin-bottom: 14px;
+            padding-left: 35px;
+            color: #4a5568;
+        }
+        ol.code-list li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-weight: 700;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        button:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .btn-toggle {
+            background-color: #ebf8ff;
+            color: #3182ce;
+            border: 1px solid #bee3f8;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: none;
+        }
+        .btn-toggle:hover { transform: none; filter: brightness(0.95); }
+
+        /* 시뮬레이터(인터랙티브 영역) 스타일 */
+        .simulator-area {
+            background-color: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .basket {
+            min-height: 80px;
+            background-color: #ffffff;
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            margin: 20px auto;
+            padding: 15px;
+            max-width: 400px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            transition: all 0.3s;
+        }
+        .basket.pop {
+            transform: scale(1.05);
+            border-color: #4299e1;
+            background-color: #ebf8ff;
+        }
+        .var-score {
+            font-size: 32px;
+            font-weight: 900;
+            color: #2b6cb0;
+            margin-bottom: 20px;
+        }
+        .action-desc {
+            min-height: 28px;
+            font-weight: 700;
+            color: #e53e3e;
+            margin-top: 15px;
+        }
+
+        .quiz-item {
+            background-color: #fdfdfd;
+            border: 1px solid #edf2f7;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .btn-quiz {
+            background-color: #edf2f7;
+            color: #4a5568;
+            margin-right: 10px;
+            box-shadow: none;
+        }
+        .feedback {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        .hint-img-container {
+            display: none;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-radius: 12px;
+            text-align: left;
+            border: 1px dashed #cbd5e0;
+        }
+
+        .block-card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .block-card img {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .btn-download {
+            background-color: #48bb78;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin: 10px 0 15px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            filter: brightness(0.95);
+        }
+
+        .sim-btn-img {
+            height: 48px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            object-fit: contain;
+        }
+        .sim-btn-img:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .sim-btn-img:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 30px 20px; }
+            h1 { font-size: 28px; }
+            button { width: 100%; margin: 5px 0; }
+            .block-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .sim-btn-img { height: auto; width: 100%; max-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🥚 [5차시] 신비한 알과 점수 상자(변수)</h1>
+
+    <section>
+        <h2>1. 도입: 알을 깨워서 키워보자! 🐣</h2>
+        <p>안녕 친구들! 오늘은 세 가지 신비한 알을 만나볼 거예요.<br>바로 <strong>불의 알, 이끼의 알, 물의 알</strong>이에요!<br>이 알들은 우리가 정성껏 클릭해줘야만 멋지게 깨어날 수 있답니다.</p>
+        <p class="guide-text">📌 오늘의 목표: '변수'를 만들어 클릭할 때마다 경험치를 쌓고, 알을 진화시켜 봅시다!</p>
+    </section>
+
+    <section>
+        <h2>2. 전개: 변수는 신비한 요술 상자! 📦</h2>
+        <p>게임을 만들 때 점수, 남은 시간, 내 이름 등을 기억해둬야 할 때가 있죠?<br>이렇게 데이터를 저장하는 <strong>'이름표가 붙은 요술 상자'</strong>를 우리는 <span class="highlight">변수</span>라고 불러요.</p>
+        
+        <p>변수 상자 안에는 숫자나 글자를 담을 수 있어요. 하지만 아주 중요한 마법의 규칙이 하나 있어요!</p>
+        
+        <div style="background-color: #fffaf0; border: 2px dashed #ed8936; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+            <h3 style="margin-top: 0; color: #dd6b20;">🚨 변수의 중요 규칙: 한 번에 오직 한 개만!</h3>
+            <p style="margin-bottom: 0;"><strong>변수 상자에는 한 번에 딱 한 개의 데이터만 담을 수 있어요.</strong><br>
+            만약 '5'가 들어있는 상자에 새롭게 '10'을 넣으면 어떻게 될까요?<br>상자가 꽉 차서 원래 있던 '5'는 <strong>뿅! 하고 사라지고 '10'만 남게 된답니다.</strong></p>
+        </div>
+
+        <div class="block-card">
+            <img src="https://docs.playentry.org/user/images/block-variable-04.png" alt="변수값 블록">
+            <div>
+                <strong>[변수값 블록]</strong><br>
+                동그랗게 생긴 이 블록은 "지금 이 상자 안에 뭐가 들어있지?" 하고 안을 들여다보는 블록이에요. 지금 경험치가 몇 점인지 확인할 때 꼭 필요해요!
+            </div>
+        </div>
+
+        <h3 style="margin-top: 50px;">⚖️ 더하기 vs 정하기! 무엇이 다를까?</h3>
+        <p>엔트리에서 변수를 다룰 때 가장 헷갈리는 두 가지 블록이 있어요. 시뮬레이터를 직접 눌러보며 차이를 알아볼까요?</p>
+
+        <!-- 인터랙티브 시뮬레이터 영역 -->
+        <div class="simulator-area">
+            <h3>💧 물_경험치 바구니 시뮬레이터</h3>
+            <div class="var-score">현재 물_경험치: <span id="var-value">0</span></div>
+            
+            <!-- 물방울이 담길 바구니 -->
+            <div id="basket-visual" class="basket"><span style="color: #a0aec0; font-size: 16px;">(바구니가 비어 있어요)</span></div>
+            
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px;">
+                <img src="https://happyhyeok.github.io/afterschool/v1.PNG" alt="1만큼 더하기" onclick="actionAdd(1)" class="sim-btn-img">
+                <img src="https://happyhyeok.github.io/afterschool/v2.PNG" alt="5로 정하기" onclick="actionSet(5)" class="sim-btn-img">
+                <img src="https://happyhyeok.github.io/afterschool/v3.PNG" alt="0으로 정하기" onclick="actionSet(0)" class="sim-btn-img">
+            </div>
+            <div id="action-description" class="action-desc">버튼을 눌러보세요!</div>
+        </div>
+        
+        <p>💡 <strong>차이점 정리 노트:</strong></p>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border-left: 5px solid #3182ce;">
+                <img src="https://docs.playentry.org/user/images/block-variable-05.png" alt="만큼 더하기" style="height: 35px; margin-bottom: 10px; display: block;">
+                <strong><span class="highlight">~만큼 더하기</span></strong>: 원래 상자에 들어있던 것에 <strong>추가로 더 담는 것</strong>이에요. (알을 클릭할 때마다 점수가 계속 늘어나요!)
+            </li>
+            <li style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border-left: 5px solid #d69e2e;">
+                <img src="https://docs.playentry.org/user/images/block-variable-06.png" alt="로 정하기" style="height: 35px; margin-bottom: 10px; display: block;">
+                <strong><span class="highlight">~로 정하기</span></strong>: 원래 상자에 뭐가 있었든 <strong>다 쏟아버리고, 딱 그 숫자만큼만 새롭게 담는 것</strong>이에요. (게임을 처음 시작할 때 0점으로 비우는 용도로 많이 써요!)
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>3. 실습: 나만의 성장 게임 코딩 🛠️</h2>
+        
+        <h3>✅ 사전 준비</h3>
+        <p>먼저 선생님이 준비한 기본 파일을 다운로드하고 엔트리에서 열어주세요!</p>
+        <a href="https://happyhyeok.github.io/afterschool/드래곤 키우기_학생용.ent" class="btn-download" download>💾 학생용 엔트리 파일 다운로드</a>
+        <ul>
+            <li>다운로드한 파일을 엔트리에서 <strong>[오프라인 작품 불러오기]</strong>로 열어주세요.</li>
+            <li>엔트리 상단 메뉴의 [속성] -> [변수]에서 <strong>'물_경험치'</strong>를 만들어주세요.</li>
+        </ul>
+
+        <h3>📝 어떻게 코딩할까요?</h3>
+
+        <h4>💧 1. 물의 알 코딩하기</h4>
+        <ol class="code-list">
+            <li><strong>시작하기 버튼을 클릭했을 때</strong>: 게임이 시작되면 '물_경험치'를 <span class="highlight">0으로 정합니다</span>. (상자 싹 비우기!)</li>
+            <li><strong>오브젝트를 클릭했을 때</strong>: 마우스로 알을 누르면 '물_경험치'에 <span class="highlight">1만큼 더합니다</span>. (경험치 쌓기!)</li>
+            <li><strong>만일 '물_경험치'가 10이라면</strong>: 점수가 10점 꽉 찼는지 확인합니다. (이때 '변수값' 블록을 써요!)</li>
+            <li><strong>다음 모양으로 바꾸기</strong>: 알을 깨고 드래곤이 나오게 합니다!</li>
+            <li><strong>'물_경험치'를 0으로 정하기</strong>: 다음 레벨(모양)을 위해 상자를 다시 비웁니다.</li>
+        </ol>
+        <button class="btn-toggle" onclick="toggleHint('hint-1')">👀 블록 조립 힌트 보기</button>
+        <div id="hint-1" class="hint-img-container">
+            <p><strong>[이렇게 조립해 보세요!]</strong></p>
+            <p>1. [시작] - 시작하기 버튼을 클릭했을 때<br>
+               2. [자료] - 물_경험치를 (0)으로 정하기<br>
+               <br>
+               3. [시작] - 오브젝트를 클릭했을 때<br>
+               4. [자료] - 물_경험치에 (1)만큼 더하기<br>
+               5. [흐름] - 만일 (물_경험치값 = 10) 이라면<br>
+               6. &nbsp;&nbsp;&nbsp;&nbsp;[생김새] - 다음 모양으로 바꾸기<br>
+               7. &nbsp;&nbsp;&nbsp;&nbsp;[자료] - 물_경험치를 (0)으로 정하기</p>
+        </div>
+
+        <h4>🔥 2. 불의 알과 이끼의 알</h4>
+        <p>물의 알과 똑같은 방법으로 코딩하되, 변수 이름만 <strong>'불_경험치'</strong>, <strong>'이끼_경험치'</strong>로 바꿔주면 완성!</p>
+    </section>
+
+    <section>
+        <h2>4. 정리 및 퀴즈 🏆</h2>
+        <p>오늘 우리는 값을 저장하는 요술 상자인 <strong>변수</strong>를 사용해 게임을 만들었어요.</p>
+
+        <h3 style="margin-top: 40px;">🤓 확인 퀴즈</h3>
+        
+        <div class="quiz-item">
+            <p><strong>Q1. 게임을 처음 시작할 때, 기존 점수를 싹 비우고 0점부터 시작하고 싶어요. 어떤 블록을 써야 할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(1, true)">점수를 (0)으로 정하기</button>
+            <button class="btn-quiz" onclick="checkQuiz(1, false)">점수에 (0)만큼 더하기</button>
+            <div id="quiz-feedback-1" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q2. 변수 상자에 '사과'라는 글자가 들어있습니다. 여기에 '바나나'를 새롭게 넣으면 상자 안에는 무엇이 있을까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(2, false)">사과와 바나나 둘 다</button>
+            <button class="btn-quiz" onclick="checkQuiz(2, true)">바나나만 (한 번에 하나만!)</button>
+            <div id="quiz-feedback-2" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q3. 게임 중 "지금 내 경험치가 몇 점이지?" 하고 변수 상자 안을 들여다보고 싶을 때 사용하는 동그란 블록의 이름은 무엇일까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(3, true)">변수값 블록</button>
+            <button class="btn-quiz" onclick="checkQuiz(3, false)">더하기 블록</button>
+            <div id="quiz-feedback-3" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q4. '물_경험치' 상자에 현재 '5'가 들어있어요. 이때 [물_경험치에 (1)만큼 더하기] 블록을 실행하면 상자 안의 숫자는 어떻게 변할까요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(4, false)">1이 된다 (초기화)</button>
+            <button class="btn-quiz" onclick="checkQuiz(4, true)">6이 된다 (기존 점수에 추가)</button>
+            <div id="quiz-feedback-4" class="feedback"></div>
+        </div>
+
+        <div class="quiz-item">
+            <p><strong>Q5. 게임을 만들 때 점수, 남은 시간, 내 이름 등을 기억하기 위해 사용하는 '이름표가 붙은 요술 상자'를 우리는 무엇이라고 부르나요?</strong></p>
+            <button class="btn-quiz" onclick="checkQuiz(5, true)">변수</button>
+            <button class="btn-quiz" onclick="checkQuiz(5, false)">배경</button>
+            <div id="quiz-feedback-5" class="feedback"></div>
+        </div>
+
+        <h3 style="margin-top: 50px;">✨ 나만의 도전 과제!</h3>
+        <ul>
+            <li>진화할 때 멋진 효과음을 넣어보세요!</li>
+            <li>경험치가 10이 아니라 20이 되어야 진화하도록 난이도를 높여보세요.</li>
+        </ul>
+    </section>
+    
+    <p style="text-align: center; font-weight: 700; color: #a0aec0; margin-top: 50px;">수고했어요 친구들! 다음 시간에는 '제한 시간' 기능을 만들어볼게요! 👋</p>
+</div>
+
+<script>
+    // --- 퀴즈 및 힌트 로직 ---
+    function toggleHint(id) {
+        const container = document.getElementById(id);
+        container.style.display = (container.style.display === "none" || container.style.display === "") ? "block" : "none";
+    }
+
+    function checkQuiz(qNum, isCorrect) {
+        const feedbackEle = document.getElementById('quiz-feedback-' + qNum);
+        if (isCorrect) {
+            feedbackEle.innerHTML = "정답입니다! 🎉 변수에 대해 완벽히 이해했군요!";
+            feedbackEle.style.color = "#38a169";
+        } else {
+            feedbackEle.innerHTML = "아쉬워요! 다시 한 번 천천히 생각해볼까요? 🧐";
+            feedbackEle.style.color = "#e53e3e";
+        }
+    }
+
+    // --- 변수 시뮬레이터 로직 ---
+    let waterExp = 0;
+    const valueDisplay = document.getElementById('var-value');
+    const basketVisual = document.getElementById('basket-visual');
+    const actionDesc = document.getElementById('action-description');
+
+    function updateVisual() {
+        valueDisplay.innerText = waterExp;
+        
+        // 바구니 애니메이션 효과
+        basketVisual.classList.add('pop');
+        setTimeout(() => basketVisual.classList.remove('pop'), 300);
+
+        // 시각적 물방울 렌더링
+        basketVisual.innerHTML = '';
+        if (waterExp === 0) {
+            basketVisual.innerHTML = '<span style="color: #a0aec0; font-size: 16px;">(바구니가 비어 있어요)</span>';
+        } else {
+            for(let i = 0; i < waterExp; i++) {
+                basketVisual.innerHTML += '💧';
+            }
+        }
+    }
+
+    function actionAdd(amount) {
+        waterExp += amount;
+        actionDesc.innerText = `👉 원래 바구니에 있던 것에서 ${amount}개를 더 추가했어요! (계속 쌓여요)`;
+        actionDesc.style.color = "#3182ce";
+        updateVisual();
+        
+        if(waterExp >= 10 && waterExp < 15) {
+            alert("경험치가 10을 넘었어요! 엔트리였다면 지금 알이 깨어났을 거예요! 🐉");
+        }
+    }
+
+    function actionSet(amount) {
+        waterExp = amount;
+        if(amount === 0) {
+            actionDesc.innerText = `👉 바구니를 싹 비우고 ${amount}개로 만들었어요! (초기화)`;
+            actionDesc.style.color = "#e53e3e";
+        } else {
+            actionDesc.innerText = `👉 원래 몇 개가 있었든 싹 쏟아버리고, 새롭게 ${amount}개로 바꿨어요!`;
+            actionDesc.style.color = "#d69e2e";
+        }
+        updateVisual();
+    }
+</script>
+
+</body>
+</html>
