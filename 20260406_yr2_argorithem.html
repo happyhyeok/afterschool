@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알고리즘 놀이터: 주수천 거북이의 모험</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        turtle: '#2D6A4F'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+            word-break: keep-all;
+        }
+        .gaegu { font-family: 'Gaegu', cursive; }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #4338ca;
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .grid-cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e5e7eb;
+            background-color: white;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .turtle-icon {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .command-badge {
+            animation: bounceIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse-primary {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 15px rgba(255, 209, 102, 0.6); }
+        }
+        .pulse-btn {
+            animation: pulse-primary 2s infinite;
+        }
+    </style>
+</head>
+<body class="pb-32">
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <!-- 헤더 -->
+        <header class="text-center mb-6">
+            <div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-4 border-2 border-primary">
+                <span class="text-primary font-bold text-lg">SW.AI 수업</span>
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-black text-gray-800 mb-2 gaegu">🐢 주수천 거북이의 길 찾기 모험</h1>
+            <p class="text-gray-600 text-xl italic">"알고리즘을 짜고, 틀린 부분은 디버깅하며 완성해봐요!"</p>
+        </header>
+
+        <!-- 네비게이션 -->
+        <div class="overflow-x-auto pb-4 mb-6">
+            <nav class="flex justify-start lg:justify-center gap-2 min-w-max px-2">
+                <button onclick="showStep(1)" class="nav-btn active px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">1. 시작</button>
+                <button onclick="showStep(2)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">2. 약속</button>
+                <button onclick="showStep(3)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">3. 미션1</button>
+                <button onclick="showStep(4)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white bg-red-50 text-red-600">4. 고치기1</button>
+                <button onclick="showStep(5)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">5. 미션2</button>
+                <button onclick="showStep(6)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white bg-red-50 text-red-600">6. 고치기2</button>
+                <button onclick="showStep(7)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">7. 미션3</button>
+                <button onclick="showStep(8)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">8. 미션4</button>
+                <button onclick="showStep(9)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">9. 미션5</button>
+                <button onclick="showStep(10)" class="nav-btn px-4 py-3 rounded-2xl font-bold transition-all border-b-4 border-gray-200 bg-white">10. 정리</button>
+            </nav>
+        </div>
+
+        <!-- 1단계: 도입 -->
+        <section id="step1" class="step-content active bg-white p-8 rounded-3xl shadow-xl border-t-8 border-primary">
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12">
+                <div class="w-full md:w-1/2">
+                    <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-100 mb-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+                            <i data-lucide="help-circle"></i> 주수천 거북이를 도와주세요!
+                        </h3>
+                        <p class="text-lg leading-relaxed text-gray-700">
+                            안녕! 나는 <strong>주수천</strong>에 살고 있는 아기 거북이야. <br>
+                            오늘 총 5개의 미션과 2개의 디버깅(고치기) 문제가 준비되어 있어. <br><br>
+                            나침반처럼 방향을 알려주는 화살표 카드로, 내가 무사히 목표에 도착할 수 있도록 멋진 <strong>알고리즘</strong>을 만들어줘!
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 flex justify-center">
+                    <div class="bg-white p-8 rounded-full border-8 border-primary shadow-inner">
+                        <i data-lucide="turtle" class="w-40 h-40 text-turtle"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <button onclick="showStep(2)" class="pulse-btn bg-primary text-yellow-900 px-12 py-5 rounded-3xl font-black text-2xl shadow-lg flex items-center gap-3">
+                    모험 시작하기! <i data-lucide="play" class="fill-current"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2단계: 약속 -->
+        <section id="step2" class="step-content bg-white p-8 rounded-3xl shadow-xl border-t-8 border-secondary">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3 text-secondary gaegu">📍 화살표 카드 복습</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <div class="bg-blue-50 p-6 rounded-2xl text-center border-2 border-transparent hover:border-secondary transition-all">
+                    <i data-lucide="chevron-up" class="w-16 h-16 mx-auto text-secondary mb-2"></i>
+                    <p class="text-xl font-bold">위로</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-2xl text-center border-2 border-transparent hover:border-secondary transition-all">
+                    <i data-lucide="chevron-down" class="w-16 h-16 mx-auto text-secondary mb-2"></i>
+                    <p class="text-xl font-bold">아래로</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-2xl text-center border-2 border-transparent hover:border-secondary transition-all">
+                    <i data-lucide="chevron-left" class="w-16 h-16 mx-auto text-secondary mb-2"></i>
+                    <p class="text-xl font-bold">왼쪽</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-2xl text-center border-2 border-transparent hover:border-secondary transition-all">
+                    <i data-lucide="chevron-right" class="w-16 h-16 mx-auto text-secondary mb-2"></i>
+                    <p class="text-xl font-bold">오른쪽</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-center border-t pt-8">
+                <button onclick="showStep(1)" class="text-gray-400 font-bold flex items-center gap-2"><i data-lucide="arrow-left"></i> 이전</button>
+                <button onclick="showStep(3)" class="pulse-btn bg-secondary text-white px-10 py-5 rounded-3xl font-black text-2xl shadow-lg">미션 1 출발!</button>
+            </div>
+        </section>
+
+        <!-- 게임 미션 화면 생성기 (자바스크립트 버그 완벽 수정) -->
+        <script>
+            function createGridHTML(stepId, missionIdx, title, color, prev, next, targetName, isDebugging = false) {
+                const c = {
+                    success: { bg: 'green-50', text: 'green-800', border: 'green-200' },
+                    secondary: { bg: 'blue-50', text: 'blue-800', border: 'blue-200' },
+                    accent: { bg: 'red-50', text: 'red-800', border: 'red-200' }
+                }[color];
+
+                return `
+                <section id="step${stepId}" class="step-content bg-white p-6 rounded-3xl shadow-xl border-t-8 border-${color}">
+                    <div class="flex flex-col lg:flex-row gap-8 mb-8">
+                        <div class="w-full lg:w-3/5">
+                            <div class="bg-${c.bg} p-4 rounded-2xl mb-4 border-2 border-${c.border} flex justify-between items-center">
+                                <span class="font-bold text-xl ${c.text}">${isDebugging ? '🔍 [고치기] ' + title : '⭐ [미션] ' + title}</span>
+                                <button onclick="resetGame(${missionIdx}, ${isDebugging})" class="text-red-500 font-bold flex items-center gap-1 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors">
+                                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 초기화
+                                </button>
+                            </div>
+                            <!-- 인덱스(missionIdx)를 1:1로 매핑하여 꼬이는 문제 완벽 해결 -->
+                            <div id="grid-${missionIdx}" class="grid gap-2 bg-gray-100 p-2 rounded-xl border-4 border-gray-300 shadow-inner"></div>
+                            ${isDebugging ? `
+                            <div class="mt-4 p-4 bg-red-100 rounded-xl border-2 border-red-200">
+                                <p class="text-red-700 font-black flex items-center gap-2">
+                                    <i data-lucide="alert-circle" class="w-5 h-5"></i> 버그를 고쳐주세요!
+                                </p>
+                                <p class="text-sm text-gray-700 mt-1 italic">이미 짜여진 명령어 중에서 틀린 것을 지우고 다시 수정해보세요.</p>
+                            </div>` : `<p class="mt-4 text-gray-600 font-bold">목표: ${targetName}에 도착하도록 알고리즘을 짜보세요!</p>`}
+                        </div>
+                        <div class="w-full lg:w-2/5 flex flex-col">
+                            <div class="bg-white border-4 border-dashed border-gray-200 rounded-2xl p-4 flex-grow mb-4 min-h-[180px] shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <p class="text-xs text-gray-400 font-black uppercase">명령어 리스트</p>
+                                    <button onclick="popCommand(${missionIdx})" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-xs font-bold border border-red-200 hover:bg-red-100 transition-colors">마지막 삭제</button>
+                                </div>
+                                <div id="command-list-${missionIdx}" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <button onclick="addCommand(${missionIdx}, 'up')" class="bg-gray-100 p-4 rounded-xl hover:bg-primary transition-all flex justify-center active:scale-95"><i data-lucide="chevron-up"></i></button>
+                                <button onclick="addCommand(${missionIdx}, 'down')" class="bg-gray-100 p-4 rounded-xl hover:bg-primary transition-all flex justify-center active:scale-95"><i data-lucide="chevron-down"></i></button>
+                                <button onclick="addCommand(${missionIdx}, 'left')" class="bg-gray-100 p-4 rounded-xl hover:bg-primary transition-all flex justify-center active:scale-95"><i data-lucide="chevron-left"></i></button>
+                                <button onclick="addCommand(${missionIdx}, 'right')" class="bg-gray-100 p-4 rounded-xl hover:bg-primary transition-all flex justify-center active:scale-95"><i data-lucide="chevron-right"></i></button>
+                            </div>
+                            <button id="run-btn-${missionIdx}" onclick="runAlgorithm(${missionIdx})" class="w-full bg-${color} text-white py-5 rounded-2xl font-black text-2xl shadow-lg hover:brightness-105 active:scale-95 transition-all">알고리즘 실행!</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-6">
+                        <button onclick="showStep(${prev})" class="bg-gray-100 px-8 py-4 rounded-2xl text-gray-500 font-bold flex items-center gap-2 hover:bg-gray-200"><i data-lucide="arrow-left"></i> 이전</button>
+                        <button onclick="showStep(${next})" class="pulse-btn bg-primary text-yellow-900 px-12 py-5 rounded-3xl font-black shadow-lg">다음 단계로! <i data-lucide="chevron-right" class="inline"></i></button>
+                    </div>
+                </section>`;
+            }
+            
+            // 미션 리스트: stepId(탭 번호)와 missionIdx(배열 인덱스)를 명확하게 매핑
+            document.write(createGridHTML(3, 0, "미션 1: 달콤한 꽃", "success", 2, 4, "꽃"));
+            document.write(createGridHTML(4, 1, "고치기 1: 길을 헤매요", "accent", 3, 5, "", true));
+            document.write(createGridHTML(5, 2, "미션 2: 시원한 그늘", "secondary", 4, 6, "야자수"));
+            document.write(createGridHTML(6, 3, "고치기 2: 바위를 피해요", "accent", 5, 7, "", true));
+            document.write(createGridHTML(7, 4, "미션 3: 빨간 사과", "success", 6, 8, "사과"));
+            document.write(createGridHTML(8, 5, "미션 4: 친구 거북이", "secondary", 7, 9, "친구 거북이"));
+            document.write(createGridHTML(9, 6, "미션 5: 주수천 우리집", "accent", 8, 10, "우리집"));
+        </script>
+
+        <!-- 10단계: 배움 정리 (퀴즈 시스템 복원 완료) -->
+        <section id="step10" class="step-content bg-white p-8 rounded-3xl shadow-xl border-t-8 border-primary text-center">
+            <h2 class="text-4xl font-bold mb-10 gaegu text-primary italic">🌟 오늘의 배움 퀴즈!</h2>
+            
+            <div class="max-w-2xl mx-auto space-y-6 mb-12 text-left">
+                <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-100 shadow-sm">
+                    <p class="text-xl font-bold mb-4">Q1. 거북이를 움직이기 위해 명령어를 <span class="text-accent underline decoration-4">순서대로</span> 나열한 것을 무엇이라고 하나요?</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(this, true)" class="bg-white p-4 rounded-xl border-2 border-blue-200 hover:bg-primary hover:border-primary font-bold shadow-sm transition-all text-lg">알고리즘</button>
+                        <button onclick="checkQuiz(this, false)" class="bg-white p-4 rounded-xl border-2 border-blue-200 hover:bg-primary hover:border-primary font-bold shadow-sm transition-all text-lg">샌드위치</button>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 p-6 rounded-2xl border-2 border-yellow-100 shadow-sm">
+                    <p class="text-xl font-bold mb-4">Q2. 미션 5처럼 복잡한 길을 통과하기 위해, 틀린 알고리즘을 찾아 고치는 과정을 무엇이라고 했나요?</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(this, false)" class="bg-white p-4 rounded-xl border-2 border-yellow-200 hover:bg-primary hover:border-primary font-bold shadow-sm transition-all text-lg">인코딩</button>
+                        <button onclick="checkQuiz(this, true)" class="bg-white p-4 rounded-xl border-2 border-yellow-200 hover:bg-primary hover:border-primary font-bold shadow-sm transition-all text-lg">디버깅</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-xl mx-auto bg-green-50 p-8 rounded-[40px] border-4 border-dashed border-success mb-10 relative">
+                <div class="absolute -top-6 -right-6 bg-accent text-white p-4 rounded-full rotate-12 shadow-lg font-black">참 잘했어요!</div>
+                <i data-lucide="party-popper" class="w-24 h-24 mx-auto text-success mb-6"></i>
+                <p class="text-2xl font-bold mb-4">여러분은 이제 <br>알고리즘 전문가예요!</p>
+                <p class="text-gray-600 text-lg">5개의 미션과 2개의 디버깅 문제를 모두 해결했어요. <br>순서대로 생각하는 힘이 쑥쑥 자랐답니다!</p>
+            </div>
+            <button onclick="location.reload()" class="bg-gray-800 text-white px-12 py-6 rounded-3xl font-bold text-2xl hover:bg-black transition-all shadow-xl">처음부터 다시 놀기</button>
+        </section>
+    </div>
+
+    <!-- 결과 알림 모달 -->
+    <div id="modal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-6">
+        <div class="bg-white p-10 rounded-[40px] max-w-sm w-full text-center shadow-2xl scale-90 transition-transform duration-300 transform">
+            <div id="modal-icon" class="mb-6 flex justify-center text-success"></div>
+            <h2 id="modal-title" class="text-3xl font-black mb-4 gaegu">결과</h2>
+            <p id="modal-msg" class="text-gray-600 text-xl mb-8"></p>
+            <button onclick="closeModal()" class="w-full bg-primary py-4 rounded-2xl font-bold text-xl text-yellow-900 shadow-md active:scale-95 transition-all">확인</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 10;
+
+        // 게임 데이터 정의 (미션 번호와 정확히 1:1 대응)
+        const gameState = [
+            // [0] 미션 1 (3x3 꽃)
+            { size: 3, turtle: {r:0, c:0}, target: {r:2, c:2}, obstacles: [], commands: [], icon: 'flower-2' },
+            // [1] 고치기 1 (3x3 꽃 디버깅)
+            { size: 3, turtle: {r:0, c:0}, target: {r:2, c:2}, obstacles: [], commands: [], isDebugging: true, bug: ['down', 'right', 'left', 'down', 'right'], icon: 'flower-2' },
+            // [2] 미션 2 (4x4 야자수)
+            { size: 4, turtle: {r:0, c:0}, target: {r:3, c:3}, obstacles: [{r:1, c:1}, {r:2, c:1}, {r:2, c:2}], commands: [], icon: 'palmtree' },
+            // [3] 고치기 2 (4x4 야자수 디버깅)
+            { size: 4, turtle: {r:0, c:0}, target: {r:0, c:3}, obstacles: [{r:0, c:2}], commands: [], isDebugging: true, bug: ['right', 'right', 'right'], icon: 'palmtree' },
+            // [4] 미션 3 (5x5 사과)
+            { size: 5, turtle: {r:0, c:0}, target: {r:4, c:4}, obstacles: [{r:1, c:0}, {r:1, c:1}, {r:1, c:2}, {r:1, c:3}, {r:3, c:1}, {r:3, c:2}, {r:3, c:3}, {r:3, c:4}], commands: [], icon: 'apple' },
+            // [5] 미션 4 (5x5 친구 거북이)
+            { size: 5, turtle: {r:0, c:0}, target: {r:4, c:0}, obstacles: [{r:0, c:1}, {r:1, c:1}, {r:2, c:1}, {r:3, c:1}, {r:4, c:1}, {r:2, c:2}, {r:2, c:3}, {r:2, c:4}], commands: [], icon: 'smile' },
+            // [6] 미션 5 (6x6 집)
+            { size: 6, turtle: {r:0, c:0}, target: {r:5, c:5}, obstacles: [{r:1, c:1}, {r:1, c:2}, {r:1, c:3}, {r:1, c:4}, {r:1, c:5}, {r:2, c:1}, {r:3, c:1}, {r:4, c:1}, {r:4, c:2}, {r:4, c:3}, {r:4, c:4}, {r:3, c:4}, {r:2, c:4}], commands: [], icon: 'home' }
+        ];
+
+        function showStep(n) {
+            if (n < 1 || n > totalSteps) return;
+            currentStep = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => btn.classList.toggle('active', idx + 1 === n));
+            
+            const stepElement = document.getElementById('step' + n);
+            if(stepElement) stepElement.classList.add('active');
+            
+            if (n >= 3 && n <= 9) {
+                const missionIdx = n - 3;
+                if (gameState[missionIdx].isDebugging && gameState[missionIdx].commands.length === 0) {
+                   gameState[missionIdx].commands = [...gameState[missionIdx].bug];
+                }
+                initGrid(missionIdx);
+                renderCommands(missionIdx);
+            }
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initGrid(missionIdx) {
+            const state = gameState[missionIdx];
+            const container = document.getElementById(`grid-${missionIdx}`);
+            if (!container) return;
+            container.innerHTML = '';
+            container.style.gridTemplateColumns = `repeat(${state.size}, 1fr)`;
+
+            for (let r = 0; r < state.size; r++) {
+                for (let c = 0; c < state.size; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.id = `cell-${missionIdx}-${r}-${c}`;
+                    
+                    if (r === state.target.r && c === state.target.c) {
+                        cell.innerHTML = `<i data-lucide="${state.icon}" class="w-8 h-8 text-accent"></i>`;
+                    }
+                    if (state.obstacles.some(o => o.r === r && o.c === c)) {
+                        cell.innerHTML = `<i data-lucide="mountain" class="w-8 h-8 text-gray-400"></i>`;
+                        cell.classList.add('bg-gray-100');
+                    }
+                    if (r === state.turtle.r && c === state.turtle.c) {
+                        cell.innerHTML += `<div id="turtle-obj-${missionIdx}" class="turtle-icon"><i data-lucide="turtle" class="w-8 h-8 text-turtle"></i></div>`;
+                    }
+                    container.appendChild(cell);
+                }
+            }
+            lucide.createIcons();
+        }
+
+        function addCommand(missionIdx, dir) {
+            if (gameState[missionIdx].isRunning) return;
+            if (gameState[missionIdx].commands.length >= 25) return;
+            gameState[missionIdx].commands.push(dir);
+            renderCommands(missionIdx);
+        }
+
+        function popCommand(missionIdx) {
+            if (gameState[missionIdx].isRunning) return;
+            gameState[missionIdx].commands.pop();
+            renderCommands(missionIdx);
+        }
+
+        function renderCommands(missionIdx) {
+            const list = document.getElementById(`command-list-${missionIdx}`);
+            if (!list) return;
+            list.innerHTML = '';
+            gameState[missionIdx].commands.forEach((cmd, i) => {
+                const icon = { up: 'chevron-up', down: 'chevron-down', left: 'chevron-left', right: 'chevron-right' }[cmd];
+                list.innerHTML += `<div class="command-badge bg-primary p-2 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm border border-yellow-500 animate-in fade-in zoom-in duration-200"><i data-lucide="${icon}" class="w-3 h-3"></i> ${i+1}</div>`;
+            });
+            lucide.createIcons();
+        }
+
+        async function runAlgorithm(missionIdx) {
+            const state = gameState[missionIdx];
+            if (state.isRunning || state.commands.length === 0) return;
+            
+            state.isRunning = true;
+            const btn = document.getElementById(`run-btn-${missionIdx}`);
+            if(btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+
+            let curR = state.turtle.r, curC = state.turtle.c;
+            const turtle = document.getElementById(`turtle-obj-${missionIdx}`);
+
+            for (const cmd of state.commands) {
+                if (cmd === 'up') curR--; else if (cmd === 'down') curR++;
+                else if (cmd === 'left') curC--; else if (cmd === 'right') curC++;
+
+                if (curR < 0 || curR >= state.size || curC < 0 || curC >= state.size) {
+                    showModal("벽에 쿵!", "격자 밖으로는 나갈 수 없어요. 명령을 고쳐보세요!", "frown");
+                    resetToStart(missionIdx); finishRun(missionIdx); return;
+                }
+                if (state.obstacles.some(o => o.r === curR && o.c === curC)) {
+                    showModal("바위에 쿵!", "바위에 부딪혔어요! 길을 다시 찾아봐요.", "mountain");
+                    resetToStart(missionIdx); finishRun(missionIdx); return;
+                }
+
+                const targetCell = document.getElementById(`cell-${missionIdx}-${curR}-${curC}`);
+                if(targetCell) targetCell.appendChild(turtle);
+                await new Promise(r => setTimeout(r, 450));
+            }
+
+            if (curR === state.target.r && curC === state.target.c) {
+                showModal("도착 성공!", state.isDebugging ? "틀린 알고리즘을 완벽하게 고쳤어요!" : "알고리즘 실행 완료!", "party-popper");
+            } else {
+                showModal("도착 실패", "엉뚱한 곳에 도착했어요. 다시 고쳐볼까요?", "map");
+                resetToStart(missionIdx);
+            }
+            finishRun(missionIdx);
+        }
+
+        function finishRun(missionIdx) {
+            gameState[missionIdx].isRunning = false;
+            const btn = document.getElementById(`run-btn-${missionIdx}`);
+            if(btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+        }
+
+        function resetToStart(missionIdx) {
+            const state = gameState[missionIdx];
+            const turtle = document.getElementById(`turtle-obj-${missionIdx}`);
+            const start = document.getElementById(`cell-${missionIdx}-${state.turtle.r}-${state.turtle.c}`);
+            if(start && turtle) start.appendChild(turtle);
+        }
+
+        function resetGame(missionIdx, isDebugging) {
+            const state = gameState[missionIdx];
+            state.commands = isDebugging ? [...state.bug] : [];
+            state.isRunning = false;
+            renderCommands(missionIdx);
+            initGrid(missionIdx);
+        }
+
+        function showModal(title, msg, icon) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-msg').innerText = msg;
+            document.getElementById('modal-icon').innerHTML = `<i data-lucide="${icon}" class="w-20 h-20"></i>`;
+            document.getElementById('modal').classList.replace('hidden', 'flex');
+            document.querySelector('#modal > div').classList.remove('scale-90');
+            document.querySelector('#modal > div').classList.add('scale-100');
+            lucide.createIcons();
+        }
+
+        function closeModal() { 
+            document.querySelector('#modal > div').classList.add('scale-90');
+            document.querySelector('#modal > div').classList.remove('scale-100');
+            setTimeout(() => {
+                document.getElementById('modal').classList.replace('flex', 'hidden'); 
+            }, 150);
+        }
+
+        // 퀴즈 피드백 함수 복원
+        function checkQuiz(btn, isCorrect) {
+            if (isCorrect) {
+                btn.classList.add('bg-success', 'text-white', 'border-success', 'scale-105');
+                btn.classList.remove('hover:bg-primary', 'hover:border-primary');
+                btn.innerText = "정답입니다! 👏";
+            } else {
+                btn.classList.add('bg-accent', 'text-white', 'border-accent');
+                const originalText = btn.innerText;
+                btn.innerText = "다시 생각해봐요! 😢";
+                setTimeout(() => {
+                    btn.classList.remove('bg-accent', 'text-white', 'border-accent');
+                    btn.innerText = originalText;
+                }, 1500);
+            }
+        }
+
+        window.onload = () => { lucide.createIcons(); };
+    </script>
+</body>
+</html>
