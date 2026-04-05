@@ -80,6 +80,17 @@
             animation: popEffect 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
+        /* 틀렸을 때 흔들리는 애니메이션 추가 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s;
+        }
+
         .folder-animate {
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -135,16 +146,16 @@
                 </div>
                 <div>
                     <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">3차시: 마법 상자 만들기</h1>
-                    <p class="text-lg md:text-xl text-yellow-600 font-bold">폴더 만들기와 그림 저장하기</p>
+                    <p class="text-lg md:text-xl text-yellow-600 font-bold">폴더 만들기와 파일 저장하기</p>
                 </div>
             </div>
 
             <nav class="hidden lg:flex gap-2">
-                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 마음열기</button>
+                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 생각열기</button>
                 <button onclick="showStep(2)" class="nav-btn bg-white border-4 border-secondary px-4 py-2 rounded-full font-bold">2. 상자 만들기</button>
                 <button onclick="showStep(3)" class="nav-btn bg-white border-4 border-success px-4 py-2 rounded-full font-bold">3. 이름표 붙이기</button>
-                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-accent px-4 py-2 rounded-full font-bold">4. 그림 쏙 넣기</button>
-                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-purple-400 px-4 py-2 rounded-full font-bold">5. 확인 퀴즈</button>
+                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-accent px-4 py-2 rounded-full font-bold">4. 종류별로 쏙쏙</button>
+                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-purple-400 px-4 py-2 rounded-full font-bold">5. 마무리</button>
             </nav>
         </div>
     </header>
@@ -157,7 +168,7 @@
                 <div class="flex flex-col md:flex-row items-start gap-8 mb-8">
                     <div class="w-full md:w-1/2">
                         <div class="bubble bg-yellow-50 text-xl font-bold border-2 border-yellow-200">
-                            "친구들! 내 소중한 그림들이 컴퓨터 여기저기에 흩어져서 울고 있어요! 어떻게 하면 좋을까요?"
+                            "친구들! 내 소중한 파일들이 컴퓨터 여기저기에 흩어져서 울고 있어요! 어떻게 하면 좋을까요?"
                         </div>
                         <img src="https://api.dicebear.com/7.x/bottts/svg?seed=teacher" alt="선생님" class="w-32 h-32 mx-auto md:mx-0">
                     </div>
@@ -263,57 +274,124 @@
                 </div>
 
                 <button onclick="showStep(4)" class="next-step-btn mx-auto lg:ml-auto lg:mr-0">
-                    그림 저장하러 가기 <i data-lucide="arrow-right-circle"></i>
+                    파일 저장하러 가기 <i data-lucide="arrow-right-circle"></i>
                 </button>
             </div>
         </section>
 
-        <!-- 탭 4: 저장하기 (드래그 앤 드롭 추가) -->
+        <!-- 탭 4: 저장하기 (드래그 앤 드롭 분류 활동) -->
         <section id="step4" class="step-content space-y-8">
             <div class="lesson-card">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">내 소중한 그림을 상자에 쏙!</h2>
-                <p class="text-xl text-accent font-bold text-center mb-6">팔레트 그림을 마우스로 꾹 눌러서 노란 폴더 위로 끌어다 놓으세요!</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">내 소중한 파일들을 종류별로 쏙쏙!</h2>
+                
+                <div class="bg-blue-50 border-4 border-blue-200 rounded-2xl p-5 mb-6 text-center">
+                    <h3 class="text-xl font-extrabold text-blue-700 mb-2 flex items-center justify-center gap-2">
+                        <i data-lucide="lightbulb" class="w-6 h-6"></i> 💡 정리 정돈 꿀팁!
+                    </h3>
+                    <p class="text-lg text-gray-700 font-bold">
+                        상자에 넣을 때는 <span class="text-accent">같은 종류끼리 나누어서</span> 넣어야 나중에 찾기 쉬워요!<br>
+                        그림, 음악, 문서 친구들을 각각 알맞은 짝꿍 상자로 끌어다 넣어주세요.
+                    </p>
+                </div>
                 
                 <div class="grid md:grid-cols-2 gap-10 mb-8 flex-grow">
                     <div class="bg-white border-4 border-dashed border-gray-200 rounded-3xl p-6 flex flex-col items-center justify-center gap-4">
-                        <p class="font-bold text-gray-500 bg-gray-100 px-4 py-1 rounded-full">방금 그린 그림 (드래그 하세요)</p>
+                        <p class="font-bold text-gray-500 bg-gray-100 px-4 py-1 rounded-full mb-2">정리할 파일들 (드래그 하세요)</p>
                         
-                        <!-- 드래그 가능한 아이템 -->
-                        <div id="drag-item" draggable="true" ondragstart="drag(event)" class="relative group cursor-grab active:cursor-grabbing p-4 touch-none">
-                            <i data-lucide="palette" class="w-32 h-32 text-accent group-hover:scale-110 transition-transform pointer-events-none"></i>
-                            <div class="absolute -top-2 -right-2 bg-success text-white p-2 rounded-full shadow-lg pointer-events-none animate-bounce">
-                                <i data-lucide="hand" class="w-6 h-6"></i>
+                        <div class="flex gap-4 md:gap-6 justify-center w-full">
+                            <!-- 그림 파일 -->
+                            <div id="item-pic" data-type="pic" draggable="true" ondragstart="drag(event)" class="drag-item relative group cursor-grab active:cursor-grabbing p-2 md:p-4 touch-none transition-opacity">
+                                <i data-lucide="image" class="w-16 h-16 md:w-20 md:h-20 text-accent group-hover:scale-110 transition-transform pointer-events-none"></i>
+                                <p class="text-center font-bold mt-2 text-gray-600 pointer-events-none">그림</p>
+                            </div>
+
+                            <!-- 음악 파일 -->
+                            <div id="item-music" data-type="music" draggable="true" ondragstart="drag(event)" class="drag-item relative group cursor-grab active:cursor-grabbing p-2 md:p-4 touch-none transition-opacity">
+                                <i data-lucide="music" class="w-16 h-16 md:w-20 md:h-20 text-secondary group-hover:scale-110 transition-transform pointer-events-none"></i>
+                                <p class="text-center font-bold mt-2 text-gray-600 pointer-events-none">음악</p>
+                            </div>
+
+                            <!-- 문서 파일 -->
+                            <div id="item-doc" data-type="doc" draggable="true" ondragstart="drag(event)" class="drag-item relative group cursor-grab active:cursor-grabbing p-2 md:p-4 touch-none transition-opacity">
+                                <i data-lucide="file-text" class="w-16 h-16 md:w-20 md:h-20 text-gray-500 group-hover:scale-110 transition-transform pointer-events-none"></i>
+                                <p class="text-center font-bold mt-2 text-gray-600 pointer-events-none">문서</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex flex-col items-center justify-center gap-4">
-                        <!-- 드롭 영역 -->
-                        <div class="relative transition-all duration-300 p-6 rounded-3xl border-4 border-transparent" 
-                             id="target-folder" 
-                             ondragover="allowDrop(event)" 
-                             ondragleave="dragLeave(event)" 
-                             ondrop="drop(event)">
-                            <i data-lucide="folder-open" class="w-48 h-48 text-yellow-400 fill-yellow-50 pointer-events-none drop-shadow-xl"></i>
-                            <div id="save-count" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-4xl text-yellow-700 pointer-events-none">0</div>
+                        <p class="font-bold text-gray-500 bg-gray-100 px-4 py-1 rounded-full mb-2">알맞은 상자 (드롭 하세요)</p>
+                        
+                        <div class="flex gap-2 md:gap-4 justify-center w-full">
+                            <!-- 그림 상자 -->
+                            <div class="folder-zone flex flex-col items-center relative transition-all duration-300 p-2 md:p-4 rounded-3xl border-4 border-transparent" 
+                                 data-target="pic" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <i data-lucide="folder-open" class="w-16 h-16 md:w-20 md:h-20 text-yellow-400 fill-yellow-50 pointer-events-none drop-shadow-md"></i>
+                                <p class="text-center font-bold text-gray-700 mt-2 pointer-events-none text-sm md:text-base">그림 상자</p>
+                            </div>
+
+                            <!-- 음악 상자 -->
+                            <div class="folder-zone flex flex-col items-center relative transition-all duration-300 p-2 md:p-4 rounded-3xl border-4 border-transparent" 
+                                 data-target="music" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <i data-lucide="folder-open" class="w-16 h-16 md:w-20 md:h-20 text-yellow-400 fill-yellow-50 pointer-events-none drop-shadow-md"></i>
+                                <p class="text-center font-bold text-gray-700 mt-2 pointer-events-none text-sm md:text-base">음악 상자</p>
+                            </div>
+
+                            <!-- 문서 상자 -->
+                            <div class="folder-zone flex flex-col items-center relative transition-all duration-300 p-2 md:p-4 rounded-3xl border-4 border-transparent" 
+                                 data-target="doc" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <i data-lucide="folder-open" class="w-16 h-16 md:w-20 md:h-20 text-yellow-400 fill-yellow-50 pointer-events-none drop-shadow-md"></i>
+                                <p class="text-center font-bold text-gray-700 mt-2 pointer-events-none text-sm md:text-base">문서 상자</p>
+                            </div>
                         </div>
-                        <p class="text-xl font-bold text-gray-700">저장된 그림 수</p>
-                        <p id="save-msg" class="text-success font-bold opacity-0 transition-opacity text-xl">그림이 상자에 쏙 들어갔어요! ✨</p>
+
+                        <div class="flex items-center gap-4 mt-2">
+                            <p class="text-lg font-bold text-gray-700">정리 성공: <span id="save-count" class="text-3xl text-yellow-700 font-black">0</span> / 3</p>
+                        </div>
+                        <p id="save-msg" class="font-bold opacity-0 transition-opacity text-xl h-8 text-success">알맞은 상자에 쏙 들어갔어요! ✨</p>
                     </div>
                 </div>
 
                 <button onclick="showStep(5)" class="next-step-btn">
-                    퀴즈 풀러 가기 <i data-lucide="arrow-right-circle"></i>
+                    마무리 하러 가기 <i data-lucide="arrow-right-circle"></i>
                 </button>
             </div>
         </section>
 
-        <!-- 탭 5: 확인 퀴즈 -->
+        <!-- 탭 5: 마무리 -->
         <section id="step5" class="step-content space-y-8">
             <div class="lesson-card text-center flex-col justify-center">
-                <h2 class="text-4xl font-bold text-gray-800 mb-10">오늘의 척척박사 퀴즈!</h2>
+                <h2 class="text-4xl font-bold text-gray-800 mb-8">마무리</h2>
                 
+                <!-- 진짜로 해보기 실습 영역 추가 -->
+                <div class="bg-orange-50 border-4 border-orange-200 rounded-3xl p-6 md:p-8 mb-10 text-left">
+                    <h3 class="text-2xl font-extrabold text-orange-700 mb-6 flex items-center justify-center gap-2">
+                        <i data-lucide="monitor-play" class="w-8 h-8"></i> 💻 진짜로 컴퓨터에서 해보기!
+                    </h3>
+                    <p class="text-lg text-gray-700 font-bold mb-6 text-center">지금까지 배운 내용을 바탕화면에서 직접 연습해봐요.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-orange-100">
+                            <span class="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shrink-0">1</span>
+                            <p class="text-lg font-bold">바탕화면에서 <span class="text-accent">자기 이름 폴더</span> 만들기</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-blue-100">
+                            <span class="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shrink-0">2</span>
+                            <p class="text-lg font-bold"><span class="text-secondary">메모장</span>을 열어서 내 이름 쓰기</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-green-100">
+                            <span class="bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shrink-0">3</span>
+                            <p class="text-lg font-bold">자기 이름 폴더에 파일 <span class="text-success">저장하기</span></p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-purple-100">
+                            <span class="bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shrink-0">4</span>
+                            <p class="text-lg font-bold">다 쓴 폴더를 <span class="text-purple-600">휴지통에 버리기</span></p>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="quiz-container" class="space-y-8">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-6 text-center">오늘의 척척박사 퀴즈!</h3>
                     <div class="bg-purple-50 p-8 rounded-3xl border-4 border-purple-200">
                         <h3 class="text-2xl font-bold mb-6 text-purple-700">Q. 컴퓨터에서 파일을 정리하는 <br>'빈 보물상자'의 이름은 무엇일까요?</h3>
                         <div class="grid grid-cols-2 gap-4">
@@ -325,7 +403,7 @@
                     <div id="congrats" class="hidden animate-bounce">
                         <p class="text-5xl mb-4">🥳</p>
                         <h3 class="text-3xl font-black text-accent">참 잘했어요!</h3>
-                        <p class="text-xl text-gray-600 mt-2">오늘부터 내 그림은 내가 직접 정리해요!</p>
+                        <p class="text-xl text-gray-600 mt-2">오늘부터 내 파일은 내가 직접 정리해요!</p>
                     </div>
                 </div>
             </div>
@@ -362,85 +440,85 @@
         const desktop = document.getElementById('desktop-area');
         const menu = document.getElementById('custom-menu');
         const instruction = document.getElementById('instruction-text');
-        const vFolder = document.getElementById('virtual-folder');
-        const popStars = document.getElementById('pop-stars').firstElementChild;
-
-        desktop.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            const rect = desktop.getBoundingClientRect();
-            menu.style.left = (e.clientX - rect.left) + 'px';
-            menu.style.top = (e.clientY - rect.top) + 'px';
-            menu.classList.remove('hidden');
-            instruction.classList.add('hidden');
-        });
-
-        // 메뉴 닫기
-        document.addEventListener('click', () => menu.classList.add('hidden'));
-
-        function createFolder() {
-            vFolder.classList.remove('hidden');
-            // 펑! 애니메이션 효과 적용
-            vFolder.classList.remove('animate-pop'); // 혹시 모를 초기화
-            void vFolder.offsetWidth; // 리플로우 강제 (애니메이션 재시작 위함)
-            vFolder.classList.add('animate-pop');
-            
-            // 별가루 반짝임 효과
-            popStars.classList.remove('opacity-0');
-            setTimeout(() => { popStars.classList.add('opacity-0'); }, 500);
-        }
-
-        // --- 실습 2. 이름 바꾸기 ---
-        function updateFolderName(val) {
-            const display = document.getElementById('display-name');
-            display.innerText = val.trim() === "" ? "새 폴더" : val;
-        }
-
-        // --- 실습 3. 드래그 앤 드롭 저장하기 ---
+        // --- 실습 3. 드래그 앤 드롭 다중 저장하기 ---
         let count = 0;
 
         function allowDrop(ev) {
             ev.preventDefault();
-            // 드래그 중일 때 폴더 강조
-            document.getElementById('target-folder').classList.add('scale-110', 'border-yellow-300', 'bg-yellow-50');
+            const folder = ev.currentTarget;
+            if (folder.classList.contains('folder-zone')) {
+                folder.classList.add('scale-110', 'border-yellow-300', 'bg-yellow-50');
+            }
         }
 
         function dragLeave(ev) {
-            // 영역 벗어나면 강조 해제
-            document.getElementById('target-folder').classList.remove('scale-110', 'border-yellow-300', 'bg-yellow-50');
+            const folder = ev.currentTarget;
+            if (folder.classList.contains('folder-zone')) {
+                folder.classList.remove('scale-110', 'border-yellow-300', 'bg-yellow-50');
+            }
         }
 
         function drag(ev) {
-            ev.dataTransfer.setData("text", ev.target.id);
-            // 모바일/터치 기기 호환성을 위해 시각 효과 추가
-            ev.target.style.opacity = '0.5';
+            ev.dataTransfer.setData("id", ev.currentTarget.id);
+            ev.dataTransfer.setData("type", ev.currentTarget.dataset.type);
+            ev.currentTarget.style.opacity = '0.5';
         }
 
         // 드래그 끝날때 원상태 복구
-        document.getElementById('drag-item').addEventListener('dragend', function(e) {
-            this.style.opacity = '1';
+        document.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+            });
         });
 
         function drop(ev) {
             ev.preventDefault();
-            const targetFolder = document.getElementById('target-folder');
-            targetFolder.classList.remove('scale-110', 'border-yellow-300', 'bg-yellow-50');
+            const folder = ev.currentTarget;
+            folder.classList.remove('scale-110', 'border-yellow-300', 'bg-yellow-50');
             
-            // 드롭 성공 시 저장 로직 실행
-            saveToFolder();
-        }
-
-        function saveToFolder() {
-            count++;
-            document.getElementById('save-count').innerText = count;
+            const itemType = ev.dataTransfer.getData("type");
+            const itemId = ev.dataTransfer.getData("id");
+            const folderType = folder.dataset.target;
             
             const msg = document.getElementById('save-msg');
-            msg.classList.remove('opacity-0');
-            setTimeout(() => msg.classList.add('opacity-0'), 2500);
-            
-            // 폴더 흔들기 효과
-            const target = document.getElementById('target-folder');
-            target.classList.add('animate-bounce');
-            setTimeout(() => target.classList.remove('animate-bounce'), 1000);
+
+            if (itemType === folderType) {
+                // 알맞은 짝꿍 상자에 넣은 경우
+                const item = document.getElementById(itemId);
+                if(item) item.style.visibility = 'hidden'; // 화면에서 숨김 처리
+                
+                folder.classList.add('animate-bounce');
+                setTimeout(() => folder.classList.remove('animate-bounce'), 1000);
+
+                let typeName = "";
+                if(itemType === 'pic') typeName = "그림이";
+                if(itemType === 'music') typeName = "음악이";
+                if(itemType === 'doc') typeName = "문서가";
+
+                msg.innerText = typeName + " 알맞은 상자에 쏙 들어갔어요! ✨";
+                msg.classList.remove('opacity-0', 'text-accent');
+                msg.classList.add('text-success');
+
+                count++;
+                document.getElementById('save-count').innerText = count;
+                
+                if(count === 3) {
+                    setTimeout(() => {
+                        msg.innerText = "모든 파일을 완벽하게 정리했어요! 🎉";
+                    }, 1500);
+                }
+
+                setTimeout(() => msg.classList.add('opacity-0'), 2500);
+            } else {
+                // 잘못된 상자에 넣은 경우
+                folder.classList.add('animate-shake');
+                setTimeout(() => folder.classList.remove('animate-shake'), 400);
+
+                msg.innerText = "어라? 짝꿍 상자가 아니에요! 👀";
+                msg.classList.remove('opacity-0', 'text-success');
+                msg.classList.add('text-accent');
+                setTimeout(() => msg.classList.add('opacity-0'), 2000);
+            }
         }
 
         // --- 실습 4. 퀴즈 체크 ---
