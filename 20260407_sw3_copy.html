@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5주차 정보: 마법의 복사 붙여넣기!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',    /* 따뜻한 노란색 */
+                        secondary: '#4EA8DE',  /* 밝은 파란색 */
+                        accent: '#EF476F',     /* 포인트 핑크 */
+                        success: '#06D6A0',    /* 성공 초록 */
+                        warning: '#FF9F1C',    /* 주황색 */
+                        bgLight: '#F8F9FA',
+                        desktop: '#2B5A84'     /* 가상 바탕화면 색상 */
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard"', '"Malgun Gothic"', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'pulse-border': 'pulseBorder 2s infinite',
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseBorder: {
+                            '0%, 100%': { borderColor: 'rgba(239, 71, 111, 0.3)' },
+                            '50%': { borderColor: 'rgba(239, 71, 111, 1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0;
+            word-break: keep-all;
+        }
+
+        /* 가상 바탕화면 우클릭 메뉴 스타일 */
+        #context-menu {
+            display: none;
+            position: absolute;
+            z-index: 50;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            width: 150px;
+        }
+        .context-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .context-item:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+        }
+        .context-item:not(:last-child) {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        /* 퀴즈 선택 버튼 애니메이션 */
+        .quiz-opt { transition: all 0.2s ease; }
+        .quiz-opt:hover { transform: translateY(-2px); border-color: #FFD166; }
+        .quiz-opt.selected-correct { background-color: #d1fae5; border-color: #06D6A0; color: #047857; }
+        .quiz-opt.selected-wrong { background-color: #fee2e2; border-color: #EF476F; color: #b91c1c; }
+
+        /* 키보드 키 스타일 */
+        kbd {
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2), inset 0 1px 0 #fff;
+            color: #333;
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: bold;
+            padding: 2px 8px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <div class="max-w-4xl mx-auto px-4 py-8 space-y-10">
+        
+        <!-- [도입] 헤더 영역 -->
+        <header class="bg-white rounded-3xl p-8 shadow-sm border border-orange-100 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden text-center md:text-left">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-10 -mt-10 pointer-events-none"></div>
+            
+            <div class="bg-primary/20 p-4 rounded-2xl flex-shrink-0 mt-2">
+                <i data-lucide="copy" class="w-14 h-14 text-warning animate-bounce-slow"></i>
+            </div>
+            <div>
+                <h2 class="text-accent font-bold text-lg mb-1 tracking-wide">5주차 미션</h2>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 drop-shadow-sm leading-tight">마법의 복사 붙여넣기 💻</h1>
+                <p class="mt-3 text-gray-600 text-lg font-medium">컴퓨터 세상의 똑똑한 마법, 쌍둥이를 만들고 이사하는 방법을 배워요!</p>
+            </div>
+        </header>
+
+        <!-- [복습] 4주차 내용 리마인드 -->
+        <section class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 shadow-sm border border-blue-100 relative">
+            <h3 class="text-xl font-bold text-blue-800 flex items-center gap-2 mb-4">
+                <i data-lucide="history" class="w-6 h-6"></i> 잠깐! 지난주에 배운 내용을 기억해 볼까요? (초성을 보고 맞춰보세요!)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="review-card bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white shadow-sm flex items-center gap-4 relative transition-all duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full shrink-0"><i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i></div>
+                    <div class="flex-1">
+                        <div class="flex items-end gap-1 mb-1">
+                            <span class="relative inline-block mt-3">
+                                <span class="initial-hint absolute -top-3 left-1/2 transform -translate-x-1/2 text-xs text-blue-400 font-black tracking-widest pointer-events-none">ㅍㅇ</span>
+                                <input type="text" class="review-input w-16 px-1 py-0 border-b-2 border-blue-200 bg-transparent text-center font-black text-gray-800 text-lg focus:outline-none focus:border-blue-500 transition-colors" data-answer="파일" autocomplete="off">
+                            </span>
+                            <span class="text-sm font-bold text-gray-400 mb-1">(File)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 break-keep mt-1">사진, 문서 같은 자료 하나하나</p>
+                    </div>
+                    <div class="review-feedback absolute right-3 hidden bg-success/20 p-1.5 rounded-full animate-pop-in">
+                        <i data-lucide="check" class="w-5 h-5 text-success"></i>
+                    </div>
+                </div>
+                
+                <div class="review-card bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white shadow-sm flex items-center gap-4 relative transition-all duration-300">
+                    <div class="bg-yellow-100 p-3 rounded-full shrink-0"><i data-lucide="folder" class="w-6 h-6 text-yellow-600"></i></div>
+                    <div class="flex-1">
+                        <div class="flex items-end gap-1 mb-1">
+                            <span class="relative inline-block mt-3">
+                                <span class="initial-hint absolute -top-3 left-1/2 transform -translate-x-1/2 text-xs text-yellow-500 font-black tracking-widest pointer-events-none">ㅍㄷ</span>
+                                <input type="text" class="review-input w-16 px-1 py-0 border-b-2 border-yellow-200 bg-transparent text-center font-black text-gray-800 text-lg focus:outline-none focus:border-yellow-500 transition-colors" data-answer="폴더" autocomplete="off">
+                            </span>
+                            <span class="text-sm font-bold text-gray-400 mb-1">(Folder)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 break-keep mt-1">파일들을 모아두는 상자 (방)</p>
+                    </div>
+                    <div class="review-feedback absolute right-3 hidden bg-success/20 p-1.5 rounded-full animate-pop-in">
+                        <i data-lucide="check" class="w-5 h-5 text-success"></i>
+                    </div>
+                </div>
+                
+                <div class="review-card bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white shadow-sm flex items-center gap-4 relative transition-all duration-300">
+                    <div class="bg-pink-100 p-3 rounded-full shrink-0"><i data-lucide="tag" class="w-6 h-6 text-pink-600"></i></div>
+                    <div class="flex-1">
+                        <div class="flex items-end gap-1 mb-1">
+                            <span class="relative inline-block mt-3">
+                                <span class="initial-hint absolute -top-3 left-1/2 transform -translate-x-1/2 text-xs text-pink-400 font-black tracking-widest pointer-events-none">ㅎㅈㅈ</span>
+                                <input type="text" class="review-input w-20 px-1 py-0 border-b-2 border-pink-200 bg-transparent text-center font-black text-gray-800 text-lg focus:outline-none focus:border-pink-500 transition-colors" data-answer="확장자" autocomplete="off">
+                            </span>
+                            <span class="text-sm font-bold text-gray-400 mb-1">(.jpg)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 break-keep mt-1">파일의 가족을 알려주는 꼬리표</p>
+                    </div>
+                    <div class="review-feedback absolute right-3 hidden bg-success/20 p-1.5 rounded-full animate-pop-in">
+                        <i data-lucide="check" class="w-5 h-5 text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [전개 1] 왜 필요할까? -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-secondary/20 text-secondary w-10 h-10 rounded-full flex items-center justify-center text-lg">1</span>
+                마법이 필요한 순간! 🤔
+            </h3>
+            
+            <div class="space-y-6">
+                <div class="bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-md flex-shrink-0 border-2 border-blue-100">
+                        <i data-lucide="cake" class="w-10 h-10 text-pink-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-gray-800 mb-2">상상해 보세요! 생일 파티 초대장 쓰기 🎂</p>
+                        <p class="text-gray-700 leading-relaxed font-medium">
+                            내 생일 파티에 친구 10명을 초대하려고 해요.<br>도화지에 "내 생일 파티에 놀러와! 토요일 오후 2시야"라는 똑같은 편지를 10번이나 직접 손으로 쓰려면 팔이 너무 아프겠죠?
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 p-6 rounded-2xl border-2 border-dashed border-yellow-200 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-md flex-shrink-0 border-2 border-yellow-100">
+                        <i data-lucide="star" class="w-10 h-10 text-warning"></i>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-gray-800 mb-2">밤하늘에 별 100개 그리기 ⭐</p>
+                        <p class="text-gray-700 leading-relaxed font-medium">
+                            도화지에 정말 예쁜 별을 하나 그렸어요.<br>이 별을 밤하늘 가득 100개로 채우고 싶어요.<br>하나하나 다시 똑같이 그리려면 시간도 오래 걸리고 모양도 삐뚤빼뚤해질 수 있어요.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-5 rounded-xl border border-success/30 text-center shadow-inner">
+                    <p class="text-lg text-gray-800 font-bold leading-relaxed">
+                        이럴 때 컴퓨터 세상에서는 <span class="text-accent underline decoration-wavy decoration-pink-300">단 한 번만</span> 만들고,<br>
+                        <span class="text-secondary text-xl font-black">'복사 마법'</span>을 써서 1초 만에 똑같은 쌍둥이를 무한대로 만들어 낼 수 있답니다!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [전개 2] 3가지 마법과 단축키 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-primary/30 text-yellow-600 w-10 h-10 rounded-full flex items-center justify-center text-lg">2</span>
+                마우스 우클릭 마법 삼총사와 단축키 🪄
+            </h3>
+            
+            <p class="text-gray-700 font-medium mb-6">파일 위에서 <b>마우스 오른쪽 버튼</b>을 누르면 마법의 메뉴가 나타나요. 키보드를 사용하면 마법을 더 빨리 쓸 수도 있어요!</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 복사 -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-secondary/20 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-secondary transition-colors">
+                    <div class="absolute -top-10 -right-10 w-20 h-20 bg-secondary/10 rounded-full group-hover:scale-150 transition-transform"></div>
+                    <i data-lucide="copy" class="w-12 h-12 text-secondary mb-4 relative z-10"></i>
+                    <span class="font-black text-gray-800 text-xl relative z-10 mb-2">복사하기</span>
+                    <span class="text-sm text-gray-600 mb-4 h-10">파일은 원래 자리에 두고<br>똑같은 쌍둥이를 복제해요!</span>
+                    <div class="mt-auto bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 w-full">
+                        <span class="text-xs text-gray-500 block mb-1">마법의 키보드 (다음 시간에 배울 내용)</span>
+                        <kbd>Ctrl</kbd> + <kbd>C</kbd>
+                    </div>
+                </div>
+                
+                <!-- 잘라내기 -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-accent/20 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-accent transition-colors">
+                    <div class="absolute -top-10 -right-10 w-20 h-20 bg-accent/10 rounded-full group-hover:scale-150 transition-transform"></div>
+                    <i data-lucide="scissors" class="w-12 h-12 text-accent mb-4 relative z-10"></i>
+                    <span class="font-black text-gray-800 text-xl relative z-10 mb-2">잘라내기</span>
+                    <span class="text-sm text-gray-600 mb-4 h-10">원래 자리에서 지우고<br>새로운 곳으로 이사 가요!</span>
+                    <div class="mt-auto bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 w-full">
+                        <span class="text-xs text-gray-500 block mb-1">마법의 키보드 (다음 시간에 배울 내용)</span>
+                        <kbd>Ctrl</kbd> + <kbd>X</kbd>
+                    </div>
+                </div>
+
+                <!-- 붙여넣기 -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-success/20 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-success transition-colors">
+                    <div class="absolute -top-10 -right-10 w-20 h-20 bg-success/10 rounded-full group-hover:scale-150 transition-transform"></div>
+                    <i data-lucide="clipboard-paste" class="w-12 h-12 text-success mb-4 relative z-10"></i>
+                    <span class="font-black text-gray-800 text-xl relative z-10 mb-2">붙여넣기</span>
+                    <span class="text-sm text-gray-600 mb-4 h-10">복사하거나 잘라낸 파일을<br>원하는 곳에 짠! 나타나게 해요.</span>
+                    <div class="mt-auto bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 w-full">
+                        <span class="text-xs text-gray-500 block mb-1">마법의 키보드 (다음 시간에 배울 내용)</span>
+                        <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차이점 비교표 -->
+            <div class="mt-8 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+                <table class="w-full text-center">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700">
+                            <th class="py-3 px-4 border-b border-gray-200 w-1/3">마법 종류</th>
+                            <th class="py-3 px-4 border-b border-gray-200 w-1/3">원래 있던 파일은?</th>
+                            <th class="py-3 px-4 border-b border-gray-200 w-1/3">새로운 곳에 파일은?</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-800 font-medium">
+                        <tr>
+                            <td class="py-4 px-4 border-b border-gray-200 text-secondary font-bold flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> 복사</td>
+                            <td class="py-4 px-4 border-b border-gray-200">그대로 남아있어요 🙆‍♂️</td>
+                            <td class="py-4 px-4 border-b border-gray-200 text-blue-600">쌍둥이가 생겨요! ✌️</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-4 text-accent font-bold flex items-center justify-center gap-2"><i data-lucide="scissors" class="w-4 h-4"></i> 잘라내기</td>
+                            <td class="py-4 px-4">싹 사라져요 🙅‍♀️</td>
+                            <td class="py-4 px-4 text-red-600">이사 와서 나타나요! 🚚</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 클립보드 설명 박스 추가 -->
+            <div class="bg-purple-50 border border-purple-200 rounded-2xl p-5 mt-8 flex flex-col md:flex-row gap-5 items-center shadow-inner">
+                <div class="bg-white p-4 rounded-full shadow-sm shrink-0 border border-purple-100 animate-bounce-slow">
+                    <i data-lucide="clipboard-list" class="w-8 h-8 text-purple-500"></i>
+                </div>
+                <div>
+                    <h4 class="font-black text-lg text-purple-800 mb-2">🤫 컴퓨터의 비밀 주머니, '클립보드(Clipboard)'</h4>
+                    <p class="text-gray-700 font-medium leading-relaxed">
+                        복사하거나 잘라낸 파일은 어디로 갈까요? 바로 다른 곳에 짠! 하고 나타나지 않죠?<br>
+                        컴퓨터는 우리가 <b class="text-success">'붙여넣기'</b>를 할 때까지 파일을 잃어버리지 않게 기억하려고 <b>'클립보드'</b>라는 보이지 않는 투명 주머니에 잠시 보관해 둔답니다!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [연습 1] 복사 연습 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-4">
+                <span class="bg-blue-100 text-secondary w-10 h-10 rounded-full flex items-center justify-center font-black">연습1</span>
+                바탕화면에서 쌍둥이 만들기 (복사)
+            </h3>
+            <p class="text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 font-medium">
+                1. <b>[강아지.jpg]</b> 파일을 마우스 오른쪽 버튼으로 클릭 ➔ <b class="text-secondary">복사</b> 선택<br>
+                2. 비어있는 파란색 <b>바탕화면</b> 아무 곳이나 우클릭 ➔ <b class="text-success">붙여넣기</b> 선택
+            </p>
+
+            <div id="desktop-1" class="relative w-full h-[300px] bg-desktop rounded-2xl shadow-inner border-[6px] border-gray-800 overflow-hidden select-none cursor-crosshair">
+                <!-- 파일 컨테이너 -->
+                <div id="files-1" class="p-4 flex gap-4 flex-wrap">
+                    <!-- 원본 파일 -->
+                    <div class="virtual-file flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer w-20" oncontextmenu="handleRightClick1(event, 'file', '강아지.jpg')">
+                        <div class="w-12 h-12 bg-white/90 rounded-xl shadow-md border-2 border-secondary flex items-center justify-center pointer-events-none">
+                            <i data-lucide="dog" class="w-6 h-6 text-secondary"></i>
+                        </div>
+                        <span class="font-bold text-white text-xs text-shadow text-center pointer-events-none">강아지.jpg</span>
+                    </div>
+                </div>
+
+                <!-- 연습 1 성공 메시지 오버레이 -->
+                <div id="success-1" class="hidden absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-40 animate-pop-in">
+                    <div class="bg-white p-6 rounded-2xl text-center shadow-2xl">
+                        <i data-lucide="party-popper" class="w-16 h-16 text-warning mx-auto mb-2 animate-bounce"></i>
+                        <h4 class="text-2xl font-black text-gray-800">연습 1 성공!</h4>
+                        <p class="text-gray-600 mt-2">강아지 쌍둥이가 생겼어요!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [연습 2] 잘라내기 연습 (팝업 윈도우 UI) -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-4">
+                <span class="bg-pink-100 text-accent w-10 h-10 rounded-full flex items-center justify-center font-black">연습2</span>
+                새로운 방으로 이사 가기 (잘라내기)
+            </h3>
+            <p class="text-gray-600 mb-4 bg-pink-50 p-3 rounded-lg border border-pink-100 font-medium">
+                1. <b>[비밀일기.txt]</b> 파일을 우클릭 ➔ <b class="text-accent">잘라내기</b> 선택<br>
+                2. 우측에 열려있는 <b>[내 비밀방] 창 안쪽</b>(하얀 바탕)을 우클릭 ➔ <b class="text-success">붙여넣기</b> 선택
+            </p>
+
+            <div id="desktop-2" class="relative w-full h-[350px] bg-desktop rounded-2xl shadow-inner border-[6px] border-gray-800 overflow-hidden select-none flex">
+                
+                <!-- 왼쪽 바탕화면 영역 -->
+                <div class="flex-1 p-4 relative" id="files-2">
+                    <div id="diary-file" class="virtual-file flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer w-20" oncontextmenu="handleRightClick2(event, 'file', '비밀일기.txt')">
+                        <div class="w-12 h-12 bg-white/90 rounded-xl shadow-md border-2 border-accent flex items-center justify-center pointer-events-none transition-opacity duration-300" id="diary-icon-box">
+                            <i data-lucide="book-lock" class="w-6 h-6 text-accent"></i>
+                        </div>
+                        <span class="font-bold text-white text-xs text-shadow text-center pointer-events-none transition-opacity duration-300" id="diary-text">비밀일기.txt</span>
+                    </div>
+                </div>
+
+                <!-- 오른쪽 폴더 윈도우 창 -->
+                <div class="w-1/2 h-[90%] bg-white rounded-lg shadow-2xl m-auto mr-4 flex flex-col border border-gray-300 overflow-hidden relative" oncontextmenu="handleRightClick2(event, 'folder', null)">
+                    <!-- 창 헤더 -->
+                    <div class="bg-gray-100 px-3 py-2 border-b border-gray-300 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="folder-open" class="w-4 h-4 text-warning"></i>
+                            <span class="text-sm font-bold text-gray-700">내 비밀방</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                    </div>
+                    <!-- 창 내부 (붙여넣기 영역) -->
+                    <div id="folder-content" class="flex-1 p-4 bg-white relative animate-pulse-border border-4 border-transparent">
+                        <p class="text-gray-400 text-sm text-center mt-10 pointer-events-none" id="folder-empty-msg">이 폴더는 비어 있습니다.<br>여기에 붙여넣기 하세요.</p>
+                    </div>
+                </div>
+
+                <!-- 연습 2 성공 메시지 오버레이 -->
+                <div id="success-2" class="hidden absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-40 animate-pop-in">
+                    <div class="bg-white p-6 rounded-2xl text-center shadow-2xl">
+                        <i data-lucide="truck" class="w-16 h-16 text-accent mx-auto mb-2 animate-bounce"></i>
+                        <h4 class="text-2xl font-black text-gray-800">연습 2 성공!</h4>
+                        <p class="text-gray-600 mt-2">비밀일기가 안전하게 이사했어요!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [정리] 퀴즈 타임 -->
+        <section class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                <span class="bg-warning/20 text-warning w-10 h-10 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-6 h-6"></i></span>
+                오늘의 마법 퀴즈!
+            </h3>
+            
+            <div class="space-y-6">
+                <!-- 퀴즈 1 -->
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <p class="text-lg font-bold text-gray-800 mb-3"><span class="text-secondary mr-1">Q1.</span> 파일은 원래 자리에 그대로 두고, 똑같은 파일을 하나 더 만들 때 쓰는 마법은?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(1, 'A', this)" class="quiz-opt-1 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">잘라내기</button>
+                        <button onclick="checkQuiz(1, 'B', this)" class="quiz-opt-1 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">복사하기</button>
+                    </div>
+                    <div id="quiz-feedback-1" class="hidden mt-3 p-2 rounded text-center text-sm font-bold"></div>
+                </div>
+
+                <!-- 퀴즈 2 -->
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <p class="text-lg font-bold text-gray-800 mb-3"><span class="text-secondary mr-1">Q2.</span> 파일을 원래 자리에서 없애고 다른 폴더로 완전히 '이사' 시킬 때 쓰는 마법은?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(2, 'A', this)" class="quiz-opt-2 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">잘라내기</button>
+                        <button onclick="checkQuiz(2, 'B', this)" class="quiz-opt-2 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">붙여넣기</button>
+                    </div>
+                    <div id="quiz-feedback-2" class="hidden mt-3 p-2 rounded text-center text-sm font-bold"></div>
+                </div>
+
+                <!-- 퀴즈 3 -->
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <p class="text-lg font-bold text-gray-800 mb-3"><span class="text-secondary mr-1">Q3.</span> 복사하거나 잘라낸 파일이 '붙여넣기' 될 때까지 잠시 보관되는 투명 주머니의 이름은?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(3, 'A', this)" class="quiz-opt-3 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">클립보드</button>
+                        <button onclick="checkQuiz(3, 'B', this)" class="quiz-opt-3 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">휴지통</button>
+                    </div>
+                    <div id="quiz-feedback-3" class="hidden mt-3 p-2 rounded text-center text-sm font-bold"></div>
+                </div>
+
+                <!-- 퀴즈 4 -->
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <p class="text-lg font-bold text-gray-800 mb-3"><span class="text-secondary mr-1">Q4.</span> 복사나 잘라내기 마법 메뉴를 열려면 마우스의 어떤 버튼을 눌러야 할까요?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(4, 'A', this)" class="quiz-opt-4 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">왼쪽 버튼</button>
+                        <button onclick="checkQuiz(4, 'B', this)" class="quiz-opt-4 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">오른쪽 버튼</button>
+                    </div>
+                    <div id="quiz-feedback-4" class="hidden mt-3 p-2 rounded text-center text-sm font-bold"></div>
+                </div>
+
+                <!-- 퀴즈 5 -->
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <p class="text-lg font-bold text-gray-800 mb-3"><span class="text-secondary mr-1">Q5.</span> '잘라내기'를 하고 새로운 곳에 '붙여넣기'를 하면, 원래 있던 자리에 파일은 어떻게 될까요?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(5, 'A', this)" class="quiz-opt-5 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">그대로 남아있다</button>
+                        <button onclick="checkQuiz(5, 'B', this)" class="quiz-opt-5 quiz-opt bg-white p-3 border border-gray-200 rounded-lg font-bold text-gray-700">싹 사라진다</button>
+                    </div>
+                    <div id="quiz-feedback-5" class="hidden mt-3 p-2 rounded text-center text-sm font-bold"></div>
+                </div>
+            </div>
+            
+            <!-- 최종 축하 메시지 -->
+            <div id="quiz-success-msg" class="hidden mt-8 text-center bg-yellow-100/50 p-6 rounded-2xl border border-primary animate-fade-in-up">
+                <i data-lucide="award" class="w-16 h-16 text-warning mx-auto mb-3 animate-bounce"></i>
+                <h4 class="text-2xl font-black text-yellow-800 mb-2">훌륭해요! 복사 붙여넣기 마스터! 🎓</h4>
+                <p class="text-gray-700 font-medium">이제 파일 관리는 문제없어요!</p>
+            </div>
+        </section>
+
+        <!-- [실제 컴퓨터 실습] -->
+        <section class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-sm border border-green-100 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none pointer-events-none">💻</div>
+            <h3 class="text-2xl font-black text-green-800 flex items-center gap-3 mb-4">
+                🚀 진짜 컴퓨터에서 실습해 보기!
+            </h3>
+            <p class="text-green-900 font-medium mb-6 text-lg">
+                오늘 배운 마법을 <b>진짜 컴퓨터</b>에서 직접 사용해 보세요!<br>아래 미션을 순서대로 완료하고 체크해 보세요.
+            </p>
+            
+            <div class="space-y-3 relative z-10">
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-green-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-green-700 transition-colors">1. 메모장에 간단한 글을 적고 <span class="text-secondary">'복사'</span>해서 여러 번 <span class="text-success">'붙여넣기'</span> 해보기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-green-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-green-700 transition-colors">2. 바탕화면에 새 폴더를 만들고, 텍스트 파일을 <span class="text-accent">'잘라내기'</span>로 폴더 안에 이사하기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-green-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-green-700 transition-colors">3. 연습이 끝난 파일과 폴더를 마우스 우클릭하여 <span class="text-gray-500">'삭제'</span>하기</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-green-50 transition-colors border border-gray-100 group">
+                    <input type="checkbox" class="w-6 h-6 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                    <span class="text-lg font-bold text-gray-700 group-hover:text-green-700 transition-colors">4. 바탕화면의 휴지통을 우클릭하여 '휴지통 비우기'로 완전 청소하기 🗑️</span>
+                </label>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 공유 우클릭 컨텍스트 메뉴 -->
+    <div id="context-menu">
+        <div id="context-menu-list" class="flex flex-col"></div>
+    </div>
+
+    <script>
+        // 아이콘 초기화
+        lucide.createIcons();
+
+        // 전역 상태
+        let clipboard1 = null; // 연습 1용 { type, fileName }
+        let clipboard2 = null; // 연습 2용 { type, fileName }
+        const contextMenu = document.getElementById('context-menu');
+        const contextMenuList = document.getElementById('context-menu-list');
+
+        // 문서 전체 클릭 시 메뉴 닫기
+        document.addEventListener('click', () => {
+            closeContextMenu();
+            // 선택 효과 제거
+            document.querySelectorAll('.virtual-file').forEach(el => el.classList.remove('ring-4', 'ring-white/50'));
+        });
+
+        function closeContextMenu() {
+            contextMenu.style.display = 'none';
+        }
+
+        function showMenu(e, items, targetDesktopId) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            contextMenuList.innerHTML = '';
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'context-item';
+                div.innerHTML = `<i data-lucide="${item.icon}" class="w-4 h-4 ${item.color}"></i> ${item.label}`;
+                div.onclick = (event) => {
+                    event.stopPropagation();
+                    closeContextMenu();
+                    item.action();
+                };
+                contextMenuList.appendChild(div);
+            });
+            
+            lucide.createIcons();
+            
+            const desktop = document.getElementById(targetDesktopId);
+            const rect = desktop.getBoundingClientRect();
+            // 화면 절대 좌표 계산
+            let menuX = e.clientX + window.scrollX;
+            let menuY = e.clientY + window.scrollY;
+            
+            contextMenu.style.left = menuX + 'px';
+            contextMenu.style.top = menuY + 'px';
+            contextMenu.style.display = 'block';
+        }
+
+        // --------------------------------------------------
+        // [연습 1] 복사 연습 로직
+        // --------------------------------------------------
+        function handleRightClick1(e, targetType, fileName) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (targetType === 'file') {
+                // 파일 선택 시각 효과
+                document.querySelectorAll('#files-1 .virtual-file').forEach(el => el.classList.remove('ring-4', 'ring-white/50'));
+                e.currentTarget.classList.add('ring-4', 'ring-white/50');
+
+                showMenu(e, [
+                    { label: '복사', icon: 'copy', color: 'text-secondary', action: () => clipboard1 = { type: 'copy', fileName } }
+                ], 'desktop-1');
+            }
+        }
+
+        // 바탕화면 1 배경 우클릭
+        document.getElementById('desktop-1').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (e.target.closest('.virtual-file')) return; // 파일 클릭 시 무시
+
+            if (clipboard1 && clipboard1.type === 'copy') {
+                showMenu(e, [
+                    { label: '붙여넣기', icon: 'clipboard-paste', color: 'text-success', action: paste1 }
+                ], 'desktop-1');
+            }
+        });
+
+        function paste1() {
+            if (!clipboard1) return;
+            const container = document.getElementById('files-1');
+            
+            const newFile = document.createElement('div');
+            newFile.className = "virtual-file flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-white/20 transition-colors w-20 animate-pop-in";
+            newFile.innerHTML = `
+                <div class="w-12 h-12 bg-white/90 rounded-xl shadow-md border-2 border-secondary flex items-center justify-center">
+                    <i data-lucide="dog" class="w-6 h-6 text-secondary"></i>
+                </div>
+                <span class="font-bold text-white text-xs text-shadow text-center line-clamp-2">${clipboard1.fileName} - 복사본</span>
+            `;
+            container.appendChild(newFile);
+            lucide.createIcons();
+            
+            clipboard1 = null; // 초기화
+            document.getElementById('success-1').classList.remove('hidden');
+        }
+
+        // --------------------------------------------------
+        // [연습 2] 잘라내기 연습 로직
+        // --------------------------------------------------
+        function handleRightClick2(e, targetType, fileName) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (targetType === 'file') {
+                // 파일 선택 시각 효과
+                e.currentTarget.classList.add('ring-4', 'ring-white/50');
+
+                showMenu(e, [
+                    { label: '잘라내기', icon: 'scissors', color: 'text-accent', action: () => {
+                        clipboard2 = { type: 'cut', fileName };
+                        // 잘라내기 시 흐리게 처리
+                        document.getElementById('diary-icon-box').classList.add('opacity-50');
+                        document.getElementById('diary-text').classList.add('opacity-50');
+                    }}
+                ], 'desktop-2');
+            } else if (targetType === 'folder') {
+                if (clipboard2 && clipboard2.type === 'cut') {
+                    showMenu(e, [
+                        { label: '붙여넣기', icon: 'clipboard-paste', color: 'text-success', action: paste2 }
+                    ], 'desktop-2');
+                }
+            }
+        }
+
+        // 바탕화면 2 빈 배경 우클릭 (아무 반응 없음)
+        document.getElementById('desktop-2').addEventListener('contextmenu', (e) => {
+            if (!e.target.closest('.virtual-file') && !e.target.closest('.w-1\\/2')) {
+                e.preventDefault();
+            }
+        });
+
+        function paste2() {
+            if (!clipboard2) return;
+            
+            // 기존 파일 삭제
+            const oldFile = document.getElementById('diary-file');
+            if(oldFile) oldFile.remove();
+
+            // 폴더 안 내용 업데이트
+            const folderContent = document.getElementById('folder-content');
+            document.getElementById('folder-empty-msg').style.display = 'none';
+            folderContent.classList.remove('animate-pulse-border');
+
+            const newFile = document.createElement('div');
+            newFile.className = "virtual-file flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors w-20 animate-pop-in mt-2 ml-2";
+            newFile.innerHTML = `
+                <div class="w-12 h-12 bg-white rounded-xl shadow border-2 border-accent flex items-center justify-center">
+                    <i data-lucide="book-lock" class="w-6 h-6 text-accent"></i>
+                </div>
+                <span class="font-bold text-gray-700 text-xs text-center">${clipboard2.fileName}</span>
+            `;
+            folderContent.appendChild(newFile);
+            lucide.createIcons();
+            
+            clipboard2 = null;
+            document.getElementById('success-2').classList.remove('hidden');
+        }
+
+        // --------------------------------------------------
+        // [정리] 퀴즈 채점 로직
+        // --------------------------------------------------
+        let qStatus = { 1: false, 2: false, 3: false, 4: false, 5: false };
+
+        function checkQuiz(qNum, choice, btnElement) {
+            const feedback = document.getElementById('quiz-feedback-' + qNum);
+            const allBtns = document.querySelectorAll('.quiz-opt-' + qNum);
+            
+            allBtns.forEach(btn => btn.classList.remove('selected-correct', 'selected-wrong'));
+            feedback.classList.remove('hidden', 'bg-success/10', 'text-success', 'bg-accent/10', 'text-accent');
+            
+            let isCorrect = false;
+            if (qNum === 1 && choice === 'B') isCorrect = true;
+            if (qNum === 2 && choice === 'A') isCorrect = true;
+            if (qNum === 3 && choice === 'A') isCorrect = true;
+            if (qNum === 4 && choice === 'B') isCorrect = true; // 오른쪽 버튼
+            if (qNum === 5 && choice === 'B') isCorrect = true; // 싹 사라진다
+
+            if (isCorrect) {
+                btnElement.classList.add('selected-correct');
+                feedback.innerText = "정답이에요! 🌟";
+                feedback.classList.add('bg-success/10', 'text-success');
+                qStatus[qNum] = true;
+                
+                checkAllQuiz();
+            } else {
+                btnElement.classList.add('selected-wrong');
+                feedback.innerText = "다시 한번 생각해보세요! 💪";
+                feedback.classList.add('bg-accent/10', 'text-accent');
+            }
+        }
+
+        function checkAllQuiz() {
+            if (qStatus[1] && qStatus[2] && qStatus[3] && qStatus[4] && qStatus[5]) {
+                document.getElementById('quiz-success-msg').classList.remove('hidden');
+            }
+        }
+
+        // --------------------------------------------------
+        // [복습] 자음 퀴즈 채점 로직
+        // --------------------------------------------------
+        const reviewInputs = document.querySelectorAll('.review-input');
+        reviewInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const answer = input.getAttribute('data-answer').replace(/\s/g, '').toLowerCase();
+                const val = e.target.value.trim().replace(/\s/g, '').toLowerCase();
+                const card = input.closest('.review-card');
+                const feedback = card.querySelector('.review-feedback');
+                const hintEl = card.querySelector('.initial-hint');
+
+                if (val === answer) {
+                    // 정답 시 스타일 변경
+                    input.classList.remove('border-blue-200', 'border-yellow-200', 'border-pink-200');
+                    input.classList.add('border-transparent', 'text-success');
+                    input.disabled = true;
+                    
+                    card.classList.add('ring-2', 'ring-success/50', 'bg-white');
+                    
+                    if(feedback) feedback.classList.remove('hidden');
+                    if(hintEl) hintEl.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
