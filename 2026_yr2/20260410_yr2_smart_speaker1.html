@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5회차: 인공지능 스피커의 비밀 (데이터 창고)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f5f3ff;
+            user-select: none;
+            font-size: 1.8rem; /* 기본 폰트 사이즈 대폭 상향 */
+            overflow-x: hidden;
+            word-break: keep-all;
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+            min-height: 70vh;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight-purple { border-bottom: 5px solid #a855f7; font-weight: bold; }
+        .highlight-blue { border-bottom: 5px solid #3b82f6; font-weight: bold; }
+        .highlight-green { border-bottom: 5px solid #22c55e; font-weight: bold; }
+        .highlight-orange { border-bottom: 5px solid #f97316; font-weight: bold; }
+        
+        .speaker-box {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            background: #1f2937;
+            border-radius: 40% 40% 10% 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            transition: all 0.4s ease-in-out;
+        }
+
+        .speaker-box.speaking {
+            animation: gentle-pulse 1.5s infinite ease-in-out;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.7), 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .speaker-light {
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #06b6d4;
+            filter: blur(14px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .speaker-light.active {
+            opacity: 0.9;
+            animation: light-blink 1s infinite alternate;
+        }
+
+        @keyframes light-blink {
+            0% { opacity: 0.3; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .chat-bubble {
+            position: relative;
+            background: white;
+            border-radius: 30px;
+            padding: 25px 40px;
+            margin: 25px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            max-width: 95%;
+            text-align: center;
+        }
+
+        .data-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 4px solid transparent;
+        }
+
+        .data-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: white;
+            padding: 20px 48px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.8rem; /* 버튼 사이즈 크게 */
+            box-shadow: 0 6px 15px rgba(124, 58, 237, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-nav.disabled {
+            background: #d1d5db;
+            box-shadow: none;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .btn-back {
+            color: #9ca3af;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+            padding: 10px 20px;
+        }
+
+        .btn-back:hover { color: #4b5563; }
+
+        .progress-container {
+            width: 100%;
+            height: 14px;
+            background: #e9d5ff;
+            border-radius: 7px;
+            margin-bottom: 35px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #a855f7;
+            width: 8.3%;
+            transition: width 0.4s ease-in-out;
+        }
+
+        /* Sound Wave Animation */
+        .wave-container { display: flex; gap: 8px; height: 70px; align-items: center; justify-content: center; }
+        .wave-bar {
+            width: 12px; height: 16px; background: #3b82f6; border-radius: 8px;
+            animation: waveAnim 1s infinite ease-in-out; opacity: 0;
+        }
+        .wave-bar:nth-child(1) { animation-delay: 0.0s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        .wave-container.playing .wave-bar { opacity: 1; }
+        
+        @keyframes waveAnim {
+            0%, 100% { height: 16px; }
+            50% { height: 60px; }
+        }
+
+        /* Float Animation */
+        .float-anim {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); }
+        }
+
+        .sorted-item {
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.5s;
+        }
+
+        /* Keyword highlight animation */
+        .keyword-glow {
+            animation: glowText 1s infinite alternate;
+            background-color: #fef08a;
+            border-radius: 10px;
+            padding: 0 10px;
+            color: #b45309;
+            font-weight: bold;
+        }
+
+        @keyframes glowText {
+            0% { box-shadow: 0 0 8px #fef08a; }
+            100% { box-shadow: 0 0 25px #facc15; }
+        }
+
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-[50px] shadow-2xl p-10 md:p-14 border-[10px] border-purple-100 relative">
+        
+        <!-- 상단 진행바 -->
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <!-- 슬라이드 1: 도입 (인사) -->
+        <div id="slide1" class="slide active">
+            <span class="bg-yellow-100 text-yellow-700 px-6 py-3 rounded-full text-2xl font-bold mb-8">5차시 탐험</span>
+            <h1 class="text-7xl font-bold text-purple-600 mb-10 text-center leading-tight">🎤 인공지능 스피커의 <br>비밀을 찾아라!</h1>
+            <div class="relative mb-10">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Lucky" alt="AI Robot" class="w-56 h-56 drop-shadow-xl">
+            </div>
+            <p class="text-4xl text-center leading-relaxed text-gray-700">
+                안녕! AI 탐험대! <br>
+                우리의 목소리를 알아듣고 척척 대답하는 똑똑한 기계가 있다는 사실,<br>
+                알고 있나요? 오늘 그 놀라운 비밀을 파헤쳐 볼 거예요!
+            </p>
+            <button onclick="nextSlide()" class="btn-nav mt-12">비밀 탐험 시작! ➔</button>
+        </div>
+
+        <!-- 슬라이드 2: AI 스피커란? -->
+        <div id="slide2" class="slide">
+            <h2 class="text-5xl font-bold text-orange-500 mb-10">💡 인공지능 스피커가 뭐예요?</h2>
+            <div class="text-4xl text-center mb-12 text-gray-700 leading-relaxed bg-orange-50 p-10 rounded-[40px] border-4 border-orange-100 w-full">
+                인공지능 스피커는 <span class="highlight-orange">우리의 목소리를 듣고,<br>스스로 생각해서 대답해 주는 똑똑한 물건</span>이에요!<br>
+                인공지능 스피커는 여러 군데 숨어 있어요.
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-10">
+                <div class="bg-white p-8 rounded-3xl border-4 border-gray-200 flex flex-col items-center text-center shadow-md">
+                    <i class="fas fa-satellite-dish text-7xl text-gray-600 mb-6"></i>
+                    <p class="text-3xl font-bold">동그란 스피커</p>
+                    <p class="text-xl text-gray-500 mt-4">"아리아, 노래 틀어줘"</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border-4 border-blue-200 flex flex-col items-center text-center shadow-md">
+                    <i class="fas fa-mobile-alt text-7xl text-blue-500 mb-6"></i>
+                    <p class="text-3xl font-bold">스마트폰 비서</p>
+                    <p class="text-xl text-gray-500 mt-4">"시리야, 알람 맞춰줘"</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl border-4 border-green-200 flex flex-col items-center text-center shadow-md">
+                    <i class="fas fa-tv text-7xl text-green-500 mb-6"></i>
+                    <p class="text-3xl font-bold">스마트 TV</p>
+                    <p class="text-xl text-gray-500 mt-4">"지니야, 만화 틀어줘"</p>
+                </div>
+            </div>
+
+            <p class="text-3xl text-center text-purple-600 font-bold bg-purple-50 p-6 rounded-2xl w-full">
+                이 기계들은 모두 목소리를 알아듣는 '똑같은 비밀'을 가지고 있어요!
+            </p>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button onclick="nextSlide()" class="btn-nav">체험하러 가기 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 3: 체험 (말 걸어보기) -->
+        <div id="slide3" class="slide">
+            <h2 class="text-5xl font-bold text-purple-600 mb-10">1. AI에게 먼저 말을 걸어볼까요?</h2>
+            <div class="chat-bubble">
+                <p id="speakerText" class="text-4xl font-bold text-gray-700">"무엇이든 물어보세요!"</p>
+            </div>
+            
+            <div id="mainSpeaker" class="speaker-box mb-12">
+                <div id="mainLight" class="speaker-light"></div>
+                <i class="fas fa-microphone-alt text-7xl text-white opacity-20"></i>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <button onclick="talkToAI('오늘 날씨 어때?', '오늘은 아주 맑고 화창해요! 소풍 가기 딱 좋은 날씨네요!')" class="p-6 bg-blue-50 hover:bg-blue-100 rounded-3xl border-4 border-blue-200 transition text-left flex items-center gap-5 text-3xl">
+                    <span class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0">1</span>
+                    "오늘 날씨 어때?"
+                </button>
+                <button onclick="talkToAI('웃긴 이야기 해줘', '개미가 이사 갈 때 하는 말은? 정답은, 영차! 하하하!')" class="p-6 bg-green-50 hover:bg-green-100 rounded-3xl border-4 border-green-200 transition text-left flex items-center gap-5 text-3xl">
+                    <span class="bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0">2</span>
+                    "웃긴 이야기 해줘"
+                </button>
+                <button onclick="talkToAI('노래 하나 불러줘', '학교종이 땡땡땡 어서 모이자~ 선생님이 우리를 기다리신다!')" class="p-6 bg-pink-50 hover:bg-pink-100 rounded-3xl border-4 border-pink-200 transition text-left flex items-center gap-5 text-3xl">
+                    <span class="bg-pink-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0">3</span>
+                    "노래 하나 불러줘"
+                </button>
+                <button onclick="talkToAI('안녕 반가워', '안녕하세요! 우리 AI 탐험대와 함께 이야기해서 정말 즐거워요!')" class="p-6 bg-yellow-50 hover:bg-yellow-100 rounded-3xl border-4 border-yellow-200 transition text-left flex items-center gap-5 text-3xl">
+                    <span class="bg-yellow-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0">4</span>
+                    "안녕 반가워"
+                </button>
+            </div>
+
+            <p class="mt-8 text-gray-500 text-xl font-bold">※ 소리가 나지 않으면 기기의 볼륨을 확인해주세요.</p>
+
+            <div class="mt-10 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button onclick="nextSlide()" class="btn-nav">다음으로 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 4: 독립된 호기심 자극 페이지 -->
+        <div id="slide4" class="slide">
+            <h2 class="text-7xl font-bold text-pink-500 mb-12 text-center leading-tight">어때요?<br>AI 탐험대 여러분, 신기하지 않나요? ✨</h2>
+            
+            <div class="bg-pink-50 w-full p-14 rounded-[40px] border-4 border-pink-100 text-center flex flex-col items-center shadow-md">
+                <i class="fas fa-question-circle text-9xl text-pink-300 mb-10 animate-bounce"></i>
+                <p class="text-5xl text-gray-800 leading-relaxed mb-8 font-bold">
+                    스피커는 사람처럼 귀도 없는데,<br>
+                    우리의 질문에 <span class="highlight-purple">어떻게 똑똑하게 대답</span>을 할 수 있을까요?
+                </p>
+                <p class="text-4xl text-gray-600">
+                    지금부터 그 놀라운 비밀을 하나씩 찾아 떠나볼까요?
+                </p>
+            </div>
+
+            <div class="mt-14 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button onclick="nextSlide()" class="btn-nav px-12 py-6">첫 번째 비밀 보러 가기 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 5: 원리 1 (소리 듣기) -->
+        <div id="slide5" class="slide">
+            <h2 class="text-5xl font-bold text-blue-600 mb-10">비결 1: 귀 기울여 듣기 (파동)</h2>
+            <p class="text-4xl text-center mb-10">
+                우리가 말을 하면 공기가 떨리면서 <br><span class="highlight-blue">'소리 파동'</span>이 스피커로 전달돼요.
+            </p>
+            
+            <div class="flex items-center justify-center gap-10 my-12 bg-blue-50 p-12 rounded-[40px] w-full border-4 border-blue-100">
+                <div class="text-7xl">🧒</div>
+                <div id="soundWaves" class="wave-container">
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div>
+                </div>
+                <div class="speaker-box w-40 h-40">
+                    <i class="fas fa-microphone-alt text-5xl text-white opacity-50"></i>
+                </div>
+            </div>
+
+            <button onclick="playWave()" class="bg-blue-500 text-white px-10 py-5 rounded-full font-bold hover:bg-blue-600 mb-12 transition text-3xl shadow-lg">
+                소리 보내보기 클릭! 🔈
+            </button>
+
+            <div class="mt-8 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextWave" onclick="nextSlide()" class="btn-nav disabled">다음으로 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 6: 원리 2 (소리를 글자로) -->
+        <div id="slide6" class="slide">
+            <h2 class="text-5xl font-bold text-indigo-600 mb-10">비결 2: 소리를 '글자'로 바꾸기</h2>
+            <p class="text-4xl text-center mb-10">
+                스피커는 소리만으로는 무슨 뜻인지 몰라요.<br>
+                그래서 들은 소리를 <span class="highlight-purple">글자(텍스트)</span>로 번역한답니다!
+            </p>
+            
+            <div class="bg-indigo-50 w-full p-12 rounded-[40px] border-4 border-indigo-100 text-center flex flex-col items-center">
+                <p class="text-2xl text-gray-500 mb-8 font-bold">아래 소리 방울을 클릭해서 글자로 바꿔보세요!</p>
+                <div id="soundBubble" onclick="convertText()" class="cursor-pointer bg-indigo-400 text-white p-10 rounded-[60px] text-5xl font-bold shadow-xl hover:bg-indigo-500 transition mb-10 float-anim">
+                    "오늘 날씨 어때?" 🎵
+                </div>
+                
+                <div id="textBlocks" class="hidden flex gap-4 justify-center mt-8 text-5xl">
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md">오</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md">늘</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md mx-3">날</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md">씨</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md mx-3">어</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-gray-700 shadow-md">때</span>
+                    <span class="bg-white border-4 border-gray-300 px-5 py-4 rounded-2xl font-bold text-indigo-500 shadow-md">?</span>
+                </div>
+            </div>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextText" onclick="nextSlide()" class="btn-nav disabled">다음 단계는? ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 7: 원리 3 (핵심 단어 찾기) -->
+        <div id="slide7" class="slide">
+            <h2 class="text-5xl font-bold text-pink-500 mb-10">비결 3: 글자 속 '핵심 단어' 찾기</h2>
+            <div class="text-4xl text-center mb-10 bg-pink-50 p-8 rounded-[30px] w-full leading-relaxed">
+                소리가 방금 글씨로 바뀌었죠?<br>
+                이제 AI는 <span class="highlight-orange">이 글자들 중에서 가장 중요한 열쇠(단어)</span>를 찾아요!
+            </div>
+            <p class="text-3xl text-center text-gray-600 mb-10 font-bold">
+                질문에서 어떤 단어가 가장 중요할까요? 아래 문장을 클릭해보세요!
+            </p>
+            
+            <div class="bg-white w-full p-12 rounded-[40px] border-4 border-pink-100 text-center flex flex-col items-center min-h-[200px]">
+                <div id="sentenceBox" onclick="extractKeyword()" class="cursor-pointer bg-white border-4 border-pink-200 px-12 py-10 rounded-[30px] text-6xl shadow-lg transition hover:bg-pink-100">
+                    <span class="text-gray-700">"오늘 </span>
+                    <span id="keywordSpan" class="text-gray-700 transition-all duration-500">날씨</span>
+                    <span class="text-gray-700"> 어때?"</span>
+                </div>
+
+                <div id="keywordResult" class="hidden mt-12 text-4xl font-bold text-pink-600 flex flex-col items-center">
+                    <i class="fas fa-key text-6xl mb-4 text-yellow-500 rotate-45"></i>
+                    "맞아요! AI는 <span class="text-5xl bg-yellow-200 px-4 rounded mx-3 text-black">'날씨'</span>라는 열쇠 단어를 찾았어요!"
+                </div>
+            </div>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextKeyword" onclick="nextSlide()" class="btn-nav disabled">열쇠로 뭘 할까? ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 8: 원리 4 (데이터 분류 게임) -->
+        <div id="slide8" class="slide">
+            <h2 class="text-5xl font-bold text-green-600 mb-8">비결 4: 데이터 창고 정리하기</h2>
+            <p class="text-3xl text-center mb-10">
+                AI는 열쇠(단어)를 가지고 <span class="highlight-green">데이터 창고(데이터베이스)</span>로 가요.<br>
+                정답을 잘 찾으려면 창고가 잘 정리되어 있어야 해요! 데이터들을 나누어 볼까요?
+            </p>
+            
+            <!-- 흩어진 데이터들 -->
+            <div class="flex justify-center gap-6 mb-14 h-28">
+                <button onclick="sortItem(this, 'weather')" class="sort-btn bg-white px-6 py-5 rounded-full shadow-lg border-2 border-gray-200 text-3xl font-bold float-anim hover:bg-gray-50">🌞 오늘 맑음</button>
+                <button onclick="sortItem(this, 'music')" class="sort-btn bg-white px-6 py-5 rounded-full shadow-lg border-2 border-gray-200 text-3xl font-bold float-anim hover:bg-gray-50" style="animation-delay: 0.5s">🎵 아기 상어</button>
+                <button onclick="sortItem(this, 'weather')" class="sort-btn bg-white px-6 py-5 rounded-full shadow-lg border-2 border-gray-200 text-3xl font-bold float-anim hover:bg-gray-50" style="animation-delay: 1s">☔ 내일 비</button>
+                <button onclick="sortItem(this, 'music')" class="sort-btn bg-white px-6 py-5 rounded-full shadow-lg border-2 border-gray-200 text-3xl font-bold float-anim hover:bg-gray-50" style="animation-delay: 1.5s">🎶 곰 세마리</button>
+            </div>
+
+            <!-- 데이터 창고 -->
+            <div class="grid grid-cols-2 gap-12 w-full px-12">
+                <div id="box-weather" class="bg-blue-100 p-10 rounded-[30px] text-center border-b-8 border-blue-300 transition-colors">
+                    <i class="fas fa-cloud-sun text-7xl mb-4 text-blue-500"></i><br>
+                    <span class="font-bold text-4xl">날씨 데이터</span>
+                    <div class="mt-4 text-xl text-blue-700 count font-bold">저장됨: 0개</div>
+                </div>
+                <div id="box-music" class="bg-green-100 p-10 rounded-[30px] text-center border-b-8 border-green-300 transition-colors">
+                    <i class="fas fa-music text-7xl mb-4 text-green-500"></i><br>
+                    <span class="font-bold text-4xl">노래 데이터</span>
+                    <div class="mt-4 text-xl text-green-700 count font-bold">저장됨: 0개</div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextSort" onclick="nextSlide()" class="btn-nav disabled">다음으로 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 9: 원리 5 (단어와 데이터 짝지어주기) -->
+        <div id="slide9" class="slide">
+            <h2 class="text-5xl font-bold text-purple-600 mb-10">비결 5: 단어로 데이터 찾기</h2>
+            <p class="text-4xl text-center mb-10">
+                이제 아까 찾은 <span class="bg-yellow-200 px-3 rounded font-bold">열쇠 단어</span>로 창고에서 정답을 꺼내요.<br>
+                아래 돋보기 버튼을 눌러 정답을 찾아보세요!
+            </p>
+            
+            <div class="bg-purple-50 w-full p-12 rounded-[40px] border-4 border-purple-200 text-center flex flex-col items-center">
+                
+                <div class="flex items-center gap-8 text-5xl font-bold mb-12">
+                    <div class="bg-white px-10 py-5 rounded-3xl border-4 border-gray-300 shadow-md text-gray-700">날씨</div>
+                    <i class="fas fa-arrow-right text-purple-400"></i>
+                    <button onclick="fetchData()" id="fetchBtn" class="bg-purple-500 text-white w-24 h-24 rounded-full flex items-center justify-center hover:bg-purple-600 shadow-xl transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <i class="fas fa-arrow-right text-purple-400"></i>
+                    <div id="answerBox" class="bg-gray-200 px-10 py-5 rounded-3xl border-4 border-dashed border-gray-400 text-gray-400 min-w-[180px]">
+                        ?
+                    </div>
+                </div>
+
+                <p id="fetchMsg" class="text-3xl text-purple-700 h-12 font-bold"></p>
+            </div>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextFetch" onclick="nextSlide()" class="btn-nav disabled">직접 해볼까? ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 10: 게임 (정답 찾기) -->
+        <div id="slide10" class="slide">
+            <h2 class="text-5xl font-bold text-orange-500 mb-8">마무리 게임: 짝꿍 데이터 찾기</h2>
+            <p class="text-3xl mb-10 text-gray-600 text-center font-bold">우리 AI 탐험대가 직접 인공지능이 되어서, <br>질문에 딱 맞는 카드를 골라주세요!</p>
+            
+            <div id="gameBox" class="w-full bg-orange-50 p-10 rounded-[40px] border-4 border-orange-200 mb-10 min-h-[160px] flex items-center justify-center">
+                <p id="gameQuestion" class="text-5xl font-bold text-orange-800">질문: "지금 몇 시예요?"</p>
+            </div>
+
+            <div id="cardContainer" class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
+                <!-- 카드들 -->
+                <div onclick="checkGame(0)" class="data-card bg-white p-6 rounded-[30px] border-4 border-gray-200 flex flex-col items-center text-center">
+                    <i class="fas fa-apple-alt text-6xl text-red-400 mb-4"></i>
+                    <span class="text-2xl font-bold">사과 칼로리<br>데이터</span>
+                </div>
+                <div onclick="checkGame(1)" class="data-card bg-white p-6 rounded-[30px] border-4 border-gray-200 flex flex-col items-center text-center">
+                    <i class="fas fa-clock text-6xl text-blue-400 mb-4"></i>
+                    <span class="text-2xl font-bold">현재 시간<br>데이터</span>
+                </div>
+                <div onclick="checkGame(2)" class="data-card bg-white p-6 rounded-[30px] border-4 border-gray-200 flex flex-col items-center text-center">
+                    <i class="fas fa-paw text-6xl text-orange-400 mb-4"></i>
+                    <span class="text-2xl font-bold">강아지 소리<br>데이터</span>
+                </div>
+                <div onclick="checkGame(3)" class="data-card bg-white p-6 rounded-[30px] border-4 border-gray-200 flex flex-col items-center text-center">
+                    <i class="fas fa-umbrella text-6xl text-indigo-400 mb-4"></i>
+                    <span class="text-2xl font-bold">내일 비 소식<br>데이터</span>
+                </div>
+            </div>
+
+            <p id="gameFeedback" class="mt-10 text-4xl font-bold h-12 text-center"></p>
+
+            <div class="mt-10 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="gameNextBtn" onclick="nextSlide()" class="btn-nav disabled">마지막 퀴즈로! ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 11: 퀴즈 (정리) -->
+        <div id="slide11" class="slide">
+            <h2 class="text-5xl font-bold text-purple-600 mb-10">최종 점검! 핵심 퀴즈 (<span id="quizProgress">1</span>/5)</h2>
+            
+            <div class="space-y-10 w-full">
+                <div class="bg-gray-50 p-10 rounded-[40px] border-4 border-purple-100 min-h-[350px] flex flex-col justify-center">
+                    <p id="quizQText" class="text-4xl font-bold mb-10 text-center leading-relaxed"></p>
+                    <div class="grid grid-cols-2 gap-6 w-full">
+                        <button onclick="checkDynamicQuiz(0)" id="quizOpt0" class="w-full p-8 bg-white border-4 border-gray-200 rounded-[30px] hover:bg-purple-50 transition text-center font-bold text-4xl shadow-sm break-keep"></button>
+                        <button onclick="checkDynamicQuiz(1)" id="quizOpt1" class="w-full p-8 bg-white border-4 border-gray-200 rounded-[30px] hover:bg-purple-50 transition text-center font-bold text-4xl shadow-sm break-keep"></button>
+                    </div>
+                    <div id="dynamicQuizFeedback" class="mt-8 text-4xl font-bold h-12 text-center"></div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex items-center gap-8">
+                <button onclick="prevSlide()" class="btn-back">뒤로</button>
+                <button id="btnNextQuiz" onclick="nextSlide()" class="btn-nav disabled">마무리하기 ➔</button>
+            </div>
+        </div>
+
+        <!-- 슬라이드 12: 마무리 및 다음 차시 예고 -->
+        <div id="slide12" class="slide">
+            <h2 class="text-6xl font-bold text-purple-600 mb-10 text-center">탐험 완료! AI 탐험대 참 잘했어요! ✨</h2>
+            
+            <div class="flex justify-center mb-10">
+                <i class="fas fa-medal text-9xl text-yellow-500 animate-bounce"></i>
+            </div>
+            
+            <div class="text-4xl text-center space-y-8 text-gray-700 bg-yellow-50 p-12 rounded-[40px] border-4 border-yellow-200 w-full mb-12">
+                <p class="font-bold text-5xl mb-8 text-orange-600">🚀 다음 시간에는?</p>
+                <p>우리 AI 탐험대가 직접 인공지능이 되어 <br><span class="highlight-green">'역할극 놀이'</span>를 해볼 거예요!</p>
+                <div class="flex flex-wrap justify-center gap-6 mt-8 text-3xl">
+                    <span class="bg-white px-6 py-4 rounded-2xl border-4 shadow-md font-bold">🙋 질문하는 사람</span>
+                    <span class="bg-white px-6 py-4 rounded-2xl border-4 shadow-md font-bold">🤖 인공지능</span>
+                    <span class="bg-white px-6 py-4 rounded-2xl border-4 shadow-md font-bold">📦 데이터 창고</span>
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="btn-nav px-12 py-6">처음부터 다시 보기 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 12;
+        
+        // Slide 8 variables
+        let sortedCount = 0;
+        let weatherCount = 0;
+        let musicCount = 0;
+
+        // Slide 10 variables
+        let gameStep = 0;
+        const gameData = [
+            { q: "질문: '지금 몇 시예요?'", a: 1 },
+            { q: "질문: '내일 비 올까요?'", a: 3 },
+            { q: "질문: '멍멍 소리 내줘!'", a: 2 }
+        ];
+
+        // Slide 11 variables
+        let currentQuizIndex = 0;
+        let isQuizAnimating = false;
+        const quizzes = [
+            { q: "Q1. 우리가 말을 할 때 스피커로 전달되는 떨림을 무엇이라고 하나요?", opts: ["① 소리 파동", "② 지진"], ans: 0 },
+            { q: "Q2. 스피커가 소리의 뜻을 알아내기 위해 무엇으로 바꿀까요?", opts: ["① 그림 (이미지)", "② 글자 (텍스트)"], ans: 1 },
+            { q: "Q3. \"오늘 날씨 어때?\"라는 질문에서 AI가 찾는 가장 중요한 열쇠는?", opts: ["① 비밀번호", "② 핵심 단어"], ans: 1 },
+            { q: "Q4. 수많은 정보를 잘 찾을 수 있게 종류별로 잘 모아둔 '비밀 상자'의 이름은?", opts: ["① 데이터 창고", "② 장난감 상자"], ans: 0 },
+            { q: "Q5. 데이터 창고에서 찾은 정답을 우리에게 어떻게 알려줄까요?", opts: ["① 춤을 춘다", "② 소리로 말해준다"], ans: 1 }
+        ];
+
+        // 소리 내기 함수 (Web Speech API) - 3번 슬라이드(체험)에서만 사용
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                utterance.pitch = 1.2;
+                utterance.rate = 1.0;
+                
+                const speaker = document.getElementById('mainSpeaker');
+                const light = document.getElementById('mainLight');
+                
+                if (speaker && light) {
+                    utterance.onstart = () => {
+                        speaker.classList.add('speaking');
+                        light.classList.add('active');
+                    };
+                    utterance.onend = () => {
+                        speaker.classList.remove('speaking');
+                        light.classList.remove('active');
+                    };
+                }
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function updateProgress() {
+            const prog = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = prog + '%';
+        }
+
+        function showSlide(n) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide' + n).classList.add('active');
+            currentSlide = n;
+            updateProgress();
+            
+            // 다른 슬라이드로 갈 때 음성 멈추기
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) showSlide(currentSlide - 1);
+        }
+
+        // 슬라이드 3: 대화 (TTS 사용)
+        function talkToAI(q, a) {
+            document.getElementById('speakerText').innerText = q;
+            setTimeout(() => {
+                document.getElementById('speakerText').innerText = a;
+                speak(a);
+            }, 600);
+        }
+
+        // 슬라이드 5: 파동 애니메이션
+        function playWave() {
+            const waves = document.getElementById('soundWaves');
+            waves.classList.add('playing');
+            document.getElementById('btnNextWave').classList.remove('disabled');
+            
+            setTimeout(() => {
+                waves.classList.remove('playing');
+            }, 2000);
+        }
+
+        // 슬라이드 6: 소리 -> 텍스트 변환
+        function convertText() {
+            const bubble = document.getElementById('soundBubble');
+            const textBlocks = document.getElementById('textBlocks');
+            
+            bubble.classList.add('hidden');
+            textBlocks.classList.remove('hidden');
+            document.getElementById('btnNextText').classList.remove('disabled');
+        }
+
+        // 슬라이드 7: 핵심 단어 추출
+        function extractKeyword() {
+            const span = document.getElementById('keywordSpan');
+            const result = document.getElementById('keywordResult');
+            
+            span.classList.add('keyword-glow');
+            result.classList.remove('hidden');
+            document.getElementById('btnNextKeyword').classList.remove('disabled');
+        }
+
+        // 슬라이드 8: 데이터 분류
+        function sortItem(btn, type) {
+            btn.classList.add('sorted-item');
+            sortedCount++;
+            
+            if(type === 'weather') {
+                weatherCount++;
+                document.querySelector('#box-weather .count').innerText = `저장됨: ${weatherCount}개`;
+                document.getElementById('box-weather').classList.add('bg-blue-200');
+                setTimeout(()=> document.getElementById('box-weather').classList.remove('bg-blue-200'), 300);
+            } else {
+                musicCount++;
+                document.querySelector('#box-music .count').innerText = `저장됨: ${musicCount}개`;
+                document.getElementById('box-music').classList.add('bg-green-200');
+                setTimeout(()=> document.getElementById('box-music').classList.remove('bg-green-200'), 300);
+            }
+
+            if(sortedCount === 4) {
+                document.getElementById('btnNextSort').classList.remove('disabled');
+            }
+        }
+
+        // 슬라이드 9: 데이터 가져오기 (단어 매칭)
+        function fetchData() {
+            const btn = document.getElementById('fetchBtn');
+            const msg = document.getElementById('fetchMsg');
+            const ans = document.getElementById('answerBox');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            msg.innerText = "날씨 데이터에서 정답을 찾는 중...";
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-search"></i>';
+                msg.innerText = "야호! 정답을 찾았어요!";
+                ans.innerHTML = '🌞 맑음';
+                ans.classList.remove('bg-gray-200', 'text-gray-400', 'border-dashed');
+                ans.classList.add('bg-yellow-100', 'text-yellow-600', 'border-yellow-400', 'font-bold');
+                
+                document.getElementById('btnNextFetch').classList.remove('disabled');
+            }, 1500);
+        }
+
+        // 슬라이드 10: 정답 찾기 게임
+        function checkGame(idx) {
+            const feedback = document.getElementById('gameFeedback');
+            const questionEl = document.getElementById('gameQuestion');
+            const nextBtn = document.getElementById('gameNextBtn');
+
+            if (idx === gameData[gameStep].a) {
+                feedback.innerText = "딩동댕! 잘 찾았어요! 🎈";
+                feedback.className = "mt-10 text-4xl font-bold text-green-500 h-12 text-center";
+                
+                gameStep++;
+                if (gameStep < gameData.length) {
+                    setTimeout(() => {
+                        questionEl.innerText = gameData[gameStep].q;
+                        feedback.innerText = "";
+                    }, 1500);
+                } else {
+                    feedback.innerText = "미션 성공! 데이터 마스터예요! 🏆";
+                    nextBtn.classList.remove('disabled');
+                }
+            } else {
+                feedback.innerText = "음... 다른 창고를 찾아볼까요? 🤔";
+                feedback.className = "mt-10 text-4xl font-bold text-red-500 h-12 text-center";
+            }
+        }
+
+        // 슬라이드 11: 동적 퀴즈
+        function checkDynamicQuiz(selectedIdx) {
+            if(isQuizAnimating) return;
+
+            const feedback = document.getElementById('dynamicQuizFeedback');
+            const btn0 = document.getElementById('quizOpt0');
+            const btn1 = document.getElementById('quizOpt1');
+            const currentQ = quizzes[currentQuizIndex];
+
+            btn0.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+            btn1.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+
+            if (selectedIdx === currentQ.ans) {
+                isQuizAnimating = true;
+                const selectedBtn = selectedIdx === 0 ? btn0 : btn1;
+                selectedBtn.classList.add('bg-green-100', 'border-green-500');
+                feedback.innerText = "정답이에요! 참 잘했어요! 🎉";
+                feedback.className = "mt-8 text-4xl font-bold text-green-600 text-center h-12";
+
+                setTimeout(() => {
+                    currentQuizIndex++;
+                    if (currentQuizIndex < quizzes.length) {
+                        loadQuiz();
+                    } else {
+                        feedback.innerText = "모든 퀴즈를 통과했어요! 대단해요! 🏆";
+                        document.getElementById('btnNextQuiz').classList.remove('disabled');
+                    }
+                    isQuizAnimating = false;
+                }, 1500);
+            } else {
+                const selectedBtn = selectedIdx === 0 ? btn0 : btn1;
+                selectedBtn.classList.add('bg-red-100', 'border-red-500');
+                feedback.innerText = "다시 한번 생각해볼까요? 💪";
+                feedback.className = "mt-8 text-4xl font-bold text-red-500 text-center h-12";
+            }
+        }
+
+        function loadQuiz() {
+            const currentQ = quizzes[currentQuizIndex];
+            document.getElementById('quizProgress').innerText = currentQuizIndex + 1;
+            document.getElementById('quizQText').innerText = currentQ.q;
+            
+            const btn0 = document.getElementById('quizOpt0');
+            const btn1 = document.getElementById('quizOpt1');
+            btn0.innerText = currentQ.opts[0];
+            btn1.innerText = currentQ.opts[1];
+
+            btn0.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+            btn1.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+            document.getElementById('dynamicQuizFeedback').innerText = "";
+        }
+        
+        // 초기화
+        loadQuiz();
+        updateProgress();
+    </script>
+</body>
+</html>
