@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아기 돼지 삼형제와 개인정보 보호</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #fff9eb;
+            font-size: 1.4rem;
+            color: #4a3728;
+            line-height: 1.6;
+        }
+        .container-box {
+            background: white;
+            border-radius: 40px;
+            border: 6px solid #ffca28;
+            box-shadow: 0 10px 0 #ffca28;
+        }
+        .input-box {
+            border: 3px solid #ffb74d;
+            border-radius: 15px;
+            padding: 5px 15px;
+            width: 150px;
+            text-align: center;
+            font-family: 'Gaegu', cursive;
+            font-size: 1.5rem;
+            outline: none;
+        }
+        .input-box:focus {
+            background-color: #fff3e0;
+            border-color: #f57c00;
+        }
+        .word-btn {
+            background: #ffe0b2;
+            border: 2px solid #fb8c00;
+            padding: 2px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #e65100;
+            font-weight: bold;
+        }
+        .word-btn:hover {
+            background: #ffcc80;
+            transform: scale(1.05);
+        }
+        .correct-text { color: #43a047; font-weight: bold; }
+        .wrong-text { color: #e53935; }
+        .band-badge {
+            transition: all 0.5s ease-out;
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+        .band-active {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .pop-effect {
+            animation: pop 0.5s ease-out;
+        }
+        /* Typing Game Styles */
+        #typingDisplay {
+            font-size: 3.5rem;
+            color: #ff7043;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <!-- Header -->
+    <header class="text-center mb-12">
+        <h1 class="text-5xl md:text-6xl text-orange-600 font-bold mb-4">🐷 돼지 삼형제와 지킴 밴드 🩹</h1>
+        <div class="bg-white inline-block px-6 py-2 rounded-full border-4 border-orange-200 shadow-sm">
+            <p class="text-2xl text-orange-800">늑대에게 정보를 흘리던 돼지들이 이제는 똑똑해졌대요!</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto space-y-16">
+
+        <!-- Activity 1: Story Review with Typing -->
+        <section class="container-box p-8">
+            <h2 class="text-4xl text-orange-500 mb-6 font-bold">1. 이야기 주머니를 열어봐요! 📖</h2>
+            <p class="mb-8 text-2xl">늑대가 어떻게 돼지들을 찾아냈는지 기억나나요? <br><span class="text-orange-600 italic">빈칸에 알맞은 단어를 쓰고 확인 버튼을 눌러보세요!</span></p>
+            
+            <div class="grid grid-cols-1 gap-10">
+                <!-- First Pig -->
+                <div class="bg-yellow-50 p-6 rounded-3xl border-4 border-yellow-200 flex flex-col md:flex-row items-center gap-6">
+                    <div class="text-7xl">🏠</div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-yellow-700 mb-2">첫째 돼지는 무엇을 실수했을까요?</h3>
+                        <p class="text-xl mb-4 text-gray-700">첫째 돼지는 예쁜 집을 자랑하고 싶어서 <span class="text-blue-600 font-bold">SNS</span>에 글을 올렸어요. <br>"우리 집 <input type="text" id="q1" class="input-box" placeholder="ㅈㅅ">는 정보줄줄 섬 1번길이야!"</p>
+                        <div class="flex gap-2">
+                            <button onclick="checkInput('q1', '주소')" class="bg-yellow-400 px-6 py-2 rounded-xl font-bold hover:bg-yellow-500">확인하기</button>
+                            <p id="res1" class="mt-2 font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Pig -->
+                <div class="bg-blue-50 p-6 rounded-3xl border-4 border-blue-200 flex flex-col md:flex-row items-center gap-6">
+                    <div class="text-7xl">🪵</div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-blue-700 mb-2">둘째 돼지는 방송에서 뭐라고 했나요?</h3>
+                        <p class="text-xl mb-4 text-gray-700">둘째 돼지는 <span class="text-blue-600 font-bold">인터넷 방송</span>에서 비밀을 말해버렸어요. <br>"우리 집 <input type="text" id="q2" class="input-box" placeholder="ㅁ">은 나무로 만들어서 아주 약해요!"</p>
+                        <div class="flex gap-2">
+                            <button onclick="checkInput('q2', '문')" class="bg-blue-400 px-6 py-2 rounded-xl font-bold text-white hover:bg-blue-500">확인하기</button>
+                            <p id="res2" class="mt-2 font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third Pig -->
+                <div class="bg-red-50 p-6 rounded-3xl border-4 border-red-200 flex flex-col md:flex-row items-center gap-6">
+                    <div class="text-7xl">🧱</div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-red-700 mb-2">셋째 돼지는 무엇을 했을까요?</h3>
+                        <p class="text-xl mb-4 text-gray-700">셋째 돼지는 이메일을 보낼 때 글자를 잘못 적는 <input type="text" id="q3" class="input-box" placeholder="ㅅㅅ">를 했어요. <br>그래서 나쁜 늑대에게 우리 집 설계도를 보내버렸지요!</p>
+                        <div class="flex gap-2">
+                            <button onclick="checkInput('q3', '실수')" class="bg-red-400 px-6 py-2 rounded-xl font-bold text-white hover:bg-red-500">확인하기</button>
+                            <p id="res3" class="mt-2 font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity 2: Click to Find Personal Info -->
+        <section class="container-box p-8 bg-green-50">
+            <h2 class="text-4xl text-green-600 mb-6 font-bold">2. 숨겨야 할 '진짜 정보'를 클릭해서 지워요! 🔍</h2>
+            <div class="bg-white p-6 rounded-2xl border-2 border-green-200 mb-6">
+                <p class="text-2xl mb-4 leading-relaxed">
+                    아래 문장에 있는 **진짜 이름, 주소, 번호**는 늑대가 알면 안 돼요! <br>
+                    <span class="text-orange-600 font-bold">위험한 진짜 정보들만 콕콕 눌러서 지워줄까요?</span>
+                </p>
+                <div class="flex flex-wrap gap-2 text-3xl p-6 bg-gray-50 rounded-xl justify-center leading-loose" id="wordSearch">
+                    <span>안녕? 나는</span> <span class="word-btn" onclick="hideWord(this)">아기돼지</span><span>야.</span>
+                    <span>우리 집은</span> <span class="word-btn" onclick="hideWord(this)">사과동 1번지</span><span>에 있어.</span>
+                    <span>내 전화번호는</span> <span class="word-btn" onclick="hideWord(this)">010-1234-5678</span><span>이야.</span>
+                    <span>내가 다니는 곳은</span> <span class="word-btn" onclick="hideWord(this)">튼튼초등학교</span><span>란다.</span>
+                </div>
+            </div>
+            <div id="wordMessage" class="text-center text-2xl font-bold text-green-700 min-h-[40px]"></div>
+        </section>
+
+        <!-- Activity 3: Safety Promise Bands -->
+        <section class="container-box p-8 border-blue-300">
+            <h2 class="text-4xl text-blue-500 mb-6 font-bold">3. 우리도 돼지 삼형제처럼 '지킴 밴드'를 차요! 🩹</h2>
+            <p class="text-2xl mb-8">안전한 디지털 생활을 하려면 어떻게 해야 할까요? <br>
+            <span class="text-blue-600">바른 행동을 골라 클릭하면 돼지 삼형제의 팔에 지킴 밴드가 나타나요!</span></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+                <!-- Visual Feedback Area -->
+                <div class="flex flex-col items-center space-y-6">
+                    <div class="flex gap-4">
+                        <div id="badge-1" class="band-badge p-4 bg-yellow-100 rounded-full border-4 border-yellow-300 text-center">
+                            <span class="text-5xl block">🐷</span>
+                            <span class="text-xs font-bold text-yellow-800">첫째</span>
+                        </div>
+                        <div id="badge-2" class="band-badge p-4 bg-blue-100 rounded-full border-4 border-blue-300 text-center">
+                            <span class="text-5xl block">🐷</span>
+                            <span class="text-xs font-bold text-blue-800">둘째</span>
+                        </div>
+                        <div id="badge-3" class="band-badge p-4 bg-red-100 rounded-full border-4 border-red-300 text-center">
+                            <span class="text-5xl block">🐷</span>
+                            <span class="text-xs font-bold text-red-800">셋째</span>
+                        </div>
+                    </div>
+                    <div id="missionBox" class="bg-white px-8 py-4 rounded-3xl shadow-md border-2 border-blue-100 text-center">
+                        <p id="missionText" class="text-2xl font-bold text-blue-500">우리의 정보를 지켜줘! (남은 약속: 4개)</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Area -->
+                <div class="space-y-4" id="promiseContainer">
+                    <!-- Promises will be added here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Bonus: Typing Game -->
+        <section class="container-box p-8 border-purple-300 bg-purple-50">
+            <h2 class="text-4xl text-purple-600 mb-6 font-bold">⌨️ [선물] 아기 돼지 타자 연습</h2>
+            <div class="bg-white p-8 rounded-3xl border-4 border-purple-200 text-center space-y-6">
+                <p class="text-2xl text-gray-600">화면에 나오는 단어를 똑같이 따라 쓰고 **[엔터 Enter]**를 누르세요!</p>
+                
+                <div id="typingDisplay" class="bg-gray-50 rounded-2xl border-2 border-dashed border-purple-300">
+                    준비되셨나요?
+                </div>
+
+                <div class="flex flex-col items-center gap-4">
+                    <input type="text" id="typingInput" class="w-full max-w-md p-4 text-3xl text-center rounded-2xl border-4 border-purple-400 outline-none focus:bg-purple-50" placeholder="여기에 따라 쓰세요" onkeypress="handleTyping(event)">
+                    <div class="flex gap-10 text-2xl font-bold">
+                        <span class="text-purple-600">점수: <span id="typingScore">0</span>점</span>
+                        <span class="text-orange-600">남은 단어: <span id="typingRemain">?</span>개</span>
+                    </div>
+                    <button onclick="startTypingGame()" class="bg-purple-500 text-white px-10 py-3 rounded-full text-2xl font-bold shadow-lg hover:bg-purple-600">게임 시작!</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Step -->
+        <section class="text-center p-12 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-[50px] text-white shadow-2xl">
+            <h2 class="text-4xl font-bold mb-6">"똑똑한 디지털 생활, 약속해요!"</h2>
+            <p class="text-2xl mb-8 leading-relaxed">
+                나의 소중한 정보를 지키는 것은 나의 안전을 지키는 일이에요.<br>
+                누가 정보를 물어보거나 선물을 준다고 하면,<br>
+                <span class="text-yellow-200 font-bold">언제나 부모님께 가장 먼저 말씀드리기로 약속!</span>
+            </p>
+            <div class="bg-white text-indigo-600 inline-block px-12 py-6 rounded-full text-5xl font-bold shadow-lg hover:scale-110 transition cursor-pointer" onclick="celebrate()">
+                지킴이 약속하기! 🤙
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-20 text-center text-gray-400 pb-10">
+        <p>🐷 아기 돼지 삼형제와 함께하는 안전한 인터넷 세상 🐷</p>
+    </footer>
+
+    <script>
+        // Activity 1: Typing check
+        function checkInput(id, answer) {
+            const val = document.getElementById(id).value.trim();
+            const res = document.getElementById('res' + id.slice(1));
+            if (val === answer) {
+                res.innerText = "정답이에요! 참 잘했어요! ⭕";
+                res.className = "mt-2 font-bold correct-text";
+                document.getElementById(id).disabled = true;
+            } else {
+                res.innerText = "다시 한번 생각해볼까요? ❌";
+                res.className = "mt-2 font-bold wrong-text";
+            }
+        }
+
+        // Activity 2: Hide actual personal info
+        let hiddenWords = 0;
+        function hideWord(el) {
+            if (el.style.backgroundColor === "rgb(209, 213, 219)") return; 
+            el.style.backgroundColor = "#d1d5db"; 
+            el.style.color = "#9ca3af";
+            el.style.textDecoration = "line-through";
+            el.style.border = "2px solid #9ca3af";
+            el.style.pointerEvents = "none";
+            hiddenWords++;
+            if (hiddenWords === 4) {
+                document.getElementById('wordMessage').innerText = "우와! 위험한 정보를 모두 지웠어요! 최고예요! 🌟";
+            } else {
+                document.getElementById('wordMessage').innerText = `위험한 정보를 ${hiddenWords}개 지웠어요!`;
+            }
+        }
+
+        // Activity 3: Promises
+        const promiseData = [
+            { text: "나의 휴대폰 번호를 함부로 알려주지 않아요.", safe: true },
+            { text: "우리 집 주소를 댓글로 친구에게 알려줘요.", safe: false },
+            { text: "집이나 학교가 나오는 영상은 찍지 않아요.", safe: true },
+            { text: "공짜 선물을 준다는 글에 정보를 적어요.", safe: false },
+            { text: "글을 올리기 전 누가 볼지 다시 생각해요.", safe: true },
+            { text: "친구의 사진을 허락 없이 인터넷에 올려요.", safe: false },
+            { text: "나와 관련된 개인정보가 있는지 꼭 확인해요.", safe: true }
+        ];
+
+        let safePromisesFound = 0;
+        const totalSafePromises = promiseData.filter(d => d.safe).length;
+
+        function initPromises() {
+            const container = document.getElementById('promiseContainer');
+            promiseData.forEach((item, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white p-4 rounded-2xl shadow-sm border-2 border-blue-100 hover:border-blue-400 transition flex items-center gap-4";
+                btn.innerHTML = `<span class="text-2xl">🩹</span> <span class="text-xl">${item.text}</span>`;
+                btn.onclick = () => {
+                    if (btn.disabled) return;
+                    if (item.safe) {
+                        btn.className = "w-full text-left bg-green-100 p-4 rounded-2xl border-2 border-green-500 flex items-center gap-4";
+                        safePromisesFound++;
+                        updateBadges();
+                        btn.disabled = true;
+                    } else {
+                        btn.className = "w-full text-left bg-red-100 p-4 rounded-2xl border-2 border-red-500 flex items-center gap-4";
+                        setTimeout(() => {
+                            btn.className = "w-full text-left bg-white p-4 rounded-2xl shadow-sm border-2 border-blue-100 flex items-center gap-4";
+                        }, 1000);
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function updateBadges() {
+            const mission = document.getElementById('missionText');
+            if (safePromisesFound >= 1) document.getElementById('badge-1').classList.add('band-active', 'pop-effect');
+            if (safePromisesFound >= 3) document.getElementById('badge-2').classList.add('band-active', 'pop-effect');
+            if (safePromisesFound >= 4) document.getElementById('badge-3').classList.add('band-active', 'pop-effect');
+
+            const remaining = totalSafePromises - safePromisesFound;
+            if (remaining > 0) {
+                mission.innerText = `잘하고 있어요! (남은 약속: ${remaining}개)`;
+            } else {
+                mission.innerText = "와! 돼지 삼형제가 모두 지킴 밴드를 찼어요! 최고!";
+                mission.classList.replace('text-blue-500', 'text-green-600');
+            }
+        }
+
+        // Typing Game Logic
+        const typingWords = [
+            "늑대", "주소", "이름", "학교", "선물", "공짜", "실수", "사진", "밴드", "약속", 
+            "아기돼지", "삼형제", "지킴이", "이메일", "전화번호", "비밀번호", "개인정보"
+        ];
+        let currentWordIndex = 0;
+        let score = 0;
+        let shuffledWords = [];
+
+        function startTypingGame() {
+            shuffledWords = [...typingWords].sort(() => Math.random() - 0.5);
+            currentWordIndex = 0;
+            score = 0;
+            const input = document.getElementById('typingInput');
+            
+            // Re-enable and reset input
+            input.disabled = false;
+            input.value = "";
+            
+            document.getElementById('typingScore').innerText = score;
+            document.getElementById('typingRemain').innerText = shuffledWords.length;
+            
+            showNextWord();
+            input.focus();
+        }
+
+        function showNextWord() {
+            if (currentWordIndex < shuffledWords.length) {
+                document.getElementById('typingDisplay').innerText = shuffledWords[currentWordIndex];
+                document.getElementById('typingRemain').innerText = shuffledWords.length - currentWordIndex;
+            } else {
+                document.getElementById('typingDisplay').innerText = "🎉 대단해요! 모두 완료! 🎉";
+                document.getElementById('typingInput').value = "";
+                document.getElementById('typingInput').disabled = true;
+            }
+        }
+
+        function handleTyping(e) {
+            if (e.key === "Enter") {
+                const input = document.getElementById('typingInput');
+                const target = shuffledWords[currentWordIndex];
+                if (input.value.trim() === target) {
+                    score += 10;
+                    currentWordIndex++;
+                    document.getElementById('typingScore').innerText = score;
+                    input.value = "";
+                    showNextWord();
+                } else {
+                    input.classList.add('ring-4', 'ring-red-400');
+                    setTimeout(() => input.classList.remove('ring-4', 'ring-red-400'), 300);
+                }
+            }
+        }
+
+        function celebrate() {
+            alert("지킴이 약속 완료! 🤙\n오늘 배운 4가지 약속을 꼭 기억하세요!");
+        }
+
+        window.onload = () => {
+            initPromises();
+        };
+    </script>
+</body>
+</html>
