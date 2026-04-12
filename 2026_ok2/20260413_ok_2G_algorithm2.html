@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주수천 거북이의 코딩 모험</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #f0fdf4; /* 연한 초록 배경 */
+            user-select: none; /* 드래그 방지 */
+        }
+        
+        .grid-cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s;
+            position: relative; /* 거북이와 배경을 겹치기 위해 추가 */
+        }
+
+        @media (max-width: 600px) {
+            .grid-cell {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+            }
+        }
+
+        .cmd-btn {
+            transition: transform 0.1s;
+        }
+        .cmd-btn:active {
+            transform: scale(0.9);
+        }
+
+        .turtle-anim {
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* 탭 활성화 스타일 */
+        .tab-active {
+            background-color: #22c55e;
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col">
+
+    <!-- 상단 네비게이션 -->
+    <header class="bg-white shadow-md p-4 z-10 flex flex-wrap gap-2 justify-center">
+        <button onclick="showTab('intro')" id="tab-intro" class="tab-btn px-4 py-2 rounded-full font-bold text-lg tab-active border-2 border-green-500">📖 도입</button>
+        <button onclick="showTab('path')" id="tab-path" class="tab-btn px-4 py-2 rounded-full font-bold text-lg border-2 border-green-500">🚀 1. 최단 경로</button>
+        <button onclick="showTab('debug')" id="tab-debug" class="tab-btn px-4 py-2 rounded-full font-bold text-lg border-2 border-green-500">🐛 2. 디버깅</button>
+        <button onclick="showTab('quiz')" id="tab-quiz" class="tab-btn px-4 py-2 rounded-full font-bold text-lg border-2 border-green-500">🤔 3. 퀴즈</button>
+        <button onclick="showTab('typing')" id="tab-typing" class="tab-btn px-4 py-2 rounded-full font-bold text-lg border-2 border-green-500">⌨️ 4. 타자연습</button>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-grow overflow-auto p-4 flex justify-center pb-20">
+        
+        <!-- 도입 탭 -->
+        <div id="content-intro" class="w-full max-w-3xl flex flex-col items-center justify-center text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-bold text-green-600 mb-4">🐢 주수천 거북이의 코딩 모험!</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full border-4 border-green-200">
+                <p class="text-2xl mb-4">친구들, 저번 시간에 거북이가 보물을 찾도록 도와준 것 기억하죠?</p>
+                <p class="text-2xl mb-4">오늘은 거북이가 더 복잡한 미로에 빠졌어요!</p>
+                <p class="text-2xl text-orange-600 font-bold mb-8">우리가 다시 한번 마우스 마법사가 되어 도와줄까요?</p>
+                <div class="flex justify-center gap-8 text-6xl my-6">
+                    <span class="turtle-anim">🐢</span>
+                    <span>✨</span>
+                    <span>🗺️</span>
+                </div>
+                <button onclick="showTab('path')" class="bg-green-500 hover:bg-green-600 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg transition-transform hover:scale-105">
+                    모험 시작하기!
+                </button>
+            </div>
+        </div>
+
+        <!-- 게임(최단경로/디버깅) 공통 탭 레이아웃 -->
+        <div id="content-game" class="hidden w-full max-w-4xl flex flex-col items-center">
+            
+            <div class="flex justify-between items-center w-full mb-4">
+                <h2 id="mission-title" class="text-2xl md:text-3xl font-bold text-blue-700">미션 제목</h2>
+                <select id="mission-select" onchange="loadMission(this.value)" class="text-xl p-2 rounded-lg border-2 border-blue-300 font-bold outline-none cursor-pointer">
+                    <!-- JS에서 채워짐 -->
+                </select>
+            </div>
+
+            <div class="bg-blue-100 p-4 rounded-xl mb-4 w-full text-center border-2 border-blue-300">
+                <p id="mission-desc" class="text-xl">미션 설명이 들어갑니다.</p>
+                <p id="mission-hint" class="text-lg text-red-500 mt-2 font-bold animate-pulse"></p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 w-full justify-center items-start">
+                
+                <!-- 게임 보드 -->
+                <div class="bg-white p-4 rounded-2xl shadow-lg border-4 border-gray-200">
+                    <div id="grid-board" class="grid gap-1 bg-green-50 p-2 rounded-lg">
+                        <!-- JS에서 격자 생성 -->
+                    </div>
+                </div>
+
+                <!-- 컨트롤 패널 -->
+                <div class="bg-white p-4 rounded-2xl shadow-lg border-4 border-gray-200 w-full md:w-80 flex flex-col">
+                    <h3 class="text-xl font-bold mb-2 text-center text-gray-700">명령어 카드 <span class="text-sm font-normal text-red-500">(클릭해서 지우기 🗑️)</span></h3>
+                    
+                    <!-- 명령어 리스트 (입력된 것들) -->
+                    <div id="command-list" class="flex flex-wrap content-start gap-2 bg-gray-100 p-3 rounded-lg h-40 overflow-y-auto mb-4 border-2 border-gray-300">
+                        <!-- 화살표 추가됨 -->
+                    </div>
+
+                    <!-- 방향키 버튼 -->
+                    <div class="grid grid-cols-3 gap-2 mb-4 w-48 mx-auto">
+                        <div></div>
+                        <button onclick="addCommand('U')" class="cmd-btn bg-blue-500 text-white text-2xl p-3 rounded-lg shadow border-b-4 border-blue-700">⬆️</button>
+                        <div></div>
+                        <button onclick="addCommand('L')" class="cmd-btn bg-blue-500 text-white text-2xl p-3 rounded-lg shadow border-b-4 border-blue-700">⬅️</button>
+                        <button onclick="addCommand('D')" class="cmd-btn bg-blue-500 text-white text-2xl p-3 rounded-lg shadow border-b-4 border-blue-700">⬇️</button>
+                        <button onclick="addCommand('R')" class="cmd-btn bg-blue-500 text-white text-2xl p-3 rounded-lg shadow border-b-4 border-blue-700">➡️</button>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button onclick="resetMission()" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white text-xl font-bold py-3 rounded-lg shadow-md">다시시작</button>
+                        <button id="run-btn" onclick="runCode()" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-3 rounded-lg shadow-md flex items-center justify-center gap-2">
+                            <span>▶️</span> 실행!
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 미션 이동 링크 -->
+            <div id="mission-nav-bottom" class="flex flex-wrap justify-center gap-4 w-full mt-8 pt-6 border-t-2 border-gray-200">
+                <!-- JS에서 동적으로 채워짐 -->
+            </div>
+            
+        </div>
+
+        <!-- 퀴즈 탭 -->
+        <div id="content-quiz" class="hidden w-full max-w-3xl flex flex-col items-center space-y-6">
+            <h2 class="text-4xl font-bold text-purple-600 mb-4">🤔 마법의 단어 퀴즈!</h2>
+            
+            <div id="quiz-container" class="bg-white p-8 rounded-2xl shadow-xl w-full border-4 border-purple-200 relative">
+                <div class="absolute top-4 right-4 text-xl font-bold text-gray-500">문제 <span id="quiz-num">1</span> / 5</div>
+                <h3 id="quiz-question" class="text-3xl mt-4 mb-8 text-center min-h-[80px]">질문이 들어갑니다.</h3>
+                
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- JS에서 버튼 채워짐 -->
+                </div>
+
+                <div id="quiz-result" class="hidden mt-8 text-center">
+                    <p class="text-3xl font-bold mb-4">🎉 퀴즈 완료! 🎉</p>
+                    <p class="text-2xl mb-6 text-purple-600">참 잘했어요! 배운 것을 완벽하게 기억하네요!</p>
+                    <button onclick="showTab('typing')" class="bg-purple-500 hover:bg-purple-600 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg">
+                        타자 연습 하러 가기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 타자 연습 탭 -->
+        <div id="content-typing" class="hidden w-full max-w-2xl flex flex-col items-center space-y-6">
+            <h2 class="text-4xl font-bold text-orange-600 mb-2">⌨️ 낱말 타자 연습</h2>
+            <p class="text-xl text-gray-600 mb-4">오늘 배운 마법의 단어들을 직접 타자로 쳐보세요!</p>
+            
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full border-4 border-orange-200 text-center">
+                <div class="mb-8">
+                    <p class="text-xl text-gray-500 mb-2">따라 쳐보세요:</p>
+                    <p id="target-word" class="text-5xl font-bold text-blue-600 tracking-widest bg-blue-50 py-4 rounded-xl border-2 border-blue-200">최단경로</p>
+                </div>
+                
+                <input type="text" id="typing-input" oninput="checkTyping()" autocomplete="off" placeholder="여기에 입력하세요" 
+                    class="w-full text-center text-4xl p-4 border-4 border-gray-300 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-gray-700 transition-colors">
+                
+                <div class="mt-8 flex justify-between items-center px-4">
+                    <span class="text-xl font-bold text-gray-500">남은 단어: <span id="words-left" class="text-orange-500">6</span>개</span>
+                    <div class="text-3xl" id="typing-feedback"></div>
+                </div>
+            </div>
+
+            <!-- 타자 완료 모달 -->
+            <div id="typing-complete" class="hidden bg-white p-8 rounded-2xl shadow-2xl border-4 border-green-500 text-center w-full">
+                <p class="text-4xl mb-4">🏆</p>
+                <h3 class="text-3xl font-bold text-green-600 mb-4">수업 완료!</h3>
+                <p class="text-xl">오늘 하루 정말 열심히 공부했어요!<br>최고의 꼬마 디버거로 임명합니다!</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 메시지 팝업 (모달) -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl transform scale-110 flex flex-col items-center border-8 border-yellow-400">
+            <div id="modal-icon" class="text-6xl mb-4">🌟</div>
+            <h2 id="modal-title" class="text-3xl font-bold mb-2">성공!</h2>
+            <p id="modal-desc" class="text-xl mb-6 text-gray-600">설명</p>
+            <button onclick="closeModal()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-xl font-bold py-2 px-8 rounded-full shadow">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // === [ 게임 데이터 & 미션 설정 ] ===
+        const MAP_SIZE = 5;
+        const CELL_EMPTY = 0;
+        const CELL_ROCK = 1;
+        const CELL_WATER = 2;
+        const CELL_GOAL = 3;
+
+        const missions = {
+            // [최단경로]
+            m1: {
+                id: 'm1', type: 'path', title: "미션 1: 달콤한 꽃 찾기 🌸",
+                desc: "바위를 피해 꽃으로 가는 길을 찾아요. 바짝 붙어 돌면 화살표 4개로 갈 수 있어요!",
+                hint: "크게 빙 둘러가지 말고, 바위 옆으로 바짝 붙어 최단 경로를 찾아라!",
+                goalIcon: '🌸',
+                start: {x: 0, y: 1}, goal: {x: 3, y: 2},
+                grid: [
+                    [0, 0, 0, 0, 0], // 크게 도는 길
+                    [0, 0, 0, 0, 0], // 출발 (0,1)
+                    [0, 1, 1, 3, 0], // 바위 (1,2), (2,2), 도착 (3,2)
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
+                ],
+                targetCommands: 4,
+                initialCommands: [],
+                explanation: "바위를 위쪽으로 크게 빙~ 둘러가면 화살표가 6개 필요하지만, 바위에 바짝 붙어 이동하면 4개만 써서 가장 빠르게 도착할 수 있어요! 화살표를 제일 적게 쓰는 길이 바로 <b>'최단 경로'</b>랍니다."
+            },
+            m2: {
+                id: 'm2', type: 'path', title: "미션 2: 시원한 그늘 찾기 🌳",
+                desc: "갈림길이에요! 위로 가는 길과 아래로 가는 길 중 화살표를 더 적게 쓰는 지름길을 선택하세요.",
+                hint: "두 길의 길이를 눈으로 세어보고, 어느 길이 더 빠를지 결정해요!",
+                goalIcon: '🌳',
+                start: {x: 0, y: 2}, goal: {x: 4, y: 1},
+                grid: [
+                    [0, 0, 0, 0, 0], // 0번 줄
+                    [0, 0, 0, 0, 3], // 1번 줄: 도착 (4,1)
+                    [0, 1, 1, 1, 0], // 2번 줄: 출발 (0,2). 가운데 바위. 마지막 칸(4,2)을 뚫어서 아랫길을 열어줌!
+                    [0, 0, 0, 0, 0], // 3번 줄: 아래쪽 길
+                    [0, 0, 0, 0, 0]  // 4번 줄
+                ],
+                targetCommands: 5,
+                initialCommands: [],
+                explanation: "위로 가는 길은 화살표가 5개, 아래로 빙 돌아가는 길은 7개가 필요했어요. 화살표를 더 적게 쓴 위쪽 길이 바로 우리의 <b>'지름길(최단 경로)'</b>이 맞습니다!"
+            },
+            m3: {
+                id: 'm3', type: 'path', title: "미션 3: 바위 사이 좁은 틈 💎",
+                desc: "거대한 바위 덩어리 두 개 사이의 좁은 틈(지름길)을 통과한 다음, 위로 꺾어서 보석을 찾으세요!",
+                hint: "바위 사이로 쏙 빠져나간 뒤, 보석이 있는 곳으로 방향을 틀어야 해요!",
+                goalIcon: '💎',
+                start: {x: 0, y: 2}, goal: {x: 4, y: 1},
+                grid: [
+                    [0, 0, 0, 0, 0], // 위쪽으로 크게 빙 둘러가는 길
+                    [0, 1, 1, 1, 3], // 윗 바위 덩어리, 도착(4,1)
+                    [0, 0, 0, 0, 0], // 출발(0,2), 좁은 틈(직진)
+                    [0, 1, 1, 1, 0], // 아랫 바위 덩어리
+                    [0, 0, 0, 0, 0]  // 아래쪽으로 크게 빙 둘러가는 길
+                ],
+                targetCommands: 5,
+                initialCommands: [],
+                explanation: "바위 위쪽으로 크게 빙 둘러서 목적지에 가면 7개의 화살표가 필요해요. 하지만 바위 사이의 좁은 틈을 통과해 위로 꺾어갔더니 5개만으로 도착했어요! 똑똑하게 최단 경로를 찾았네요."
+            },
+            // [디버깅]
+            d1: {
+                id: 'd1', type: 'debug', title: "미션 4: 길을 헤매요 (디버깅) 🗑️",
+                desc: "앗! 누군가 화살표를 잘못 놨어요. 목적지를 지나쳐 허공으로 가는 불필요한 화살표 1개를 클릭해서 지우세요!",
+                hint: "명령어를 하나씩 따라가며 버그(잘못된 잉여 화살표)를 찾아봐요.",
+                goalIcon: '🌸',
+                start: {x: 0, y: 2}, goal: {x: 3, y: 2},
+                grid: [
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 3, 0], // x:3, y:2 도착
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
+                ],
+                targetCommands: 3,
+                initialCommands: ['R', 'R', 'R', 'R'], // R 하나가 잉여
+                explanation: "원래 목적지인 꽃을 지나쳐서 허공으로 계속 가는 오른쪽 화살표가 하나 더 숨어있었네요! 불필요한 명령어를 찾아서 지우는 것이 컴퓨터를 고치는 <b>'디버깅'</b>의 첫걸음이에요."
+            },
+            d2: {
+                id: 'd2', type: 'debug', title: "미션 5: 쿵! 바위를 피해요 💥",
+                desc: "직진만 하다가 바위에 부딪히는 코드가 짜여 있어요! 충돌하게 만드는 화살표를 지우고 방향을 바꿔주세요.",
+                hint: "몇 번째 화살표에서 바위에 부딪히는지 눈여겨보고, 그 화살표를 지워요!",
+                goalIcon: '🌳',
+                start: {x: 0, y: 2}, goal: {x: 3, y: 0},
+                grid: [
+                    [0, 0, 0, 3, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0], // x:2, y:2 직진하면 부딪힘
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
+                ],
+                targetCommands: 5,
+                initialCommands: ['R', 'R', 'R', 'U', 'U'], // 세 번째 R에서 부딪힘
+                explanation: "오른쪽으로 계속 직진만 하다가 쿵! 바위에 부딪힐 뻔했어요. 충돌을 일으키는 버그(잘못된 화살표)를 쏙 빼내고 위로 돌아가게 만들어 주었네요. 멋진 디버깅 실력이에요!"
+            },
+            d3: {
+                id: 'd3', type: 'debug', title: "미션 6: 물에 빠져요! 순서 바꾸기 💧",
+                desc: "'위로 ➔ 오른쪽'으로 가야 하는데 화살표 순서가 바뀌어 물에 빠지는 버그가 있어요. 알맞게 고쳐주세요!",
+                hint: "풍덩! 물에 빠지게 만드는 첫 번째 명령어를 지우고, 방향을 다시 맞춰보세요.",
+                goalIcon: '💎',
+                start: {x: 1, y: 3}, goal: {x: 2, y: 2},
+                grid: [
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 3, 0, 0], // 도착
+                    [0, 0, 2, 0, 0], // x:2, y:3 (오른쪽으로 먼저가면 빠짐)
+                    [0, 0, 0, 0, 0]
+                ],
+                targetCommands: 2,
+                initialCommands: ['R', 'U'], // Swapped.
+                explanation: "오른쪽으로 먼저 이동하면 물웅덩이에 빠져버려요! 화살표가 맞게 들어있더라도 <b>'실행되는 순서'</b>가 틀리면 버그가 생겨요. 순서를 알맞게 고쳐준 꼬마 디버거, 최고예요!"
+            }
+        };
+
+        let currentMissionData = null;
+        let turtle = {x:0, y:0};
+        let commands = [];
+        let isRunning = false;
+
+        const cmdIcons = { 'U': '⬆️', 'D': '⬇️', 'L': '⬅️', 'R': '➡️' };
+
+        // === [ UI 및 탭 관리 ] ===
+        function showTab(tabName) {
+            // 모든 탭 컨텐츠 숨기기
+            document.getElementById('content-intro').classList.add('hidden');
+            document.getElementById('content-game').classList.add('hidden');
+            document.getElementById('content-quiz').classList.add('hidden');
+            document.getElementById('content-typing').classList.add('hidden');
+
+            // 탭 버튼 스타일 초기화
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active', 'bg-green-500', 'text-white');
+                btn.classList.add('text-gray-800');
+            });
+
+            // 선택된 탭 보이기 & 스타일 적용
+            const selectedBtn = document.getElementById(`tab-${tabName}`);
+            selectedBtn.classList.add('tab-active');
+            
+            if (tabName === 'intro') {
+                document.getElementById('content-intro').classList.remove('hidden');
+            } else if (tabName === 'path') {
+                document.getElementById('content-game').classList.remove('hidden');
+                updateMissionSelect('path');
+                loadMission('m1');
+            } else if (tabName === 'debug') {
+                document.getElementById('content-game').classList.remove('hidden');
+                updateMissionSelect('debug');
+                loadMission('d1');
+            } else if (tabName === 'quiz') {
+                document.getElementById('content-quiz').classList.remove('hidden');
+                loadQuiz();
+            } else if (tabName === 'typing') {
+                document.getElementById('content-typing').classList.remove('hidden');
+                startTyping();
+            }
+        }
+
+        function updateMissionSelect(type) {
+            const select = document.getElementById('mission-select');
+            const navBottom = document.getElementById('mission-nav-bottom');
+            
+            select.innerHTML = '';
+            navBottom.innerHTML = ''; // 하단 네비게이션도 초기화
+            
+            for (let key in missions) {
+                if (missions[key].type === type) {
+                    // 상단 드롭다운 옵션 추가
+                    let option = document.createElement('option');
+                    option.value = key;
+                    option.text = missions[key].title.split(':')[0]; // "미션 1" 부분만
+                    select.appendChild(option);
+
+                    // 하단 바로가기 버튼 추가
+                    let btn = document.createElement('button');
+                    btn.className = "bg-green-100 hover:bg-green-500 hover:text-white text-green-800 text-xl font-bold py-2 px-6 rounded-full border-2 border-green-400 shadow-sm transition-all";
+                    btn.innerText = missions[key].title.split(':')[0];
+                    btn.onclick = () => loadMission(key);
+                    navBottom.appendChild(btn);
+                }
+            }
+        }
+
+        // === [ 게임 로직 ] ===
+        function loadMission(missionId) {
+            currentMissionData = missions[missionId];
+            document.getElementById('mission-select').value = missionId;
+            document.getElementById('mission-title').innerText = currentMissionData.title;
+            document.getElementById('mission-desc').innerText = currentMissionData.desc;
+            document.getElementById('mission-hint').innerText = currentMissionData.hint;
+            
+            resetMission();
+        }
+
+        function resetMission() {
+            if (isRunning) return;
+            turtle = { x: currentMissionData.start.x, y: currentMissionData.start.y };
+            commands = [...currentMissionData.initialCommands];
+            renderGrid();
+            renderCommands();
+        }
+
+        function renderGrid() {
+            const board = document.getElementById('grid-board');
+            board.style.gridTemplateColumns = `repeat(${MAP_SIZE}, 1fr)`;
+            board.innerHTML = '';
+
+            for (let y = 0; y < MAP_SIZE; y++) {
+                for (let x = 0; x < MAP_SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.id = `cell-${x}-${y}`;
+                    
+                    let cellVal = currentMissionData.grid[y][x];
+                    let cellContent = '';
+
+                    // 배경 아이템 (바위, 물, 목표)
+                    if (cellVal === CELL_ROCK) {
+                        // 엑스박스 방지를 위해 이모지 대신 CSS로 바위 디자인을 직접 그림
+                        cellContent += `<div class="absolute inset-0 flex items-center justify-center"><div class="w-10 h-10 bg-gray-500 rounded-tl-2xl rounded-tr-md rounded-bl-md rounded-br-2xl shadow-[inset_-2px_-3px_0px_rgba(0,0,0,0.3)] border-2 border-gray-600 relative">
+                            <div class="absolute top-1 left-2 w-3 h-1.5 bg-gray-400 rounded-full opacity-60 transform -rotate-12"></div>
+                        </div></div>`;
+                    }
+                    else if (cellVal === CELL_WATER) {
+                        cellContent += `<div class="absolute inset-0 flex items-center justify-center z-0 text-3xl">💧</div>`;
+                    }
+                    else if (cellVal === CELL_GOAL) {
+                        // 목표 지점은 거북이가 와도 잘 보이게 z-index 0으로 두고 반투명 처리
+                        cellContent += `<div class="absolute inset-0 flex items-center justify-center z-0 text-4xl opacity-70"><div style="transform: scale(0.9);">${currentMissionData.goalIcon}</div></div>`;
+                    }
+
+                    // 거북이는 z-index 10으로 올려서 목표 아이콘과 겹쳐도 보이게 함 (충돌 방지를 위해 감싸는 div 추가)
+                    if (x === turtle.x && y === turtle.y) {
+                        cellContent += `<div class="absolute inset-0 flex items-center justify-center z-10 text-4xl"><div class="turtle-anim">🐢</div></div>`;
+                    }
+
+                    cell.innerHTML = cellContent;
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function addCommand(cmd) {
+            if (isRunning) return;
+            commands.push(cmd);
+            renderCommands();
+        }
+
+        function removeCommand(index) {
+            if (isRunning) return;
+            commands.splice(index, 1);
+            renderCommands();
+        }
+
+        function renderCommands() {
+            const list = document.getElementById('command-list');
+            list.innerHTML = '';
+            commands.forEach((cmd, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-white border-2 border-gray-300 rounded p-2 text-xl shadow-sm hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer';
+                btn.innerText = cmdIcons[cmd];
+                btn.title = "클릭해서 지우기";
+                btn.onclick = () => removeCommand(idx);
+                list.appendChild(btn);
+            });
+            list.scrollTop = list.scrollHeight;
+        }
+
+        async function runCode() {
+            if (isRunning || commands.length === 0) return;
+            isRunning = true;
+            document.getElementById('run-btn').classList.add('opacity-50', 'cursor-not-allowed');
+
+            // 초기 위치로 리셋
+            turtle = { x: currentMissionData.start.x, y: currentMissionData.start.y };
+            renderGrid();
+
+            let success = false;
+            let crash = false;
+            let outOfBounds = false;
+            let drown = false;
+
+            for (let i = 0; i < commands.length; i++) {
+                // UI에서 현재 실행중인 명령어 하이라이트
+                const cmdBtns = document.getElementById('command-list').children;
+                for(let btn of cmdBtns) btn.classList.remove('ring-4', 'ring-green-400', 'bg-green-100');
+                if(cmdBtns[i]) cmdBtns[i].classList.add('ring-4', 'ring-green-400', 'bg-green-100');
+
+                await new Promise(r => setTimeout(r, 400)); // 0.4초 딜레이
+
+                let nextX = turtle.x;
+                let nextY = turtle.y;
+
+                if (commands[i] === 'U') nextY--;
+                else if (commands[i] === 'D') nextY++;
+                else if (commands[i] === 'L') nextX--;
+                else if (commands[i] === 'R') nextX++;
+
+                // 벽 충돌 검사
+                if (nextX < 0 || nextX >= MAP_SIZE || nextY < 0 || nextY >= MAP_SIZE) {
+                    outOfBounds = true;
+                    break;
+                }
+
+                turtle.x = nextX;
+                turtle.y = nextY;
+                renderGrid();
+
+                let cellVal = currentMissionData.grid[turtle.y][turtle.x];
+
+                // 장애물 검사
+                if (cellVal === CELL_ROCK) {
+                    crash = true;
+                    document.getElementById(`cell-${turtle.x}-${turtle.y}`).classList.add('shake', 'bg-red-200');
+                    break;
+                }
+                if (cellVal === CELL_WATER) {
+                    drown = true;
+                    document.getElementById(`cell-${turtle.x}-${turtle.y}`).classList.add('shake', 'bg-blue-200');
+                    break;
+                }
+
+                // 목표 도착
+                if (cellVal === CELL_GOAL) {
+                    success = true;
+                    break; // 도착하면 남은 명령어 무시하고 끝남 (초과 명령어 체크를 위해 뒤에서 검사)
+                }
+            }
+
+            await new Promise(r => setTimeout(r, 300)); // 결과 표시 전 잠시 대기
+
+            // 결과 판정
+            if (crash) {
+                showModal("아야!", "쿵! 바위에 부딪혔어요.<br>디버깅(고치기)이 필요해요!", "💥");
+            } else if (outOfBounds) {
+                showModal("앗!", "지도 밖으로 나가버렸어요. 방향을 다시 확인해볼까요?", "🧭");
+            } else if (drown) {
+                showModal("풍덩!", "물에 빠졌어요. 💧<br>순서가 맞는지 디버깅해봐요!", "🌊");
+            } else if (success) {
+                // 도착은 했으나 잉여 명령어가 남아있는 경우 (디버깅 미션1 등에서 중요)
+                // 최단 경로 미션에서는 목표 화살표 개수 체크
+                if (commands.length > currentMissionData.targetCommands) {
+                    if (currentMissionData.type === 'path') {
+                        showModal("도착은 했지만...", `너무 빙~ 돌아왔어요.<br>더 적은 화살표(${currentMissionData.targetCommands}개 이하)로 가는 <b>'최단 경로'</b>를 찾아보세요!`, "🤔");
+                    } else {
+                        showModal("도착은 했지만...", "필요 없는 화살표가 섞여 있어요.<br>불필요한 명령어를 지우는 '디버깅'을 해주세요!", "🗑️");
+                    }
+                } else {
+                    // 완벽 성공 (해설 추가)
+                    let modalContent = "";
+                    if (currentMissionData.type === 'path') {
+                        modalContent = `<p class="mb-4">가장 빠른 지름길로 도착했어요!<br>정말 멋진 마법사네요!</p>
+                                        <div class="bg-green-100 p-4 rounded-xl text-left border-2 border-green-300 text-lg">
+                                            <span class="font-bold text-green-700">💡 마법사의 해설:</span><br>
+                                            ${currentMissionData.explanation}
+                                        </div>`;
+                        showModal("최단 경로 성공! 🎉", modalContent, "🎉");
+                    } else {
+                        modalContent = `<p class="mb-4">버그를 완벽하게 고쳤어요!<br>최고의 꼬마 디버거입니다!</p>
+                                        <div class="bg-blue-100 p-4 rounded-xl text-left border-2 border-blue-300 text-lg">
+                                            <span class="font-bold text-blue-700">💡 디버거의 해설:</span><br>
+                                            ${currentMissionData.explanation}
+                                        </div>`;
+                        showModal("디버깅 성공! 🛠️", modalContent, "🛠️");
+                    }
+                }
+            } else {
+                showModal("아직 도착하지 못했어요", "명령어가 부족해요. 화살표를 더 놓아주세요!", "🐢");
+            }
+
+            isRunning = false;
+            document.getElementById('run-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function showModal(title, desc, icon) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-desc').innerHTML = desc;
+            document.getElementById('modal-icon').innerHTML = icon;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+        }
+
+        // === [ 퀴즈 로직 ] ===
+        const quizData = [
+            { q: "화살표를 가장 적게 써서 목적지에 도착하는 제일 빠른 지름길을 무엇이라고 부르나요?", opts: ["가장 긴 길", "최단 경로", "느린 경로"], ans: 1 },
+            { q: "거북이가 바위에 부딪히게 만드는 '잘못된 명령어'를 컴퓨터 세상에서는 벌레라는 뜻의 이 단어로 불러요. 무엇일까요?", opts: ["거미", "개미", "버그"], ans: 2 },
+            { q: "틀린 명령어(버그)를 찾아 알맞게 고쳐주는 과정을 무엇이라고 할까요?", opts: ["디버깅(고치기)", "버리기", "숨기기"], ans: 0 },
+            { q: "최단 경로로 목적지에 도착하면, 우리가 사용한 화살표의 개수는 많아질까요, 아니면 적어질까요?", opts: ["많아진다", "적어진다", "똑같다"], ans: 1 },
+            { q: "디버깅(고치기)을 할 때는 화살표를 어떻게 하는 것이 좋을까요?", opts: ["처음부터 다 지우고 다시 한다", "틀린 부분만 찾아 지우고 고친다", "그냥 둔다"], ans: 1 }
+        ];
+        let currentQuizIndex = 0;
+
+        function loadQuiz() {
+            if(currentQuizIndex >= quizData.length) {
+                document.getElementById('quiz-question').classList.add('hidden');
+                document.getElementById('quiz-options').classList.add('hidden');
+                document.getElementById('quiz-num').parentElement.classList.add('hidden');
+                document.getElementById('quiz-result').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-question').classList.remove('hidden');
+            document.getElementById('quiz-options').classList.remove('hidden');
+            document.getElementById('quiz-num').parentElement.classList.remove('hidden');
+
+            const qInfo = quizData[currentQuizIndex];
+            document.getElementById('quiz-num').innerText = currentQuizIndex + 1;
+            document.getElementById('quiz-question').innerText = qInfo.q;
+            
+            const optsContainer = document.getElementById('quiz-options');
+            optsContainer.innerHTML = '';
+            
+            qInfo.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-purple-100 hover:bg-purple-200 border-2 border-purple-300 text-purple-800 text-2xl font-bold py-4 px-6 rounded-xl shadow-sm transition-colors";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (selectedIdx === quizData[currentQuizIndex].ans) {
+                // 정답
+                showModal("정답!", "참 잘했어요!", "⭕");
+                currentQuizIndex++;
+                setTimeout(loadQuiz, 1000); // 1초 뒤 다음 문제
+            } else {
+                // 오답
+                showModal("앗, 아쉬워요", "다시 한번 생각해볼까요?", "❌");
+            }
+        }
+
+        // === [ 타자 연습 로직 ] ===
+        const typingWords = ["최단경로", "디버깅", "화살표", "버그", "고치기", "지름길", "명령어"];
+        let wordsLeft = [...typingWords];
+        let currentWord = "";
+
+        function startTyping() {
+            wordsLeft = [...typingWords];
+            // 섞기
+            wordsLeft.sort(() => Math.random() - 0.5);
+            document.getElementById('typing-complete').classList.add('hidden');
+            document.getElementById('typing-input').disabled = false;
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-input').focus();
+            document.getElementById('typing-feedback').innerText = '';
+            nextTypingWord();
+        }
+
+        function nextTypingWord() {
+            if (wordsLeft.length === 0) {
+                // 타자 끝
+                document.getElementById('target-word').parentElement.classList.add('hidden');
+                document.getElementById('typing-input').classList.add('hidden');
+                document.getElementById('typing-complete').classList.remove('hidden');
+                document.getElementById('words-left').innerText = '0';
+                return;
+            }
+            
+            document.getElementById('target-word').parentElement.classList.remove('hidden');
+            document.getElementById('typing-input').classList.remove('hidden');
+            
+            currentWord = wordsLeft.pop();
+            document.getElementById('target-word').innerText = currentWord;
+            document.getElementById('words-left').innerText = wordsLeft.length + 1;
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-feedback').innerText = '';
+        }
+
+        function checkTyping() {
+            const input = document.getElementById('typing-input');
+            const val = input.value.trim();
+            if (val === currentWord) {
+                document.getElementById('typing-feedback').innerText = '✅ 참 잘했어요!';
+                input.disabled = true; // 한글 입력(IME) 찌꺼기가 남는 현상 방지
+                setTimeout(() => {
+                    nextTypingWord();
+                    input.disabled = false;
+                    input.focus();
+                }, 500); // 0.5초 뒤 다음 단어
+            }
+        }
+
+        // 초기 시작
+        showTab('intro');
+
+    </script>
+</body>
+</html>
