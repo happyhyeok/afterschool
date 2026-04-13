@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엔트리 코딩 교실 - 다람쥐의 각설탕 뺏기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f8fb;
+            color: #333;
+        }
+        
+        /* 탭 애니메이션 */
+        .step-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <!-- 헤더 영역 -->
+    <header class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-12 shadow-md">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">다람쥐의 각설탕 뺏기! 🐿️🧊</h1>
+            <p class="text-lg md:text-xl opacity-90">좌표(X, Y)를 이해하고, 방향키로 노란새를 움직여 각설탕을 획득하는 게임을 만들어보아요.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
+
+        <!-- 1. 좌표 학습 위젯 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">🧭</span> 
+                1. X, Y 좌표 이해하기
+            </h2>
+            <p class="text-gray-600 mb-6 ml-13">
+                엔트리 화면의 크기는 <strong>가로 480, 세로 270</strong>입니다.<br>
+                정중앙 <strong>(0, 0)</strong>을 기준으로 오브젝트가 어디에 있는지 알려주는 주소를 <strong>좌표</strong>라고 해요. 아래 슬라이더를 움직여 좌표의 위치를 직접 확인해보세요!
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-8 items-center bg-gray-50 p-6 rounded-xl">
+                <!-- 시뮬레이터 화면 -->
+                <div class="relative w-full max-w-[400px] aspect-[480/270] bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-inner flex-shrink-0">
+                    <!-- 그리드 라인 -->
+                    <div class="absolute w-full h-[1px] bg-gray-300 top-1/2 -translate-y-1/2"></div>
+                    <div class="absolute h-full w-[1px] bg-gray-300 left-1/2 -translate-x-1/2"></div>
+                    <div class="absolute top-1/2 left-1/2 text-[10px] text-gray-500 mt-1 ml-1 font-bold">(0,0)</div>
+                    
+                    <!-- 타겟 점 -->
+                    <div id="sim-dot" class="absolute w-8 h-8 bg-red-500 rounded-full -ml-4 mb-4 transition-all duration-300 shadow-lg flex items-center justify-center text-white text-sm" style="left: 50%; bottom: 50%;">📍</div>
+                </div>
+
+                <!-- 조작부 -->
+                <div class="flex-1 w-full">
+                    <div class="mb-4">
+                        <label class="flex justify-between font-bold text-blue-600 mb-1">
+                            <span>가로 위치 (X)</span>
+                            <span id="x-val" class="font-mono bg-white px-2 py-0.5 rounded border shadow-sm">0</span>
+                        </label>
+                        <input type="range" id="x-range" min="-240" max="240" value="0" class="w-full accent-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="flex justify-between font-bold text-green-600 mb-1">
+                            <span>세로 위치 (Y)</span>
+                            <span id="y-val" class="font-mono bg-white px-2 py-0.5 rounded border shadow-sm">0</span>
+                        </label>
+                        <input type="range" id="y-range" min="-135" max="135" value="0" class="w-full accent-green-500">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="setCoord(105, 76, '🧊')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 py-2 rounded-lg text-sm font-bold transition-colors border border-blue-200">🧊 각설탕 위치</button>
+                        <button onclick="setCoord(185, 90, '🐦')" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-800 py-2 rounded-lg text-sm font-bold transition-colors border border-yellow-200">🐦 노란새 위치</button>
+                        <button onclick="setCoord(-175, -40, '🐿️')" class="bg-orange-50 hover:bg-orange-100 text-orange-800 py-2 rounded-lg text-sm font-bold transition-colors border border-orange-200">🐿️ 다람쥐 위치</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 방향과 이동방향 이해하기 (구글 슬라이드 임베드) -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                <span class="bg-purple-100 text-purple-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">🔄</span> 
+                2. 방향과 이동 방향 이해하기
+            </h2>
+            <p class="text-gray-600 mb-6 ml-13">
+                코딩을 시작하기 전에 오브젝트가 바라보는 <strong>'방향'</strong>과 실제로 움직이는 <strong>'이동 방향'</strong>의 차이를 먼저 알아볼까요? 슬라이드를 넘겨가며 확인해 보세요.
+            </p>
+
+            <!-- 16:9 비율 유지를 위한 반응형 컨테이너 -->
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-md border border-gray-200 bg-gray-50 ml-0 lg:ml-13 lg:w-[calc(100%-3.25rem)]">
+                <iframe 
+                    src="https://docs.google.com/presentation/d/1V6TU-oc6MZNMlZ2X58xgzcN2EPgbr9v_/embed?start=false&loop=false&delayms=3000" 
+                    frameborder="0" 
+                    width="100%" 
+                    height="100%" 
+                    allowfullscreen="true" 
+                    mozallowfullscreen="true" 
+                    webkitallowfullscreen="true"
+                    class="absolute top-0 left-0 w-full h-full">
+                </iframe>
+            </div>
+        </section>
+
+        <!-- 3. 오브젝트 준비하기 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <div class="bg-green-500 text-white w-7 h-7 rounded-sm flex items-center justify-center mr-3 text-sm shadow-sm">✔</div> 
+                3. 필요한 오브젝트 추가하기
+            </h2>
+            <p class="text-gray-700 text-lg mb-5 ml-10">오브젝트 추가하기를 누르고 아래 4가지를 검색해서 추가해 주세요!</p>
+            <ul class="list-disc pl-16 space-y-3 text-gray-800 text-[17px]">
+                <li>🌲 오솔길 (배경)</li>
+                <li>🧊 각설탕</li>
+                <li>🐦 노란새</li>
+                <li>🐿️ 다람쥐</li>
+            </ul>
+        </section>
+
+        <!-- 4. 코딩하기 -->
+        <h2 class="text-3xl font-black text-center text-gray-800 mt-12 mb-6">💻 차근차근 코딩하기</h2>
+
+        <!-- 과자 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🧊 1. 각설탕 코딩하기
+            </h3>
+            
+            <div class="mb-6 p-4 bg-emerald-50 rounded-xl text-emerald-700 font-medium border border-emerald-100">
+                🎯 <strong>코딩 목표:</strong> 9초 뒤에 각설탕이 화면에서 감쪽같이 사라지게 만들어요.
+            </div>
+
+            <ul class="space-y-5 ml-2 mb-2">
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">1</span>
+                    <span class="text-gray-700 text-[17px]">시작하기 버튼을 클릭했을 때</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">2</span>
+                    <span class="text-gray-700 text-[17px]">크기를 <strong>25</strong> (으)로 정하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">3</span>
+                    <span class="text-gray-700 text-[17px]">x: <strong>105</strong>, y: <strong>76</strong> 위치로 이동하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">4</span>
+                    <span class="text-gray-700 text-[17px]"><strong>9</strong>초 기다리기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">5</span>
+                    <span class="text-gray-700 text-[17px]">모양 숨기기</span>
+                </li>
+            </ul>
+
+            <div class="mt-6">
+                <button onclick="document.getElementById('blocks-sugar').classList.toggle('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-sm focus:outline-none">
+                    🧩 사용할 명령블럭 보기
+                </button>
+                <div id="blocks-sugar" class="hidden mt-3 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+                    <div class="flex flex-wrap items-center justify-start gap-3">
+                        <img src="https://docs.playentry.org/user/images/block-start-01.png" alt="시작 블록" class="h-[46px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-12.png" alt="크기 정하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-08.png" alt="위치 이동 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-flow-01.png" alt="기다리기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-02.png" alt="모양 숨기기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 잉꼬 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🐦 2. 노란새 코딩하기
+            </h3>
+            
+            <div class="mb-6 p-4 bg-emerald-50 rounded-xl text-emerald-700 font-medium border border-emerald-100">
+                🎯 <strong>코딩 목표:</strong> 화살표 키를 눌러 노란새를 요리조리 움직여요.<br>
+                <span class="text-sm mt-1 inline-block text-emerald-600">💡 힌트: '이동 방향'을 270도(왼쪽)로 정해서 시작하기 때문에 숫자의 부호(-, +)에 따라 움직이는 방향에 주의하세요!</span>
+            </div>
+
+            <div class="space-y-8">
+                <!-- 1. 노란새 배치 -->
+                <div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2 pl-1">
+                        <span class="text-xl">📍</span> 노란새를 배치해요
+                    </h4>
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <ul class="space-y-5 ml-1">
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-4 flex-shrink-0 shadow-sm">1</span>
+                                <span class="text-gray-700 text-[17px]">시작하기 버튼을 클릭했을 때</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-4 flex-shrink-0 shadow-sm">2</span>
+                                <span class="text-gray-700 text-[17px]">크기를 <strong>55</strong> (으)로 정하기</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-4 flex-shrink-0 shadow-sm">3</span>
+                                <span class="text-gray-700 text-[17px]">x: <strong>185</strong>, y: <strong>90</strong> 위치로 이동하기</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-4 flex-shrink-0 shadow-sm">4</span>
+                                <span class="text-gray-700 text-[17px]">이동 방향을 <strong>270</strong> (으)로 정하기</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-4 flex-shrink-0 shadow-sm">5</span>
+                                <span class="text-gray-700 text-[17px]"><strong>노란새 2</strong> 모양으로 바꾸기</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2. 방향 조정 -->
+                <div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2 pl-1">
+                        <span class="text-xl">🔄</span> 위쪽, 아래쪽 화살표로 새의 방향을 조정해요.
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <ul class="space-y-4">
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">1</span>
+                                    <span class="text-gray-700 text-[16px]">위쪽 화살표 키를 눌렀을 때</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">2</span>
+                                    <span class="text-gray-700 text-[16px]">방향을 <strong>-5</strong> 만큼 회전하기</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <ul class="space-y-4">
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">1</span>
+                                    <span class="text-gray-700 text-[16px]">아래쪽 화살표 키를 눌렀을 때</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">2</span>
+                                    <span class="text-gray-700 text-[16px]">방향을 <strong>5</strong> 만큼 회전하기</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 이동 조정 -->
+                <div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2 pl-1">
+                        <span class="text-xl">🚀</span> 왼쪽, 오른쪽 화살표로 새가 움직이게 조정해요.
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <ul class="space-y-4">
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">1</span>
+                                    <span class="text-gray-700 text-[16px]">왼쪽 화살표 키를 눌렀을 때</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">2</span>
+                                    <span class="text-gray-700 text-[16px]">이동 방향으로 <strong>5</strong> 만큼 움직이기</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <ul class="space-y-4">
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">1</span>
+                                    <span class="text-gray-700 text-[16px]">오른쪽 화살표 키를 눌렀을 때</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-bold mr-3 flex-shrink-0 shadow-sm">2</span>
+                                    <span class="text-gray-700 text-[16px]">이동 방향으로 <strong>-5</strong> 만큼 움직이기</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button onclick="document.getElementById('blocks-bird').classList.toggle('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-sm focus:outline-none">
+                    🧩 사용할 명령블럭 보기
+                </button>
+                <div id="blocks-bird" class="hidden mt-3 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+                    <div class="flex flex-wrap items-center justify-start gap-3">
+                        <img src="https://docs.playentry.org/user/images/block-start-01.png" alt="시작하기 버튼을 클릭했을 때 블록" class="h-[46px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-start-02.png" alt="키를 눌렀을 때 블록" class="h-[46px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-12.png" alt="크기 정하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-08.png" alt="위치 이동 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-17.png" alt="이동 방향 정하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-06.png" alt="모양 바꾸기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-12.png" alt="방향 회전하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-01.png" alt="이동 방향으로 움직이기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 다람쥐 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🐿️ 3. 다람쥐 코딩하기
+            </h3>
+            
+            <div class="mb-6 p-4 bg-emerald-50 rounded-xl text-emerald-700 font-medium border border-emerald-100">
+                🎯 <strong>코딩 목표:</strong> 다람쥐가 게임 방법을 친절하게 설명해주고, 각설탕이 사라질 때 알려줘요.
+            </div>
+
+            <ul class="space-y-5 ml-2 mb-2">
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">1</span>
+                    <span class="text-gray-700 text-[17px]">시작하기 버튼을 클릭했을 때</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">2</span>
+                    <span class="text-gray-700 text-[17px]">크기를 <strong>100</strong> (으)로 정하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">3</span>
+                    <span class="text-gray-700 text-[17px]">x: <strong>-175</strong>, y: <strong>-40</strong> 위치로 이동하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">4</span>
+                    <span class="text-gray-700 text-[17px]"><strong>화살표 키를 눌러 각설탕을 가져가세요.</strong> 을(를) <strong>2</strong> 초 동안 말하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">5</span>
+                    <span class="text-gray-700 text-[17px]"><strong>5초 후에 각설탕은 사라져요. 그럼 출발!</strong> 을(를) <strong>2</strong> 초 동안 말하기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">6</span>
+                    <span class="text-gray-700 text-[17px]"><strong>5</strong> 초 기다리기</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0">7</span>
+                    <span class="text-gray-700 text-[17px]"><strong>사라졌다!</strong> 을(를) <strong>1</strong> 초 동안 말하기</span>
+                </li>
+            </ul>
+
+            <div class="mt-6">
+                <button onclick="document.getElementById('blocks-squirrel').classList.toggle('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-sm focus:outline-none">
+                    🧩 사용할 명령블럭 보기
+                </button>
+                <div id="blocks-squirrel" class="hidden mt-3 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+                    <div class="flex flex-wrap items-center justify-start gap-3">
+                        <img src="https://docs.playentry.org/user/images/block-start-01.png" alt="시작하기 버튼을 클릭했을 때 블록" class="h-[46px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-12.png" alt="크기 정하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-motion-08.png" alt="위치 이동 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-03.png" alt="말하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-flow-01.png" alt="기다리기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 각설탕 추가 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🧊 4. 각설탕 추가 코딩하기
+            </h3>
+            
+            <div class="mb-6 p-4 bg-emerald-50 rounded-xl text-emerald-700 font-medium border border-emerald-100">
+                🎯 <strong>코딩 목표:</strong> 노란새가 각설탕에 닿으면 성공 메시지를 말하고 각설탕이 바로 사라지게 만들어요.
+            </div>
+
+            <ul class="space-y-5 ml-2 mb-2">
+                <li class="flex items-start">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0 mt-0.5">1</span>
+                    <span class="text-gray-700 text-[17px] mt-0.5">시작하기 버튼을 클릭했을 때</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-bold mr-4 flex-shrink-0 mt-0.5">2</span>
+                    <div class="text-gray-700 text-[17px] mt-0.5 w-full">
+                        계속 반복하기
+                        <div class="mt-4 ml-1 pl-4 border-l-2 border-gray-200 space-y-4">
+                            <div class="flex items-start">
+                                <span class="font-bold text-gray-600 mr-2 mt-0.5">1).</span>
+                                <div class="w-full">
+                                    만일 <strong>노란새</strong>에 닿았는가? (이)라면
+                                    <div class="mt-3 space-y-3">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600 font-bold text-lg mr-2">①</span>
+                                            <span><strong>과자먹기 성공!</strong> 을(를) <strong>1</strong> 초 동안 말하기</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600 font-bold text-lg mr-2">②</span>
+                                            <span>모양 숨기기</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="mt-6">
+                <button onclick="document.getElementById('blocks-sugar-2').classList.toggle('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-sm focus:outline-none">
+                    🧩 사용할 명령블럭 보기
+                </button>
+                <div id="blocks-sugar-2" class="hidden mt-3 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-inner">
+                    <div class="flex flex-wrap items-center justify-start gap-3">
+                        <img src="https://docs.playentry.org/user/images/block-start-01.png" alt="시작하기 버튼을 클릭했을 때 블록" class="h-[46px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-flow-03.png" alt="계속 반복하기 블록" class="h-[84px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-flow-07.png" alt="만일 ~라면 블록" class="h-[84px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-decision-04.png" alt="~에 닿았는가 블록" class="h-[32px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-02.png" alt="모양 숨기기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                        <img src="https://docs.playentry.org/user/images/block-looks-03.png" alt="말하기 블록" class="h-[40px] object-contain drop-shadow-sm">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 마무리 -->
+        <section class="text-center py-8">
+            <h2 class="text-2xl font-black text-gray-800 mb-2">🎉 완성했어요!</h2>
+            <p class="text-gray-600 mb-6">시작하기 버튼을 누르고 방향키로 노란새를 조종해보세요.</p>
+            <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform hover:scale-105" onclick="alert('화이팅! 멋진 코더가 되어보아요!')">
+                나는 다 완성했다! (클릭)
+            </button>
+        </section>
+
+        <!-- 5. 추가 미션 -->
+        <section class="bg-indigo-50 rounded-2xl shadow-sm p-6 sm:p-8 border border-indigo-100 step-card">
+            <h2 class="text-2xl font-bold text-indigo-800 mb-4 flex items-center">
+                <span class="text-3xl mr-3">🚀</span> 
+                5. 도전! 추가 미션
+            </h2>
+            <p class="text-indigo-700 mb-5 text-lg">배운 내용을 바탕으로 게임을 더 재미있게 업그레이드 해볼까요?</p>
+            <div class="space-y-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-indigo-100">
+                    <h4 class="font-bold text-indigo-600 text-lg mb-2">미션 1. 더 빠른 노란새 만들기 ⚡</h4>
+                    <p class="text-gray-700">노란새가 한 번에 이동하는 숫자(5와 -5)를 <strong>15와 -15</strong>로 바꾸면 어떻게 될까요? 더 빠르게 움직이도록 코드를 수정해보세요!</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-indigo-100">
+                    <h4 class="font-bold text-indigo-600 text-lg mb-2">미션 2. 각설탕 빨리 사라지게 하기 ⏳</h4>
+                    <p class="text-gray-700">각설탕이 9초 뒤에 사라지는 것을 <strong>5초</strong>로 줄여서 게임의 난이도를 높여보세요.</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-indigo-100">
+                    <h4 class="font-bold text-indigo-600 text-lg mb-2">미션 3. 다람쥐의 위치 바꾸기 🐿️</h4>
+                    <p class="text-gray-700">다람쥐의 시작 위치를 <code>x: -175, y: -40</code> 에서 화면 오른쪽 위(예: <code>x: 150, y: 100</code>)로 자유롭게 옮겨보세요.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 확인학습 퀴즈 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-yellow-100 text-yellow-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">📝</span> 
+                6. 확인학습 퀴즈
+            </h2>
+            <p class="text-gray-600 mb-6 ml-13 text-lg">오늘 배운 내용을 10개의 퀴즈로 복습해 보아요! 정답을 선택하고 결과를 확인해보세요.</p>
+            
+            <div id="quiz-container" class="space-y-6 pl-2 md:pl-12">
+                <!-- JS에서 퀴즈가 삽입됩니다 -->
+            </div>
+            
+            <div class="mt-10 text-center">
+                <button onclick="submitQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-xl shadow-md transition-colors text-lg">결과 확인하기</button>
+                <div id="quiz-result" class="mt-6 text-2xl font-black hidden rounded-xl p-4 transition-all"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 인터랙티브 좌표 시뮬레이터 스크립트 -->
+    <script>
+        const xRange = document.getElementById('x-range');
+        const yRange = document.getElementById('y-range');
+        const xVal = document.getElementById('x-val');
+        const yVal = document.getElementById('y-val');
+        const dot = document.getElementById('sim-dot');
+
+        function updateDot() {
+            const x = parseInt(xRange.value);
+            const y = parseInt(yRange.value);
+            
+            // 텍스트 업데이트
+            xVal.innerText = x;
+            yVal.innerText = y;
+            
+            // 엔트리 좌표계 기준 위치 계산 (중앙 0,0 / 폭 480 / 높이 270)
+            const leftPercent = ((x + 240) / 480) * 100;
+            const bottomPercent = ((y + 135) / 270) * 100;
+            
+            // 점 위치 이동
+            dot.style.left = `${leftPercent}%`;
+            dot.style.bottom = `${bottomPercent}%`;
+        }
+
+        // 이벤트 리스너 등록
+        xRange.addEventListener('input', updateDot);
+        yRange.addEventListener('input', updateDot);
+
+        // 특정 좌표로 이동하는 버튼용 함수
+        function setCoord(x, y, emoji) {
+            xRange.value = x;
+            yRange.value = y;
+            dot.innerText = emoji;
+            updateDot();
+            
+            // 약간의 팝 효과
+            dot.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                dot.style.transform = 'scale(1)';
+            }, 300);
+        }
+
+        // 초기화 호출
+        updateDot();
+
+        // --- 확인학습 퀴즈 데이터 및 로직 ---
+        const quizData = [
+            { q: "1. 엔트리 화면의 정중앙 좌표는 무엇일까요?", options: ["x: 100, y: 100", "x: 0, y: 0", "x: -100, y: -100", "x: 240, y: 135"], a: 1 },
+            { q: "2. 좌우(가로) 위치를 나타내는 좌표는 무엇인가요?", options: ["X 좌표", "Y 좌표", "Z 좌표", "방향"], a: 0 },
+            { q: "3. 화면에서 아래쪽으로 이동하려면 어떤 좌표가 변해야 할까요?", options: ["X 좌표가 커져야 한다", "X 좌표가 작아져야 한다", "Y 좌표가 커져야 한다", "Y 좌표가 작아져야 한다 (마이너스)"], a: 3 },
+            { q: "4. 화면에서 오브젝트가 보이지 않게 하려면 어떤 블록을 사용할까요?", options: ["모양 보이기", "모양 숨기기", "투명도 효과 주기", "크기를 0으로 정하기"], a: 1 },
+            { q: "5. 오브젝트가 제자리에서 바라보는 방향을 빙글빙글 돌리고 싶을 때 사용하는 블록은?", options: ["이동 방향으로 움직이기", "방향을 ~만큼 회전하기", "위치로 이동하기", "크기 바꾸기"], a: 1 },
+            { q: "6. 바라보고 있는 쪽으로 오브젝트를 직진시키고 싶을 때 사용하는 블록은?", options: ["방향을 회전하기", "이동 방향을 정하기", "이동 방향으로 움직이기", "y좌표를 바꾸기"], a: 2 },
+            { q: "7. 다람쥐가 말풍선으로 설명을 띄우게 하는 블록은?", options: ["소리 재생하기", "~초 동안 말하기", "대답 기다리기", "글쓰기"], a: 1 },
+            { q: "8. 시작할 때 노란새의 크기를 딱 맞춰주기 위해 사용한 블록은?", options: ["크기를 ~만큼 바꾸기", "크기를 ~로 정하기", "모양 바꾸기", "도장 찍기"], a: 1 },
+            { q: "9. 각설탕이 사라지기 전까지 9초 동안 멈춰있게 만드는 블록은?", options: ["9초 기다리기", "9번 반복하기", "9초 동안 이동하기", "타이머 시작하기"], a: 0 },
+            { q: "10. 특정 키보드 버튼(예: 왼쪽 화살표)을 눌렀을 때 작동하게 하는 블록의 종류는?", options: ["흐름 블록", "시작 블록", "움직임 블록", "생김새 블록"], a: 1 }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        // 퀴즈 렌더링
+        function renderQuiz() {
+            quizData.forEach((quiz, index) => {
+                const quizBlock = document.createElement('div');
+                quizBlock.className = 'bg-gray-50 p-5 rounded-xl border border-gray-200';
+                
+                const questionTitle = document.createElement('h4');
+                questionTitle.className = 'font-bold text-gray-800 text-lg mb-3';
+                questionTitle.innerText = quiz.q;
+                quizBlock.appendChild(questionTitle);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'flex flex-col gap-2 pl-2';
+
+                quiz.options.forEach((option, optIndex) => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-colors';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `quiz-${index}`;
+                    radio.value = optIndex;
+                    radio.className = 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500';
+                    
+                    const span = document.createElement('span');
+                    span.className = 'text-gray-700';
+                    span.innerText = option;
+
+                    label.appendChild(radio);
+                    label.appendChild(span);
+                    optionsContainer.appendChild(label);
+                });
+
+                quizBlock.appendChild(optionsContainer);
+                
+                // 피드백 영역
+                const feedback = document.createElement('div');
+                feedback.id = `feedback-${index}`;
+                feedback.className = 'mt-3 text-sm font-bold hidden';
+                quizBlock.appendChild(feedback);
+
+                quizContainer.appendChild(quizBlock);
+            });
+        }
+
+        // 퀴즈 채점
+        function submitQuiz() {
+            let score = 0;
+            quizData.forEach((quiz, index) => {
+                const selected = document.querySelector(`input[name="quiz-${index}"]:checked`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                feedbackDiv.classList.remove('hidden');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === quiz.a) {
+                        score++;
+                        feedbackDiv.innerText = "✅ 정답입니다!";
+                        feedbackDiv.className = 'mt-3 text-sm font-bold text-green-600';
+                    } else {
+                        feedbackDiv.innerText = `❌ 오답입니다. 정답은 '${quiz.options[quiz.a]}' 입니다.`;
+                        feedbackDiv.className = 'mt-3 text-sm font-bold text-red-500';
+                    }
+                } else {
+                    feedbackDiv.innerText = "⚠️ 답을 선택하지 않았습니다.";
+                    feedbackDiv.className = 'mt-3 text-sm font-bold text-orange-500';
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerText = `총 10문제 중 ${score}문제를 맞혔습니다! 🎯`;
+            
+            if(score === 10) {
+                resultDiv.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+                resultDiv.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-300');
+            } else {
+                resultDiv.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-300');
+                resultDiv.classList.remove('bg-green-100', 'text-green-800', 'border-green-300');
+            }
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>
