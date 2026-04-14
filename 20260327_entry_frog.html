@@ -212,7 +212,7 @@
         </div>
     </div>
 
-    <!-- 실습 파일 다운로드 영역 이동 (1번과 2번 사이) -->
+    <!-- 실습 파일 다운로드 영역 -->
     <div class="mb-9 bg-indigo-50 border border-indigo-200 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
         <div class="text-left">
             <p class="text-indigo-900 font-extrabold text-lg mb-1 flex items-center gap-2">
@@ -233,12 +233,12 @@
             <p class="text-gray-700 mb-4 font-medium">나무는 게임이 시작되면 "돌멩이 피하기!"라고 외치며 게임 출발 신호를 보내요.<br>그리고 개구리가 앞으로 달려가는 것처럼 보이도록 나무가 계속 뒤로 움직인답니다.</p>
             <button class="btn-hint" onclick="toggleCode('code_tree', this)">💡 코딩 가이드 보기</button>
             <div id="code_tree" class="code-block" style="display: none;"><b>[나무 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>시작하기 버튼</b>을 클릭했을 때:
-  └ 크기를 150으로 정하고 정해진 위치로 이동하기
-  └ <b>"돌멩이 피하기"</b>를 2초 동안 말하기
-  └ <b>활동 신호</b> 보내기
-<span class="pseudo-num">②</span> <b>시작하기 버튼</b>을 클릭했을 때:
-  └ 계속 반복하기: 오른쪽에서 시작해 왼쪽으로 130번 이동하기 (스크롤 효과)</div>
+<span class="pseudo-num">1.</span> <b>시작하기 버튼</b>을 클릭했을 때:
+  1) 크기를 150으로 정하고 정해진 위치로 이동하기
+  2) <b>"돌멩이 피하기"</b>를 2초 동안 말하기
+  3) <b>활동 신호</b> 보내기
+<span class="pseudo-num">2.</span> <b>시작하기 버튼</b>을 클릭했을 때:
+  1) 계속 반복하기: 오른쪽에서 시작해 왼쪽으로 130번 이동하기 (스크롤 효과)</div>
         </div>
     </div>
 
@@ -249,12 +249,12 @@
             <p class="text-gray-700 mb-4 font-medium">스페이스키를 누르면 개구리는 다가오는 돌멩이를 점프해서 피해요.<br>스페이스를 누르면 위로 점프했다가 바닥에 착지해요.</p>
             <button class="btn-hint" onclick="toggleCode('code_toad', this)">💡 코딩 가이드 보기</button>
             <div id="code_toad" class="code-block" style="display: none;"><b>[두꺼비 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>활동 신호</b>를 받았을 때: 계속 반복하기
-<span class="pseudo-num">②</span> 만일 <b>스페이스 키</b>가 눌려져 있는가? 라면
-  └ 모양을 점프 모양으로 바꾸기
-  └ <b>20번 반복하기</b>: y 좌표를 <b>5</b>만큼 바꾸기 (위로 점프)
-  └ <b>두꺼비 y좌표가 -90보다 작을 때까지</b> 반복하기
-    └ y 좌표를 <b>-5</b>만큼 바꾸기 (바닥으로 착지)</div>
+<span class="pseudo-num">1.</span> <b>활동 신호</b>를 받았을 때: 계속 반복하기
+<span class="pseudo-num">2.</span> 만일 <b>스페이스 키</b>가 눌려져 있는가? 라면
+  1) 모양을 점프 모양으로 바꾸기
+  2) <b>20번 반복하기</b>: y 좌표를 <b>5</b>만큼 바꾸기 (위로 점프)
+  3) <b>두꺼비 y좌표가 -90보다 작을 때까지</b> 반복하기
+    ① y 좌표를 <b>-5</b>만큼 바꾸기 (바닥으로 착지)</div>
         </div>
     </div>
 
@@ -265,14 +265,14 @@
             <p class="text-gray-700 mb-4 font-medium">돌멩이는 개구리를 향해서 다가옵니다.<br>돌멩이는 하나를 피하면 뒤에 또 돌멩이가 다가옵니다.<br>돌멩이는 하나가 아니고, 여러 개가 연속해서 계속 나타납니다.</p>
             <button class="btn-hint" onclick="toggleCode('code_stone', this)">💡 코딩 가이드 보기</button>
             <div id="code_stone" class="code-block" style="display: none;"><b>[돌멩이 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>활동 신호</b>를 받았을 때: 
-  └ <b>자신의 복제본 만들기</b>
-  └ <b>2~5초 사이의 무작위 수</b>만큼 기다리기 (계속 반복)
-<span class="pseudo-num">②</span> <b>복제본이 처음 생성되었을 때</b>:
-  └ 모양 보이기
-  └ <b>벽에 닿았는가?</b> 까지 반복: x 좌표를 <b>-5</b>만큼 바꾸기 (왼쪽으로 다가오기)
-  └ 만일 <b>두꺼비</b>에 닿았는가? 라면: <b>미션실패 신호</b> 보내기
-  └ 화면 끝에 도달하면 <b>이 복제본 삭제하기</b></div>
+<span class="pseudo-num">1.</span> <b>활동 신호</b>를 받았을 때: 
+  1) <b>자신의 복제본 만들기</b>
+  2) <b>2~5초 사이의 무작위 수</b>만큼 기다리기 (계속 반복)
+<span class="pseudo-num">2.</span> <b>복제본이 처음 생성되었을 때</b>:
+  1) 모양 보이기
+  2) <b>벽에 닿았는가?</b> 까지 반복: x 좌표를 <b>-5</b>만큼 바꾸기 (왼쪽으로 다가오기)
+  3) 만일 <b>두꺼비</b>에 닿았는가? 라면: <b>미션실패 신호</b> 보내기
+  4) 화면 끝에 도달하면 <b>이 복제본 삭제하기</b></div>
         </div>
     </div>
 
@@ -283,14 +283,14 @@
             <p class="text-gray-700 mb-4 font-medium">하늘에는 구름이 둥둥 떠다녀요.<br>구름은 30초 동안 개구리가 돌멩이를 잘 피하는지 지켜보며 시간을 재는 중요한 역할도 해요.<br>30초가 지나면 미션 성공을 알려준답니다!</p>
             <button class="btn-hint" onclick="toggleCode('code_cloud', this)">💡 코딩 가이드 보기</button>
             <div id="code_cloud" class="code-block" style="display: none;"><b>[구름 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>시작하기 버튼</b>을 클릭했을 때:
-  └ 2.5초마다 <b>자신의 복제본 만들기</b> (계속 반복)
-<span class="pseudo-num">②</span> <b>복제본이 처음 생성되었을 때</b>:
-  └ 모양을 보이고 왼쪽으로 계속 이동하다가 <b>벽에 닿으면 삭제하기</b>
-<span class="pseudo-num">③</span> <b>활동 신호</b>를 받았을 때:
-  └ <b>30초</b> 기다리기 (시간 재기)
-  └ <b>미션성공 신호</b> 보내기
-  └ <b>다른 오브젝트의 코드 멈추기</b></div>
+<span class="pseudo-num">1.</span> <b>시작하기 버튼</b>을 클릭했을 때:
+  1) 2.5초마다 <b>자신의 복제본 만들기</b> (계속 반복)
+<span class="pseudo-num">2.</span> <b>복제본이 처음 생성되었을 때</b>:
+  1) 모양을 보이고 왼쪽으로 계속 이동하다가 <b>벽에 닿으면 삭제하기</b>
+<span class="pseudo-num">3.</span> <b>활동 신호</b>를 받았을 때:
+  1) <b>30초</b> 기다리기 (시간 재기)
+  2) <b>미션성공 신호</b> 보내기
+  3) <b>다른 오브젝트의 코드 멈추기</b></div>
         </div>
     </div>
 
@@ -311,36 +311,28 @@
 
         let isRunning = false;
         let animationId;
-        let gameTimer;
         let gameTime = 0;
 
         const frog = { 
             x: 100, y: 270, baseY: 270, w: 40, h: 40, 
             isJumping: false, jumpPhase: 0, 
-            color: '#d97706', /* Toad color matching PDF */
+            color: '#d97706',
             effect: 0 
         };
         
         let stones = [];
-        let trees = [
-            { x: 100, y: 140 }, { x: 300, y: 150 }, { x: 500, y: 130 }
-        ];
-        let clouds = [
-            { x: 50, y: 50, scale: 1 }, { x: 250, y: 80, scale: 0.8 }, { x: 450, y: 40, scale: 1.2 }
-        ];
+        let trees = [{ x: 100, y: 140 }, { x: 300, y: 150 }, { x: 500, y: 130 }];
+        let clouds = [{ x: 50, y: 50, scale: 1 }, { x: 250, y: 80, scale: 0.8 }, { x: 450, y: 40, scale: 1.2 }];
         let keys = {};
 
         window.addEventListener('keydown', e => { if(e.code === 'Space') keys[e.code] = true; });
         window.addEventListener('keyup', e => { if(e.code === 'Space') keys[e.code] = false; });
 
         function drawBackground() {
-            // Ground
             ctx.fillStyle = '#b45309';
             ctx.fillRect(0, 310, 480, 50);
             ctx.fillStyle = '#78350f';
             ctx.fillRect(0, 310, 480, 10);
-            
-            // Distant hills
             ctx.fillStyle = '#84cc16';
             ctx.beginPath();
             ctx.moveTo(0, 310);
@@ -350,12 +342,8 @@
         }
 
         function drawTree(t) {
-            ctx.save();
-            ctx.translate(t.x, t.y);
-            // Trunk
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(0, 50, 20, 120);
-            // Leaves
+            ctx.save(); ctx.translate(t.x, t.y);
+            ctx.fillStyle = '#8B4513'; ctx.fillRect(0, 50, 20, 120);
             ctx.fillStyle = '#22c55e';
             ctx.beginPath(); ctx.arc(10, 30, 40, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(-15, 60, 30, 0, Math.PI*2); ctx.fill();
@@ -364,36 +352,20 @@
         }
 
         function drawCloud(c) {
-            ctx.save();
-            ctx.translate(c.x, c.y);
-            ctx.scale(c.scale, c.scale);
+            ctx.save(); ctx.translate(c.x, c.y); ctx.scale(c.scale, c.scale);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.beginPath();
-            ctx.arc(0, 0, 20, 0, Math.PI*2);
-            ctx.arc(20, -10, 25, 0, Math.PI*2);
-            ctx.arc(40, 0, 20, 0, Math.PI*2);
-            ctx.arc(20, 10, 20, 0, Math.PI*2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.arc(20, -10, 25, 0, Math.PI*2);
+            ctx.arc(40, 0, 20, 0, Math.PI*2); ctx.arc(20, 10, 20, 0, Math.PI*2); ctx.fill();
             ctx.restore();
         }
 
         function drawFrog() {
             ctx.save();
             if (frog.effect > 0) ctx.filter = `hue-rotate(${frog.effect}deg)`;
-            
             ctx.fillStyle = frog.color;
-            // Body (Toad)
-            ctx.beginPath();
-            ctx.ellipse(frog.x, frog.y, 25, 18, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Belly
+            ctx.beginPath(); ctx.ellipse(frog.x, frog.y, 25, 18, 0, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#fef3c7';
-            ctx.beginPath();
-            ctx.ellipse(frog.x + 8, frog.y + 4, 15, 10, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Eyes
+            ctx.beginPath(); ctx.ellipse(frog.x + 8, frog.y + 4, 15, 10, 0, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = 'white';
             ctx.beginPath(); ctx.arc(frog.x + 10, frog.y - 15, 6, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = 'black';
@@ -403,93 +375,51 @@
 
         function drawStone(s) {
             ctx.fillStyle = '#64748b';
-            ctx.beginPath();
-            ctx.moveTo(s.x, s.y);
-            ctx.lineTo(s.x + 30, s.y - 5);
-            ctx.lineTo(s.x + 35, s.y + 20);
-            ctx.lineTo(s.x + 5, s.y + 25);
-            ctx.closePath();
-            ctx.fill();
-            // Texture
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(s.x + 10, s.y + 5, 5, 5);
+            ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x + 30, s.y - 5);
+            ctx.lineTo(s.x + 35, s.y + 20); ctx.lineTo(s.x + 5, s.y + 25); ctx.closePath(); ctx.fill();
         }
 
         function update() {
             if (!isRunning) return;
 
-            // Frog Jump Logic
             if (keys['Space'] && !frog.isJumping) {
                 frog.isJumping = true;
                 frog.jumpPhase = 0;
             }
 
             if (frog.isJumping) {
-                if (frog.jumpPhase < 20) {
-                    frog.y -= 6; // Go up
-                } else {
-                    frog.y += 6; // Go down
-                    if (frog.y >= frog.baseY) {
-                        frog.y = frog.baseY;
-                        frog.isJumping = false;
-                    }
+                if (frog.jumpPhase < 20) frog.y -= 6;
+                else {
+                    frog.y += 6;
+                    if (frog.y >= frog.baseY) { frog.y = frog.baseY; frog.isJumping = false; }
                 }
                 frog.jumpPhase++;
             }
 
-            // Environment Scrolling
-            trees.forEach(t => {
-                t.x -= 2;
-                if (t.x < -80) t.x = 480 + Math.random() * 50;
-            });
+            trees.forEach(t => { t.x -= 2; if (t.x < -80) t.x = 480 + Math.random() * 50; });
+            clouds.forEach(c => { c.x -= 1; if (c.x < -80) { c.x = 480 + Math.random() * 50; c.y = 30 + Math.random() * 60; } });
 
-            clouds.forEach(c => {
-                c.x -= 1;
-                if (c.x < -80) {
-                    c.x = 480 + Math.random() * 50;
-                    c.y = 30 + Math.random() * 60;
-                }
-            });
-
-            // Stone Logic
-            if (Math.random() < 0.02) {
-                if(stones.length === 0 || stones[stones.length-1].x < 300) {
-                    stones.push({ x: 500, y: 285 });
-                }
-            }
+            if (Math.random() < 0.02) { if(stones.length === 0 || stones[stones.length-1].x < 300) stones.push({ x: 500, y: 285 }); }
 
             for (let i = stones.length - 1; i >= 0; i--) {
                 stones[i].x -= 5;
-                
-                // Collision
                 const dx = frog.x - (stones[i].x + 15);
                 const dy = frog.y - (stones[i].y + 10);
                 const dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < 30) {
-                    endGame(false);
-                }
-
+                if (dist < 30) endGame(false);
                 if (stones[i].x < -50) stones.splice(i, 1);
             }
 
-            // Time Tracking
             gameTime += 1/60;
-            if (gameTime >= 30) { // Win after 30s as per instructions
-                endGame(true);
-            }
+            if (gameTime >= 30) endGame(true);
 
             ctx.clearRect(0, 0, 480, 360);
             drawBackground();
-            
-            // Draw background elements
             trees.forEach(drawTree);
             clouds.forEach(drawCloud);
-            
             drawFrog();
             stones.forEach(drawStone);
 
-            // Timer display
             ctx.fillStyle = '#1e293b';
             ctx.font = 'bold 18px Pretendard, sans-serif';
             ctx.fillText(`남은 시간: ${Math.max(0, Math.ceil(30 - gameTime))}초`, 20, 30);
@@ -504,14 +434,13 @@
             speechBubble.style.display = 'block';
             speechBubble.style.left = (frog.x / 480 * rect.width + 20) + 'px';
             speechBubble.style.top = (frog.y / 360 * rect.height - 40) + 'px';
-
             if (success) {
                 speechBubble.innerText = "미션 성공!";
                 speechBubble.style.borderColor = "#10b981";
             } else {
                 speechBubble.innerText = "앗, 미션 실패!";
                 speechBubble.style.borderColor = "#ef4444";
-                frog.effect = 100; // Reddish
+                frog.effect = 100;
                 drawFrog();
             }
         }
@@ -520,69 +449,27 @@
             if (isRunning) return;
             stones = []; gameTime = 0;
             frog.y = frog.baseY; frog.isJumping = false; frog.effect = 0;
-            
-            // Reset background positions for fresh start
             trees = [{ x: 100, y: 140 }, { x: 300, y: 150 }, { x: 500, y: 130 }];
             clouds = [{ x: 50, y: 50, scale: 1 }, { x: 250, y: 80, scale: 0.8 }, { x: 450, y: 40, scale: 1.2 }];
-            
             speechBubble.style.display = 'block';
             speechBubble.innerText = "돌멩이 피하기!";
             speechBubble.style.borderColor = "#10b981";
-            
-            // Initial render before animation loop
             ctx.clearRect(0, 0, 480, 360);
-            drawBackground();
-            trees.forEach(drawTree);
-            clouds.forEach(drawCloud);
-            drawFrog();
-            
-            setTimeout(() => {
-                speechBubble.style.display = 'none';
-                isRunning = true;
-                update();
-            }, 1500);
+            drawBackground(); trees.forEach(drawTree); clouds.forEach(drawCloud); drawFrog();
+            setTimeout(() => { speechBubble.style.display = 'none'; isRunning = true; update(); }, 1500);
         });
 
         document.getElementById('resetBtn').addEventListener('click', () => { location.reload(); });
 
-        // Initial Draw
-        drawBackground();
-        trees.forEach(drawTree);
-        clouds.forEach(drawCloud);
-        drawFrog();
+        drawBackground(); trees.forEach(drawTree); clouds.forEach(drawCloud); drawFrog();
 
         // --- Quiz Setup ---
         const quizzes = [
-            {
-                q: "작품에서 돌멩이가 개구리에 닿았을 때 보내야 하는 신호는 무엇인가요?",
-                a: ["활동", "모양 바꾸기", "미션실패", "점수 추가"],
-                correct: 2,
-                hint: "장애물에 닿으면 게임을 중단하거나 실패를 알려야 해요."
-            },
-            {
-                q: "개구리의 점프를 구현할 때, y좌표를 '+' 방향으로 바꾸면 어느 쪽으로 이동하나요?",
-                a: ["아래쪽", "위쪽", "오른쪽", "왼쪽"],
-                correct: 1,
-                hint: "엔트리와 수학 좌표계에서 y값이 커지면 위로 올라갑니다."
-            },
-            {
-                q: "돌멩이를 한 개가 아닌 여러 개로 계속 나타나게 하려면 어떤 기능을 써야 하나요?",
-                a: ["변수", "복제본", "신호", "리스트"],
-                correct: 1,
-                hint: "같은 성격의 오브젝트를 여러 개 생성할 때는 '자신의 복제본 만들기'가 필수입니다."
-            },
-            {
-                q: "구름 오브젝트에서 '30초 기다리기' 후에 실행되어야 할 가장 적절한 블록은?",
-                a: ["자료값 정하기", "미션성공 신호 보내기", "모양 숨기기", "다시 시작하기"],
-                correct: 1,
-                hint: "정해진 시간을 버텨냈으므로 미션을 완료했다는 소식을 알려야 해요."
-            },
-            {
-                q: "개구리가 앞으로 달리는 것처럼 보이게 만들기 위해 나무 오브젝트는 어느 방향으로 움직여야 할까요?",
-                a: ["왼쪽에서 오른쪽으로", "오른쪽에서 왼쪽으로", "위에서 아래로", "아래에서 위로"],
-                correct: 1,
-                hint: "배경이 개구리의 뒤쪽(왼쪽)으로 흘러가야 개구리가 앞(오른쪽)으로 나아가는 것처럼 보여요."
-            }
+            { q: "작품에서 돌멩이가 개구리에 닿았을 때 보내야 하는 신호는 무엇인가요?", a: ["활동", "모양 바꾸기", "미션실패", "점수 추가"], correct: 2, hint: "장애물에 닿으면 게임을 중단하거나 실패를 알려야 해요." },
+            { q: "개구리의 점프를 구현할 때, y좌표를 '+' 방향으로 바꾸면 어느 쪽으로 이동하나요?", a: ["아래쪽", "위쪽", "오른쪽", "왼쪽"], correct: 1, hint: "엔트리와 수학 좌표계에서 y값이 커지면 위로 올라갑니다." },
+            { q: "돌멩이를 한 개가 아닌 여러 개로 계속 나타나게 하려면 어떤 기능을 써야 하나요?", a: ["변수", "복제본", "신호", "리스트"], correct: 1, hint: "같은 성격의 오브젝트를 여러 개 생성할 때는 '자신의 복제본 만들기'가 필수입니다." },
+            { q: "구름 오브젝트에서 '30초 기다리기' 후에 실행되어야 할 가장 적절한 블록은?", a: ["자료값 정하기", "미션성공 신호 보내기", "모양 숨기기", "다시 시작하기"], correct: 1, hint: "정해진 시간을 버텨냈으므로 미션을 완료했다는 소식을 알려야 해요." },
+            { q: "개구리가 앞으로 달리는 것처럼 보이게 만들기 위해 나무 오브젝트는 어느 방향으로 움직여야 할까요?", a: ["왼쪽에서 오른쪽으로", "오른쪽에서 왼쪽으로", "위에서 아래로", "아래에서 위로"], correct: 1, hint: "배경이 개구리의 뒤쪽(왼쪽)으로 흘러가야 개구리가 앞(오른쪽)으로 나아가는 것처럼 보여요." }
         ];
 
         function loadQuiz() {
@@ -590,56 +477,24 @@
             quizzes.forEach((quiz, qIdx) => {
                 const qDiv = document.createElement('div');
                 qDiv.className = 'mb-10 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md';
-                
-                let optionsHtml = quiz.a.map((opt, oIdx) => `
-                    <button class="quiz-option" data-q="${qIdx}" data-o="${oIdx}">
-                        <span class="option-index">${oIdx + 1}</span>
-                        <span class="option-text">${opt}</span>
-                    </button>
-                `).join('');
-
-                qDiv.innerHTML = `
-                    <h3 class="font-bold mb-6 text-slate-800 text-xl flex items-start">
-                        <span class="bg-emerald-100 text-emerald-700 w-9 h-9 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 text-sm font-black">Q${qIdx+1}</span>
-                        <span class="pt-1">${quiz.q}</span>
-                    </h3>
-                    <div class="options-wrapper">${optionsHtml}</div>
-                    <div id="q-hint-${qIdx}" class="hidden mt-6 p-5 bg-emerald-50 text-emerald-800 rounded-2xl text-sm border border-emerald-100 animate-pulse">
-                        💡 <b>도움말:</b> ${quiz.hint}
-                    </div>
-                `;
+                let optionsHtml = quiz.a.map((opt, oIdx) => `<button class="quiz-option" data-q="${qIdx}" data-o="${oIdx}"><span class="option-index">${oIdx + 1}</span><span class="option-text">${opt}</span></button>`).join('');
+                qDiv.innerHTML = `<h3 class="font-bold mb-6 text-slate-800 text-xl flex items-start"><span class="bg-emerald-100 text-emerald-700 w-9 h-9 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 text-sm font-black">Q${qIdx+1}</span><span class="pt-1">${quiz.q}</span></h3><div class="options-wrapper">${optionsHtml}</div><div id="q-hint-${qIdx}" class="hidden mt-6 p-5 bg-emerald-50 text-emerald-800 rounded-2xl text-sm border border-emerald-100 animate-pulse">💡 <b>도움말:</b> ${quiz.hint}</div>`;
                 container.appendChild(qDiv);
             });
-
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const qIdx = parseInt(this.getAttribute('data-q'));
                     const oIdx = parseInt(this.getAttribute('data-o'));
-                    const correctIdx = quizzes[qIdx].correct;
-                    const options = this.closest('.options-wrapper').querySelectorAll('.quiz-option');
-                    
-                    if (oIdx === correctIdx) {
-                        this.classList.add('correct');
-                        this.querySelector('.option-text').innerHTML += " <strong>(정답입니다!)</strong>";
-                        options.forEach(b => b.disabled = true);
-                    } else {
-                        this.classList.add('wrong');
-                        this.disabled = true;
-                        document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden');
-                    }
+                    if (oIdx === quizzes[qIdx].correct) { this.classList.add('correct'); this.querySelector('.option-text').innerHTML += " <strong>(정답입니다!)</strong>"; this.closest('.options-wrapper').querySelectorAll('.quiz-option').forEach(b => b.disabled = true); }
+                    else { this.classList.add('wrong'); this.disabled = true; document.getElementById(`q-hint-${qIdx}`).classList.remove('hidden'); }
                 });
             });
         }
 
         function toggleCode(id, btnElement) {
             const el = document.getElementById(id);
-            if (el.style.display === 'block') {
-                el.style.display = 'none';
-                btnElement.innerHTML = '💡 코딩 가이드 보기';
-            } else {
-                el.style.display = 'block';
-                btnElement.innerHTML = '💡 코딩 가이드 숨기기';
-            }
+            if (el.style.display === 'block') { el.style.display = 'none'; btnElement.innerHTML = '💡 코딩 가이드 보기'; }
+            else { el.style.display = 'block'; btnElement.innerHTML = '💡 코딩 가이드 숨기기'; }
         }
 
         window.onload = loadQuiz;
