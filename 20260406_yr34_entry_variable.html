@@ -75,34 +75,48 @@
         }
 
         ul { padding-left: 25px; margin-bottom: 20px; }
-        ol.code-list {
-            padding-left: 20px;
-            margin-bottom: 20px;
-            counter-reset: step-counter;
-            list-style-type: none;
+        
+        /* 의사코드 계층 스타일 */
+        .pseudo-code {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 30px;
+            background-color: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
         }
-        ol.code-list li {
-            position: relative;
-            margin-bottom: 14px;
-            padding-left: 35px;
-            color: #4a5568;
+        .pseudo-code li { margin-bottom: 10px; }
+        .depth-1 { font-weight: 700; color: #2b6cb0; margin-top: 15px; }
+        .depth-1:first-child { margin-top: 0; }
+        .depth-2 { padding-left: 25px; color: #4a5568; }
+        .depth-3 { padding-left: 50px; color: #2d3748; }
+
+        /* 블록 이미지 공통 스타일 */
+        .entry-block {
+            height: 48px;
+            vertical-align: middle;
+            object-fit: contain;
+            display: inline-block;
         }
-        ol.code-list li::before {
-            content: counter(step-counter);
-            counter-increment: step-counter;
-            position: absolute;
-            left: 0;
-            top: 2px;
-            background-color: #edf2f7;
-            color: #4a5568;
-            font-weight: 700;
-            font-size: 14px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
+        
+        /* 특정 블록 크기 조정 (만일~이라면 블록 등) */
+        .block-large {
+            height: 75px !important;
+        }
+
+        .hint-block-img {
+            margin: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .hint-blocks-container {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            gap: 15px;
+            padding: 10px 0;
         }
 
         button {
@@ -128,9 +142,8 @@
             align-items: center;
             box-shadow: none;
         }
-        .btn-toggle:hover { transform: none; filter: brightness(0.95); }
 
-        /* 시뮬레이터(인터랙티브 영역) 스타일 */
+        /* 시뮬레이터 스타일 */
         .simulator-area {
             background-color: #f7fafc;
             border: 2px solid #e2e8f0;
@@ -196,8 +209,8 @@
             display: none;
             margin-top: 10px;
             margin-bottom: 30px;
-            padding: 15px;
-            background-color: #f7fafc;
+            padding: 25px;
+            background-color: #f8fafc;
             border-radius: 12px;
             text-align: left;
             border: 1px dashed #cbd5e0;
@@ -213,10 +226,6 @@
             align-items: center;
             gap: 20px;
         }
-        .block-card img {
-            height: 40px;
-            object-fit: contain;
-        }
 
         .btn-download {
             background-color: #48bb78;
@@ -231,11 +240,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: all 0.2s;
         }
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-            filter: brightness(0.95);
-        }
 
         .sim-btn-img {
             height: 48px;
@@ -245,21 +249,12 @@
             transition: all 0.2s;
             object-fit: contain;
         }
-        .sim-btn-img:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-        }
-        .sim-btn-img:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
 
         @media (max-width: 600px) {
             .container { padding: 30px 20px; }
             h1 { font-size: 28px; }
             button { width: 100%; margin: 5px 0; }
             .block-card { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .sim-btn-img { height: auto; width: 100%; max-width: 250px; }
         }
     </style>
 </head>
@@ -269,13 +264,13 @@
     <h1>🥚 [5차시] 신비한 알과 점수 상자(변수)</h1>
 
     <section>
-        <h2>1. 도입: 알을 깨워서 키워보자! 🐣</h2>
+        <h2>1. 알을 깨워서 키워보자! 🐣</h2>
         <p>안녕 친구들! 오늘은 세 가지 신비한 알을 만나볼 거예요.<br>바로 <strong>불의 알, 이끼의 알, 물의 알</strong>이에요!<br>이 알들은 우리가 정성껏 클릭해줘야만 멋지게 깨어날 수 있답니다.</p>
         <p class="guide-text">📌 오늘의 목표: '변수'를 만들어 클릭할 때마다 경험치를 쌓고, 알을 진화시켜 봅시다!</p>
     </section>
 
     <section>
-        <h2>2. 전개: 변수는 신비한 요술 상자! 📦</h2>
+        <h2>2. 변수는 신비한 요술 상자! 📦</h2>
         <p>게임을 만들 때 점수, 남은 시간, 내 이름 등을 기억해둬야 할 때가 있죠?<br>이렇게 데이터를 저장하는 <strong>'이름표가 붙은 요술 상자'</strong>를 우리는 <span class="highlight">변수</span>라고 불러요.</p>
         
         <p>변수 상자 안에는 숫자나 글자를 담을 수 있어요. 하지만 아주 중요한 마법의 규칙이 하나 있어요!</p>
@@ -287,7 +282,7 @@
         </div>
 
         <div class="block-card">
-            <img src="https://docs.playentry.org/user/images/block-variable-04.png" alt="변수값 블록">
+            <img src="https://docs.playentry.org/user/images/block-variable-04.png" alt="변수값 블록" class="entry-block">
             <div>
                 <strong>[변수값 블록]</strong><br>
                 동그랗게 생긴 이 블록은 "지금 이 상자 안에 뭐가 들어있지?" 하고 안을 들여다보는 블록이에요. 지금 경험치가 몇 점인지 확인할 때 꼭 필요해요!
@@ -297,14 +292,10 @@
         <h3 style="margin-top: 50px;">⚖️ 더하기 vs 정하기! 무엇이 다를까?</h3>
         <p>엔트리에서 변수를 다룰 때 가장 헷갈리는 두 가지 블록이 있어요. 시뮬레이터를 직접 눌러보며 차이를 알아볼까요?</p>
 
-        <!-- 인터랙티브 시뮬레이터 영역 -->
         <div class="simulator-area">
             <h3>💧 물_경험치 바구니 시뮬레이터</h3>
             <div class="var-score">현재 물_경험치: <span id="var-value">0</span></div>
-            
-            <!-- 물방울이 담길 바구니 -->
             <div id="basket-visual" class="basket"><span style="color: #a0aec0; font-size: 16px;">(바구니가 비어 있어요)</span></div>
-            
             <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px;">
                 <img src="https://happyhyeok.github.io/afterschool/v1.PNG" alt="1만큼 더하기" onclick="actionAdd(1)" class="sim-btn-img">
                 <img src="https://happyhyeok.github.io/afterschool/v2.PNG" alt="5로 정하기" onclick="actionSet(5)" class="sim-btn-img">
@@ -315,19 +306,21 @@
         
         <p>💡 <strong>차이점 정리 노트:</strong></p>
         <ul style="list-style: none; padding-left: 0;">
-            <li style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border-left: 5px solid #3182ce;">
-                <img src="https://docs.playentry.org/user/images/block-variable-05.png" alt="만큼 더하기" style="height: 35px; margin-bottom: 10px; display: block;">
-                <strong><span class="highlight">~만큼 더하기</span></strong>: 원래 상자에 들어있던 것에 <strong>추가로 더 담는 것</strong>이에요. (알을 클릭할 때마다 점수가 계속 늘어나요!)
+            <li style="margin-bottom: 20px; background-color: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #3182ce;">
+                <img src="https://docs.playentry.org/user/images/block-variable-05.png" alt="만큼 더하기" class="entry-block" style="margin-bottom: 15px; display: block;">
+                <strong><span class="highlight">~만큼 더하기</span></strong>: 원래 상자에 들어있던 것에 <strong>추가로 더 담는 것</strong>이에요.<br>
+                <span style="color: #718096; font-size: 16px;">(알을 클릭할 때마다 점수가 계속 늘어나요!)</span>
             </li>
-            <li style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border-left: 5px solid #d69e2e;">
-                <img src="https://docs.playentry.org/user/images/block-variable-06.png" alt="로 정하기" style="height: 35px; margin-bottom: 10px; display: block;">
-                <strong><span class="highlight">~로 정하기</span></strong>: 원래 상자에 뭐가 있었든 <strong>다 쏟아버리고, 딱 그 숫자만큼만 새롭게 담는 것</strong>이에요. (게임을 처음 시작할 때 0점으로 비우는 용도로 많이 써요!)
+            <li style="margin-bottom: 20px; background-color: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #d69e2e;">
+                <img src="https://docs.playentry.org/user/images/block-variable-06.png" alt="로 정하기" class="entry-block" style="margin-bottom: 15px; display: block;">
+                <strong><span class="highlight">~로 정하기</span></strong>: 원래 상자에 뭐가 있었든 <strong>다 쏟아버리고, 딱 그 숫자만큼만 새롭게 담는 것</strong>이에요.<br>
+                <span style="color: #718096; font-size: 16px;">(게임을 처음 시작할 때 0점으로 비우는 용도로 많이 써요!)</span>
             </li>
         </ul>
     </section>
 
     <section>
-        <h2>3. 실습: 나만의 성장 게임 코딩 🛠️</h2>
+        <h2>3. 나만의 성장 게임 코딩 🛠️</h2>
         
         <h3>✅ 사전 준비</h3>
         <p>먼저 선생님이 준비한 기본 파일을 다운로드하고 엔트리에서 열어주세요!</p>
@@ -340,24 +333,30 @@
         <h3>📝 어떻게 코딩할까요?</h3>
 
         <h4>💧 1. 물의 알 코딩하기</h4>
-        <ol class="code-list">
-            <li><strong>시작하기 버튼을 클릭했을 때</strong>: 게임이 시작되면 '물_경험치'를 <span class="highlight">0으로 정합니다</span>. (상자 싹 비우기!)</li>
-            <li><strong>오브젝트를 클릭했을 때</strong>: 마우스로 알을 누르면 '물_경험치'에 <span class="highlight">1만큼 더합니다</span>. (경험치 쌓기!)</li>
-            <li><strong>만일 '물_경험치'가 10이라면</strong>: 점수가 10점 꽉 찼는지 확인합니다. (이때 '변수값' 블록을 써요!)</li>
-            <li><strong>다음 모양으로 바꾸기</strong>: 알을 깨고 드래곤이 나오게 합니다!</li>
-            <li><strong>'물_경험치'를 0으로 정하기</strong>: 다음 레벨(모양)을 위해 상자를 다시 비웁니다.</li>
-        </ol>
-        <button class="btn-toggle" onclick="toggleHint('hint-1')">👀 블록 조립 힌트 보기</button>
+        <ul class="pseudo-code">
+            <li class="depth-1">1. 시작하기 버튼을 클릭했을 때</li>
+            <li class="depth-2">1) '물_경험치'를 <span class="highlight">0으로 정하기</span></li>
+            
+            <li class="depth-1">2. 오브젝트를 클릭했을 때</li>
+            <li class="depth-2">1) '물_경험치'에 <span class="highlight">1만큼 더하기</span></li>
+            <li class="depth-2">2) 만약 '물_경험치'값이 10이라면? 그렇다면,</li>
+            <li class="depth-3">① <span class="highlight">다음 모양으로 바꾸기</span></li>
+            <li class="depth-3">② '물_경험치'를 <span class="highlight">0으로 정하기</span></li>
+        </ul>
+
+        <button class="btn-toggle" onclick="toggleHint('hint-1')">👀 사용 블록 안내 보기</button>
         <div id="hint-1" class="hint-img-container">
-            <p><strong>[이렇게 조립해 보세요!]</strong></p>
-            <p>1. [시작] - 시작하기 버튼을 클릭했을 때<br>
-               2. [자료] - 물_경험치를 (0)으로 정하기<br>
-               <br>
-               3. [시작] - 오브젝트를 클릭했을 때<br>
-               4. [자료] - 물_경험치에 (1)만큼 더하기<br>
-               5. [흐름] - 만일 (물_경험치값 = 10) 이라면<br>
-               6. &nbsp;&nbsp;&nbsp;&nbsp;[생김새] - 다음 모양으로 바꾸기<br>
-               7. &nbsp;&nbsp;&nbsp;&nbsp;[자료] - 물_경험치를 (0)으로 정하기</p>
+            <div class="hint-blocks-container">
+                <img src="https://docs.playentry.org/user/images/block-start-01.png" class="entry-block hint-block-img" alt="시작하기 클릭">
+                <img src="https://docs.playentry.org/user/images/block-start-05.png" class="entry-block hint-block-img" alt="오브젝트 클릭">
+                <img src="https://docs.playentry.org/user/images/block-variable-06.png" class="entry-block hint-block-img" alt="0으로 정하기">
+                <img src="https://docs.playentry.org/user/images/block-variable-05.png" class="entry-block hint-block-img" alt="1만큼 더하기">
+                <img src="https://docs.playentry.org/user/images/block-flow-07.png" class="entry-block hint-block-img block-large" alt="만일~이라면">
+                <img src="https://docs.playentry.org/user/images/block-variable-04.png" class="entry-block hint-block-img" alt="변수값">
+                <img src="https://docs.playentry.org/user/images/block-decision-06.png" class="entry-block hint-block-img" alt="=">
+                <img src="https://docs.playentry.org/user/images/block-looks-07.png" class="entry-block hint-block-img" alt="다음 모양">
+            </div>
+            <p style="font-size: 14px; color: #718096; margin-top: 15px;">* 위 블록들을 참고하여 알이 깨어나는 코드를 완성해 보세요!</p>
         </div>
 
         <h4>🔥 2. 불의 알과 이끼의 알</h4>
@@ -380,7 +379,7 @@
         <div class="quiz-item">
             <p><strong>Q2. 변수 상자에 '사과'라는 글자가 들어있습니다. 여기에 '바나나'를 새롭게 넣으면 상자 안에는 무엇이 있을까요?</strong></p>
             <button class="btn-quiz" onclick="checkQuiz(2, false)">사과와 바나나 둘 다</button>
-            <button class="btn-quiz" onclick="checkQuiz(2, true)">바나나만 (한 번에 하나만!)</button>
+            <button class="btn-quiz" onclick="checkQuiz(2, true)">바나나만</button>
             <div id="quiz-feedback-2" class="feedback"></div>
         </div>
 
@@ -393,8 +392,8 @@
 
         <div class="quiz-item">
             <p><strong>Q4. '물_경험치' 상자에 현재 '5'가 들어있어요. 이때 [물_경험치에 (1)만큼 더하기] 블록을 실행하면 상자 안의 숫자는 어떻게 변할까요?</strong></p>
-            <button class="btn-quiz" onclick="checkQuiz(4, false)">1이 된다 (초기화)</button>
-            <button class="btn-quiz" onclick="checkQuiz(4, true)">6이 된다 (기존 점수에 추가)</button>
+            <button class="btn-quiz" onclick="checkQuiz(4, false)">1이 된다</button>
+            <button class="btn-quiz" onclick="checkQuiz(4, true)">6이 된다</button>
             <div id="quiz-feedback-4" class="feedback"></div>
         </div>
 
@@ -409,6 +408,7 @@
         <ul>
             <li>진화할 때 멋진 효과음을 넣어보세요!</li>
             <li>경험치가 10이 아니라 20이 되어야 진화하도록 난이도를 높여보세요.</li>
+            <li><strong>장면을 추가해서 드래곤이 자라난 뒤의 다음 이야기를 만들어보세요!</strong></li>
         </ul>
     </section>
     
@@ -416,7 +416,6 @@
 </div>
 
 <script>
-    // --- 퀴즈 및 힌트 로직 ---
     function toggleHint(id) {
         const container = document.getElementById(id);
         container.style.display = (container.style.display === "none" || container.style.display === "") ? "block" : "none";
@@ -433,7 +432,6 @@
         }
     }
 
-    // --- 변수 시뮬레이터 로직 ---
     let waterExp = 0;
     const valueDisplay = document.getElementById('var-value');
     const basketVisual = document.getElementById('basket-visual');
@@ -441,12 +439,8 @@
 
     function updateVisual() {
         valueDisplay.innerText = waterExp;
-        
-        // 바구니 애니메이션 효과
         basketVisual.classList.add('pop');
         setTimeout(() => basketVisual.classList.remove('pop'), 300);
-
-        // 시각적 물방울 렌더링
         basketVisual.innerHTML = '';
         if (waterExp === 0) {
             basketVisual.innerHTML = '<span style="color: #a0aec0; font-size: 16px;">(바구니가 비어 있어요)</span>';
@@ -462,8 +456,7 @@
         actionDesc.innerText = `👉 원래 바구니에 있던 것에서 ${amount}개를 더 추가했어요! (계속 쌓여요)`;
         actionDesc.style.color = "#3182ce";
         updateVisual();
-        
-        if(waterExp >= 10 && waterExp < 15) {
+        if(waterExp >= 10 && waterExp < 11) {
             alert("경험치가 10을 넘었어요! 엔트리였다면 지금 알이 깨어났을 거예요! 🐉");
         }
     }
