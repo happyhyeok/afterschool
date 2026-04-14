@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6주차: 컴퓨터 마법사 단축키 배우기</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+        }
+        h1, h2, h3, .gaegu-font {
+            font-family: 'Gaegu', cursive;
+        }
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .step-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-btn.active {
+            border-bottom-color: var(--primary);
+            color: #D97706; /* tailwind yellow-600 */
+            background-color: #FFFBEB; /* tailwind yellow-50 */
+        }
+        
+        /* 커스텀 스타일 추가: 퀴즈 및 버튼 효과 */
+        .magic-key {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 8px 0 #cbd5e1;
+        }
+        .magic-key:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 rgba(0,0,0,0.1), 0 4px 0 #cbd5e1;
+        }
+        .toast {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, -10px);
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-animation {
+            animation: shake 0.4s;
+        }
+        
+        /* 웹 실습(Step 4)용 아이템 애니메이션 */
+        .practice-item {
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .practice-item:hover {
+            transform: scale(1.1);
+        }
+        .practice-item.selected {
+            box-shadow: 0 0 0 4px var(--primary);
+            background-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+        .zone-selected {
+            box-shadow: inset 0 0 0 6px var(--accent) !important;
+            background-color: #fdf2f8 !important; /* pink-50 */
+        }
+    </style>
+</head>
+<body class="text-gray-800 pb-24 lg:pb-0 relative">
+
+    <!-- 최상단 전체 수업 타이틀 (네비게이션 탭 위로 이동) -->
+    <header class="max-w-4xl mx-auto px-4 pt-6 pb-2 md:px-8 md:pt-8 md:pb-4 text-center">
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl shadow-lg border-4 border-white p-6 md:p-8 flex flex-col items-center justify-center">
+            <div class="flex items-center gap-2 md:gap-4 mb-2">
+                <i data-lucide="wand-2" class="w-10 h-10 md:w-12 md:h-12 text-white"></i>
+                <h1 class="text-3xl md:text-5xl font-black text-white gaegu-font drop-shadow-md">단축키 마법사 되기!</h1>
+                <i data-lucide="sparkles" class="w-8 h-8 md:w-10 md:h-10 text-yellow-300"></i>
+            </div>
+            <p class="text-white text-base md:text-lg font-bold bg-white/20 px-4 py-1 rounded-full shadow-sm">복제 마법과 순간이동 마법의 비밀</p>
+        </div>
+    </header>
+
+    <!-- 모바일/태블릿을 위한 상단 네비게이션 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex overflow-x-auto no-scrollbar px-2 md:px-4">
+            <button onclick="showStep(0)" class="nav-btn active flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">0. 복습</button>
+            <button onclick="showStep(1)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">1. 준비</button>
+            <button onclick="showStep(2)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">2. 복제</button>
+            <button onclick="showStep(3)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">3. 이동</button>
+            <button onclick="showStep(4)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors text-indigo-600 bg-indigo-50">4. 연습하기</button>
+            <button onclick="showStep(5)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">5. 미션</button>
+            <button onclick="showStep(6)" class="nav-btn flex-1 py-3 px-3 md:py-4 md:px-6 font-bold text-sm md:text-lg text-gray-500 whitespace-nowrap border-b-4 border-transparent hover:bg-gray-50 transition-colors">6. 퀴즈</button>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="max-w-4xl mx-auto p-4 md:p-8 mt-4">
+
+        <!-- 단계별 콘텐츠를 감싸는 컨테이너 -->
+        <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10 border-4 border-primary relative overflow-hidden">
+            
+            <!-- 장식용 도형 -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary rounded-full opacity-20"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary rounded-full opacity-20"></div>
+
+            <!-- ================= Step 0 (복습) ================= -->
+            <div id="step0" class="step-content active relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-gray-200 text-gray-700 px-4 py-2 rounded-2xl font-bold text-xl">복습</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">지난 시간 마법 복습 🧙‍♂️</h2>
+                </div>
+
+                <div class="bg-blue-50 rounded-2xl p-6 border-2 border-blue-100 mb-6">
+                    <p class="text-lg leading-relaxed mb-4">
+                        지난 시간에는 <b>마우스 오른쪽 버튼</b>을 딸깍! 눌러서 사용하는 마법들을 배웠어요.<br>
+                        오늘의 새로운 단축키 마법을 배우기 전에, 잘 기억하고 있는지 자음 퀴즈를 풀어볼까요?
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <!-- 복습 1 -->
+                    <div class="review-card bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-sm transition-all duration-300">
+                        <div class="flex justify-center mb-3 text-blue-500"><i data-lucide="copy" class="w-10 h-10"></i></div>
+                        <h4 class="text-center font-bold text-lg mb-2">파일 똑같이 만들기</h4>
+                        <div class="initial-hint text-center text-sm text-gray-500 mb-2">초성 힌트: ㅂ ㅅ</div>
+                        <input type="text" data-answer="복사" maxlength="2" placeholder="정답 입력" class="review-input w-full text-center text-2xl font-black tracking-widest bg-gray-50 border-2 border-blue-200 rounded-xl py-3 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+                        <div class="review-feedback hidden mt-3 text-center text-green-600 font-bold bg-green-50 py-2 rounded-lg animate-bounce">정답! 🎉</div>
+                    </div>
+                    
+                    <!-- 복습 2 -->
+                    <div class="review-card bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-sm transition-all duration-300">
+                        <div class="flex justify-center mb-3 text-yellow-500"><i data-lucide="scissors" class="w-10 h-10"></i></div>
+                        <h4 class="text-center font-bold text-lg mb-2">원래 자리에서 오려내기</h4>
+                        <div class="initial-hint text-center text-sm text-gray-500 mb-2">초성 힌트: ㅈ ㄹ ㄴ ㄱ</div>
+                        <input type="text" data-answer="잘라내기" maxlength="4" placeholder="정답 입력" class="review-input w-full text-center text-2xl font-black tracking-widest bg-gray-50 border-2 border-yellow-200 rounded-xl py-3 placeholder:text-gray-400 focus:outline-none focus:border-yellow-500 focus:bg-white transition-colors">
+                        <div class="review-feedback hidden mt-3 text-center text-green-600 font-bold bg-green-50 py-2 rounded-lg animate-bounce">정답! 🎉</div>
+                    </div>
+
+                    <!-- 복습 3 -->
+                    <div class="review-card bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-sm transition-all duration-300">
+                        <div class="flex justify-center mb-3 text-pink-500"><i data-lucide="clipboard-paste" class="w-10 h-10"></i></div>
+                        <h4 class="text-center font-bold text-lg mb-2">기억한 파일 나타내기</h4>
+                        <div class="initial-hint text-center text-sm text-gray-500 mb-2">초성 힌트: ㅂ ㅇ ㄴ ㄱ</div>
+                        <input type="text" data-answer="붙여넣기" maxlength="4" placeholder="정답 입력" class="review-input w-full text-center text-2xl font-black tracking-widest bg-gray-50 border-2 border-pink-200 rounded-xl py-3 placeholder:text-gray-400 focus:outline-none focus:border-pink-500 focus:bg-white transition-colors">
+                        <div class="review-feedback hidden mt-3 text-center text-green-600 font-bold bg-green-50 py-2 rounded-lg animate-bounce">정답! 🎉</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end hidden lg:flex">
+                    <button onclick="showStep(nextStep())" class="bg-primary hover:bg-yellow-400 px-8 py-4 rounded-2xl font-bold text-xl text-yellow-900 transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        오늘의 마법 배우기 <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 1 ================= -->
+            <div id="step1" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-primary text-yellow-900 px-4 py-2 rounded-2xl font-bold text-xl">도입</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">마법 주문 준비하기 🪄</h2>
+                </div>
+                
+                <div class="bg-blue-50 rounded-2xl p-6 border-2 border-blue-100 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-500 p-3 rounded-full text-white">
+                            <i data-lucide="wand-2" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 text-blue-800">꼬마 마법사님, 환영합니다!</h3>
+                            <p class="text-lg leading-relaxed mb-4">
+                                컴퓨터 세상에서는 마우스를 오른쪽 클릭해서 '복사하기'를 누를 수도 있지만, 
+                                진짜 고수 마법사들은 <strong>'키보드 단축키'</strong>라는 마법 주문을 사용한답니다!
+                                오늘은 엄청나게 빠른 3가지 마법 주문을 배워볼 거예요.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 p-8 rounded-2xl text-center border-4 border-dashed border-gray-300">
+                    <h4 class="text-xl font-bold mb-4 text-gray-700">모든 마법의 시작! <span class="text-accent text-2xl">Ctrl(컨트롤)</span> 키를 찾아라!</h4>
+                    
+                    <!-- CSS로 직접 그린 키보드 대체 (엑박 방지) -->
+                    <div class="mb-6 bg-white p-6 rounded-3xl shadow-md border-4 border-primary inline-block">
+                        <div class="flex flex-col gap-2 font-mono">
+                            <div class="flex gap-2 ml-6">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">Z</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">X</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">C</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">V</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-16 h-10 md:h-12 bg-blue-500 text-white rounded-lg border-b-4 border-blue-700 flex items-center justify-center font-black text-lg md:text-xl shadow-lg ring-4 ring-blue-200 animate-pulse">Ctrl</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-24 h-10 md:w-32 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-lg mb-4 font-bold text-gray-700 bg-white p-4 rounded-xl shadow-sm" id="ctrl-mission-text">
+                        키보드 맨 왼쪽 아래를 보세요!<br>
+                        여러분의 <span class="text-blue-600">진짜 키보드에서 Ctrl 키</span>를 찾아 눌러 연습해 볼까요?<br>
+                        자, 새끼손가락으로 <span class="text-accent text-2xl">한번</span> 꾹 눌러보세요!
+                    </p>
+                    
+                    <!-- 실제 Ctrl 키 인식 피드백 UI -->
+                    <div class="flex justify-center items-center mt-6">
+                        <div id="real-ctrl-indicator" class="bg-gray-800 text-white font-black py-6 px-10 rounded-2xl text-4xl border-b-8 border-gray-900 transition-all duration-75 shadow-xl flex items-center gap-3">
+                            <i data-lucide="keyboard" class="w-8 h-8 text-gray-400"></i> Ctrl
+                        </div>
+                    </div>
+
+                    <!-- 칭찬 메시지 -->
+                    <div id="ctrl-praise-msg" class="mt-6 text-2xl font-black text-accent hidden">
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                    <button onclick="showStep(nextStep())" class="bg-primary hover:bg-yellow-400 px-8 py-4 rounded-2xl font-bold text-xl text-yellow-900 transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        마법 배우러 가기 <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 2 ================= -->
+            <div id="step2" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-secondary text-white px-4 py-2 rounded-2xl font-bold text-xl">전개 1</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">뚝딱! 복제 마법 👯‍♂️</h2>
+                </div>
+
+                <!-- CSS로 직접 그린 Ctrl + C, V 키보드 대체 (엑박 방지) -->
+                <div class="mb-6 text-center w-full">
+                    <div class="bg-white p-6 rounded-3xl shadow-md border-4 border-secondary inline-block">
+                        <div class="flex flex-col gap-2 font-mono">
+                            <div class="flex gap-2 ml-6">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">Z</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">X</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-green-400 text-white rounded-lg border-b-4 border-green-600 flex items-center justify-center font-black text-xl shadow-md ring-4 ring-green-200">C</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-400 text-white rounded-lg border-b-4 border-purple-600 flex items-center justify-center font-black text-xl shadow-md ring-4 ring-purple-200">V</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-16 h-10 md:h-12 bg-blue-500 text-white rounded-lg border-b-4 border-blue-700 flex items-center justify-center font-black text-lg md:text-xl shadow-md ring-4 ring-blue-200">Ctrl</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-24 h-10 md:w-32 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 복사 설명 -->
+                    <div class="bg-white rounded-2xl p-6 border-2 border-green-200 shadow-sm flex flex-col items-center text-center">
+                        <div class="bg-green-100 p-4 rounded-full text-green-600 mb-4">
+                            <i data-lucide="copy" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-green-700 mb-2">복사하기 (Copy)</h3>
+                        <div class="text-3xl font-black text-gray-800 mb-2 bg-gray-100 px-4 py-2 rounded-xl">Ctrl + <span class="text-green-500">C</span></div>
+                        <p class="text-gray-600 text-lg">파일이나 글자를 똑같이 기억하는 마법이에요! 영단어 <b>C</b>opy의 <b>C</b>를 기억해요.</p>
+                        
+                        <!-- 버튼을 제거하고 인디케이터(알림판)로 변경, 마우스 클릭 삭제 -->
+                        <div id="real-copy-indicator" class="mt-4 bg-gray-100 border-4 border-green-400 text-green-700 font-bold py-4 px-6 rounded-xl w-full flex flex-col items-center justify-center transition-all duration-200">
+                            <span class="text-lg animate-pulse">⌨️ 진짜 키보드에서 눌러보세요!</span>
+                        </div>
+                    </div>
+
+                    <!-- 붙여넣기 설명 -->
+                    <div class="bg-white rounded-2xl p-6 border-2 border-purple-200 shadow-sm flex flex-col items-center text-center">
+                        <div class="bg-purple-100 p-4 rounded-full text-purple-600 mb-4">
+                            <i data-lucide="clipboard-paste" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-purple-700 mb-2">붙여넣기 (Paste)</h3>
+                        <div class="text-3xl font-black text-gray-800 mb-2 bg-gray-100 px-4 py-2 rounded-xl">Ctrl + <span class="text-purple-500">V</span></div>
+                        <p class="text-gray-600 text-lg">기억한 것을 화면에 찰싹! 나타나게 해요. 찍찍이(<b>V</b>elcro)의 <b>V</b>로 생각할까요?</p>
+                        
+                        <!-- 버튼을 제거하고 인디케이터(알림판)로 변경, 마우스 클릭 삭제 -->
+                        <div id="real-paste-indicator" class="mt-4 bg-gray-100 border-4 border-purple-400 text-purple-700 font-bold py-4 px-6 rounded-xl w-full flex flex-col items-center justify-center transition-all duration-200">
+                            <span class="text-lg animate-pulse">⌨️ 진짜 키보드에서 눌러보세요!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2용 인터랙션 피드백 토스트 -->
+                <div id="magicToast2" class="toast text-center text-xl font-bold text-white bg-gray-800 py-3 rounded-xl shadow-2xl">
+                    마법 대기 중...
+                </div>
+                
+                <div class="mt-8 flex justify-between hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                    <button onclick="showStep(nextStep())" class="bg-primary hover:bg-yellow-400 px-8 py-4 rounded-2xl font-bold text-xl text-yellow-900 transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        다음 마법 <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 3 ================= -->
+            <div id="step3" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-secondary text-white px-4 py-2 rounded-2xl font-bold text-xl">전개 2</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">슝~ 순간이동 마법 🚀</h2>
+                </div>
+
+                <!-- CSS로 직접 그린 Ctrl + X 키보드 대체 (엑박 방지) -->
+                <div class="mb-6 text-center w-full">
+                    <div class="bg-white p-6 rounded-3xl shadow-md border-4 border-accent inline-block">
+                        <div class="flex flex-col gap-2 font-mono">
+                            <div class="flex gap-2 ml-6">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">Z</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-red-400 text-white rounded-lg border-b-4 border-red-600 flex items-center justify-center font-black text-xl shadow-md ring-4 ring-red-200">X</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">C</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200 flex items-center justify-center font-bold text-gray-400">V</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-16 h-10 md:h-12 bg-blue-500 text-white rounded-lg border-b-4 border-blue-700 flex items-center justify-center font-black text-lg md:text-xl shadow-md ring-4 ring-blue-200">Ctrl</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                                <div class="w-24 h-10 md:w-32 md:h-12 bg-gray-50 rounded-lg border-b-4 border-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 rounded-2xl p-6 border-2 border-red-100 mb-8 text-center">
+                    <div class="flex justify-center mb-4 text-accent">
+                        <i data-lucide="scissors" class="w-16 h-16"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-accent mb-2">잘라내기 (Cut)</h3>
+                    <div class="text-4xl font-black text-gray-800 mb-4 inline-block bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-200">
+                        Ctrl + <span class="text-accent">X</span>
+                    </div>
+                    <p class="text-xl mb-4">
+                        가위(<b>X</b> 모양)로 싹둑 잘라내는 마법이에요!<br>
+                        복사와 다르게, <b>원래 있던 자리에서는 사라지고 다른 곳으로 이동</b>시킬 때 사용해요.
+                    </p>
+
+                    <div id="real-cut-indicator" class="mt-4 mx-auto max-w-xs bg-gray-100 border-4 border-red-400 text-red-700 font-bold py-4 px-6 rounded-xl flex flex-col items-center justify-center transition-all duration-200">
+                        <span class="text-lg animate-pulse">⌨️ 진짜 키보드에서 눌러보세요!</span>
+                    </div>
+                </div>
+
+                <!-- Step 3용 피드백 토스트 -->
+                <div id="magicToast3" class="toast text-center text-xl font-bold text-white bg-gray-800 py-3 rounded-xl shadow-2xl">
+                    마법 대기 중...
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border-4 border-dashed border-gray-300">
+                    <h4 class="text-xl font-bold text-gray-700 mb-4 text-center">🪄 순간이동 콤보 마법을 볼까요?</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                        <div class="text-center">
+                            <div class="text-5xl mb-2">🍎</div>
+                            <div class="bg-gray-100 px-3 py-1 rounded font-bold">1. 선택</div>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-8 h-8 text-gray-400 hidden md:block"></i>
+                        <i data-lucide="arrow-down" class="w-8 h-8 text-gray-400 block md:hidden"></i>
+                        <div class="text-center text-accent">
+                            <div class="text-3xl font-black bg-red-100 px-4 py-2 rounded-xl mb-2">Ctrl+X</div>
+                            <div class="font-bold">2. 잘라내기</div>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-8 h-8 text-gray-400 hidden md:block"></i>
+                        <i data-lucide="arrow-down" class="w-8 h-8 text-gray-400 block md:hidden"></i>
+                        <div class="text-center text-purple-600">
+                            <div class="text-3xl font-black bg-purple-100 px-4 py-2 rounded-xl mb-2">Ctrl+V</div>
+                            <div class="font-bold">3. 붙여넣기</div>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-8 h-8 text-gray-400 hidden md:block"></i>
+                        <i data-lucide="arrow-down" class="w-8 h-8 text-gray-400 block md:hidden"></i>
+                        <div class="text-center">
+                            <div class="bg-orange-100 p-4 rounded-xl border-2 border-orange-300">
+                                <div class="text-5xl">🍎</div>
+                            </div>
+                            <div class="font-bold mt-2">이동 완료!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                    <button onclick="showStep(nextStep())" class="bg-indigo-500 hover:bg-indigo-600 px-8 py-4 rounded-2xl font-bold text-xl text-white transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        연습하러 가기 <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 4 (연습하기) ================= -->
+            <div id="step4" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-indigo-500 text-white px-4 py-2 rounded-2xl font-bold text-xl">연습하기</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">방 정리 대작전! 🧹</h2>
+                </div>
+
+                <p class="text-lg mb-4 text-gray-700 bg-indigo-50 p-4 rounded-xl border-2 border-indigo-100 font-bold">
+                    진짜 컴퓨터 바탕화면을 정리하기 전에, 여기서 먼저 단축키를 연습해 볼까요?<br>
+                    어질러진 장난감들을 잘라내서(<span class="text-red-500">Ctrl+X</span>) 상자에 넣고(<span class="text-purple-600">Ctrl+V</span>),<br>
+                    예쁜 스티커는 복사해서(<span class="text-green-600">Ctrl+C</span>) 여러 개 붙여보세요!
+                </p>
+
+                <!-- 실습 가이드라인 -->
+                <div class="flex justify-center gap-4 mb-6 text-sm md:text-base">
+                    <div class="bg-white px-4 py-2 rounded-full border shadow-sm"><span class="font-bold bg-gray-200 px-2 rounded">1</span> 마우스로 장난감 선택</div>
+                    <div class="bg-white px-4 py-2 rounded-full border shadow-sm"><span class="font-bold bg-gray-200 px-2 rounded">2</span> 키보드로 복사/잘라내기</div>
+                    <div class="bg-white px-4 py-2 rounded-full border shadow-sm"><span class="font-bold bg-gray-200 px-2 rounded">3</span> 상자 클릭하고 붙여넣기</div>
+                </div>
+
+                <!-- Step 4용 피드백 토스트 -->
+                <div id="magicToast4" class="toast text-center text-xl font-bold text-white bg-gray-800 py-3 rounded-xl shadow-2xl">
+                    마법 대기 중...
+                </div>
+
+                <!-- 인터랙티브 작업 공간 -->
+                <div class="flex flex-col md:flex-row gap-4 h-[500px]">
+                    
+                    <!-- Source: 어질러진 방 -->
+                    <div id="zone-source" class="w-full md:w-1/2 bg-[#FFF5E1] rounded-2xl border-4 border-amber-300 p-4 relative overflow-hidden transition-all cursor-pointer shadow-inner" onclick="selectZone('zone-source')">
+                        <div class="flex items-center gap-2 text-amber-800 font-bold mb-2">
+                            <i data-lucide="home" class="w-5 h-5"></i> 어질러진 방
+                        </div>
+                        <div class="text-xs text-amber-600 mb-4">(여기를 클릭해서 선택할 수도 있어요)</div>
+                        
+                        <!-- 장난감 & 스티커 아이템들 -->
+                        <div class="practice-item absolute top-16 left-10 text-5xl bg-white p-2 rounded-xl shadow cursor-pointer border-2 border-gray-100" onclick="selectItem(this, event)">🧸</div>
+                        <div class="practice-item absolute top-32 left-32 text-5xl bg-white p-2 rounded-xl shadow cursor-pointer border-2 border-gray-100" onclick="selectItem(this, event)">🚗</div>
+                        <div class="practice-item absolute bottom-16 right-10 text-5xl bg-white p-2 rounded-xl shadow cursor-pointer border-2 border-gray-100" onclick="selectItem(this, event)">⚽️</div>
+                        <div class="practice-item absolute bottom-32 left-16 text-5xl bg-white p-2 rounded-xl shadow cursor-pointer border-2 border-gray-100" onclick="selectItem(this, event)">⭐️</div>
+                        <div class="practice-item absolute top-10 right-16 text-5xl bg-white p-2 rounded-xl shadow cursor-pointer border-2 border-gray-100" onclick="selectItem(this, event)">🌺</div>
+                    </div>
+
+                    <!-- Target Zones Column -->
+                    <div class="w-full md:w-1/2 flex flex-col gap-4">
+                        <!-- Target 1: 장난감 상자 (잘라내기/이동) -->
+                        <div id="zone-target-cut" class="flex-1 bg-[#E1F0FF] rounded-2xl border-4 border-blue-300 p-4 relative transition-all cursor-pointer shadow-inner flex flex-col" onclick="selectZone('zone-target-cut')">
+                            <div class="flex items-center gap-2 text-blue-800 font-bold mb-2">
+                                <i data-lucide="box" class="w-5 h-5"></i> 장난감 상자 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded ml-2">이동(Ctrl+X)</span>
+                            </div>
+                            <div class="text-xs text-blue-600 text-center mt-auto mb-auto opacity-50 font-bold text-lg pointer-events-none">
+                                장난감을 잘라내서(X)<br>여기에 넣으세요(V)
+                            </div>
+                        </div>
+
+                        <!-- Target 2: 스티커 북 (복사/복제) -->
+                        <div id="zone-target-copy" class="flex-1 bg-[#F0FFE1] rounded-2xl border-4 border-green-300 p-4 relative transition-all cursor-pointer shadow-inner flex flex-col" onclick="selectZone('zone-target-copy')">
+                            <div class="flex items-center gap-2 text-green-800 font-bold mb-2">
+                                <i data-lucide="book" class="w-5 h-5"></i> 스티커 북 <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded ml-2">복제(Ctrl+C)</span>
+                            </div>
+                            <div class="text-xs text-green-600 text-center mt-auto mb-auto opacity-50 font-bold text-lg pointer-events-none">
+                                스티커를 복사해서(C)<br>여기에 여러 개 붙이세요(V)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                    <button onclick="showStep(nextStep())" class="bg-primary hover:bg-yellow-400 px-8 py-4 rounded-2xl font-bold text-xl text-yellow-900 transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        미션하러 가기 <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 5 (마법 미션) ================= -->
+            <div id="step5" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-accent text-white px-4 py-2 rounded-2xl font-bold text-xl">미션</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">진짜 바탕화면 정리 미션 📂</h2>
+                </div>
+
+                <p class="text-lg mb-6">
+                    연습을 잘 마쳤나요? 이제 <b>진짜 컴퓨터 바탕화면</b>에서 실력을 보여주세요!<br>
+                    바탕화면에 길을 잃은 동물 친구들을 단축키로 안전한 <b>'동물농장'</b> 폴더로 이사시켜 주세요!
+                </p>
+
+                <div class="space-y-4">
+                    <!-- 미션 항목 1 -->
+                    <div class="flex items-start gap-4 p-4 bg-white border-2 border-gray-200 rounded-2xl shadow-sm hover:border-primary transition-colors cursor-pointer" onclick="toggleMission(this)">
+                        <div class="mt-1 w-8 h-8 rounded border-2 border-gray-300 flex items-center justify-center text-white font-bold checkbox-ui"></div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-1 flex items-center gap-2"><span class="bg-gray-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span> 바탕화면에 새 폴더 만들기</h4>
+                            <p class="text-gray-600">바탕화면 빈 곳을 마우스 오른쪽 클릭 → '새로 만들기' → '폴더'를 누르고 이름을 <span class="bg-yellow-200 px-2 rounded font-bold">동물농장</span>으로 바꿔요.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 미션 항목 2 -->
+                    <div class="flex items-start gap-4 p-4 bg-white border-2 border-gray-200 rounded-2xl shadow-sm hover:border-primary transition-colors cursor-pointer" onclick="toggleMission(this)">
+                        <div class="mt-1 w-8 h-8 rounded border-2 border-gray-300 flex items-center justify-center text-white font-bold checkbox-ui"></div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-1 flex items-center gap-2"><span class="bg-gray-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span> 동물 사진 잘라내기 (순간이동 준비)</h4>
+                            <p class="text-gray-600">바탕화면에 있는 '사자', '호랑이', '토끼' 사진을 드래그해서 모두 선택한 후, <span class="text-accent font-bold bg-red-50 px-2 rounded">Ctrl + X</span> 를 눌러요. 사진이 약간 투명해질 거예요!</p>
+                        </div>
+                    </div>
+
+                    <!-- 미션 항목 3 -->
+                    <div class="flex items-start gap-4 p-4 bg-white border-2 border-gray-200 rounded-2xl shadow-sm hover:border-primary transition-colors cursor-pointer" onclick="toggleMission(this)">
+                        <div class="mt-1 w-8 h-8 rounded border-2 border-gray-300 flex items-center justify-center text-white font-bold checkbox-ui"></div>
+                        <div>
+                            <h4 class="font-bold text-xl mb-1 flex items-center gap-2"><span class="bg-gray-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span> 동물농장으로 이사시키기</h4>
+                            <p class="text-gray-600">'동물농장' 폴더를 더블클릭해서 연 다음, 빈 곳을 한 번 클릭하고 <span class="text-purple-600 font-bold bg-purple-50 px-2 rounded">Ctrl + V</span> 를 눌러요! 동물들이 뿅 나타나면 성공!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center text-gray-400 font-bold">
+                    💡 항목을 클릭해서 체크해 보세요! 미션을 다 완료했나요?
+                </div>
+
+                <div class="mt-8 flex justify-between hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                    <button onclick="showStep(nextStep())" class="bg-success hover:bg-green-500 px-8 py-4 rounded-2xl font-bold text-xl text-white transition-transform hover:scale-105 shadow-md flex items-center gap-2">
+                        퀴즈 풀러 가기 <i data-lucide="check-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= Step 6 (기존 Step 5: 자격증 퀴즈) ================= -->
+            <div id="step6" class="step-content relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="bg-success text-white px-4 py-2 rounded-2xl font-bold text-xl">정리</span>
+                    <h2 class="text-4xl gaegu-font font-bold text-gray-800">마법사 자격증 퀴즈 🎓</h2>
+                </div>
+                
+                <p class="text-lg mb-6">훌륭해요! 이제 마지막으로 마법사 자격증 퀴즈를 풀어볼까요? 정답을 클릭해 보세요.</p>
+
+                <!-- 퀴즈 1 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-gray-200 mb-6 quiz-container">
+                    <h4 class="text-xl font-bold mb-4">Q1. 똑같은 파일을 하나 더 만드는 '복사하기' 마법 주문은 무엇일까요?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(this, false, 'A는 전체선택 마법이에요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">1) Ctrl + A</button>
+                        <button onclick="checkQuiz(this, true, '정답! Copy의 C를 기억하세요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">2) Ctrl + C</button>
+                        <button onclick="checkQuiz(this, false, '이건 붙여넣기 마법이에요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">3) Ctrl + V</button>
+                        <button onclick="checkQuiz(this, false, '이건 잘라내기 마법이에요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">4) Ctrl + X</button>
+                    </div>
+                    <div class="quiz-feedback mt-3 text-lg font-bold hidden"></div>
+                </div>
+
+                <!-- 퀴즈 2 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-gray-200 mb-6 quiz-container">
+                    <h4 class="text-xl font-bold mb-4">Q2. 가위로 싹둑 자르듯, 파일을 원래 자리에서 없애고 다른 곳으로 이동시킬 준비를 하는 단축키는?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="checkQuiz(this, true, '정답! 가위 모양의 X를 기억해요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">1) Ctrl + X</button>
+                        <button onclick="checkQuiz(this, false, '이건 복사하기 마법이에요.')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">2) Ctrl + C</button>
+                        <button onclick="checkQuiz(this, false, '이건 붙여넣기 마법이에요.')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">3) Ctrl + V</button>
+                        <button onclick="checkQuiz(this, false, 'Z는 뒤로가기 마법이에요!')" class="p-4 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-lg font-bold text-left transition-colors">4) Ctrl + Z</button>
+                    </div>
+                    <div class="quiz-feedback mt-3 text-lg font-bold hidden"></div>
+                </div>
+
+                <div class="bg-yellow-100 p-6 rounded-2xl text-center mt-8">
+                    <h3 class="text-2xl font-bold text-yellow-800 mb-2">오늘의 수업 끝! 수고하셨습니다 👏</h3>
+                    <p class="text-yellow-700">이제 마우스를 여러 번 누르지 않고도 단축키로 멋지게 컴퓨터를 다룰 수 있게 되었어요!</p>
+                </div>
+
+                <div class="mt-8 flex justify-start hidden lg:flex">
+                    <button onclick="showStep(prevStep())" class="bg-gray-200 hover:bg-gray-300 px-6 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 flex items-center gap-2">
+                        <i data-lucide="arrow-left"></i> 뒤로
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 모바일/태블릿 하단 고정 네비게이션 버튼 -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons(); // 아이콘 렌더링 활성화
+        
+        let currentStep = 0;
+        const maxStep = 6; // 스텝 개수 수정 (0부터 6까지 총 7개)
+
+        function showStep(n) {
+            currentStep = n;
+            
+            // 모든 콘텐츠 내용 숨기기
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            
+            // 탭 버튼 색상(active) 업데이트
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === n);
+            });
+            
+            // 클릭한 번호의 콘텐츠만 화면에 표시
+            document.getElementById('step' + n).classList.add('active');
+            
+            // 화면 최상단으로 부드럽게 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            return currentStep < maxStep ? currentStep + 1 : currentStep;
+        }
+
+        function prevStep() {
+            return currentStep > 0 ? currentStep - 1 : currentStep;
+        }
+
+        // --- 커스텀 JavaScript 영역 --- //
+
+        // 1. 단축키 가상 체험 로직 (Step 2, Step 3, Step 4)
+        function simulateMagic(type, messageOverride) {
+            let toast;
+            if (currentStep === 2) toast = document.getElementById('magicToast2');
+            else if (currentStep === 3) toast = document.getElementById('magicToast3');
+            else if (currentStep === 4) toast = document.getElementById('magicToast4');
+            
+            if(!toast) return;
+            toast.classList.remove('bg-gray-800', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500', 'show');
+            
+            if(messageOverride) {
+                toast.innerText = messageOverride.text;
+                toast.classList.add(messageOverride.color, 'show');
+            } else {
+                if(type === 'copy') {
+                    toast.innerText = "✨ 반짝! 똑같이 복사되었습니다! (클립보드 저장 완료)";
+                    toast.classList.add('bg-green-500', 'show');
+                } else if (type === 'paste') {
+                    toast.innerText = "찰싹! 화면에 붙여넣었습니다! 🎉";
+                    toast.classList.add('bg-purple-500', 'show');
+                } else if (type === 'cut') {
+                    toast.innerText = "싹둑! 파일이 오려졌습니다! ✂️ (순간이동 준비 완료)";
+                    toast.classList.add('bg-red-500', 'show');
+                }
+            }
+
+            // 3초 뒤 토스트 메시지 숨기기
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 2. 마법 미션 체크박스 로직 (Step 5)
+        function toggleMission(element) {
+            const checkbox = element.querySelector('.checkbox-ui');
+            const isChecked = checkbox.innerHTML !== '';
+            
+            if(isChecked) {
+                checkbox.innerHTML = '';
+                checkbox.classList.remove('bg-success', 'border-success');
+                checkbox.classList.add('border-gray-300');
+                element.classList.remove('border-success', 'bg-green-50');
+                element.classList.add('border-gray-200', 'bg-white');
+            } else {
+                checkbox.innerHTML = '✓';
+                checkbox.classList.remove('border-gray-300');
+                checkbox.classList.add('bg-success', 'border-success');
+                element.classList.remove('border-gray-200', 'bg-white');
+                element.classList.add('border-success', 'bg-green-50');
+            }
+        }
+
+        // 3. 자격증 퀴즈 로직 (Step 6)
+        function checkQuiz(btn, isCorrect, msg) {
+            const container = btn.closest('.quiz-container');
+            const feedback = container.querySelector('.quiz-feedback');
+            
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('bg-green-100', 'border-green-500', 'text-green-800', 'bg-red-100', 'border-red-500', 'text-red-800');
+                b.classList.add('border-gray-200');
+            });
+
+            feedback.style.display = 'block';
+            feedback.innerText = msg;
+            
+            if(isCorrect) {
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                feedback.className = 'quiz-feedback mt-3 text-lg font-bold text-green-600 block';
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800', 'shake-animation');
+                feedback.className = 'quiz-feedback mt-3 text-lg font-bold text-red-600 block';
+                setTimeout(() => {
+                    btn.classList.remove('shake-animation');
+                }, 400);
+            }
+        }
+
+        // 4. 복습 자음 퀴즈 채점 로직 (Step 0)
+        const reviewInputs = document.querySelectorAll('.review-input');
+        reviewInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const answer = input.getAttribute('data-answer').replace(/\s/g, '').toLowerCase();
+                const val = e.target.value.trim().replace(/\s/g, '').toLowerCase();
+                const card = input.closest('.review-card');
+                const feedback = card.querySelector('.review-feedback');
+                const hintEl = card.querySelector('.initial-hint');
+
+                if (val === answer) {
+                    input.classList.remove('border-blue-200', 'border-yellow-200', 'border-pink-200');
+                    input.classList.add('border-transparent', 'text-success');
+                    input.disabled = true;
+                    card.classList.add('ring-2', 'ring-success/50', 'bg-white');
+                    if(feedback) feedback.classList.remove('hidden');
+                    if(hintEl) hintEl.classList.add('hidden'); 
+                }
+            });
+        });
+
+        // -----------------------------------------------------
+        // 5. 연습하기(방 정리 대작전) 로직 (Step 4)
+        // -----------------------------------------------------
+        let webSelectedElement = null;
+        let webTargetZone = null;
+        let webClipboard = { element: null, type: null }; // type: 'copy' or 'cut'
+
+        function selectItem(el, event) {
+            event.stopPropagation(); // 영역(존) 클릭 이벤트 방지
+            
+            // 모든 아이템 선택 해제
+            document.querySelectorAll('.practice-item').forEach(item => item.classList.remove('selected'));
+            
+            // 클릭한 아이템 선택
+            el.classList.add('selected');
+            webSelectedElement = el;
+            
+            // 영역 선택 초기화
+            clearZoneSelection();
+            
+            simulateMagic('', { text: "장난감이 선택되었어요! 복사(Ctrl+C)나 잘라내기(Ctrl+X)를 눌러보세요.", color: "bg-blue-500" });
+        }
+
+        function selectZone(zoneId) {
+            clearZoneSelection();
+            
+            const zone = document.getElementById(zoneId);
+            zone.classList.add('zone-selected');
+            webTargetZone = zone;
+            
+            // 아이템 선택 해제
+            if (webSelectedElement) {
+                webSelectedElement.classList.remove('selected');
+                webSelectedElement = null;
+            }
+        }
+
+        function clearZoneSelection() {
+            document.getElementById('zone-source').classList.remove('zone-selected');
+            const targetCut = document.getElementById('zone-target-cut');
+            const targetCopy = document.getElementById('zone-target-copy');
+            if(targetCut) targetCut.classList.remove('zone-selected');
+            if(targetCopy) targetCopy.classList.remove('zone-selected');
+            webTargetZone = null;
+        }
+
+        // -----------------------------------------------------
+        // 6. 글로벌 실제 키보드 입력 로직
+        // -----------------------------------------------------
+        let ctrlPressCount = 0;
+        
+        window.addEventListener('keydown', function(e) {
+            // Step 1: 컨트롤 키 위치 확인
+            if (currentStep === 1) {
+                if (e.key === 'Control' && !e.repeat) {
+                    pressCtrl();
+                    const ctrlIndicator = document.getElementById('real-ctrl-indicator');
+                    if (ctrlIndicator) {
+                        ctrlIndicator.classList.remove('border-b-8', 'bg-gray-800');
+                        ctrlIndicator.classList.add('border-b-0', 'translate-y-2', 'bg-blue-600');
+                    }
+                }
+            }
+
+            // Step 2 & 3: 성공 시 축하 메시지로 변경 (복사, 붙여넣기, 잘라내기)
+            if (currentStep === 2) {
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                    simulateMagic('copy');
+                    const indicator = document.getElementById('real-copy-indicator');
+                    if(indicator) {
+                        indicator.innerHTML = '<span class="text-xl font-black animate-bounce">🎉 복사 성공! 참 잘했어요! 🎉</span>';
+                        indicator.className = 'mt-4 bg-green-500 text-white font-bold py-4 px-6 rounded-xl w-full flex flex-col items-center justify-center transition-all duration-500 shadow-lg scale-105';
+                    }
+                }
+                if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+                    simulateMagic('paste');
+                    const indicator = document.getElementById('real-paste-indicator');
+                    if(indicator) {
+                        indicator.innerHTML = '<span class="text-xl font-black animate-bounce">✨ 붙여넣기 성공! 최고예요! ✨</span>';
+                        indicator.className = 'mt-4 bg-purple-500 text-white font-bold py-4 px-6 rounded-xl w-full flex flex-col items-center justify-center transition-all duration-500 shadow-lg scale-105';
+                    }
+                }
+            }
+            if (currentStep === 3) {
+                if (e.ctrlKey && (e.key === 'x' || e.key === 'X')) {
+                    simulateMagic('cut');
+                    const indicator = document.getElementById('real-cut-indicator');
+                    if(indicator) {
+                        indicator.innerHTML = '<span class="text-xl font-black animate-bounce">✂️ 잘라내기 성공! 멋져요! ✂️</span>';
+                        indicator.className = 'mt-4 mx-auto max-w-xs bg-red-500 text-white font-bold py-4 px-6 rounded-xl flex flex-col items-center justify-center transition-all duration-500 shadow-lg scale-105';
+                    }
+                }
+            }
+
+            // Step 4: 연습하기(방 정리) 인터랙티브 로직
+            if (currentStep === 4) {
+                // Ctrl + C (복사)
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                    if (webSelectedElement) {
+                        webClipboard = { element: webSelectedElement, type: 'copy' };
+                        // 선택됐다는 시각적 표시 약간
+                        webSelectedElement.classList.remove('opacity-50');
+                        simulateMagic('', { text: "✨ 복사 완료! '스티커 북'을 클릭하고 붙여넣기 하세요.", color: "bg-green-500" });
+                    } else {
+                        simulateMagic('', { text: "어떤 장난감을 복사할지 먼저 마우스로 클릭해주세요!", color: "bg-yellow-500" });
+                    }
+                }
+                // Ctrl + X (잘라내기)
+                if (e.ctrlKey && (e.key === 'x' || e.key === 'X')) {
+                    if (webSelectedElement) {
+                        webClipboard = { element: webSelectedElement, type: 'cut' };
+                        webSelectedElement.classList.add('opacity-50'); // 잘라내기 대기상태 표시
+                        simulateMagic('', { text: "✂️ 잘라내기 완료! '장난감 상자'를 클릭하고 붙여넣기 하세요.", color: "bg-red-500" });
+                    } else {
+                        simulateMagic('', { text: "어떤 장난감을 오려낼지 먼저 마우스로 클릭해주세요!", color: "bg-yellow-500" });
+                    }
+                }
+                // Ctrl + V (붙여넣기)
+                if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+                    if (webTargetZone && webClipboard.element) {
+                        // 요소 복제 및 설정
+                        const newItem = webClipboard.element.cloneNode(true);
+                        newItem.classList.remove('selected', 'opacity-50');
+                        
+                        // 타겟 영역 안에 랜덤 위치 배정
+                        newItem.style.top = Math.floor(Math.random() * 50 + 20) + '%';
+                        newItem.style.left = Math.floor(Math.random() * 60 + 10) + '%';
+                        
+                        // 새 아이템에도 클릭 이벤트 다시 부여
+                        newItem.onclick = function(event) { selectItem(newItem, event); };
+
+                        webTargetZone.appendChild(newItem);
+                        simulateMagic('', { text: "🎉 찰싹! 상자에 잘 들어갔어요!", color: "bg-purple-500" });
+
+                        // 만약 '잘라내기' 였다면 원본 삭제
+                        if (webClipboard.type === 'cut') {
+                            webClipboard.element.remove();
+                            webClipboard = { element: null, type: null }; // 잘라낸 후에는 클립보드 비우기
+                        }
+                    } else if (!webTargetZone) {
+                        simulateMagic('', { text: "어디에 넣을지 상자나 방의 빈 곳을 먼저 클릭해주세요!", color: "bg-yellow-500" });
+                    } else if (!webClipboard.element) {
+                        simulateMagic('', { text: "아직 복사나 잘라내기 한 장난감이 없어요!", color: "bg-yellow-500" });
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('keyup', function(e) {
+            if (currentStep !== 1) return;
+            if (e.key === 'Control') {
+                const ctrlIndicator = document.getElementById('real-ctrl-indicator');
+                if (ctrlIndicator) {
+                    ctrlIndicator.classList.add('border-b-8', 'bg-gray-800');
+                    ctrlIndicator.classList.remove('border-b-0', 'translate-y-2', 'bg-blue-600');
+                }
+            }
+        });
+
+        function animateKeyIndicator(id, addBg, addText, removeBg, removeText) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove(removeBg, removeText);
+                el.classList.add(addBg, addText, 'scale-105', 'shadow-lg');
+                setTimeout(() => {
+                    el.classList.remove(addBg, addText, 'scale-105', 'shadow-lg');
+                    el.classList.add(removeBg, removeText);
+                }, 300);
+            }
+        }
+
+        function pressCtrl() {
+            ctrlPressCount++;
+            const praiseMsg = document.getElementById('ctrl-praise-msg');
+            const missionText = document.getElementById('ctrl-mission-text');
+
+            praiseMsg.classList.remove('hidden');
+            praiseMsg.classList.remove('animate-bounce');
+            void praiseMsg.offsetWidth; 
+            praiseMsg.classList.add('animate-bounce');
+
+            if (ctrlPressCount === 1) {
+                praiseMsg.innerText = "✨ 한번 눌렀네요! 참 잘했어요! ✨";
+                missionText.innerHTML = "아주 좋아요! 잊어버리지 않게 <span class='text-accent text-2xl'>또 한번</span> 눌러볼까요?";
+            } else if (ctrlPressCount === 2) {
+                praiseMsg.innerText = "🎉 또 한번! 정말 멋져요! 🎉";
+                missionText.innerHTML = "마지막으로 <span class='text-accent text-2xl'>꼭 기억하기 한번!</span> 더 눌러주세요!";
+            } else if (ctrlPressCount >= 3) {
+                praiseMsg.innerText = "🎓 꼭 기억하기 한번! 이제 절대 안 잊어버리겠죠? 🎓";
+                praiseMsg.classList.remove('text-accent');
+                praiseMsg.classList.add('text-success');
+                missionText.innerHTML = "최고의 꼬마 마법사가 될 준비가 끝났어요!";
+            }
+        }
+    </script>
+</body>
+</html>
