@@ -75,15 +75,16 @@
             font-family: 'Courier New', monospace;
             font-size: 0.95rem;
             margin: 18px 0;
-            white-space: pre-wrap;
             border-left: 8px solid #38bdf8;
-            line-height: 1.6;
+            line-height: 1.4;
         }
 
         .code-block b { color: #38bdf8; }
         .pseudo-num { color: #facc15; font-weight: bold; margin-right: 6px; }
-        .indent-1 { padding-left: 1.5rem; display: block; }
-        .indent-2 { padding-left: 3.0rem; display: block; color: #cbd5e1; }
+        .step-title { display: block; margin-top: 12px; margin-bottom: 4px; }
+        .indent-1 { padding-left: 1.5rem; display: block; margin-bottom: 4px; }
+        .indent-2 { padding-left: 3.0rem; display: block; color: #cbd5e1; margin-bottom: 4px; }
+        .indent-3 { padding-left: 4.5rem; display: block; color: #94a3b8; margin-bottom: 4px; }
 
         .btn-hint {
             background: #f1f5f9;
@@ -168,21 +169,6 @@
         <p class="text-slate-600 mt-4 text-lg max-w-2xl mx-auto">꽃게, 바구니, 쓰레기, 물고기 친구들이 어떻게 움직이는지 쉽게 알아볼까요?</p>
     </header>
 
-    <!-- 다운로드 및 준비 안내 -->
-    <div class="step-card !border-amber-300">
-        <div class="step-header !bg-amber-500"><span>🚀</span> 코딩 시작 전 준비물</div>
-        <div class="content-body bg-amber-50 text-center">
-            <p class="text-slate-800 font-medium mb-6 text-lg">
-                코딩을 시작하기 전에 오브젝트들이 미리 배치된 파일을 다운로드해 주세요.<br>
-                엔트리를 열고 <b>[오프라인 작품 불러오기]</b> 메뉴를 통해 다운로드한 파일을 열면 코딩 준비 완료!
-            </p>
-            <a href="https://happyhyeok.github.io/afterschool/cleanfish.ent" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition-all hover:-translate-y-1 text-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                오브젝트 배치 파일 다운로드
-            </a>
-        </div>
-    </div>
-
     <!-- Project Simulation -->
     <div class="step-card">
         <div class="step-header"><span>🎮</span> 완성 작품 미리보기</div>
@@ -238,13 +224,13 @@
         <div class="content-body">
             <p class="text-gray-700 mb-4 font-medium">통(바구니)은 항상 꽃게 등에 딱 붙어서 따라다녀요.<br>만약 쓰레기에 닿았을 때 색깔이 잠깐 바뀝니다!</p>
             <div class="code-block"><b>[통 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>시작하기 버튼을 클릭했을 때</b>
-<span class="indent-1">└ 준비 위치로 먼저 이동해요.</span>
-<span class="indent-1">└ <b>계속 반복하기 (쉬지 않고 계속할 일)</b></span>
-<span class="indent-2">└ <b>꽃게 위치로 이동하기</b> (이 블록 덕분에 꽃게를 따라가요!)</span>
-<span class="indent-2">└ 그림을 화면 <b>맨 앞으로</b> 가져와요.</span>
-<span class="indent-2">└ 만약 <b>쓰레기에 닿았나요?</b> 그렇다면,</span>
-<span class="indent-2">  └ 색깔을 잠깐 바꿔서 "수거했다!"는 걸 보여줘요.</span></div>
+<div class="step-title"><span class="pseudo-num">1.</span> <b>시작하기 버튼을 클릭했을 때</b></div>
+<span class="indent-1">1) 준비 위치로 먼저 이동해요.</span>
+<span class="indent-1">2) <b>계속 반복하기 (쉬지 않고 계속할 일)</b></span>
+<span class="indent-2">① <b>꽃게 위치로 이동하기</b> (이 블록 덕분에 꽃게를 따라가요!)</span>
+<span class="indent-2">② 그림을 화면 <b>맨 앞으로</b> 가져와요.</span>
+<span class="indent-2">③ 만약 <b>쓰레기에 닿았나요?</b> 그렇다면,</span>
+<span class="indent-3">(1) 색깔을 잠깐 바꿔서 "수거했다!"는 걸 보여줘요.</span></div>
         </div>
     </div>
 
@@ -254,15 +240,15 @@
         <div class="content-body">
             <p class="text-gray-700 mb-4 font-medium">꽃게는 가만히 있으면 물속으로 스르륵 가라앉아요.<br>키보드 방향키를 눌러서 이리저리 헤엄치며 물고기를 피해야 한답니다!</p>
             <div class="code-block"><b>[꽃게 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>"시작" 신호를 받았을 때</b>: 계속 반복하기
-<span class="indent-1">└ 만약 <b>너무 위로 떠 있지 않다면?</b>: y좌표를 -3만큼 바꿔서 <b>아래로 가라앉게 해요.</b></span>
-<span class="indent-1">└ 만약 <b>왼쪽 화살표</b>를 누르면?: x좌표를 -5만큼 바꿔서 <b>왼쪽으로 이동!</b></span>
-<span class="indent-1">└ 만약 <b>오른쪽 화살표</b>를 누르면?: x좌표를 5만큼 바꿔서 <b>오른쪽으로 이동!</b></span>
-<span class="indent-1">└ 만약 <b>위쪽 화살표</b>를 누르면?: y좌표를 6만큼 바꿔서 <b>위로 헤엄쳐요!</b></span>
-<br>
-<span class="pseudo-num">②</span> <b>"미션확인" 신호를 받았을 때 (아프면 안 돼!)</b>: 계속 반복하기
-<span class="indent-1">└ 만약 <b>물고기에 닿았나요?</b> 그렇다면,</span>
-<span class="indent-2">└ <b>기회</b>를 1개 빼고, 너무 빨리 줄어들지 않게 0.1초 잠깐 쉬어요.</span></div>
+<div class="step-title"><span class="pseudo-num">1.</span> <b>"시작" 신호를 받았을 때</b>: 계속 반복하기</div>
+<span class="indent-1">1) 만약 <b>너무 위로 떠 있지 않다면?</b>: y좌표를 -3만큼 바꿔서 <b>아래로 가라앉게 해요.</b></span>
+<span class="indent-1">2) 만약 <b>왼쪽 화살표</b>를 누르면?: x좌표를 -5만큼 바꿔서 <b>왼쪽으로 이동!</b></span>
+<span class="indent-1">3) 만약 <b>오른쪽 화살표</b>를 누르면?: x좌표를 5만큼 바꿔서 <b>오른쪽으로 이동!</b></span>
+<span class="indent-1">4) 만약 <b>위쪽 화살표</b>를 누르면?: y좌표를 6만큼 바꿔서 <b>위로 헤엄쳐요!</b></span>
+
+<div class="step-title"><span class="pseudo-num">2.</span> <b>"미션확인" 신호를 받았을 때</b>: 계속 반복하기</div>
+<span class="indent-1">1) 만약 <b>물고기에 닿았나요?</b> 그렇다면,</span>
+<span class="indent-2">① <b>기회</b>를 1개 빼고, 너무 빨리 줄어들지 않게 0.1초 잠깐 쉬어요.</span></div>
         </div>
     </div>
 
@@ -272,17 +258,17 @@
         <div class="content-body">
             <p class="text-gray-700 mb-4 font-medium">쓰레기는 무작위로 복제되어 위에서 아래로 떨어져요.<br>그리고 게임이 몇 초나 지났는지, 성공인지 실패인지 알려주는 <b>심판 역할</b>도 맡고 있어요!</p>
             <div class="code-block"><b>[쓰레기 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>도장 찍듯 복제본이 처음 만들어졌을 때</b>: 화면 위쪽에 뿅 나타나기
-<span class="indent-1">└ 계속 반복하기: y좌표를 -3만큼 바꿔서 <b>바닥으로 떨어져요.</b></span>
-<span class="indent-1">└ 만약 <b>통에 들어갔나요?</b>: 앗싸! <b>점수</b> 1점 올리고 복제본은 사라져요.</span>
-<span class="indent-1">└ 만약 통에 못 들어가고 <b>벽(바닥)에 닿았나요?</b>: 앗, <b>기회</b> 1개를 잃고 복제본은 사라져요.</span>
-<br>
-<span class="pseudo-num">②</span> <b>"시간체크" 신호를 받았을 때 (타이머)</b>
-<span class="indent-1">└ 계속 반복하기: 1초마다 <b>시간</b>을 1씩 올려요.</span>
-<span class="indent-1">└ 만약 <b>시간이 30초가 되었나요?</b>: 하던 일을 멈추고 <b>"성공" 신호를 외쳐요!</b></span>
-<br>
-<span class="pseudo-num">③</span> <b>"미션확인" 신호를 받았을 때 (게임오버 감지)</b>
-<span class="indent-1">└ 계속 반복하기: 만약 <b>기회가 0이 되었나요?</b>: 하던 일을 멈추고 <b>"실패" 신호를 외쳐요!</b></span></div>
+<div class="step-title"><span class="pseudo-num">1.</span> <b>도장 찍듯 복제본이 처음 만들어졌을 때</b>: 화면 위쪽에 뿅 나타나기</div>
+<span class="indent-1">1) 계속 반복하기: y좌표를 -3만큼 바꿔서 <b>바닥으로 떨어져요.</b></span>
+<span class="indent-1">2) 만약 <b>통에 들어갔나요?</b>: 앗싸! <b>점수</b> 1점 올리고 복제본은 사라져요.</span>
+<span class="indent-1">3) 만약 통에 못 들어가고 <b>벽(바닥)에 닿았나요?</b>: 앗, <b>기회</b> 1개를 잃고 복제본은 사라져요.</span>
+
+<div class="step-title"><span class="pseudo-num">2.</span> <b>"시간체크" 신호를 받았을 때 (타이머)</b></div>
+<span class="indent-1">1) 계속 반복하기: 1초마다 <b>시간</b>을 1씩 올려요.</span>
+<span class="indent-1">2) 만약 <b>시간이 30초가 되었나요?</b>: 하던 일을 멈추고 <b>"성공" 신호를 외쳐요!</b></span>
+
+<div class="step-title"><span class="pseudo-num">3.</span> <b>"미션확인" 신호를 받았을 때 (게임오버 감지)</b></div>
+<span class="indent-1">1) 계속 반복하기: 만약 <b>기회가 0이 되었나요?</b>: 하던 일을 멈추고 <b>"실패" 신호를 외쳐요!</b></span></div>
         </div>
     </div>
 
@@ -292,14 +278,14 @@
         <div class="content-body">
             <p class="text-gray-700 mb-4 font-medium">물고기는 가장 먼저 다가와서 게임을 시작할지 물어봐요.<br>그리고 게임이 시작되면 꽃게를 방해하기 위해 헤엄쳐 온답니다.</p>
             <div class="code-block"><b>[물고기 오브젝트]</b>
-<span class="pseudo-num">①</span> <b>시작하기 버튼을 클릭했을 때</b>
-<span class="indent-1">└ "시작할까요?(예, 아니오)" 라고 물어봐요.</span>
-<span class="indent-1">└ 만약 대답이 <b>"예"</b> 라면: <b>"시작" 신호</b>를 보내서 게임을 출발시켜요.</span>
-<span class="indent-1">└ "예"가 아니라면: "휴식" 신호를 보내고 <b>"알았어."</b> 라고 말해요.</span>
-<br>
-<span class="pseudo-num">②</span> <b>물고기 복제본이 나타났을 때</b> (방해꾼 등장!)
-<span class="indent-1">└ 오른쪽에서 나타난 다음, 왼쪽 끝(벽)에 닿을 때까지 왼쪽으로 계속 헤엄쳐요.</span>
-<span class="indent-1">└ 벽에 닿으면 뿅 사라진답니다.</span></div>
+<div class="step-title"><span class="pseudo-num">1.</span> <b>시작하기 버튼을 클릭했을 때</b></div>
+<span class="indent-1">1) "시작할까요?(예, 아니오)" 라고 물어봐요.</span>
+<span class="indent-1">2) 만약 대답이 <b>"예"</b> 라면: <b>"시작" 신호</b>를 보내서 게임을 출발시켜요.</span>
+<span class="indent-1">3) "예"가 아니라면: "휴식" 신호를 보내고 <b>"알았어."</b> 라고 말해요.</span>
+
+<div class="step-title"><span class="pseudo-num">2.</span> <b>물고기 복제본이 나타났을 때</b> (방해꾼 등장!)</div>
+<span class="indent-1">1) 오른쪽에서 나타난 다음, 왼쪽 끝(벽)에 닿을 때까지 왼쪽으로 계속 헤엄쳐요.</span>
+<span class="indent-1">2) 벽에 닿으면 뿅 사라진답니다.</span></div>
         </div>
     </div>
 
