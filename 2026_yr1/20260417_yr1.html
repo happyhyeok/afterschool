@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7회차: 인공지능의 눈! 특징을 찾아라</title>
+    
+    <!-- 테일윈드 설정 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        bgLight: '#FFF9E6'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+            word-break: keep-all;
+        }
+        .font-gaegu { font-family: 'Gaegu', cursive; }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #854d0e;
+            transform: scale(1.1);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s;
+        }
+
+        .feature-item-btn.selected {
+            background-color: var(--primary);
+            border-color: #d97706;
+            transform: scale(1.05);
+        }
+        
+        .training-card {
+            transition: all 0.5s;
+        }
+        .training-card.hidden-card {
+            opacity: 0;
+            transform: translateX(100px);
+            pointer-events: none;
+            position: absolute;
+        }
+    </style>
+</head>
+<body class="pb-24 lg:pb-0">
+
+    <div class="max-w-4xl mx-auto p-4 lg:p-8">
+        <!-- 헤더 -->
+        <header class="text-center mb-8">
+            <div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-4 border-2 border-primary">
+                <span class="text-yellow-600 font-bold">🤖 여량초 AI 탐험대 - 7회차</span>
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-black text-slate-800 font-gaegu leading-tight">
+                인공지능의 눈! <br><span class="text-accent">특징</span>을 찾아라 👀
+            </h1>
+        </header>
+
+        <!-- 네비게이션 -->
+        <nav class="flex flex-wrap justify-center gap-2 mb-8 bg-white/50 p-2 rounded-3xl backdrop-blur-sm">
+            <button onclick="showStep(1)" class="nav-btn active px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="hand" class="w-4 h-4"></i> 안녕!</button>
+            <button onclick="showStep(2)" class="nav-btn px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="users" class="w-4 h-4"></i> 나 vs AI</button>
+            <button onclick="showStep(3)" class="nav-btn px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="search" class="w-4 h-4"></i> 특징 돋보기</button>
+            <button onclick="showStep(4)" class="nav-btn px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="graduation-cap" class="w-4 h-4"></i> AI 훈련소</button>
+            <button onclick="showStep(5)" class="nav-btn px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="puzzle" class="w-4 h-4"></i> 분류 게임</button>
+            <button onclick="showStep(6)" class="nav-btn px-3 py-2 rounded-xl font-bold flex items-center gap-1 transition-all"><i data-lucide="award" class="w-4 h-4"></i> 정리해요</button>
+        </nav>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="bg-white rounded-[2.5rem] shadow-xl p-6 lg:p-10 border-b-8 border-gray-200 min-h-[550px]">
+            
+            <!-- 1단계: 도입 -->
+            <section id="step1" class="step-content active text-center">
+                <div class="mb-6 inline-block p-4 bg-yellow-50 rounded-full animate-bounce">
+                    <i data-lucide="sparkles" class="w-12 h-12 text-primary"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-6 text-slate-800">우리는 모두 "AI 탐정님"!</h2>
+                <div class="space-y-6 text-xl text-slate-600 font-medium">
+                    <p>친구들, 인공지능 친구는 눈이 없는데 어떻게 우리를 알아볼까요?</p>
+                    <p>그건 바로 물건마다 가진 <span class="text-accent font-bold">특별한 모습</span>을 찾기 때문이에요!</p>
+                    <div class="bg-blue-50 p-6 rounded-3xl border-2 border-dashed border-secondary my-8">
+                        <p class="text-secondary font-black text-2xl mb-2">오늘의 미션!</p>
+                        <p class="text-slate-700 font-bold">내가 찾은 특징으로 인공지능을 훈련시켜서<br>똑똑한 분류 대장을 만들어주세요!</p>
+                    </div>
+                </div>
+                <button onclick="showStep(2)" class="mt-8 bg-primary hover:bg-yellow-400 text-yellow-900 font-black py-4 px-10 rounded-3xl text-2xl shadow-lg transition-transform hover:scale-105">탐험 시작! 🚀</button>
+            </section>
+
+            <!-- 2단계: 사람 vs 인공지능 비교 (설명 강화) -->
+            <section id="step2" class="step-content">
+                <h2 class="text-3xl font-bold mb-8 text-slate-800 text-center">우리의 눈과 AI의 카메라</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-orange-50 p-8 rounded-[2rem] border-2 border-orange-100 relative">
+                        <div class="absolute -top-4 -left-4 bg-orange-400 text-white px-4 py-1 rounded-full font-bold">사람</div>
+                        <div class="text-6xl mb-4 text-center">👀</div>
+                        <h3 class="text-2xl font-bold text-orange-700 mb-4 text-center">직관으로 봐요</h3>
+                        <p class="text-slate-700 leading-relaxed">
+                            우리는 보자마자 "어! 저건 강아지네!" 하고 바로 알 수 있어요. 뇌가 아주 빠르게 생각하기 때문이죠. 기분이 어떤지도 느낄 수 있어요!
+                        </p>
+                    </div>
+                    <div class="bg-blue-50 p-8 rounded-[2rem] border-2 border-blue-100 relative">
+                        <div class="absolute -top-4 -left-4 bg-blue-400 text-white px-4 py-1 rounded-full font-bold">인공지능</div>
+                        <div class="text-6xl mb-4 text-center">📷</div>
+                        <h3 class="text-2xl font-bold text-blue-700 mb-4 text-center">데이터로 공부해요</h3>
+                        <p class="text-slate-700 leading-relaxed">
+                            인공지능은 카메라로 찍은 사진을 **숫자**로 바꿔서 봐요. 수천 장의 사진에서 공통된 <span class="text-blue-600 font-bold">특징</span>을 찾아내서 공부해야 알 수 있답니다.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 bg-yellow-50 p-6 rounded-3xl border-2 border-primary text-center">
+                    <p class="text-xl font-bold text-yellow-800">💡 사람이 특징을 잘 가르쳐주면 인공지능이 더 잘 배울 수 있어요!</p>
+                </div>
+            </section>
+
+            <!-- 3단계: 특징 돋보기 (예시 3가지 추가) -->
+            <section id="step3" class="step-content">
+                <h2 class="text-3xl font-bold mb-4 text-slate-800">특징 찾기 연습! 돋보기를 대봐요</h2>
+                <p class="text-slate-500 mb-8">사물의 특징을 관찰하면 무엇인지 맞힐 수 있어요.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 예시 1: 포도 -->
+                    <div class="bg-purple-50 p-6 rounded-3xl border-2 border-purple-100 card-hover text-center">
+                        <div class="text-6xl mb-4">🍇</div>
+                        <h3 class="font-black text-purple-700 text-xl mb-2">포도 탐정</h3>
+                        <div class="space-y-1 text-slate-600">
+                            <p class="bg-white rounded-full py-1">💜 보라색</p>
+                            <p class="bg-white rounded-full py-1">⚪ 작고 동글동글</p>
+                            <p class="bg-white rounded-full py-1">🍇 여러 알이 모임</p>
+                        </div>
+                    </div>
+                    <!-- 예시 2: 당근 -->
+                    <div class="bg-orange-50 p-6 rounded-3xl border-2 border-orange-100 card-hover text-center">
+                        <div class="text-6xl mb-4">🥕</div>
+                        <h3 class="font-black text-orange-700 text-xl mb-2">당근 탐정</h3>
+                        <div class="space-y-1 text-slate-600">
+                            <p class="bg-white rounded-full py-1">🧡 주황색</p>
+                            <p class="bg-white rounded-full py-1">📐 세모 모양</p>
+                            <p class="bg-white rounded-full py-1">📏 길쭉길쭉</p>
+                        </div>
+                    </div>
+                    <!-- 예시 3: 나비 -->
+                    <div class="bg-sky-50 p-6 rounded-3xl border-2 border-sky-100 card-hover text-center">
+                        <div class="text-6xl mb-4">🦋</div>
+                        <h3 class="font-black text-sky-700 text-xl mb-2">나비 탐정</h3>
+                        <div class="space-y-1 text-slate-600">
+                            <p class="bg-white rounded-full py-1">🦋 커다란 날개</p>
+                            <p class="bg-white rounded-full py-1">〰️ 돌돌 말린 입</p>
+                            <p class="bg-white rounded-full py-1">🌸 꽃을 좋아함</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center mt-8 text-slate-500 font-bold">이제 여러분이 직접 인공지능을 훈련시키러 가볼까요?</p>
+            </section>
+
+            <!-- 4단계: AI 훈련소 (3가지 항목 훈련) -->
+            <section id="step4" class="step-content">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-slate-800">여량초 AI 훈련소 🏫</h2>
+                    <p class="text-slate-500">각 물건의 진짜 특징을 클릭해서 AI를 공부시켜주세요!</p>
+                </div>
+
+                <div id="training-container" class="relative min-h-[350px]">
+                    <!-- 훈련 1: 새 -->
+                    <div id="train-1" class="training-card bg-blue-50 p-8 rounded-[3rem] border-4 border-blue-200 shadow-sm text-center">
+                        <div class="text-8xl mb-4">🐦</div>
+                        <h3 class="text-2xl font-bold mb-6 text-blue-700">[새]의 특징을 골라주세요</h3>
+                        <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                            <button onclick="markTrained(this, 't1')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🪶 깃털과 날개</button>
+                            <button onclick="markTrained(this, 'wrong')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🚜 바퀴</button>
+                            <button onclick="markTrained(this, 't1')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">👄 뾰족한 부리</button>
+                        </div>
+                        <button onclick="nextTrain(1)" id="next-train-1" class="hidden mt-8 bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold">다음 훈련하기</button>
+                    </div>
+
+                    <!-- 훈련 2: 꽃 -->
+                    <div id="train-2" class="training-card hidden-card bg-pink-50 p-8 rounded-[3rem] border-4 border-pink-200 shadow-sm text-center">
+                        <div class="text-8xl mb-4">🌻</div>
+                        <h3 class="text-2xl font-bold mb-6 text-pink-700">[꽃]의 특징을 골라주세요</h3>
+                        <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                            <button onclick="markTrained(this, 't2')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🌸 알록달록 꽃잎</button>
+                            <button onclick="markTrained(this, 't2')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🌱 초록색 잎사귀</button>
+                            <button onclick="markTrained(this, 'wrong')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">💤 푹신한 침대</button>
+                        </div>
+                        <button onclick="nextTrain(2)" id="next-train-2" class="hidden mt-8 bg-pink-500 text-white px-8 py-3 rounded-2xl font-bold">다음 훈련하기</button>
+                    </div>
+
+                    <!-- 훈련 3: 자동차 -->
+                    <div id="train-3" class="training-card hidden-card bg-slate-50 p-8 rounded-[3rem] border-4 border-slate-200 shadow-sm text-center">
+                        <div class="text-8xl mb-4">🚗</div>
+                        <h3 class="text-2xl font-bold mb-6 text-slate-700">[자동차]의 특징을 골라주세요</h3>
+                        <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                            <button onclick="markTrained(this, 'wrong')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🍎 맛있는 사과</button>
+                            <button onclick="markTrained(this, 't3')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">⚙️ 뱅글뱅글 바퀴</button>
+                            <button onclick="markTrained(this, 't3')" class="feature-item-btn bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold transition-all">🪟 네모난 유리창</button>
+                        </div>
+                        <button onclick="finishAllTraining()" id="finish-training" class="hidden mt-8 bg-secondary text-white px-8 py-3 rounded-2xl font-bold">훈련 끝! 시험 보러 가기</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5단계: 분류 게임 (훈련 결과 확인) -->
+            <section id="step5" class="step-content">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-slate-800">특징으로 분류하기 대작전!</h2>
+                    <p class="text-slate-500">여러분이 공부시킨 AI가 이제 사물을 구별할 수 있을까요?</p>
+                </div>
+
+                <div id="game-zone" class="bg-white border-4 border-dashed border-primary rounded-[3rem] p-8 text-center">
+                    <div id="quiz-flow-container">
+                        <!-- 퀴즈 1 -->
+                        <div id="q1" class="quiz-item">
+                            <div class="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full font-bold mb-4">문제 1</div>
+                            <p class="text-2xl font-bold text-slate-700 mb-8">"날개와 깃털이 있고 짹짹 노래해! <br>나는 누구일까?"</p>
+                            <div class="flex justify-center gap-6">
+                                <button onclick="checkGame(1, 'bird')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-blue-100 transition-colors text-6xl">🐦</button>
+                                <button onclick="checkGame(1, 'car')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-red-100 transition-colors text-6xl">🚗</button>
+                            </div>
+                        </div>
+                        <!-- 퀴즈 2 -->
+                        <div id="q2" class="quiz-item hidden">
+                            <div class="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full font-bold mb-4">문제 2</div>
+                            <p class="text-2xl font-bold text-slate-700 mb-8">"뱅글뱅글 바퀴가 4개 있고 쌩쌩 달려! <br>나는 누구일까?"</p>
+                            <div class="flex justify-center gap-6">
+                                <button onclick="checkGame(2, 'flower')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-pink-100 transition-colors text-6xl">🌻</button>
+                                <button onclick="checkGame(2, 'car')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-blue-100 transition-colors text-6xl">🚗</button>
+                            </div>
+                        </div>
+                        <!-- 퀴즈 3 -->
+                        <div id="q3" class="quiz-item hidden">
+                            <div class="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full font-bold mb-4">문제 3</div>
+                            <p class="text-2xl font-bold text-slate-700 mb-8">"알록달록 예쁜 꽃잎과 초록색 잎이 있어! <br>나는 누구일까?"</p>
+                            <div class="flex justify-center gap-6">
+                                <button onclick="checkGame(3, 'flower')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-yellow-100 transition-colors text-6xl">🌻</button>
+                                <button onclick="checkGame(3, 'bird')" class="p-6 bg-slate-50 rounded-3xl shadow-md hover:bg-blue-100 transition-colors text-6xl">🐦</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="game-feedback" class="mt-8 min-h-[50px] text-xl font-bold"></div>
+                </div>
+            </section>
+
+            <!-- 6단계: 정리 -->
+            <section id="step6" class="step-content text-center">
+                <h2 class="text-4xl font-black mb-6 text-slate-800 font-gaegu">최고의 AI 선생님 탄생!</h2>
+                <div class="max-w-md mx-auto mb-10">
+                    <div class="bg-white border-4 border-success p-6 rounded-3xl shadow-lg relative">
+                        <div class="absolute -top-6 -right-6 text-5xl rotate-12">🏆</div>
+                        <p class="text-xl text-slate-700 leading-relaxed font-bold">
+                            "내가 특징을 잘 찾아서 알려주면,<br>인공지능도 척척박사가 될 수 있어요!"
+                        </p>
+                    </div>
+                </div>
+                <div class="space-y-4 text-lg font-medium text-slate-500">
+                    <p>✅ 인공지능의 눈은 '특징'을 찾아요.</p>
+                    <p>✅ 공부를 많이 한 인공지능은 '분류'를 잘해요.</p>
+                </div>
+                <button onclick="location.reload()" class="mt-8 bg-accent text-white font-black py-4 px-10 rounded-3xl text-2xl shadow-lg transition-transform hover:scale-110">다시 도전하기 🏠</button>
+            </section>
+
+        </main>
+
+        <!-- 푸터 네비게이션 -->
+        <div class="mt-8 hidden lg:flex justify-between items-center px-4">
+            <button onclick="showStep(currentStep-1)" id="prev-btn" class="flex items-center gap-2 text-slate-400 font-bold hover:text-slate-600 disabled:opacity-0">
+                <i data-lucide="chevron-left"></i> 이전으로
+            </button>
+            <div class="text-slate-400 font-bold">
+                <span id="current-page-display">1</span> / 6
+            </div>
+            <button onclick="showStep(currentStep+1)" id="next-btn" class="flex items-center gap-2 bg-primary text-yellow-900 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-yellow-400 transition-colors">
+                다음으로 <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 하단 고정 바 (모바일) -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="showStep(currentStep-1)" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200 active:scale-90 transition-transform"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(currentStep+1)" id="mobile-next-btn" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md active:scale-95 transition-transform">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        function showStep(n) {
+            if (n < 1 || n > totalSteps) return;
+            currentStep = n;
+            
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+            });
+            
+            document.getElementById('step' + n).classList.add('active');
+            updateNavigation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const mobileNextBtn = document.getElementById('mobile-next-btn');
+            const pageDisplay = document.getElementById('current-page-display');
+
+            if (prevBtn) prevBtn.disabled = currentStep === 1;
+            if (nextBtn) {
+                if (currentStep === totalSteps) {
+                    nextBtn.innerHTML = '참 잘했어요! <i data-lucide="party-popper"></i>';
+                    nextBtn.disabled = true;
+                } else {
+                    nextBtn.innerHTML = '다음으로 <i data-lucide="chevron-right"></i>';
+                    nextBtn.disabled = false;
+                }
+            }
+            if (mobileNextBtn) {
+                mobileNextBtn.innerText = currentStep === totalSteps ? "학습 끝!" : "다음으로";
+            }
+            if (pageDisplay) pageDisplay.innerText = currentStep;
+            lucide.createIcons();
+        }
+
+        // --- 활동: AI 훈련소 로직 ---
+        let trainingState = { t1: 0, t2: 0, t3: 0 };
+
+        function markTrained(btn, type) {
+            if (type === 'wrong') {
+                btn.classList.add('bg-red-100', 'border-red-300');
+                setTimeout(() => btn.classList.remove('bg-red-100', 'border-red-300'), 500);
+                return;
+            }
+            
+            if (!btn.classList.contains('selected')) {
+                btn.classList.add('selected');
+                trainingState[type]++;
+            }
+
+            // 각 단계별로 2개 이상의 특징을 고르면 '다음' 버튼 등장
+            if (trainingState.t1 >= 2) document.getElementById('next-train-1').classList.remove('hidden');
+            if (trainingState.t2 >= 2) document.getElementById('next-train-2').classList.remove('hidden');
+            if (trainingState.t3 >= 2) document.getElementById('finish-training').classList.remove('hidden');
+        }
+
+        function nextTrain(num) {
+            document.getElementById('train-' + num).classList.add('hidden-card');
+            document.getElementById('train-' + (num + 1)).classList.remove('hidden-card');
+        }
+
+        function finishAllTraining() {
+            showStep(5);
+        }
+
+        // --- 활동: 분류 게임 로직 ---
+        function checkGame(step, ans) {
+            const feedback = document.getElementById('game-feedback');
+            let isCorrect = false;
+
+            if (step === 1 && ans === 'bird') isCorrect = true;
+            if (step === 2 && ans === 'car') isCorrect = true;
+            if (step === 3 && ans === 'flower') isCorrect = true;
+
+            if (isCorrect) {
+                feedback.innerText = "🎉 와! AI가 정확하게 분류했어요!";
+                feedback.className = "mt-8 min-h-[50px] text-xl font-bold text-success animate-bounce";
+                
+                setTimeout(() => {
+                    feedback.innerText = "";
+                    if (step < 3) {
+                        document.getElementById('q' + step).classList.add('hidden');
+                        document.getElementById('q' + (step + 1)).classList.remove('hidden');
+                    } else {
+                        showStep(6);
+                    }
+                }, 1500);
+            } else {
+                feedback.innerText = "❌ 음~ AI가 조금 헷갈리나봐요. 다시 해볼까요?";
+                feedback.className = "mt-8 min-h-[50px] text-xl font-bold text-accent";
+            }
+        }
+    </script>
+</body>
+</html>
