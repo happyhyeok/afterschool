@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엔트리 코딩 교실 - 아기 돼지의 숨바꼭질</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f8fb;
+            color: #333;
+        }
+        
+        /* 탭 애니메이션 */
+        .step-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="pb-20 leading-relaxed break-keep">
+
+    <!-- 헤더 영역 -->
+    <header class="bg-gradient-to-r from-teal-500 to-green-600 text-white py-12 shadow-md">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">🎬 아기 돼지의 숨바꼭질! 🐷🐺</h1>
+            <p class="text-lg md:text-xl opacity-90">오늘은 여러분이 멋진 애니메이션 감독이 될 시간이에요!<br>명령 블록을 조립해서 한 편의 재미있는 만화 같은 영상을 만들어보아요.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 mt-8 space-y-8">
+
+        <!-- 도입부 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="text-3xl mr-3">🌟</span> 
+                오늘의 작품 소개
+            </h2>
+            <p class="text-gray-700 text-lg leading-relaxed mb-4">
+                평화로운 시골길에 아기 돼지가 놀고 있었어요.<br>
+                그런데 앗! 무서운 늑대가 나타났어요!<br>
+                아기 돼지는 늑대에게 들키지 않게 재빨리 수풀 뒤로 쏙~ 숨을 거예요.<br>
+                늑대는 아기 돼지를 찾지 못하고 그냥 지나쳐 멀리 사라지게 되죠.<br>
+                마치 한 편의 만화 같지 않나요?<br>
+                오늘 우리는 이 장면을 직접 코딩으로 만들어 볼 거랍니다!
+            </p>
+        </section>
+
+        <!-- 1. 애니메이션 연출의 2가지 비밀 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="bg-yellow-100 text-yellow-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">🤫</span> 
+                1. 애니메이션 연출의 2가지 비밀!
+            </h2>
+            
+            <div class="space-y-8">
+                <!-- 비밀 1: 모양 바꾸기 -->
+                <div class="flex flex-col md:flex-row gap-6 items-center bg-orange-50 p-6 rounded-xl border border-orange-100 shadow-sm">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-orange-800 mb-3">비밀 1. 찰칵! 찰칵! 모양 바꾸기 📸</h3>
+                        <p class="text-orange-900 leading-relaxed break-keep text-lg">
+                            만화 주인공이 움직이는 것처럼 보이는 이유는 무엇일까요?<br>
+                            바로 <strong>조금씩 다르게 그려진 그림들을 아주 빠르게 번갈아 보여주기</strong> 때문이에요!<br>
+                            이것을 코딩에서는 '모양 바꾸기'라고 부른답니다.<br>
+                            다리를 벌린 늑대와 다리를 모은 늑대를 번갈아 보여주면 진짜 걷는 것처럼 보여요!
+                        </p>
+                    </div>
+                    <div class="w-full md:w-[45%] flex-shrink-0">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/aini1.PNG" alt="애니메이션 모양 바꾸기 원리" class="w-full rounded-xl shadow-md border-2 border-orange-200" onerror="this.onerror=null; this.src='https://placehold.co/600x350/orange/white?text=이미지+준비중';">
+                    </div>
+                </div>
+
+                <!-- 비밀 2: 원근감 -->
+                <div class="flex flex-col md:flex-row-reverse gap-6 items-center bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-indigo-800 mb-3">비밀 2. 멀어질수록 작아지는 마법! 🔍</h3>
+                        <p class="text-indigo-900 leading-relaxed break-keep text-lg">
+                            우리 눈은 가까이 있는 것은 크게, 멀리 있는 것은 작게 봐요.<br>
+                            이런 마법을 <strong>'원근감'</strong>이라고 해요!<br>
+                            늑대가 화면 안쪽으로 멀리 걸어가는 느낌을 주려면 어떻게 해야 할까요?<br>
+                            걸어갈수록 늑대의 <strong>크기를 점점 작게</strong> 줄여주면 늑대가 점점 멀어지는 느낌을 줄 수 있어요.<br>
+                            반대로 크기를 점점 크게 키워주면 늑대가 점점 가까워지는 느낌을 줄 수 있죠.
+                        </p>
+                    </div>
+                    <div class="w-full md:w-[45%] flex-shrink-0">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/aini2.PNG" alt="원근감과 크기 변화 원리" class="w-full rounded-xl shadow-md border-2 border-indigo-200" onerror="this.onerror=null; this.src='https://placehold.co/600x350/indigo/white?text=이미지+준비중';">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 핵심 이론 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">🧠</span> 
+                2. 만들기 전, 이것만은 꼭 알기! (마법의 도구들)
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                    <h4 class="font-bold text-blue-800 text-lg mb-2">🗺️ X, Y 좌표 (화면 속 주소표)</h4>
+                    <p class="text-gray-700">화면 안에서 아기 돼지와 늑대가 어디에 서 있어야 할지 알려주려면 주소가 필요해요.<br>
+                    • <strong>X 좌표:</strong> '좌우(왼쪽, 오른쪽)'로 움직이는 주소<br>
+                    • <strong>Y 좌표:</strong> '상하(위, 아래)'로 움직이는 주소</p>
+                </div>
+                <div class="bg-purple-50 p-5 rounded-xl border border-purple-100">
+                    <h4 class="font-bold text-purple-800 text-lg mb-2">🪄 반복하기 (요술 지팡이)</h4>
+                    <p class="text-gray-700">"한 발짝 걷고, 또 한 발짝 걷고..." 100번 써야 한다면 팔이 너무 아프겠죠? 이럴 때 '반복하기' 상자에 넣으면 컴퓨터가 알아서 척척 반복해 준답니다.</p>
+                </div>
+                <div class="bg-yellow-50 p-5 rounded-xl border border-yellow-100">
+                    <h4 class="font-bold text-yellow-800 text-lg mb-2">📖 모양 바꾸기 (만화책 넘기기)</h4>
+                    <p class="text-gray-700">늑대가 진짜 걷는 것처럼 보이게 하려면 다리를 벌린 모양, 오므린 모양을 번갈아 가며 빠르게 보여주면 돼요!</p>
+                </div>
+                <div class="bg-green-50 p-5 rounded-xl border border-green-100">
+                    <h4 class="font-bold text-green-800 text-lg mb-2">🔍 크기 바꾸기 (멀어지는 마법)</h4>
+                    <p class="text-gray-700">눈에서 물체가 멀어지면 점점 작게 보이죠? 늑대가 안쪽으로 멀어져 가는 느낌을 주기 위해 크기를 점점 작게 만들어 줄 거예요.</p>
+                </div>
+            </div>
+
+            <!-- 시뮬레이터 -->
+            <div class="flex flex-col md:flex-row gap-8 items-center bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <div class="relative w-full max-w-[400px] aspect-[480/270] bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-inner flex-shrink-0">
+                    <div class="absolute w-full h-[1px] bg-gray-300 top-1/2 -translate-y-1/2"></div>
+                    <div class="absolute h-full w-[1px] bg-gray-300 left-1/2 -translate-x-1/2"></div>
+                    <div class="absolute top-1/2 left-1/2 text-[10px] text-gray-500 mt-1 ml-1 font-bold">(0,0)</div>
+                    <div id="sim-dot" class="absolute w-8 h-8 bg-green-500 rounded-full -ml-4 mb-4 transition-all duration-300 shadow-lg flex items-center justify-center text-white text-sm" style="left: 50%; bottom: 50%;">📍</div>
+                </div>
+
+                <div class="flex-1 w-full">
+                    <p class="text-sm text-gray-600 mb-4 font-bold">👇 버튼을 눌러 각 배우들의 등장 위치(좌표)를 확인해 보세요!</p>
+                    <div class="mb-4 hidden">
+                        <input type="range" id="x-range" min="-240" max="240" value="0" class="w-full">
+                        <input type="range" id="y-range" min="-135" max="135" value="0" class="w-full">
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="setCoord(128, 60, '🐷', 'bg-pink-500')" class="bg-pink-50 hover:bg-pink-100 text-pink-800 py-3 rounded-xl text-md font-bold transition-colors border border-pink-200 shadow-sm flex justify-between px-4 items-center">
+                            <span>🐷 아기 돼지 위치</span>
+                            <span class="font-mono text-sm bg-white px-2 py-1 rounded shadow-inner">X: 128 / Y: 60</span>
+                        </button>
+                        <button onclick="setCoord(-190, 0, '🐺', 'bg-gray-600')" class="bg-gray-50 hover:bg-gray-200 text-gray-800 py-3 rounded-xl text-md font-bold transition-colors border border-gray-300 shadow-sm flex justify-between px-4 items-center">
+                            <span>🐺 늑대 위치</span>
+                            <span class="font-mono text-sm bg-white px-2 py-1 rounded shadow-inner">X: -190 / Y: 0</span>
+                        </button>
+                        <button onclick="setCoord(137, -100, '🌿', 'bg-green-600')" class="bg-green-50 hover:bg-green-100 text-green-800 py-3 rounded-xl text-md font-bold transition-colors border border-green-200 shadow-sm flex justify-between px-4 items-center">
+                            <span>🌿 수풀 위치</span>
+                            <span class="font-mono text-sm bg-white px-2 py-1 rounded shadow-inner">X: 137 / Y: -100</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 오브젝트 준비하기 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-teal-100 text-teal-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">🎬</span> 
+                Step 1. 무대와 배우들 준비하기
+            </h2>
+            <p class="text-gray-700 text-lg mb-5 ml-13">먼저 시골길 배경을 깔고, 오늘 이야기의 주인공들을 무대 위로 불러와요. 오브젝트 추가하기를 눌러주세요!</p>
+            <div class="flex flex-wrap gap-4 ml-13">
+                <span class="px-4 py-2 bg-gray-100 rounded-full font-bold text-gray-700">🌲 시골길(배경)</span>
+                <span class="px-4 py-2 bg-green-100 rounded-full font-bold text-green-800">🌿 수풀</span>
+                <span class="px-4 py-2 bg-pink-100 rounded-full font-bold text-pink-800">🐷 아기돼지</span>
+                <span class="px-4 py-2 bg-slate-100 rounded-full font-bold text-slate-800">🐺 늑대(인간)</span>
+            </div>
+        </section>
+
+        <h2 class="text-3xl font-black text-center text-gray-800 mt-12 mb-6">🎥 차근차근 코딩하기 (액션!)</h2>
+
+        <!-- Step 2: 수풀 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card border-t-4 border-t-green-500">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🌿 Step 2. 수풀의 자리 잡아주기
+            </h3>
+            
+            <div class="mb-6 p-5 bg-green-50 rounded-xl border-2 border-green-200 shadow-sm">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">감독님의 연출 노트 🎬</span>
+                </div>
+                <p class="text-green-900 text-lg md:text-xl font-black mb-2 leading-relaxed">"아기 돼지가 안전하게 숨을 수 있도록,<br>커다란 수풀을 화면 <span class="text-green-600 underline decoration-wavy">오른쪽 아래</span>에 딱! 배치하자!"</p>
+                <p class="text-green-700 text-[15px] mt-3 font-medium">💡 무대 위에 수풀을 원하는 자리에 세팅하기 위해 [수풀] 오브젝트에 아래 코드를 조립합니다.</p>
+            </div>
+
+            <div class="space-y-4 ml-2 text-[17px] text-gray-800">
+                <div class="flex items-start">
+                    <span class="font-bold text-green-600 mr-2">1.</span>
+                    <span><strong>시작하기 버튼을 클릭했을 때</strong></span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-green-600 mr-2">2.</span>
+                    <span>크기를 <strong>100</strong> (으)로 정하기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-green-600 mr-2">3.</span>
+                    <span>x: <strong>137</strong>, y: <strong>-100</strong> 위치로 이동하기</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: 아기 돼지 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card border-t-4 border-t-pink-400">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🐷 Step 3. 앗! 늑대다! 도망가는 아기 돼지
+            </h3>
+            
+            <div class="mb-6 p-5 bg-pink-50 rounded-xl border-2 border-pink-200 shadow-sm">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">감독님의 연출 노트 🎬</span>
+                </div>
+                <p class="text-pink-900 text-lg md:text-xl font-black mb-2 leading-relaxed">"아기 돼지가 늑대를 보고 깜짝 놀라,<br>대각선 아래 수풀 뒤로 <span class="text-pink-600 underline decoration-wavy">쪼르르 미끄러지듯</span> 도망가게 만들자!"</p>
+                <p class="text-pink-700 text-[15px] mt-3 font-medium">💡 단순히 뿅! 하고 사라지는 게 아니라 스르륵~ 자연스럽게 숨는 애니메이션을 만들기 위해 [아기돼지] 오브젝트에 아래 코드를 조립합니다.</p>
+            </div>
+
+            <div class="space-y-4 ml-2 text-[17px] text-gray-800">
+                <div class="flex items-start">
+                    <span class="font-bold text-pink-600 mr-2">1.</span>
+                    <span><strong>시작하기 버튼을 클릭했을 때</strong></span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-pink-600 mr-2">2.</span>
+                    <span>크기를 <strong>65</strong> (으)로 정하기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-pink-600 mr-2">3.</span>
+                    <span>x: <strong>128</strong>, y: <strong>60</strong> 위치로 이동하기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-pink-600 mr-2">4.</span>
+                    <span><strong>앗 늑대다</strong> 안녕을(를) <strong>2</strong> 초 동안 말하기</span>
+                </div>
+                <div class="flex items-start mt-5">
+                    <span class="font-bold text-pink-600 mr-2 mt-2">5.</span>
+                    <div class="w-full">
+                        <div class="bg-gray-100 p-2 px-4 rounded-t-lg font-bold text-gray-700 inline-block border-l-4 border-blue-400 mb-[-1px]">🔁 25 번 반복하기</div>
+                        <div class="bg-gray-50 border-2 border-gray-100 p-5 rounded-b-lg rounded-tr-lg space-y-3">
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">1)</span>
+                                <p class="text-gray-700">x 좌표를 <strong>1</strong> 만큼 바꾸기 <span class="text-sm text-gray-500 font-medium">(오른쪽으로 살짝)</span></p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">2)</span>
+                                <p class="text-gray-700">y 좌표를 <strong>-5</strong> 만큼 바꾸기 <span class="text-sm text-gray-500 font-medium">(아래로 쑥!)</span></p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">3)</span>
+                                <p class="text-gray-700"><strong>0.1</strong> 초 기다리기 <span class="text-sm text-gray-500 font-medium">(너무 순식간에 사라지지 않게!)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start mt-4">
+                    <span class="font-bold text-pink-600 mr-2">6.</span>
+                    <span><strong>2</strong> 초 기다리기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-pink-600 mr-2">7.</span>
+                    <span><strong>휴 다행이다. 큰일 날 뻔 했네</strong> 안녕을(를) <strong>2</strong> 초 동안 말하기</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: 늑대 코딩 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card border-t-4 border-t-slate-500">
+            <h3 class="text-xl font-bold text-gray-800 pb-3 mb-4 flex items-center gap-2 border-b border-gray-100">
+                🐺 Step 4. 쿵쾅쿵쾅 어슬렁거리는 늑대
+            </h3>
+            
+            <div class="mb-6 p-5 bg-slate-100 rounded-xl border-2 border-slate-300 shadow-sm">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-slate-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">감독님의 연출 노트 🎬</span>
+                </div>
+                <p class="text-slate-900 text-lg md:text-xl font-black mb-2 leading-relaxed">"늑대가 왼쪽에서 나타나 대각선 위로 발을 구르며 걸어가게 하자!<br>멀어질수록 크기를 <span class="text-slate-600 underline decoration-wavy">점점 작게</span> 줄여서 진짜처럼 연출해야지!"</p>
+                <p class="text-slate-700 text-[15px] mt-3 font-medium">💡 모양을 번갈아 바꿔 걷는 효과를 내고, 원근감을 표현하기 위해 [늑대] 오브젝트에 아래 코드를 조립합니다.</p>
+            </div>
+
+            <div class="space-y-4 ml-2 text-[17px] text-gray-800">
+                <div class="flex items-start">
+                    <span class="font-bold text-slate-600 mr-2">1.</span>
+                    <span><strong>시작하기 버튼을 클릭했을 때</strong></span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-slate-600 mr-2">2.</span>
+                    <span>크기를 <strong>120</strong> (으)로 정하기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-slate-600 mr-2">3.</span>
+                    <span>x: <strong>-190</strong>, y: <strong>0</strong> 위치로 이동하기</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-slate-600 mr-2">4.</span>
+                    <span>이동 방향을 <strong>80</strong> (으)로 정하기</span>
+                </div>
+                <div class="flex items-start mt-5">
+                    <span class="font-bold text-slate-600 mr-2 mt-2">5.</span>
+                    <div class="w-full">
+                        <div class="bg-gray-100 p-2 px-4 rounded-t-lg font-bold text-gray-700 inline-block border-l-4 border-blue-500 mb-[-1px]">♾️ 계속 반복하기</div>
+                        <div class="bg-gray-50 border-2 border-gray-100 p-5 rounded-b-lg rounded-tr-lg space-y-3">
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">1)</span>
+                                <p class="text-gray-700">이동 방향으로 <strong>5</strong> 만큼 움직이기</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">2)</span>
+                                <p class="text-gray-700"><strong>늑대인간_2</strong> 모양으로 바꾸기</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">3)</span>
+                                <p class="text-gray-700"><strong>0.1</strong> 초 기다리기</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">4)</span>
+                                <p class="text-gray-700"><strong>늑대인간_1</strong> 모양으로 바꾸기</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">5)</span>
+                                <p class="text-gray-700"><strong>0.5</strong> 초 기다리기 <span class="text-sm text-gray-500 font-medium">(발걸음을 옮기는 느낌!)</span></p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="font-bold text-blue-600 mr-2">6)</span>
+                                <p class="text-gray-700">크기를 <strong>-0.5</strong> 만큼 바꾸기 <span class="text-sm text-gray-500 font-medium">(점점 멀어지게)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 마무리 & 미션 -->
+        <section class="text-center py-8">
+            <h2 class="text-3xl font-black text-gray-800 mb-2">🎉 컷! 완성이에요 감독님!</h2>
+            <p class="text-gray-600 mb-12 text-lg">시작하기 버튼(▶)을 눌러서 아기 돼지가 무사히 숨었는지, 늑대가 자연스럽게 걸어가는지 감상해 보세요!</p>
+            
+            <h2 class="text-3xl font-black text-gray-800 mb-8 flex items-center justify-center gap-3">
+                <span class="text-4xl">🚀</span> 감독님의 추가 연출 미션!
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left">
+                <!-- 미션 1 -->
+                <div class="bg-yellow-50 rounded-2xl shadow-sm p-6 border border-yellow-200 flex flex-col h-full">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-3 flex items-center">
+                        <span class="bg-yellow-200 text-yellow-900 w-8 h-8 rounded-lg flex items-center justify-center mr-2 text-sm">1</span>
+                        번개처럼 빠른 늑대! ⚡
+                    </h3>
+                    <p class="text-yellow-700 mb-4 flex-grow">늑대가 너무 느릿느릿 걷나요? 훨씬 더 빠르게 뛰어가도록 코드를 고쳐보세요!</p>
+                    <div class="bg-white p-4 rounded-lg border border-yellow-100 mt-auto">
+                        <p class="text-[15px] text-gray-600 leading-relaxed">💡 <strong>힌트:</strong> 늑대의 [이동 방향으로 ~만큼 움직이기] 숫자를 크게 키우거나, [기다리는 시간]을 줄여보세요!</p>
+                    </div>
+                </div>
+
+                <!-- 미션 2 -->
+                <div class="bg-blue-50 rounded-2xl shadow-sm p-6 border border-blue-200 flex flex-col h-full">
+                    <h3 class="text-xl font-bold text-blue-800 mb-3 flex items-center">
+                        <span class="bg-blue-200 text-blue-900 w-8 h-8 rounded-lg flex items-center justify-center mr-2 text-sm">2</span>
+                        늑대의 혼잣말 💬
+                    </h3>
+                    <p class="text-blue-700 mb-4 flex-grow">늑대가 지나가면서 돼지를 찾는 연출을 추가해봐요. "어디로 숨었지?"라고 말하게 할 수 있을까요?</p>
+                    <div class="bg-white p-4 rounded-lg border border-blue-100 mt-auto">
+                        <p class="text-[15px] text-gray-600 leading-relaxed">💡 <strong>힌트:</strong> 늑대 코드 중간에 [~를 ~초 동안 말하기] 블록을 넣어보세요. 단, 반복하기 블록 밖에 넣어야 한 번만 말해요!</p>
+                    </div>
+                </div>
+
+                <!-- 미션 3 -->
+                <div class="bg-pink-50 rounded-2xl shadow-sm p-6 border border-pink-200 flex flex-col h-full">
+                    <h3 class="text-xl font-bold text-pink-800 mb-3 flex items-center">
+                        <span class="bg-pink-200 text-pink-900 w-8 h-8 rounded-lg flex items-center justify-center mr-2 text-sm">3</span>
+                        다시 나온 돼지 🐷
+                    </h3>
+                    <p class="text-pink-700 mb-4 flex-grow">늑대가 사라진 뒤, 아기 돼지가 다시 시골길로 나와서 기뻐하는 장면을 연출해보세요!</p>
+                    <div class="bg-white p-4 rounded-lg border border-pink-100 mt-auto">
+                        <p class="text-[15px] text-gray-600 leading-relaxed">💡 <strong>힌트:</strong> 아기 돼지 코드의 마지막에 [반복하기]를 하나 더 쓰고, 숨었을 때와 <strong>반대 방향</strong>으로 움직이게 하면 돼요!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 감독님의 무한 상상력 섹션 -->
+        <section class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl shadow-xl p-8 sm:p-10 text-white step-card">
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-3">
+                <span class="text-4xl">✨</span> 감독님만의 시즌 2! 이야기 확장하기
+            </h2>
+            <p class="text-indigo-100 text-lg mb-8 leading-relaxed">
+                기본 연출을 모두 마스터하셨군요! 이제 누구도 생각하지 못한 **감독님만의 특별한 이야기**로 작품을 연결해 보세요. <br>
+                스스로 생각하고 코딩할 때 진짜 마법이 시작된답니다! 아래 세 가지 아이디어 중 하나를 골라 도전해 볼까요?
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 늑대의 속사정 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <h4 class="text-xl font-bold mb-3 flex items-center gap-2">
+                        🐺 늑대는 사실... (늑대 시점)
+                    </h4>
+                    <p class="text-indigo-50 text-[16px] mb-4">
+                        늑대가 아기 돼지를 잡아먹으려고 하는 게 아니라면 어떨까요? <br>
+                        "돼지야~ 같이 축구하자!", "내 사탕 못 봤니?"라고 말하며 지나가는 평화로운 늑대를 연출해 보세요. 늑대의 반전 매력을 보여주는 거예요!
+                    </p>
+                </div>
+
+                <!-- 아기 돼지의 용기 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <h4 class="text-xl font-bold mb-3 flex items-center gap-2">
+                        🐷 돼지의 깜짝 대반격! (돼지 시점)
+                    </h4>
+                    <p class="text-indigo-50 text-[16px] mb-4">
+                        숨어있던 아기 돼지가 용기를 내어 늑대 뒤로 살금살금 다가가 "으악!" 하고 놀래키는 장면은 어떨까요? 무서웠던 상황을 코믹한 반전으로 바꿔 보세요!
+                    </p>
+                </div>
+
+                <!-- 새로운 등장인물 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <h4 class="text-xl font-bold mb-3 flex items-center gap-2">
+                        🐦 도와줘요! 숲속 친구들
+                    </h4>
+                    <p class="text-indigo-50 text-[16px] mb-4">
+                        하늘을 나는 새나 나비 오브젝트를 추가해 보세요. 새가 늑대의 눈을 가리거나, 돼지에게 늑대가 오고 있다고 미리 알려주는 장면을 만들면 이야기가 훨씬 풍성해져요!
+                    </p>
+                </div>
+
+                <!-- 감독님 자유 연출 -->
+                <div class="bg-white/20 rounded-2xl p-6 border border-dashed border-white/40 flex flex-col justify-center items-center text-center">
+                    <h4 class="text-xl font-bold mb-2">💎 감독님의 자유 시나리오</h4>
+                    <p class="text-indigo-50 text-[15px]">
+                        아무도 모르는 감독님만의 결말을 만들어보세요. <br>
+                        "돼지와 늑대가 친구가 되어 파티를 연다" 같은 기발한 생각도 좋아요!
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-10 p-5 bg-white/10 rounded-xl text-center font-bold text-lg border border-white/10">
+                💡 팁: 새로운 장면을 만들 때는 [장면 추가] 기능을 쓰거나, 기존 코드 끝에 새로운 블록들을 길게 이어 붙여보세요!
+            </div>
+        </section>
+
+        <!-- 확인학습 퀴즈 -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-100 step-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <span class="bg-indigo-100 text-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-xl">📝</span> 
+                감독님을 위한 미니 퀴즈
+            </h2>
+            <p class="text-gray-600 mb-6 ml-13 text-lg">오늘 배운 애니메이션 연출(코딩) 기법을 퀴즈로 확인해볼까요?</p>
+            
+            <div id="quiz-container" class="space-y-6 pl-2 md:pl-12">
+                <!-- JS에서 퀴즈가 삽입됩니다 -->
+            </div>
+            
+            <div class="mt-10 text-center">
+                <button onclick="submitQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-10 rounded-xl shadow-md transition-colors text-lg">결과 확인하기</button>
+                <div id="quiz-result" class="mt-6 text-2xl font-black hidden rounded-xl p-4 transition-all"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // 좌표 시뮬레이터 로직
+        const simDot = document.getElementById('sim-dot');
+        const xRange = document.getElementById('x-range');
+        const yRange = document.getElementById('y-range');
+
+        function setCoord(x, y, emoji, bgColorClass) {
+            xRange.value = x;
+            yRange.value = y;
+            simDot.innerText = emoji;
+            
+            simDot.className = simDot.className.replace(/bg-\w+-\d+/, '');
+            simDot.classList.add(bgColorClass);
+            
+            const leftPercent = ((x + 240) / 480) * 100;
+            const bottomPercent = ((y + 135) / 270) * 100;
+            
+            simDot.style.left = `${leftPercent}%`;
+            simDot.style.bottom = `${bottomPercent}%`;
+            
+            simDot.style.transform = 'scale(1.5)';
+            setTimeout(() => {
+                simDot.style.transform = 'scale(1)';
+            }, 300);
+        }
+
+        const quizData = [
+            { q: "1. 늑대가 화면 멀리 사라지는 느낌을 주기 위해 사용한 블록은 무엇일까요?", options: ["모양 숨기기", "크기를 -0.5만큼 바꾸기", "방향을 회전하기", "색깔 효과 주기"], a: 1 },
+            { q: "2. 아기 돼지가 수풀 아래쪽으로 숨게 하려면 Y좌표를 어떻게 바꿔야 할까요?", options: ["양수(+)로 바꾼다", "음수(-)로 바꾼다", "0으로 정한다", "바꾸지 않는다"], a: 1 },
+            { q: "3. 늑대가 걷는 것처럼 다리를 움직이게 만들려면 어떤 블록을 반복해야 할까요?", options: ["크기 바꾸기", "말하기", "모양 바꾸기", "기다리기"], a: 2 },
+            { q: "4. 여러 번 써야 하는 똑같은 명령 블록을 하나로 묶어주는 편리한 도구는 무엇인가요?", options: ["시작 블록", "만일 ~라면 블록", "반복하기 블록", "계산 블록"], a: 2 },
+            { q: "5. 화면의 정중앙 좌표는 무엇일까요?", options: ["X: 100, Y: 100", "X: 240, Y: 135", "X: -100, Y: -100", "X: 0, Y: 0"], a: 3 }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        function renderQuiz() {
+            quizData.forEach((quiz, index) => {
+                const quizBlock = document.createElement('div');
+                quizBlock.className = 'bg-gray-50 p-5 rounded-xl border border-gray-200';
+                
+                const questionTitle = document.createElement('h4');
+                questionTitle.className = 'font-bold text-gray-800 text-lg mb-3';
+                questionTitle.innerText = quiz.q;
+                quizBlock.appendChild(questionTitle);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'flex flex-col gap-2 pl-2';
+
+                quiz.options.forEach((option, optIndex) => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-colors';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `quiz-${index}`;
+                    radio.value = optIndex;
+                    radio.className = 'w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 focus:ring-indigo-500';
+                    
+                    const span = document.createElement('span');
+                    span.className = 'text-gray-700';
+                    span.innerText = option;
+
+                    label.appendChild(radio);
+                    label.appendChild(span);
+                    optionsContainer.appendChild(label);
+                });
+
+                quizBlock.appendChild(optionsContainer);
+                
+                const feedback = document.getElementById(`feedback-${index}`);
+                if (!feedback) {
+                    const newFeedback = document.createElement('div');
+                    newFeedback.id = `feedback-${index}`;
+                    newFeedback.className = 'mt-3 text-sm font-bold hidden';
+                    quizBlock.appendChild(newFeedback);
+                }
+
+                quizContainer.appendChild(quizBlock);
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            quizData.forEach((quiz, index) => {
+                const selected = document.querySelector(`input[name="quiz-${index}"]:checked`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                feedbackDiv.classList.remove('hidden');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === quiz.a) {
+                        score++;
+                        feedbackDiv.innerText = "✅ 딩동댕! 정답입니다.";
+                        feedbackDiv.className = 'mt-3 text-sm font-bold text-green-600';
+                    } else {
+                        feedbackDiv.innerText = `❌ 아쉽네요. 정답은 '${quiz.options[quiz.a]}' 입니다.`;
+                        feedbackDiv.className = 'mt-3 text-sm font-bold text-red-500';
+                    }
+                } else {
+                    feedbackDiv.innerText = "⚠️ 답을 선택하지 않았습니다.";
+                    feedbackDiv.className = 'mt-3 text-sm font-bold text-orange-500';
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerText = `총 5문제 중 ${score}문제를 맞혔습니다! 🎬`;
+            
+            if(score === 5) {
+                resultDiv.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+                resultDiv.classList.remove('bg-indigo-100', 'text-indigo-800', 'border-indigo-300');
+            } else {
+                resultDiv.classList.add('bg-indigo-100', 'text-indigo-800', 'border', 'border-indigo-300');
+                resultDiv.classList.remove('bg-green-100', 'text-green-800', 'border-green-300');
+            }
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>
