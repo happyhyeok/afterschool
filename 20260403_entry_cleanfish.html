@@ -103,15 +103,6 @@
 
         .btn-hint:hover { background: #e2e8f0; }
 
-        .hint-box {
-            display: none;
-            background: #f0f9ff;
-            border: 2px dashed #0284c7;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 15px;
-        }
-
         /* Quiz Design */
         .quiz-option {
             display: flex;
@@ -159,6 +150,16 @@
             color: #64748b;
             flex-shrink: 0;
         }
+
+        /* Highlight Download Section */
+        .download-box {
+            background: #eff6ff;
+            border: 2px dashed #3b82f6;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 35px;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-4xl mx-auto">
@@ -192,6 +193,34 @@
         </div>
     </div>
 
+    <!-- 🛠 실습 준비하기 (Download Section) -->
+    <div class="download-box">
+        <h2 class="text-2xl font-extrabold text-blue-800 mb-4">🚀 직접 코딩해볼까요?</h2>
+        <p class="text-slate-600 mb-6">아래 버튼을 눌러 실습 파일을 다운로드하고, 엔트리에서 불러와서 시작하세요!</p>
+        
+        <div class="flex flex-col items-center gap-4">
+            <a href="https://happyhyeok.github.io/afterschool/cleanfish.ent" 
+               download 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-black shadow-lg transition-transform hover:scale-105 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                학생용 실습 파일(.ent) 다운로드
+            </a>
+            
+            <div class="bg-white/80 p-4 rounded-xl text-sm text-left max-w-md border border-blue-100">
+                <p class="font-bold text-blue-900 mb-2">📁 불러오는 방법:</p>
+                <ol class="list-decimal list-inside space-y-1 text-slate-700">
+                    <li>위 버튼을 눌러 파일을 내 컴퓨터에 저장합니다.</li>
+                    <li><a href="https://playentry.org" target="_blank" class="text-blue-600 underline font-semibold">엔트리(playentry.org)</a>에 접속합니다.</li>
+                    <li>상단 메뉴의 <b>[만들기]</b> → <b>[작품 만들기]</b>를 클릭합니다.</li>
+                    <li>왼쪽 상단 <b>[파일]</b> 메뉴에서 <b>[오프라인 작품 불러오기]</b>를 선택합니다.</li>
+                    <li>방금 다운로드한 <code class="bg-slate-100 px-1 rounded">cleanfish.ent</code> 파일을 선택해 열어주세요!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
     <!-- 🎯 게임 규칙 (조건) -->
     <div class="step-card">
         <div class="step-header"><span>🎯</span> 핵심 게임 규칙 알아보기</div>
@@ -218,7 +247,7 @@
         </div>
     </div>
 
-    <!-- 1. 통 (Trash Can) Logic -->
+    <!-- Core Logic Sections (1-4) -->
     <div class="step-card">
         <div class="step-header"><span>1</span> [통] 꽃게를 졸졸 따라다니는 바구니</div>
         <div class="content-body">
@@ -234,7 +263,6 @@
         </div>
     </div>
 
-    <!-- 2. Crab Logic -->
     <div class="step-card">
         <div class="step-header"><span>2</span> [꽃게] 바다를 누비는 청소부 주인공</div>
         <div class="content-body">
@@ -252,7 +280,6 @@
         </div>
     </div>
 
-    <!-- 3. Trash Logic -->
     <div class="step-card">
         <div class="step-header"><span>3</span> [쓰레기] 바다로 떨어지는 쓰레기와 심판 선생님</div>
         <div class="content-body">
@@ -272,7 +299,6 @@
         </div>
     </div>
 
-    <!-- 4. Fish Logic -->
     <div class="step-card">
         <div class="step-header"><span>4</span> [물고기] 질문하는 방해꾼</div>
         <div class="content-body">
@@ -311,17 +337,14 @@
         let gameTime = 0;
         let score = 0;
         let chances = 5;
-        let timeCounter = 0; // For actual 1 second ticks
+        let timeCounter = 0;
 
-        // Crab Object (Y axis inverted in Canvas: Top is 0, Bottom is 360. Crab floats if y > -100 in Entry, meaning it sinks if it's high up. Here we simulate sinking towards bottom)
         const crab = { 
             x: 240, y: 180, w: 40, h: 30, 
             color: '#ef4444', effect: 0 
         };
         
-        // Tong Effect
         let tongEffectFrames = 0;
-
         let trashes = [];
         let fishes = [];
         let keys = {};
@@ -330,14 +353,12 @@
         window.addEventListener('keyup', e => { keys[e.code] = false; });
 
         function drawBackground() {
-            // Gradient Ocean
             let grd = ctx.createLinearGradient(0, 0, 0, 360);
             grd.addColorStop(0, "#0284c7");
             grd.addColorStop(1, "#082f49");
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, 480, 360);
             
-            // Sand bottom (Visual representation of Wall/Bottom)
             ctx.fillStyle = '#d4d4d8'; 
             ctx.beginPath();
             ctx.moveTo(0, 330);
@@ -349,34 +370,29 @@
 
         function drawCrabAndCan() {
             ctx.save();
-            if (crab.effect > 0) ctx.globalAlpha = 0.5; // Blink effect on hit
+            if (crab.effect > 0) ctx.globalAlpha = 0.5;
             
-            // --- Draw Trash Can (Tong) at Crab's Position ---
-            // If tong effect is active, change color to bright cyan briefly
             ctx.fillStyle = tongEffectFrames > 0 ? '#06b6d4' : '#1e40af'; 
             ctx.beginPath();
-            ctx.moveTo(crab.x - 20, crab.y - 30); // Top left
-            ctx.lineTo(crab.x + 20, crab.y - 30); // Top right
-            ctx.lineTo(crab.x + 15, crab.y - 5);  // Bottom right
-            ctx.lineTo(crab.x - 15, crab.y - 5);  // Bottom left
+            ctx.moveTo(crab.x - 20, crab.y - 30);
+            ctx.lineTo(crab.x + 20, crab.y - 30);
+            ctx.lineTo(crab.x + 15, crab.y - 5);
+            ctx.lineTo(crab.x - 15, crab.y - 5);
             ctx.fill();
-            // Grid lines on bin
+
             ctx.strokeStyle = tongEffectFrames > 0 ? '#164e63' : '#1e3a8a';
             ctx.lineWidth = 2;
             for(let i=1; i<4; i++) {
                 ctx.beginPath(); ctx.moveTo(crab.x - 20 + (i*10), crab.y - 30); ctx.lineTo(crab.x - 15 + (i*7.5), crab.y - 5); ctx.stroke();
             }
 
-            // Decrease tong effect timer
             if (tongEffectFrames > 0) tongEffectFrames--;
 
-            // --- Draw Crab ---
             ctx.fillStyle = crab.color;
             ctx.beginPath();
             ctx.ellipse(crab.x, crab.y, 20, 15, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Eyes
             ctx.fillStyle = 'white';
             ctx.beginPath(); ctx.arc(crab.x - 8, crab.y - 12, 5, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(crab.x + 8, crab.y - 12, 5, 0, Math.PI*2); ctx.fill();
@@ -384,7 +400,6 @@
             ctx.beginPath(); ctx.arc(crab.x - 8, crab.y - 12, 2, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(crab.x + 8, crab.y - 12, 2, 0, Math.PI*2); ctx.fill();
             
-            // Claws
             ctx.fillStyle = '#dc2626';
             ctx.beginPath(); ctx.arc(crab.x - 25, crab.y - 5, 8, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(crab.x + 25, crab.y - 5, 8, 0, Math.PI*2); ctx.fill();
@@ -394,108 +409,87 @@
         }
 
         function drawTrash(t) {
-            ctx.fillStyle = '#e2e8f0'; // Bottle color
+            ctx.fillStyle = '#e2e8f0';
             ctx.beginPath();
-            ctx.fillRect(t.x - 6, t.y - 15, 12, 20); // body
-            ctx.fillRect(t.x - 3, t.y - 22, 6, 7);  // neck
-            ctx.fillStyle = '#38bdf8'; // Label
+            ctx.fillRect(t.x - 6, t.y - 15, 12, 20);
+            ctx.fillRect(t.x - 3, t.y - 22, 6, 7);
+            ctx.fillStyle = '#38bdf8';
             ctx.fillRect(t.x - 6, t.y - 5, 12, 6);
         }
 
         function drawFish(f) {
-            ctx.fillStyle = '#fbbf24'; // Yellow fish
+            ctx.fillStyle = '#fbbf24';
             ctx.beginPath();
             ctx.ellipse(f.x, f.y, 15, 10, 0, 0, Math.PI * 2);
             ctx.fill();
-            // Tail
             ctx.beginPath();
             ctx.moveTo(f.x + 10, f.y);
             ctx.lineTo(f.x + 25, f.y - 10);
             ctx.lineTo(f.x + 25, f.y + 10);
             ctx.fill();
-            ctx.fillStyle = 'black'; // Eye
+            ctx.fillStyle = 'black';
             ctx.beginPath(); ctx.arc(f.x - 8, f.y - 2, 2, 0, Math.PI*2); ctx.fill();
         }
 
         function update() {
             if (!isRunning) return;
 
-            // Crab Movement Logic (Canvas Y is top-down)
-            // 1. Gravity
             if (crab.y < 310) crab.y += 3;
 
-            // 2. Key Controls: Up is Y-6 in Canvas (Swim up)
             if (keys['ArrowLeft'] && crab.x > 20) crab.x -= 5;
             if (keys['ArrowRight'] && crab.x < 460) crab.x += 5;
-            if (keys['ArrowUp'] && crab.y > 40) crab.y -= 6; // 헤엄쳐 오르기
+            if (keys['ArrowUp'] && crab.y > 40) crab.y -= 6;
             if (keys['ArrowDown'] && crab.y < 310) crab.y += 5; 
 
-            // Spawn Trash
             if (Math.random() < 0.02) {
                 trashes.push({ x: Math.random() * 400 + 40, y: -20 });
             }
-
-            // Spawn Fish
             if (Math.random() < 0.015) {
                 fishes.push({ x: 500, y: Math.random() * 200 + 50 });
             }
 
-            // Update Trash
             for (let i = trashes.length - 1; i >= 0; i--) {
-                trashes[i].y += 3; // Fall down (y +3 in Canvas, -3 in Entry)
-                
-                // Collision with Trash Can (Basket is slightly above crab center)
+                trashes[i].y += 3;
                 const dx = crab.x - trashes[i].x;
                 const dy = (crab.y - 20) - trashes[i].y; 
                 if (Math.sqrt(dx*dx + dy*dy) < 30) {
                     score++;
-                    tongEffectFrames = 15; // Set color change effect for 15 frames
+                    tongEffectFrames = 15;
                     trashes.splice(i, 1);
                     continue;
                 }
-
-                // Hit Bottom (Wall) -> Fail to catch
                 if (trashes[i].y > 330) {
                     chances--;
                     trashes.splice(i, 1);
                 }
             }
 
-            // Update Fish
             for (let i = fishes.length - 1; i >= 0; i--) {
-                fishes[i].x -= 5; // Move left (x -5)
-                
-                // Collision with Crab
+                fishes[i].x -= 5;
                 const dx = crab.x - fishes[i].x;
                 const dy = crab.y - fishes[i].y;
                 if (Math.sqrt(dx*dx + dy*dy) < 30 && crab.effect === 0) {
                     chances--;
-                    crab.effect = 30; // Blink frames (0.1 sec delay equivalent)
+                    crab.effect = 30;
                 }
-
-                // Hit left wall
                 if (fishes[i].x < -30) fishes.splice(i, 1);
             }
 
-            // Time Tracking
             timeCounter++;
             if (timeCounter >= 60) {
                 gameTime++;
                 timeCounter = 0;
             }
 
-            // Win / Lose Conditions
             if (gameTime >= 30) endGame(true);
             if (chances <= 0) endGame(false);
 
-            // Drawing
             ctx.clearRect(0, 0, 480, 360);
             drawBackground();
             trashes.forEach(drawTrash);
             fishes.forEach(drawFish);
             drawCrabAndCan(); 
 
-            // UI HUD
             ctx.fillStyle = 'white';
             ctx.font = 'bold 16px Arial';
             ctx.fillText(`시간: ${gameTime}`, 20, 30);
@@ -523,7 +517,6 @@
             }
         }
 
-        // Show initial prompt bubble
         const initRect = canvas.getBoundingClientRect();
         speechBubble.style.display = 'block';
         speechBubble.style.left = '50%';
@@ -537,41 +530,39 @@
             crab.x = 240; crab.y = 150; crab.effect = 0;
             tongEffectFrames = 0;
             speechBubble.style.display = 'none';
-            speechBubble.style.transform = 'none'; // reset centered transform
+            speechBubble.style.transform = 'none';
             isRunning = true;
             update();
             document.getElementById('startBtn').innerText = '다시 하기';
             document.getElementById('startBtn').classList.replace('bg-sky-600', 'bg-slate-500');
             document.getElementById('startBtn').classList.replace('hover:bg-sky-700', 'hover:bg-slate-600');
-            // If already playing, reload instead
             document.getElementById('startBtn').onclick = () => location.reload();
         });
 
-        // --- Quiz Setup ---
         const quizzes = [
             {
                 q: "꽃게가 아무 키도 누르지 않을 때 물 아래로 가라앉게(중력) 만드는 코드는 무엇인가요?",
                 a: ["만일 위쪽 화살표가 눌려져 있는가? 라면", "만일 너무 높이 떠있지 않다면(y좌표 조건)", "만일 벽에 닿았는가? 라면", "만일 기회가 0이라면"],
                 correct: 1,
-                hint: "꽃게가 공중에 둥둥 떠 있는 게 아니라면, y좌표를 조금씩 마이너스(-)로 바꿔서 바닥으로 떨어지게 하는 비밀 조건이 있어요!"
+                hint: "y좌표를 조금씩 마이너스(-)로 바꿔서 바닥으로 떨어지게 하는 비밀 조건이 있어요!"
             },
             {
                 q: "통이 꽃게 등에서 떨어지지 않고 졸졸 따라다니게 하려면 어떻게 해야 할까요?",
                 a: ["자기 복제본을 계속 만들기", "오른쪽 화살표 누르기", "무한 반복해서 '꽃게 위치로 이동하기'", "가만히 기다리기"],
                 correct: 2,
-                hint: "통의 위치를 쉬지 않고(계속 반복하기) 꽃게의 위치와 똑같이 맞춰주면, 꼭 꽃게가 통을 짊어지고 다니는 것처럼 보인답니다."
+                hint: "통의 위치를 쉬지 않고 꽃게의 위치와 똑같이 맞춰주면 됩니다."
             },
             {
                 q: "점수 1점을 얻으려면 떨어지는 '쓰레기'가 어디에 쏙 들어가야 할까요?",
                 a: ["꽃게의 집게발", "바다(배경)", "헤엄치는 물고기", "꽃게가 들고 있는 통(바구니)"],
                 correct: 3,
-                hint: "꽃게 몸통이 아니라 꽃게가 등에 메고 있는 '통'에 쓰레기가 닿아야 점수가 올라가면서 통 색깔이 잠깐 변해요."
+                hint: "꽃게가 등에 메고 있는 '통'에 쓰레기가 닿아야 점수가 올라갑니다."
             },
             {
-                q: "게임이 시작된 후, 시간이 30초가 되었는지 검사하고 '성공!'을 외쳐주는 심판 역할은 누가 하고 있나요?",
+                q: "시간이 30초가 되었는지 검사하고 '성공!'을 외쳐주는 심판 역할은 누가 하나요?",
                 a: ["꽃게", "바구니(통)", "쓰레기", "물고기"],
                 correct: 2,
-                hint: "쓰레기 오브젝트의 코드를 잘 보면, 1초마다 시간을 올리고 30초가 되면 성공을 알려주는 블록들이 숨어있답니다."
+                hint: "쓰레기 오브젝트의 코드를 잘 보면 시간 체크 블록이 있습니다."
             }
         ];
 
