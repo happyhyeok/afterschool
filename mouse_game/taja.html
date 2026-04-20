@@ -62,7 +62,7 @@
         }
 
         .title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             margin-bottom: 1rem;
             color: #FF7F50;
             text-shadow: 2px 2px 0px #FFF, 4px 4px 0px #FFD700;
@@ -213,7 +213,6 @@
         }
         .word-node .emoji-hint { font-size: 3.5rem; margin-bottom: 5px; }
         
-        /* 숲 테마 비눗방울 스타일 */
         body.theme-forest .word-node {
             width: 130px; height: 130px;
             background: rgba(255, 255, 255, 0.4); border: 3px solid rgba(255, 255, 255, 0.9);
@@ -448,7 +447,7 @@
                 createStars();
             } else {
                 ui.player.innerText = '🐰';
-                ui.stars.innerHTML = ''; // 별 제거
+                ui.stars.innerHTML = ''; 
             }
 
             updateScoreAndLevel();
@@ -476,13 +475,22 @@
 
         function updateScoreAndLevel() {
             ui.score.innerText = `점수: ${score}`;
-            if (score >= 100 && currentLevel === 1) {
-                currentLevel = 2; speak("2단계, 이름 지키기!");
-            } else if (score >= 250 && currentLevel === 2) {
-                currentLevel = 3; speak("3단계, 낱말 맞추기!");
+            let oldLevel = currentLevel;
+
+            if (score >= 250) currentLevel = 3;
+            else if (score >= 100) currentLevel = 2;
+
+            if (oldLevel !== currentLevel) {
+                const levelNames = {1: '1단계: 자음/모음', 2: '2단계: 이름 지키기', 3: '3단계: 낱말 맞추기'};
+                ui.level.innerText = levelNames[currentLevel];
+                if(currentLevel === 2) speak("2단계, 이름 지키기!");
+                if(currentLevel === 3) speak("3단계, 낱말 맞추기!");
+
+                // [개선 포인트 2] 2, 3단계 조합단계에서 떨어지는 속도가 3배 느려지므로 화면 겹침 방지를 위해 스폰 속도 완화
+                clearInterval(spawnInterval);
+                let spawnDelay = (currentLevel === 1) ? 2500 : 5000;
+                spawnInterval = setInterval(spawnWord, spawnDelay);
             }
-            const levelNames = {1: '1단계: 자음/모음', 2: '2단계: 이름 지키기', 3: '3단계: 낱말 맞추기'};
-            ui.level.innerText = levelNames[currentLevel];
         }
 
         function spawnWord() {
@@ -494,7 +502,6 @@
             
             let displayEmoji = wordData.e || '';
             
-            // 1단계(자음/모음) 일 경우 테마별 이모지 할당
             if (currentLevel === 1) {
                 if (currentTheme === 'space') {
                     const spaceEmojis =['👽', '🛸', '☄️'];
@@ -516,9 +523,14 @@
 
             ui.words.appendChild(wordEl);
             
+            // [개선 포인트 2] 글자를 조합하는 2, 3단계에서는 기존(1.1, 1.4) 대비 떨어지는 속도를 3배(1/3) 가량 느리게 설정
+            let fallSpeed = 0.8;
+            if (currentLevel === 2) fallSpeed = 1.1 / 3; // 약 0.36
+            else if (currentLevel === 3) fallSpeed = 1.4 / 3; // 약 0.46
+
             activeWords.push({
                 el: wordEl, text: wordData.t, x: startX, y: -150,
-                speed: (currentLevel * 0.3) + 0.5
+                speed: fallSpeed
             });
 
             if(currentLevel === 3) speak(wordData.t);
@@ -534,7 +546,6 @@
                 w.y += w.speed;
                 w.el.style.top = w.y + 'px';
 
-                // 바닥 터치 시 페널티 없이 위로 튕겨 오르기
                 if (w.y > thresholdY) {
                     w.y = -150;
                     w.x = Math.max(50, Math.random() * (window.innerWidth - 150));
@@ -545,24 +556,28 @@
             gameInterval = requestAnimationFrame(gameLoop);
         }
 
-        // --- Utils: 한글 자모 분해 ---
-        function extractJamo(char) {
-            const code = char.charCodeAt(0);
-            if (code >= 44032 && code <= 55203) {
-                const offset = code - 44032;
-                const cho = Math.floor(offset / 588);
-                const jung = Math.floor((offset - (cho * 588)) / 28);
-                const jong = offset % 28;
-                
-                const CHO =['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-                const JUNG = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
-                const JONG =['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-                
-                const result = [CHO[cho], JUNG[jung]];
-                if (jong > 0) result.push(JONG[jong]);
-                return result;
+        // [개선 포인트 1] 조합된 글자(예:'가')를 자모(ㄱ,ㅏ)로 분해해주는 함수
+        function getJamos(str) {
+            const CHO =["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+            const JUNG =["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
+            const JONG =["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+            
+            let jamos =[];
+            for(let i=0; i<str.length; i++) {
+                let code = str.charCodeAt(i);
+                if (code >= 44032 && code <= 55203) {
+                    let offset = code - 44032;
+                    let choIdx = Math.floor(offset / 588);
+                    let jungIdx = Math.floor((offset % 588) / 28);
+                    let jongIdx = offset % 28;
+                    jamos.push(CHO[choIdx]);
+                    jamos.push(JUNG[jungIdx]);
+                    if(jongIdx > 0) jamos.push(JONG[jongIdx]);
+                } else {
+                    jamos.push(str[i]);
+                }
             }
-            return [char];
+            return jamos;
         }
 
         // --- Interaction & Shooting ---
@@ -576,34 +591,27 @@
             showAISuggestions(typed[0]);
 
             let matchIndex = activeWords.findIndex(w => w.text === typed);
-
-            // 1단계(자음/모음)에서 한글이 조합되어 버린 경우 (예: 'ㄱ' + 'ㅏ' = '가')
-            // 조합된 글자를 자모로 분해하여 개별 자음/모음 매칭을 시도
+            
+            // [개선 포인트 1] 1단계 한정: 모음 입력 시 앞에 남아있던 자음과 결합(IME 버그)되는 현상 대응
+            // '가' 처럼 조합된 글자가 들어와도 자모를 분해(ㄱ+ㅏ)하여 일치하는 낱자가 화면에 있으면 성공으로 판정
             if (matchIndex === -1 && currentLevel === 1) {
-                const lastChar = typed[typed.length - 1];
-                if (lastChar) {
-                    const jamos = extractJamo(lastChar);
-                    // 방금 조합되어 추가된 최신 모음/종성을 우선적으로 찾기 위해 뒤에서부터 확인
-                    for (let i = jamos.length - 1; i >= 0; i--) {
-                        matchIndex = activeWords.findIndex(w => w.text === jamos[i]);
-                        if (matchIndex > -1) {
-                            break;
-                        }
-                    }
-                }
+                let jamos = getJamos(typed);
+                matchIndex = activeWords.findIndex(w => jamos.includes(w.text));
             }
 
             if (matchIndex > -1) {
                 const targetWord = activeWords[matchIndex];
                 activeWords.splice(matchIndex, 1);
                 
-                // 단어를 맞춘 후 입력창 초기화
-                // 조합되어 남은 글자도 분해로직으로 처리되므로 억지로 blur()하지 않아도 원활하게 동작함 (모바일 깜빡임 방지)
+                // 타격 성공 시 입력창 완전 초기화 및 IME 강제 종료(데스크탑 환경 최적화)
                 e.target.value = '';
+                e.target.blur();   
+                setTimeout(() => { e.target.focus(); }, 10);
                 
                 ui.ai.innerHTML = ''; 
                 shoot(targetWord);
             }
+
             updateHighlight();
         });
 
@@ -647,7 +655,6 @@
             const targetX = target.x + target.el.offsetWidth / 2;
             const targetY = target.y + target.el.offsetHeight / 2;
             
-            // 회전 (레이저용)
             if (currentTheme === 'space') {
                 const angle = Math.atan2(targetY - startY, targetX - startX) * 180 / Math.PI;
                 proj.style.transform = `translate(-50%, -50%) rotate(${angle + 90}deg)`;
@@ -695,7 +702,6 @@
             updateHighlight();
         }
 
-        // --- Keyboard Highlight Logic ---
         function getFirstJamo(word) {
             if(!word) return '';
             const charCode = word.charCodeAt(0);
