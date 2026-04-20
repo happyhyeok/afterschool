@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7주차: 올바른 인터넷 예절</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+        }
+        h1, h2, h3, .gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 탭 버튼 기본 스타일 */
+        .nav-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        /* 탭 버튼이 활성화되었을 때의 스타일 */
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #78350f; 
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        /* 아이콘 배경 스타일 */
+        .nav-btn .icon-bg {
+            transition: all 0.3s;
+        }
+        .nav-btn.active .icon-bg {
+            background-color: white;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex flex-col lg:flex-row gap-8 lg:gap-12 pb-32 lg:pb-12">
+        
+        <!-- 왼쪽 사이드바 (PC버전 내비게이션) -->
+        <div class="w-full lg:w-1/3 xl:w-1/4 z-10">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-primary mb-8 text-center transform rotate-1 hover:rotate-0 transition-transform">
+                <h1 class="text-4xl font-bold text-secondary mb-2">올바른<br>인터넷 예절</h1>
+                <p class="text-gray-500 font-bold">신왕초 3학년 컴퓨터 교실</p>
+            </div>
+
+            <nav class="hidden lg:flex flex-col gap-4 sticky top-10">
+                <button onclick="showStep(1)" class="nav-btn active flex items-center p-4 rounded-3xl bg-white border-2 border-gray-100 hover:border-primary text-gray-400 w-full text-left">
+                    <div class="icon-bg w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mr-4">
+                        <i data-lucide="rocket" class="w-7 h-7"></i>
+                    </div>
+                    <span class="text-2xl font-black">1. 인터넷과 브라우저</span>
+                </button>
+
+                <button onclick="showStep(2)" class="nav-btn flex items-center p-4 rounded-3xl bg-white border-2 border-gray-100 hover:border-primary text-gray-400 w-full text-left">
+                    <div class="icon-bg w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mr-4">
+                        <i data-lucide="search" class="w-7 h-7"></i>
+                    </div>
+                    <span class="text-2xl font-black">2. 마법 검색창 미션</span>
+                </button>
+
+                <button onclick="showStep(3)" class="nav-btn flex items-center p-4 rounded-3xl bg-white border-2 border-gray-100 hover:border-primary text-gray-400 w-full text-left">
+                    <div class="icon-bg w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mr-4">
+                        <i data-lucide="heart-handshake" class="w-7 h-7"></i>
+                    </div>
+                    <span class="text-2xl font-black">3. 온라인 대화와 예절</span>
+                </button>
+
+                <button onclick="showStep(4)" class="nav-btn flex items-center p-4 rounded-3xl bg-white border-2 border-gray-100 hover:border-primary text-gray-400 w-full text-left">
+                    <div class="icon-bg w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mr-4">
+                        <i data-lucide="gamepad-2" class="w-7 h-7"></i>
+                    </div>
+                    <span class="text-2xl font-black">4. O/X 연속 퀴즈</span>
+                </button>
+
+                <button onclick="showStep(5)" class="nav-btn flex items-center p-4 rounded-3xl bg-white border-2 border-gray-100 hover:border-primary text-gray-400 w-full text-left">
+                    <div class="icon-bg w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mr-4">
+                        <i data-lucide="check-circle" class="w-7 h-7"></i>
+                    </div>
+                    <span class="text-2xl font-black">5. 시민 약속 도장</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- 오른쪽 메인 콘텐츠 영역 -->
+        <div class="w-full lg:w-2/3 xl:w-3/4">
+            
+            <!-- Step 1: 도입 (인터넷 세상과 웹 브라우저) -->
+            <div id="step1" class="step-content active bg-white rounded-[2rem] p-8 lg:p-12 shadow-xl border-4 border-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary rounded-bl-full opacity-20 -z-10"></div>
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-secondary/10 text-secondary rounded-full font-bold text-lg mb-6">
+                    <i data-lucide="rocket"></i> 인터넷 세상으로 풍덩!
+                </div>
+                
+                <h2 class="text-4xl lg:text-5xl font-black mb-8 text-gray-800 leading-tight">마법의 정보 도서관,<br>인터넷에 들어가 볼까요?</h2>
+                
+                <div class="bg-gray-50 rounded-3xl p-8 mb-8 border-2 border-gray-100">
+                    <p class="text-2xl leading-relaxed text-gray-700">
+                        우리 친구들은 모르는 것이 생겼을 때 어떻게 하나요?<br>
+                        인터넷은 전 세계의 수많은 정보가 모여있는 <b>'거대한 마법 도서관'</b>이에요!<br>
+                    </p>
+                </div>
+
+                <!-- 웹 브라우저 설명 추가 -->
+                <div class="bg-blue-50 border-4 border-secondary/20 rounded-3xl p-8 mb-8">
+                    <h3 class="text-3xl font-bold text-secondary mb-4 gaegu flex items-center gap-3">
+                        <i data-lucide="layout-template" class="w-8 h-8"></i> 마법 도서관의 문, '웹 브라우저'
+                    </h3>
+                    <p class="text-xl text-gray-700 mb-6">
+                        인터넷 도서관에 들어가려면 특별한 '문'이 필요해요. 이 문을 바로 <b>'웹 브라우저(Web Browser)'</b>라고 부른답니다. 바탕화면이나 작업 표시줄에서 아래 이름들을 본 적 있나요?
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm text-center font-bold text-gray-800">
+                            <img src="https://www.google.com/chrome/static/images/chrome-logo-m100.svg" alt="크롬 로고" class="w-14 h-14 mx-auto mb-2 object-contain" onerror="this.src='https://api.dicebear.com/7.x/icons/svg?seed=chrome'"> 크롬 (Chrome)
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm text-center font-bold text-gray-800">
+                            <img src="https://images.sftcdn.net/images/t_app-icon-s/p/449d6486-96d2-11e6-b4e2-00163ec9f5fa/2182742371/microsoft-edge-Icon.jpg" alt="엣지 로고" class="w-14 h-14 mx-auto mb-2 object-contain rounded-xl" onerror="this.src='https://api.dicebear.com/7.x/icons/svg?seed=edge'"> 엣지 (Edge)
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm text-center font-bold text-gray-800">
+                            <img src="https://img1.daumcdn.net/thumb/R1280x0.fpng/?fname=http://t1.daumcdn.net/brunch/service/user/ePhW/image/DOZlFcwsYd_l4fafHtfKfyKqxuk.png" alt="웨일 로고" class="w-14 h-14 mx-auto mb-2 object-contain" onerror="this.src='https://api.dicebear.com/7.x/icons/svg?seed=whale'"> 웨일 (Whale)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 인터넷에서 할 수 있는 일들 추가 -->
+                <div class="bg-green-50 border-4 border-success/20 rounded-3xl p-8 mb-8">
+                    <h3 class="text-3xl font-bold text-green-700 mb-4 gaegu flex items-center gap-3">
+                        <i data-lucide="monitor-play" class="w-8 h-8"></i> 인터넷에서는 무엇을 할 수 있을까요?
+                    </h3>
+                    <p class="text-xl text-gray-700 mb-6">
+                        마법 도서관의 문을 열고 들어가면 아주 많은 일들을 할 수 있어요!
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                            <div class="bg-primary/20 p-3 rounded-full"><i data-lucide="search" class="text-yellow-700 w-6 h-6"></i></div>
+                            <span class="font-bold text-gray-700 text-lg">궁금한 정보 똑똑하게 검색하기</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                            <div class="bg-secondary/20 p-3 rounded-full"><i data-lucide="message-circle" class="text-blue-700 w-6 h-6"></i></div>
+                            <span class="font-bold text-gray-700 text-lg">게임 속에서 친구와 대화하기</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                            <div class="bg-accent/20 p-3 rounded-full"><i data-lucide="youtube" class="text-red-700 w-6 h-6"></i></div>
+                            <span class="font-bold text-gray-700 text-lg">재미있는 영상 보며 댓글 달기</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                            <div class="bg-success/20 p-3 rounded-full"><i data-lucide="pencil" class="text-green-700 w-6 h-6"></i></div>
+                            <span class="font-bold text-gray-700 text-lg">내가 그린 멋진 그림 올리기</span>
+                        </div>
+                    </div>
+                    <p class="text-xl text-gray-700 mt-6 font-bold text-center bg-white py-3 rounded-xl shadow-sm border border-gray-100">
+                        다음 단계에서는 이 중에서 <span class="text-secondary">'정보 검색'</span>을 잘하는 방법과 <span class="text-accent">'다른 사람과 소통할 때'</span> 꼭 필요한 예절을 알아볼 거예요!
+                    </p>
+                </div>
+                
+                <div class="flex items-start gap-4 bg-primary/20 p-6 rounded-2xl">
+                    <i data-lucide="lightbulb" class="w-10 h-10 text-yellow-600 flex-shrink-0"></i>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">오늘의 학습 목표</h3>
+                        <p class="text-xl text-gray-700">정보를 빠르고 똑똑하게 찾는 방법과, 인터넷 세상에서 꼭 지켜야 할 예절(네티켓)을 알아봅시다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 마법 검색창 미션 -->
+            <div id="step2" class="step-content bg-white rounded-[2rem] p-8 lg:p-12 shadow-xl border-4 border-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-secondary rounded-bl-full opacity-20 -z-10"></div>
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-secondary/10 text-secondary rounded-full font-bold text-lg mb-6">
+                    <i data-lucide="search"></i> 똑똑한 검색 미션
+                </div>
+                
+                <h2 class="text-4xl lg:text-5xl font-black mb-8 text-gray-800">핵심만 쏙쏙, 키워드 검색!</h2>
+                
+                <p class="text-2xl text-gray-700 mb-8">
+                    컴퓨터에게 길게 질문하는 것보다, 가장 중요한 <b>'핵심 단어(키워드)'</b>를 알려주면 네이버나 구글 같은 검색 엔진이 훨씬 똑똑하게 찾아준답니다.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-10">
+                    <div class="bg-red-50 border-2 border-red-200 rounded-3xl p-6 text-center">
+                        <i data-lucide="x-circle" class="w-12 h-12 text-accent mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-accent mb-2">길게 묻기 (아쉬워요)</h3>
+                        <p class="text-lg bg-white p-3 rounded-xl shadow-sm text-gray-600">"사자가 사는 곳이 어디인가요?"</p>
+                    </div>
+                    <div class="bg-green-50 border-2 border-green-200 rounded-3xl p-6 text-center">
+                        <i data-lucide="check-circle-2" class="w-12 h-12 text-success mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-success mb-2">키워드 쓰기 (최고예요!)</h3>
+                        <p class="text-lg bg-white p-3 rounded-xl shadow-sm text-gray-600">"사자 서식지" 또는 "사자 사는곳"</p>
+                    </div>
+                </div>
+
+                <!-- 스스로 해보기 미션 -->
+                <div class="bg-yellow-50 p-8 rounded-3xl border-4 border-primary/40">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-3xl font-bold text-yellow-800 gaegu">💪 스스로 해보기 미션!</h3>
+                        <span class="bg-primary text-yellow-900 px-4 py-1 rounded-full font-bold text-sm">실습 타임</span>
+                    </div>
+                    <p class="text-xl mb-6 text-gray-700">
+                        내가 좋아하는 동물, 음식, 게임에 대해 궁금한 점을 하나 떠올려 보세요. 그리고 문장을 <b>'키워드'</b>로 바꿔볼까요?
+                    </p>
+                    
+                    <div class="flex flex-col gap-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-2">1. 궁금한 것을 문장으로 적어보세요.</label>
+                            <input type="text" id="missionQuestion" placeholder="예: 판다가 좋아하는 음식은 무엇일까요?" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-300 focus:border-primary outline-none text-xl bg-white">
+                        </div>
+                        <div class="flex items-center justify-center my-2">
+                            <i data-lucide="arrow-down" class="text-gray-400 w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-2">2. 핵심 단어(키워드)만 뽑아서 적어보세요!</label>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <input type="text" id="missionKeyword" placeholder="예: 판다 먹이" class="flex-1 px-6 py-4 rounded-2xl border-2 border-gray-300 focus:border-secondary outline-none text-xl bg-white border-dashed">
+                                <button onclick="checkMission()" class="bg-secondary text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-blue-600 transition shadow-md whitespace-nowrap">
+                                    키워드 확인!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="missionFeedback" class="mt-6 text-xl font-bold text-center h-16 flex items-center justify-center rounded-2xl"></div>
+                </div>
+
+                <!-- 실전 검색 미션 3가지 (새로 추가) -->
+                <div class="bg-blue-50 p-8 rounded-3xl border-4 border-secondary/40 mt-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-3xl font-bold text-blue-900 gaegu">🚀 실전! 마법 검색 미션</h3>
+                        <span class="bg-secondary text-white px-4 py-1 rounded-full font-bold text-sm">직접 검색하기</span>
+                    </div>
+                    <p class="text-xl mb-6 text-gray-700">
+                        이제 새 창(웹 브라우저)을 열고, <b>추천 키워드</b>로 직접 검색해서 아래 3가지 질문의 정답을 찾아 적어보세요!
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <!-- 미션 1 -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-blue-100 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-400"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm">미션 1</span>
+                                🦒 목이 아주 긴 '기린'의 혀는 무슨 색일까요?
+                            </h4>
+                            <p class="text-sm text-gray-500 mb-3 ml-0 md:ml-16">💡 추천 키워드: <b>기린 혀 색깔</b></p>
+                            <div class="flex flex-col sm:flex-row gap-3 ml-0 md:ml-16">
+                                <input type="text" id="ans1" placeholder="정답을 적어주세요 (예: 빨간색)" class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-secondary outline-none">
+                                <button onclick="checkSearchMission(1, ['보라', '검', '파란', '푸른'])" class="bg-secondary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition whitespace-nowrap shadow-md">정답 확인</button>
+                            </div>
+                            <div id="feed1" class="mt-3 ml-0 md:ml-16 text-lg font-bold"></div>
+                        </div>
+
+                        <!-- 미션 2 -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-blue-100 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm">미션 2</span>
+                                🌞 태양계 우주에서 가장 큰 행성의 이름은?
+                            </h4>
+                            <p class="text-sm text-gray-500 mb-3 ml-0 md:ml-16">💡 추천 키워드: <b>가장 큰 행성</b></p>
+                            <div class="flex flex-col sm:flex-row gap-3 ml-0 md:ml-16">
+                                <input type="text" id="ans2" placeholder="정답을 적어주세요" class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-secondary outline-none">
+                                <button onclick="checkSearchMission(2, ['목성'])" class="bg-secondary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition whitespace-nowrap shadow-md">정답 확인</button>
+                            </div>
+                            <div id="feed2" class="mt-3 ml-0 md:ml-16 text-lg font-bold"></div>
+                        </div>
+
+                        <!-- 미션 3 -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-blue-100 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-600"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm">미션 3</span>
+                                ⛰️ 우리나라 제주도에 있는 가장 높은 산은?
+                            </h4>
+                            <p class="text-sm text-gray-500 mb-3 ml-0 md:ml-16">💡 추천 키워드: <b>제주도 가장 높은 산</b></p>
+                            <div class="flex flex-col sm:flex-row gap-3 ml-0 md:ml-16">
+                                <input type="text" id="ans3" placeholder="정답을 적어주세요" class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-secondary outline-none">
+                                <button onclick="checkSearchMission(3, ['한라산'])" class="bg-secondary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition whitespace-nowrap shadow-md">정답 확인</button>
+                            </div>
+                            <div id="feed3" class="mt-3 ml-0 md:ml-16 text-lg font-bold"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Step 3: 네티켓 알아보기 (내용 보강) -->
+            <div id="step3" class="step-content bg-white rounded-[2rem] p-8 lg:p-12 shadow-xl border-4 border-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-accent rounded-bl-full opacity-20 -z-10"></div>
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-accent/10 text-accent rounded-full font-bold text-lg mb-6">
+                    <i data-lucide="heart-handshake"></i> 디지털 시민의 약속
+                </div>
+                
+                <h2 class="text-4xl lg:text-5xl font-black mb-6 text-gray-800">온라인 대화와 네티켓!</h2>
+                
+                <div class="bg-gray-50 rounded-3xl p-6 mb-8 border-2 border-gray-200">
+                    <p class="text-2xl text-gray-700 mb-4 leading-relaxed">
+                        앞에서 똑똑하게 <b>검색</b>하는 방법을 배웠죠? <br>
+                        하지만 인터넷에서는 검색만 하는 게 아니에요.<br>
+                        게임 속에서 친구와 <b>대화</b>를 나누기도 하고, 재미있는 영상에 <b>댓글</b>을 남기기도 해요.
+                    </p>
+                    <p class="text-2xl text-gray-700 font-bold text-accent bg-white p-4 rounded-2xl shadow-sm inline-block">
+                        이렇게 다른 사람들과 만날 때, 우리는 꼭 '네티켓(디지털 예절)'을 지켜야 해요!
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- 규칙 1 -->
+                    <div class="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                        <div class="bg-primary/20 p-4 flex items-center gap-4">
+                            <i data-lucide="message-circle-heart" class="w-8 h-8 text-yellow-700"></i>
+                            <h3 class="text-2xl font-bold text-yellow-900 gaegu">규칙 1. 예쁜 말, 바른 말(선플) 쓰기</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p class="md:col-span-2 text-lg text-gray-700 mb-2">얼굴이 보이지 않는다고 나쁜 말(악플)을 쓰면 상대방은 큰 상처를 받아요.</p>
+                            <div class="bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 font-bold">X 나쁜 예:</span> "그림 진짜 못 그린다ㅋㅋ"</div>
+                            <div class="bg-green-50 p-3 rounded-xl border border-green-100"><span class="text-green-600 font-bold">O 좋은 예:</span> "색깔이 너무 예쁘다! 노력했네!"</div>
+                        </div>
+                    </div>
+
+                    <!-- 규칙 2 -->
+                    <div class="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                        <div class="bg-secondary/20 p-4 flex items-center gap-4">
+                            <i data-lucide="copyright" class="w-8 h-8 text-blue-700"></i>
+                            <h3 class="text-2xl font-bold text-blue-900 gaegu">규칙 2. 남의 작품은 허락받고 출처 남기기</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p class="md:col-span-2 text-lg text-gray-700 mb-2">인터넷에 있는 사진, 음악, 글도 모두 주인이 있어요. 함부로 가져다 쓰면(불펌) 안 돼요.</p>
+                            <div class="bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 font-bold">X 나쁜 예:</span> 남의 사진을 내 것처럼 올리기</div>
+                            <div class="bg-green-50 p-3 rounded-xl border border-green-100"><span class="text-green-600 font-bold">O 좋은 예:</span> "출처: 신왕초 홈페이지" 라고 쓰기</div>
+                        </div>
+                    </div>
+
+                    <!-- 규칙 3 -->
+                    <div class="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                        <div class="bg-accent/20 p-4 flex items-center gap-4">
+                            <i data-lucide="shield-check" class="w-8 h-8 text-red-700"></i>
+                            <h3 class="text-2xl font-bold text-red-900 gaegu">규칙 3. 소중한 내 정보 지키기</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p class="md:col-span-2 text-lg text-gray-700 mb-2">내 이름, 집 주소, 전화번호, 비밀번호는 나를 지키는 열쇠예요. 게임이나 게시판에 절대 쓰지 마세요!</p>
+                            <div class="bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 font-bold">X 나쁜 예:</span> 댓글에 "우리 집은 신왕초 앞이야 놀러와"</div>
+                            <div class="bg-green-50 p-3 rounded-xl border border-green-100"><span class="text-green-600 font-bold">O 좋은 예:</span> 개인정보는 부모님과 함께 관리하기</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: O/X 연속 퀴즈 -->
+            <div id="step4" class="step-content bg-white rounded-[2rem] p-8 lg:p-12 shadow-xl border-4 border-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary rounded-bl-full opacity-20 -z-10"></div>
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-primary/20 text-yellow-800 rounded-full font-bold text-lg mb-6">
+                    <i data-lucide="gamepad-2"></i> 실력 확인
+                </div>
+                
+                <h2 class="text-4xl lg:text-5xl font-black mb-8 text-gray-800 text-center">도전! 인터넷 매너왕 퀴즈</h2>
+                
+                <div class="bg-gray-100 rounded-3xl p-8 text-center border-4 border-gray-200 relative min-h-[400px] flex flex-col justify-center">
+                    
+                    <!-- 퀴즈 진행 상태 -->
+                    <div class="absolute top-6 left-0 w-full flex justify-center gap-2" id="quizProgress">
+                        <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                    </div>
+
+                    <div id="quizArea">
+                        <span class="inline-block bg-white text-secondary font-bold px-4 py-1 rounded-full mb-4 shadow-sm border border-gray-200">문제 <span id="qNum">1</span> / 4</span>
+                        
+                        <h3 id="quizQuestion" class="text-3xl font-bold text-gray-800 mb-10 gaegu leading-relaxed px-4">
+                            "크롬, 엣지, 웨일처럼 인터넷 마법 도서관으로 들어가는 문을 '웹 브라우저'라고 부른다."
+                        </h3>
+                        
+                        <div class="flex justify-center gap-8 mb-6">
+                            <button onclick="submitAnswer('O')" class="w-28 h-28 lg:w-32 lg:h-32 rounded-full bg-white border-4 border-blue-400 text-6xl font-black text-blue-500 hover:bg-blue-50 hover:scale-110 transition shadow-lg flex items-center justify-center">O</button>
+                            <button onclick="submitAnswer('X')" class="w-28 h-28 lg:w-32 lg:h-32 rounded-full bg-white border-4 border-red-400 text-6xl font-black text-red-500 hover:bg-red-50 hover:scale-110 transition shadow-lg flex items-center justify-center">X</button>
+                        </div>
+                    </div>
+
+                    <!-- 결과 피드백 화면 (숨김 상태) -->
+                    <div id="quizFeedbackArea" class="hidden flex-col items-center">
+                        <div id="feedbackIcon" class="mb-4"></div>
+                        <h3 id="feedbackTitle" class="text-3xl font-bold mb-4 gaegu">정답입니다!</h3>
+                        <p id="feedbackDesc" class="text-xl text-gray-700 mb-8 bg-white p-4 rounded-xl shadow-sm inline-block"></p>
+                        <button id="nextQuizBtn" onclick="nextQuiz()" class="bg-gray-800 text-white px-8 py-3 rounded-full font-bold text-xl hover:bg-gray-700 transition shadow-md">다음 문제로</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: 약속해요 (도장) -->
+            <div id="step5" class="step-content bg-white rounded-[2rem] p-8 lg:p-12 shadow-xl border-4 border-white relative overflow-hidden text-center">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-success rounded-bl-full opacity-20 -z-10"></div>
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-success/20 text-green-800 rounded-full font-bold text-lg mb-6">
+                    <i data-lucide="star"></i> 수업 마무리
+                </div>
+                
+                <h2 class="text-4xl lg:text-5xl font-black mb-4 text-gray-800">나는 멋진 디지털 시민!</h2>
+                <p class="text-xl text-gray-600 mb-8">아래 5가지 약속을 읽고, 큰 소리로 다짐한 후 도장을 찍어주세요.</p>
+                
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=InternetHero&backgroundColor=06D6A0" alt="로봇 아이콘" class="w-32 h-32 mx-auto rounded-full bg-green-100 p-3 mb-6 shadow-md border-4 border-white">
+
+                <div class="bg-gray-50 p-8 rounded-3xl border-2 border-gray-200 mb-10 text-left max-w-2xl mx-auto shadow-inner">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center border-b-2 border-gray-200 pb-4">나의 인터넷 다짐서</h3>
+                    <ul class="text-xl text-gray-700 space-y-4 font-medium">
+                        <li class="flex gap-3"><i data-lucide="check" class="text-success flex-shrink-0 mt-1"></i> 나는 인터넷을 올바른 곳에만 사용하겠습니다.</li>
+                        <li class="flex gap-3"><i data-lucide="check" class="text-success flex-shrink-0 mt-1"></i> 검색을 할 때는 똑똑하게 '키워드'를 쓰겠습니다.</li>
+                        <li class="flex gap-3"><i data-lucide="check" class="text-success flex-shrink-0 mt-1"></i> 보이지 않는 곳에서도 고운 말을 사용하겠습니다.</li>
+                        <li class="flex gap-3"><i data-lucide="check" class="text-success flex-shrink-0 mt-1"></i> 남의 작품을 가져올 때는 꼭 출처를 남기겠습니다.</li>
+                        <li class="flex gap-3"><i data-lucide="check" class="text-success flex-shrink-0 mt-1"></i> 비밀번호와 내 정보는 누구에게도 알려주지 않겠습니다.</li>
+                    </ul>
+                </div>
+
+                <!-- 인터랙티브: 약속 도장 -->
+                <button id="promiseBtn" onclick="makePromise()" class="bg-gray-200 text-gray-600 px-8 py-5 md:px-12 md:py-6 rounded-full font-black text-2xl md:text-3xl hover:bg-gray-300 transition-all duration-300 shadow-xl flex items-center justify-center mx-auto gap-4 w-full md:w-auto">
+                    <i data-lucide="stamp" class="w-8 h-8 md:w-10 md:h-10"></i>
+                    여기를 눌러 약속 도장 찍기!
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 모바일 하단 내비게이션 -->
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl hover:bg-gray-200 text-gray-600 shadow-sm">
+            <i data-lucide="arrow-left" class="w-8 h-8"></i>
+        </button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md w-full flex justify-center items-center gap-2">
+            다음 <i data-lucide="arrow-right" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <script>
+        // 아이콘 초기화
+        lucide.createIcons();
+        
+        // --- 탭 내비게이션 로직 ---
+        let currentStep = 1;
+        const totalSteps = 5; 
+
+        function showStep(n) {
+            currentStep = n;
+            
+            // 모든 콘텐츠 내용 숨기기
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            
+            // 탭 버튼 색상(active) 업데이트
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+            });
+            
+            // 클릭한 번호의 콘텐츠만 화면에 표시
+            document.getElementById('step' + n).classList.add('active');
+            
+            // 맨 위로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            return currentStep < totalSteps ? currentStep + 1 : totalSteps;
+        }
+
+        function prevStep() {
+            return currentStep > 1 ? currentStep - 1 : 1;
+        }
+
+        // --- [Step 2] 마법 검색창 미션 로직 ---
+        function checkMission() {
+            const question = document.getElementById('missionQuestion').value.trim();
+            const keyword = document.getElementById('missionKeyword').value.trim();
+            const feedbackBox = document.getElementById('missionFeedback');
+            
+            if(keyword.length === 0) {
+                feedbackBox.className = "mt-6 text-xl font-bold text-center h-16 flex items-center justify-center rounded-2xl bg-gray-100 text-gray-500 border border-gray-200";
+                feedbackBox.innerHTML = `앗, 키워드를 먼저 입력해주세요!`;
+                return;
+            }
+
+            if(keyword.length > 10 || keyword.includes('요?') || keyword.includes('나요')) {
+                feedbackBox.className = "mt-6 text-xl font-bold text-center h-16 flex items-center justify-center rounded-2xl bg-red-50 text-accent border border-red-200";
+                feedbackBox.innerHTML = `문장 말고, 가장 중요한 '단어'만 짧게 적어볼까요?`;
+            } else {
+                feedbackBox.className = "mt-6 text-xl font-bold text-center h-auto py-4 px-6 flex items-center justify-center rounded-2xl bg-green-50 text-success border border-green-200 flex-col";
+                feedbackBox.innerHTML = `
+                    <span>최고예요! <b>"${keyword}"</b> (으)로 검색하면 아주 잘 나올 거예요!</span>
+                    <span class="text-sm mt-2 text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200">실제로 브라우저를 열어서 검색해봐도 좋아요!</span>
+                `;
+            }
+        }
+
+        function checkSearchMission(missionNum, validKeywords) {
+            const inputVal = document.getElementById('ans' + missionNum).value.trim().replace(/\s+/g, '');
+            const feedBox = document.getElementById('feed' + missionNum);
+
+            if(inputVal.length === 0) {
+                feedBox.className = "mt-3 ml-0 md:ml-16 text-lg font-bold text-gray-500";
+                feedBox.innerHTML = "앗, 정답을 먼저 입력해주세요!";
+                return;
+            }
+
+            let isCorrect = false;
+            for(let word of validKeywords) {
+                if(inputVal.includes(word)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+
+            if(isCorrect) {
+                feedBox.className = "mt-3 ml-0 md:ml-16 text-lg font-bold text-success flex items-center gap-2";
+                feedBox.innerHTML = `<i data-lucide="check-circle-2" class="w-6 h-6"></i> 딩동댕! 스스로 아주 잘 찾았어요!`;
+            } else {
+                feedBox.className = "mt-3 ml-0 md:ml-16 text-lg font-bold text-accent flex items-center gap-2";
+                feedBox.innerHTML = `<i data-lucide="alert-circle" class="w-6 h-6"></i> 앗, 다시 한번 검색해볼까요?`;
+            }
+            
+            lucide.createIcons();
+        }
+
+        // --- [Step 4] O/X 연속 퀴즈 로직 ---
+        const quizzes = [
+            { 
+                q: "크롬, 엣지, 웨일처럼 인터넷 마법 도서관으로 들어가는 문을 '웹 브라우저'라고 부른다.", 
+                a: "O", 
+                exp: "맞아요! 웹 브라우저를 통해 인터넷 세상에 들어갈 수 있어요." 
+            },
+            { 
+                q: "인터넷에는 얼굴이 안 보이니까, 내 진짜 이름을 숨기고 친구에게 심한 장난을 쳐도 괜찮다.", 
+                a: "X", 
+                exp: "틀렸어요! 보이지 않는 곳에서도 예쁜 말을 써야 진짜 멋진 친구예요." 
+            },
+            { 
+                q: "검색을 할 때는 '강아지가 좋아하는 간식이 뭐야?' 처럼 길게 쓰는 것보다 '강아지 간식'처럼 키워드로 검색하는 것이 좋다.", 
+                a: "O", 
+                exp: "정답! 핵심 단어(키워드)만 입력하면 훨씬 정확한 정보를 찾을 수 있어요." 
+            },
+            { 
+                q: "인터넷에 올라와 있는 남의 멋진 그림을 저장해서, 내 블로그에 내가 그린 것처럼 올려도 된다.", 
+                a: "X", 
+                exp: "안 돼요! 남의 작품을 가져올 때는 꼭 허락을 받고 출처를 남겨야 합니다." 
+            }
+        ];
+        
+        let currentQuizIndex = 0;
+
+        function updateQuizProgress() {
+            const dots = document.getElementById('quizProgress').children;
+            for(let i=0; i<dots.length; i++) {
+                if(i < currentQuizIndex) dots[i].className = "w-3 h-3 rounded-full bg-success"; // 완료
+                else if(i === currentQuizIndex) dots[i].className = "w-3 h-3 rounded-full bg-secondary scale-125 transform transition"; // 현재
+                else dots[i].className = "w-3 h-3 rounded-full bg-gray-300"; // 대기
+            }
+        }
+
+        function submitAnswer(userAnswer) {
+            const quiz = quizzes[currentQuizIndex];
+            const isCorrect = userAnswer === quiz.a;
+            
+            document.getElementById('quizArea').classList.add('hidden');
+            const feedbackArea = document.getElementById('quizFeedbackArea');
+            feedbackArea.classList.remove('hidden');
+            feedbackArea.classList.add('flex');
+
+            const iconDiv = document.getElementById('feedbackIcon');
+            const title = document.getElementById('feedbackTitle');
+            const desc = document.getElementById('feedbackDesc');
+            const nextBtn = document.getElementById('nextQuizBtn');
+
+            if(isCorrect) {
+                iconDiv.innerHTML = `<i data-lucide="check-circle-2" class="w-20 h-20 text-success"></i>`;
+                title.innerHTML = `<span class="text-success">정답입니다!</span>`;
+            } else {
+                iconDiv.innerHTML = `<i data-lucide="x-circle" class="w-20 h-20 text-accent"></i>`;
+                title.innerHTML = `<span class="text-accent">앗, 아쉬워요!</span>`;
+            }
+            desc.textContent = quiz.exp;
+            
+            lucide.createIcons();
+
+            if(currentQuizIndex === quizzes.length - 1) {
+                nextBtn.textContent = "퀴즈 완료! 다음 단계로";
+                nextBtn.className = "bg-primary text-yellow-900 px-8 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition shadow-md";
+                nextBtn.onclick = function() { showStep(5); };
+                
+                // 마지막 동그라미 색상 변경
+                document.getElementById('quizProgress').children[currentQuizIndex].className = "w-3 h-3 rounded-full bg-success";
+            } else {
+                nextBtn.textContent = "다음 문제로";
+                nextBtn.onclick = function() { nextQuiz(); };
+            }
+        }
+
+        function nextQuiz() {
+            currentQuizIndex++;
+            document.getElementById('quizFeedbackArea').classList.add('hidden');
+            document.getElementById('quizFeedbackArea').classList.remove('flex');
+            document.getElementById('quizArea').classList.remove('hidden');
+            
+            document.getElementById('qNum').textContent = currentQuizIndex + 1;
+            document.getElementById('quizQuestion').textContent = `"${quizzes[currentQuizIndex].q}"`;
+            
+            updateQuizProgress();
+        }
+
+        // --- [Step 5] 약속 도장 로직 ---
+        function makePromise() {
+            const btn = document.getElementById('promiseBtn');
+            btn.innerHTML = `<i data-lucide="check-circle" class="w-10 h-10"></i> 참 잘했어요! 약속 완료!`;
+            // 도장 찍히는 애니메이션 효과를 위해 클래스 교체
+            btn.className = "bg-success text-white px-8 py-5 md:px-12 md:py-6 rounded-full font-black text-2xl md:text-3xl transition-all duration-500 shadow-[0_0_30px_rgba(6,214,160,0.5)] flex items-center justify-center mx-auto gap-4 transform scale-110 w-full md:w-auto";
+            
+            lucide.createIcons();
+            
+            // 약간의 딜레이 후 축하 폭죽 효과 (심플한 CSS 처리)
+            setTimeout(() => {
+                btn.classList.remove('scale-110');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
