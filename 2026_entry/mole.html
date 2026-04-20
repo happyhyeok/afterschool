@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>두더지 잡기 게임 만들기</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f8ff; 
+            color: #333;
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, .font-jua {
+            font-family: 'Jua', sans-serif; 
+        }
+        
+        .pseudo-box {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.8;
+        }
+        .ps-event { color: #fde047; font-weight: bold; display: block; margin-top: 1rem; } 
+        .ps-event:first-child { margin-top: 0; }
+        .ps-loop { color: #a78bfa; font-weight: bold; } 
+        .ps-action { color: #34d399; } 
+        .ps-indent-1 { padding-left: 1.5rem; display: block; border-left: 2px solid #475569; margin-left: 0.5rem; margin-top: 0.5rem; font-weight: bold; color: #cbd5e1;}
+        .ps-indent-2 { padding-left: 3.0rem; display: block; border-left: 2px solid #64748b; margin-left: 2.0rem; margin-top: 0.25rem;}
+        .ps-indent-3 { padding-left: 4.5rem; display: block; margin-left: 3.5rem; margin-top: 0.25rem;}
+
+        .hover-lift {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-badge {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .code-animate {
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        
+        .quiz-card {
+            background-color: white;
+            border: 2px solid #fef08a;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .quiz-card:hover {
+            transform: scale(1.01);
+        }
+        .quiz-options button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            margin-top: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .quiz-options button:hover {
+            background-color: #fef08a;
+            border-color: #eab308;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body class="pb-24">
+
+    <header class="bg-blue-500 text-white pt-12 pb-16 px-6 rounded-b-[3rem] shadow-lg mb-10 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-20" style="background-image: radial-gradient(circle, #fff 2px, transparent 2px); background-size: 30px 30px;"></div>
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <span class="bg-blue-800 text-sm font-bold px-4 py-1.5 rounded-full mb-4 inline-block shadow-sm">선생님과 함께하는 엔트리 코딩</span>
+            <h1 class="text-4xl md:text-5xl mt-4 mb-4 drop-shadow-md">두더지 잡기 게임 🐹</h1>
+            <p class="text-xl opacity-90">안녕 친구들! 오늘은 마우스를 요리조리 피하는 귀여운 두더지를 잡아볼까요?</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 space-y-12">
+
+        <!-- 1. 코딩 핵심 개념 -->
+        <section class="bg-purple-50 p-6 md:p-8 rounded-3xl shadow-sm border-2 border-purple-200 relative mt-10">
+            <div class="absolute -top-6 left-8 bg-purple-100 text-3xl p-3 rounded-2xl shadow-sm border border-purple-200">💡</div>
+            <h2 class="text-3xl text-purple-700 mb-8 mt-4 font-jua ml-2">1. 변수, 무작위 수, 좌표 이해하기</h2>
+
+            <div class="space-y-8 pl-4 pr-2">
+                
+                <!-- 변수 개념 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border-2 border-indigo-200 relative ml-2">
+                    <div class="step-badge bg-indigo-500">1</div>
+                    <h3 class="text-2xl font-bold text-indigo-700 mb-4 ml-4">📦 변수 (Variable)</h3>
+                    <div class="mb-4 ml-4 flex justify-center">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/variable.png" alt="변수 개념 설명 이미지" class="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm">
+                    </div>
+                    <p class="text-lg text-gray-700 ml-4 leading-relaxed">
+                        친구들, 변수는 <strong>무엇이든 딱 하나만 담을 수 있는 마법의 데이터 상자</strong>랍니다.<br>
+                        방이 하나뿐이라서 상자에 한 번에 하나의 값만 보관할 수 있어요.<br>
+                        예를 들어 '점수'라는 상자에 10이 들어있었는데, 50을 새롭게 쏙~ 넣으면 기존의 10은 밀려나서 사라지고 <strong>50만 남게 된답니다!</strong> 
+                        우리 게임에서는 잡은 두더지의 '점수'를 기억할 때 쓸 거예요.
+                    </p>
+                </div>
+
+                <!-- 무작위 수 개념 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border-2 border-indigo-200 relative ml-2">
+                    <div class="step-badge bg-indigo-500">2</div>
+                    <h3 class="text-2xl font-bold text-indigo-700 mb-4 ml-4">🎲 무작위 수 (Random Number)</h3>
+                    <div class="mb-4 ml-4 flex justify-center">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/random.png" alt="무작위 수 개념 설명 이미지" class="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm">
+                    </div>
+                    <p class="text-lg text-gray-700 ml-4 leading-relaxed">
+                        무작위 수는 <strong>컴퓨터가 눈을 감고 마음대로 뽑는 제비뽑기</strong>와 같아요.<br>
+                        우리가 "1부터 10 사이에서 골라줘!" 라고 부탁하면, 컴퓨터가 그 안에서 임의로 하나의 값을 딱! 고르는 거죠.<br>
+                        두더지가 화면 어디서 튀어나올지 우리가 모르게 만들려면 이 '무작위 수' 마법이 꼭 필요하답니다!
+                    </p>
+                </div>
+
+                <!-- 좌표 개념 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border-2 border-indigo-200 relative ml-2">
+                    <div class="step-badge bg-indigo-500">3</div>
+                    <h3 class="text-2xl font-bold text-indigo-700 mb-4 ml-4">📍 좌표 (Coordinates)</h3>
+                    <div class="flex flex-col md:flex-row gap-4 mb-4 ml-4 justify-center">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/x_coordinate.png" alt="X 좌표 설명" class="md:w-1/2 h-auto rounded-lg border border-gray-200 shadow-sm">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/y_coordinate.png" alt="Y 좌표 설명" class="md:w-1/2 h-auto rounded-lg border border-gray-200 shadow-sm">
+                    </div>
+                    <p class="text-lg text-gray-700 ml-4 leading-relaxed">
+                        좌표는 화면에서 <strong>오브젝트가 살고 있는 위치를 알려주는 주소</strong>예요.<br>
+                        가로로 왔다 갔다 하는 길은 <strong>X좌표</strong> (오른쪽으로 가면 +, 왼쪽으로 가면 -), <br>
+                        세로로 왔다 갔다 하는 길은 <strong>Y좌표</strong> (위로 가면 +, 아래로 가면 -)라고 부른답니다.<br>
+                        화면의 정중앙은 항상 <strong>X: 0, Y: 0</strong> 이라는 사실! 꼭 기억해 주세요.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. 개념 확인 퀴즈 -->
+        <section class="bg-yellow-50 p-6 md:p-8 rounded-3xl shadow-sm border-2 border-yellow-300 relative mt-10 overflow-hidden">
+            <div class="absolute -top-6 left-8 bg-yellow-200 text-3xl p-3 rounded-2xl shadow-sm border border-yellow-300 z-20">🎮</div>
+            <h2 class="text-3xl text-yellow-700 mb-6 mt-4 font-jua ml-2 relative z-10">2. 선생님과 함께하는 개념 확인 퀴즈!</h2>
+            <p class="text-lg mb-8 text-gray-800 bg-white p-4 rounded-xl shadow-sm text-center font-medium">
+                자, 우리 친구들이 방금 배운 마법의 단어들을 잘 기억하고 있는지 퀴즈로 확인해 볼까요?<br>
+                엔트리 블록이 실행되면 어떤 결과가 나올지 천천히 생각하며 정답을 클릭해 보세요!
+            </p>
+            
+            <div class="flex flex-col space-y-8 max-w-3xl mx-auto">
+                
+                <!-- 변수 퀴즈 그룹 -->
+                <div class="bg-yellow-100 p-6 rounded-2xl shadow-inner border-2 border-yellow-200">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-yellow-800">📦 마법의 상자, 변수 퀴즈</h3>
+                    
+                    <div class="flex flex-col space-y-6">
+                        <div class="quiz-card" id="q1">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q1. 처음 '점수' 변수를 10으로 정했어요. 그 다음 엔트리 블록으로 <span class="text-blue-600 bg-blue-100 px-2 rounded">점수에 20만큼 더하기</span>를 실행하면 우리 점수 상자에는 어떤 숫자가 들어있을까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q1', false, this)">1) 10 (그대로 있는다)</button>
+                                <button onclick="checkAnswer('q1', false, this)">2) 20 (새로운 숫자로 바뀐다)</button>
+                                <button onclick="checkAnswer('q1', true, this)">3) 30 (기존 숫자에 더해진다)</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-card" id="q2">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q2. '생명' 변수를 50으로 정해두었어요. 그런데 중간에 <span class="text-blue-600 bg-blue-100 px-2 rounded">생명을 10으로 정하기</span> 블록을 실행했어요. 그렇다면 생명 상자에는 어떤 변화가 생길까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q2', true, this)">1) 50은 사라지고 10만 남는다.</button>
+                                <button onclick="checkAnswer('q2', false, this)">2) 50이 유지되어 아무 변화가 없다.</button>
+                                <button onclick="checkAnswer('q2', false, this)">3) 50과 10이 더해져서 60이 된다.</button>
+                            </div>
+                        </div>
+
+                        <div class="quiz-card" id="q3">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q3. 선생님이 "변수 상자에는 한 번에 몇 개의 값을 보관할 수 있을까요?" 라고 물으셨어요. 정답은 무엇일까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q3', false, this)">1) 상자가 크니까 무한대로 넣을 수 있어요!</button>
+                                <button onclick="checkAnswer('q3', true, this)">2) 방이 하나뿐이라 오직 1개만 넣을 수 있어요!</button>
+                                <button onclick="checkAnswer('q3', false, this)">3) 사이좋게 2개까지 넣을 수 있어요!</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 무작위 수 퀴즈 그룹 -->
+                <div class="bg-green-100 p-6 rounded-2xl shadow-inner border-2 border-green-200">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-green-800">🎲 컴퓨터의 제비뽑기, 무작위 수 퀴즈</h3>
+                    
+                    <div class="flex flex-col space-y-6">
+                        <div class="quiz-card" id="q4">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q4. <span class="text-green-600 bg-green-100 px-2 rounded">1부터 5 사이의 무작위 수</span> 블록을 가져왔어요. 이 블록을 실행했을 때 <strong>절대 나올 수 없는 숫자</strong>는 무엇일까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q4', false, this)">1) 1</button>
+                                <button onclick="checkAnswer('q4', false, this)">2) 3</button>
+                                <button onclick="checkAnswer('q4', true, this)">3) 6</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-card" id="q5">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q5. 무작위 수 블록을 여러 번 반복해서 실행해보면 결과가 어떻게 될까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q5', true, this)">1) 컴퓨터가 마음대로 뽑으니까 매번 다를 수 있어요.</button>
+                                <button onclick="checkAnswer('q5', false, this)">2) 처음 뽑은 숫자랑 항상 같은 수만 나와요.</button>
+                                <button onclick="checkAnswer('q5', false, this)">3) 무작위라서 아무것도 안 나와요.</button>
+                            </div>
+                        </div>
+
+                        <div class="quiz-card" id="q6">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q6. 우리가 정해준 범위 안에서 컴퓨터가 눈을 감고 마음대로 임의의 숫자를 뽑는 것을 무엇이라고 부를까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q6', false, this)">1) 정해진 수</button>
+                                <button onclick="checkAnswer('q6', true, this)">2) 무작위 수</button>
+                                <button onclick="checkAnswer('q6', false, this)">3) 투명한 수</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 좌표 퀴즈 그룹 -->
+                <div class="bg-blue-100 p-6 rounded-2xl shadow-inner border-2 border-blue-200">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-blue-800">📍 오브젝트의 주소, 좌표 퀴즈</h3>
+                    
+                    <div class="flex flex-col space-y-6">
+                        <div class="quiz-card" id="q7">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q7. 엔트리 화면에서 한가운데, 즉 '정중앙'의 X와 Y 좌표값은 무엇일까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q7', true, this)">1) X: 0, Y: 0</button>
+                                <button onclick="checkAnswer('q7', false, this)">2) X: 100, Y: 100</button>
+                                <button onclick="checkAnswer('q7', false, this)">3) X: -100, Y: -100</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-card" id="q8">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q8. 두더지에게 <span class="text-purple-600 bg-purple-100 px-2 rounded">X좌표를 100만큼 바꾸기</span> 블록을 실행시켜 주었어요. 두더지는 어느 방향으로 폴짝 이동할까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q8', false, this)">1) 왼쪽 (-) 방향으로 이동해요.</button>
+                                <button onclick="checkAnswer('q8', true, this)">2) 오른쪽 (+) 방향으로 이동해요.</button>
+                                <button onclick="checkAnswer('q8', false, this)">3) 위쪽 (+) 방향으로 이동해요.</button>
+                            </div>
+                        </div>
+
+                        <div class="quiz-card" id="q9">
+                            <p class="font-bold text-lg mb-2 text-gray-800">Q9. 이번에는 두더지에게 <span class="text-purple-600 bg-purple-100 px-2 rounded">Y좌표를 -50만큼 바꾸기</span> 블록을 주었어요. 두더지는 어느 방향으로 이동할까요?</p>
+                            <div class="quiz-options">
+                                <button onclick="checkAnswer('q9', true, this)">1) 아래쪽 (-) 방향으로 이동해요.</button>
+                                <button onclick="checkAnswer('q9', false, this)">2) 위쪽 (+) 방향으로 이동해요.</button>
+                                <button onclick="checkAnswer('q9', false, this)">3) 오른쪽 (+) 방향으로 이동해요.</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 정답 피드백 메시지 박스 -->
+            <div id="quiz-msg" class="mt-8 p-6 rounded-xl text-2xl font-bold text-center hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 shadow-2xl transition-all duration-300"></div>
+        </section>
+
+        <!-- 3. 작품 개발 안내 -->
+        <section class="bg-orange-50 p-6 md:p-8 rounded-3xl shadow-sm border-2 border-orange-200 relative mt-10">
+            <div class="absolute -top-6 left-8 bg-orange-100 text-3xl p-3 rounded-2xl shadow-sm border border-orange-200">🎒</div>
+            <h2 class="text-3xl text-orange-600 mb-4 mt-4 font-jua ml-2">3. 작품 개발 안내 및 꿀팁!</h2>
+            
+            <p class="text-lg text-gray-700 mb-6 ml-2">친구들! 퀴즈를 모두 풀었나요? 너무너무 잘했어요! 이제 진짜 게임을 만들어 볼 준비가 되었어요.</p>
+
+            <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center bg-white p-5 rounded-2xl shadow-sm border border-orange-100 hover-lift">
+                    <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center text-4xl mb-3 sm:mb-0 sm:mr-5 shrink-0">🐻</div>
+                    <div>
+                        <strong class="text-xl text-orange-700 block mb-1">오브젝트 추가하기</strong>
+                        <p class="text-gray-600 text-lg">엔트리 화면에서 <strong>[두더지], [뿅망치], [풀(배경)]</strong> 오브젝트를 찾아 추가해 주세요.</p>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 p-6 rounded-2xl shadow-md border-2 border-red-300 relative">
+                    <div class="step-badge bg-red-500 text-white"><i class="fas fa-star"></i></div>
+                    <div class="mb-4 ml-4">
+                        <span class="text-2xl font-bold text-red-600">선생님의 특급 비밀! (뿅망치의 중심점 이동하기)</span>
+                    </div>
+                    <div class="ml-4 mb-4 flex flex-col md:flex-row gap-6 items-start">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_entry/centerpoint.PNG" alt="중심점 이동 설명" class="max-w-[250px] rounded-lg border-2 border-red-200 shadow-md">
+                        <div class="text-lg text-gray-800 leading-relaxed space-y-3">
+                            <p>
+                                뿅망치를 추가한 후에는 <strong>노란색 동그라미(중심점)를 마우스로 꾹~ 눌러서 뿅망치 손잡이 아래쪽으로 꼭! 옮겨주세요.</strong>
+                            </p>
+                            <p class="bg-white p-3 rounded-xl border border-red-100">
+                                <strong>선생님, 왜 중심점을 옮겨야 하나요? 🤔</strong><br>
+                                뿅망치는 게임 내내 우리 마우스 포인터를 졸졸 따라다닐 거예요. 만약 중심점이 뿅망치 머리(가운데)에 그대로 있다면, 커다란 뿅망치 이미지가 마우스 화살표를 다 가려버리겠죠?<br><br>
+                                우리는 나중에 두더지에게 <code>'오브젝트를 클릭했을 때'</code> 라는 블록을 사용할 텐데, 마우스 화살표 끝이 두더지에 정확히 닿은 상태로 클릭해야만 작동을 해요. 그래서 <strong>뿅망치 이미지가 마우스 클릭을 방해하지 않도록</strong> 손잡이 쪽으로 중심점을 스윽~ 내려주는 거랍니다!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 코딩 가이드 -->
+        <section class="bg-gray-50 p-6 md:p-8 rounded-3xl shadow-sm border-2 border-gray-200 relative mt-10">
+            <div class="absolute -top-6 left-8 bg-gray-200 text-3xl p-3 rounded-2xl shadow-sm border border-gray-300">⚙️</div>
+            <h2 class="text-3xl text-gray-800 mb-4 mt-4 font-jua ml-2">4. 차근차근 코딩 시작하기</h2>
+            <p class="text-lg mb-8 text-gray-700 bg-white p-3 rounded-xl inline-block shadow-sm">아래의 의사코드를 보며, 엔트리 블록을 하나씩 조립해 보아요. 괄호 안의 설명을 보면 블록이 어떤 역할을 하는지 쉽게 알 수 있답니다!</p>
+
+            <div class="space-y-8">
+                
+                <!-- 배경(풀) 코드 -->
+                <div class="bg-white p-6 rounded-2xl border-l-8 border-green-500 shadow-md">
+                    <h3 class="text-2xl font-bold text-green-700 mb-4 flex items-center"><span class="text-3xl mr-3 bg-green-50 w-12 h-12 flex items-center justify-center rounded-full">🌿</span> 풀 (배경) 오브젝트</h3>
+                    
+                    <div class="bg-green-50 p-4 rounded-xl mb-5 border border-green-200 text-gray-800 text-lg font-medium leading-relaxed shadow-sm">
+                        💡 게임은 30초 동안만 진행될 거예요. 그래서 <strong>배경이 30초를 재는 역할</strong>을 한답니다! 30초가 지나면 모든 코드가 딱! 멈추도록 만들어 보아요.
+                    </div>
+                    
+                    <button onclick="toggleCode('code-grass', this)" class="mb-4 px-4 py-3 bg-green-100 text-green-700 rounded-xl font-bold hover:bg-green-200 transition text-lg flex items-center gap-2 hover-lift w-full sm:w-auto justify-center">
+                        <i class="fas fa-chevron-down"></i> 풀(배경) 코드 열어보기
+                    </button>
+                    
+                    <div id="code-grass" class="pseudo-box hidden text-lg">
+                        <span class="ps-event">1. 시작하기 버튼을 클릭하면,</span>
+                        <span class="ps-action ps-indent-1">1) 점수 변수를 0으로 정하고 (시작 점수를 0점으로 만들고)</span>
+                        <span class="ps-action ps-indent-1">2) 초시계를 시작해요 (시간을 재기 시작해요).</span>
+                        <span class="ps-loop ps-indent-1">3) 그리고 계속 반복해서,</span>
+                        <span class="ps-loop ps-indent-2">① 만일 초시계 값이 30보다 크거나 같다면 (30초가 다 지났다면)</span>
+                        <span class="ps-action ps-indent-3">ㄱ) 모든 코드를 멈춰요 (게임을 끝내요).</span>
+                    </div>
+                </div>
+
+                <!-- 뿅망치 코드 -->
+                <div class="bg-white p-6 rounded-2xl border-l-8 border-orange-500 shadow-md">
+                    <h3 class="text-2xl font-bold text-orange-700 mb-4 flex items-center"><span class="text-3xl mr-3 bg-orange-50 w-12 h-12 flex items-center justify-center rounded-full">🔨</span> 뿅망치 오브젝트</h3>
+                    
+                    <div class="bg-orange-50 p-4 rounded-xl mb-4 border border-orange-200 text-gray-800 text-lg font-medium leading-relaxed shadow-sm">
+                        💡 우리가 뿅망치로 두더지를 직접 잡아야겠죠? <strong>뿅망치가 내 마우스를 졸졸 따라다녀야</strong> 두더지를 정확히 조준해서 잡을 수 있을 거예요. 마우스를 따라다니게 만들고, 클릭할 때마다 '얍!' 하고 때리게 해봐요!
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl mb-5 border border-blue-200 text-gray-800 text-lg font-medium leading-relaxed shadow-sm">
+                        <strong class="text-blue-700"><i class="fas fa-music"></i> 소리 추가하기 (매우 중요!)</strong><br>
+                        오브젝트들은 각자 자기만의 이름, 위치, 모양, 그리고 '소리' 주머니를 따로 가지고 있어요. <br>
+                        그러니까 <strong>반드시 뿅망치 오브젝트를 먼저 클릭</strong>한 다음, 위쪽의 <strong>[소리] 탭</strong>을 눌러서 타격음인 <strong>'또미'</strong> 소리를 추가해 주어야 한답니다!
+                    </div>
+                    
+                    <button onclick="toggleCode('code-hammer', this)" class="mb-4 px-4 py-3 bg-orange-100 text-orange-700 rounded-xl font-bold hover:bg-orange-200 transition text-lg flex items-center gap-2 hover-lift w-full sm:w-auto justify-center">
+                        <i class="fas fa-chevron-down"></i> 뿅망치 코드 열어보기
+                    </button>
+                    
+                    <div id="code-hammer" class="pseudo-box hidden text-lg">
+                        <span class="ps-event">1. 시작하기 버튼을 클릭하면,</span>
+                        <span class="ps-action ps-indent-1">1) 크기를 80으로 정하고 (뿅망치 크기를 적당히 줄이고)</span>
+                        <span class="ps-action ps-indent-1">2) 방향을 315도로 정해요 (잡기 편하게 살짝 기울여요).</span>
+                        <span class="ps-loop ps-indent-1">3) 그리고 계속 반복해서,</span>
+                        <span class="ps-action ps-indent-2">① 마우스 포인터 위치로 이동시켜요 (내 마우스를 졸졸 따라다니게 해요).</span>
+                        
+                        <span class="ps-event border-t border-gray-600 pt-4 mt-4">2. 마우스를 클릭했을 때,</span>
+                        <span class="ps-action ps-indent-1">1) '또미' 소리를 재생하고 (타격음이 나게 하고),</span>
+                        <span class="ps-action ps-indent-1">2) 0.1초 동안 방향을 -45만큼 회전했다가 (뿅망치를 휙 내렸다가),</span>
+                        <span class="ps-action ps-indent-1">3) 0.1초 동안 방향을 45만큼 다시 회전해요 (원래 위치로 올려요).</span>
+                    </div>
+                </div>
+
+                <!-- 두더지 코드 -->
+                <div class="bg-white p-6 rounded-2xl border-l-8 border-amber-800 shadow-md">
+                    <h3 class="text-2xl font-bold text-amber-900 mb-4 flex items-center"><span class="text-3xl mr-3 bg-amber-50 w-12 h-12 flex items-center justify-center rounded-full">🐹</span> 두더지 오브젝트</h3>
+                    
+                    <div class="bg-amber-50 p-4 rounded-xl mb-4 border border-amber-200 text-gray-800 text-lg font-medium leading-relaxed shadow-sm">
+                        💡 두더지가 똑같은 곳에서만 나오면 금방 잡히고 시시하겠죠? 그래서 두더지가 화면 여기저기서 <strong>무작위 위치에 깜짝 나타나게</strong> 만들 거예요. 그리고 뿅망치에 맞으면 우리 점수를 쑥쑥 올려주는 아주 중요한 역할을 한답니다.
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl mb-5 border border-blue-200 text-gray-800 text-lg font-medium leading-relaxed shadow-sm">
+                        <strong class="text-blue-700"><i class="fas fa-music"></i> 소리 추가하기 (매우 중요!)</strong><br>
+                        두더지도 뿅망치와는 별개로 자신만의 소리 주머니가 필요하겠죠? <br>
+                        <strong>두더지 오브젝트를 클릭</strong>한 다음, 위쪽의 <strong>[소리] 탭</strong>에서 두더지가 아파하는 소리인 <strong>'호물호물2'</strong>를 꼭 추가해 주세요!
+                    </div>
+                    
+                    <button onclick="toggleCode('code-mole', this)" class="mb-4 px-4 py-3 bg-amber-100 text-amber-800 rounded-xl font-bold hover:bg-amber-200 transition text-lg flex items-center gap-2 hover-lift w-full sm:w-auto justify-center">
+                        <i class="fas fa-chevron-down"></i> 두더지 코드 열어보기
+                    </button>
+                    
+                    <div id="code-mole" class="pseudo-box hidden text-lg">
+                        <span class="ps-event">1. 시작하기 버튼을 클릭하면,</span>
+                        <span class="ps-loop ps-indent-1">1) 계속 반복해서 다음 행동을 해요.</span>
+                        <span class="ps-action ps-indent-2">① 두더지_5 모양으로 바꾸고 (바닥으로 쏙 숨고),</span>
+                        <span class="ps-action ps-indent-2">② 2초 동안 기다렸다가,</span>
+                        <span class="ps-action ps-indent-2">③ X: -200~200, Y: -100~100 무작위 수 위치로 이동해요 (아무 곳으로나 몰래 이동해요).</span>
+                        <span class="ps-action ps-indent-2">④ 두더지_1 모양으로 바꾸고 (땅 위로 불쑥! 나타나고),</span>
+                        <span class="ps-action ps-indent-2">⑤ 1초 동안 기다려줘요 (친구들이 잡을 수 있게 시간을 줘요).</span>
+                        
+                        <span class="ps-event border-t border-gray-600 pt-4 mt-4">2. 오브젝트를 클릭했을 때 (두더지를 마우스로 딱! 때렸을 때),</span>
+                        <span class="ps-action ps-indent-1">1) '호물호물2' 소리를 재생하고 ('아야!' 소리를 내고),</span>
+                        <span class="ps-action ps-indent-1">2) 점수에 10만큼 더해줘요 (내 점수를 높여줘요).</span>
+                        <span class="ps-action ps-indent-1">3) 두더지_3 모양으로 바꾸고 (어지러워하는 모습으로 바꾸고),</span>
+                        <span class="ps-action ps-indent-1">4) 0.3초 동안 기다렸다가 (잠깐 그 모습을 보여주고),</span>
+                        <span class="ps-action ps-indent-1">5) 두더지_5 모양으로 바꿔요 (다시 바닥으로 쏙 숨어요).</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. 보너스 미션 -->
+        <section class="bg-pink-50 p-6 md:p-8 rounded-3xl shadow-sm border-2 border-pink-200 relative mt-10">
+            <div class="absolute -top-6 left-8 bg-pink-200 text-3xl p-3 rounded-2xl shadow-sm border border-pink-300 z-20">🚀</div>
+            <h2 class="text-3xl text-pink-700 mb-6 mt-4 font-jua ml-2 relative z-10">5. 보너스 미션: 나만의 특별한 게임 만들기!</h2>
+            <p class="text-lg mb-6 text-gray-800 font-medium bg-white p-4 rounded-xl shadow-sm inline-block leading-relaxed">
+                코딩을 모두 끝낸 친구들, 정말 대단해요! 🎉 <br>
+                이제 내가 만든 게임을 더 재미있고 스릴 넘치게 바꿔볼 차례예요. 아래의 미션에 도전해 보세요!
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-pink-400 hover-lift">
+                    <div class="text-4xl mb-4">⏱️</div>
+                    <h3 class="text-xl font-bold text-pink-800 mb-2">미션 1: 시간 마법사</h3>
+                    <p class="text-gray-700 text-base">게임 시간을 30초가 아니라 아주 짧은 10초, 혹은 아주 긴 60초로 자유롭게 변경해 보세요!</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-teal-400 hover-lift">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold text-teal-800 mb-2">미션 2: 번개 두더지</h3>
+                    <p class="text-gray-700 text-base">두더지가 기다리는 시간을 줄여서 아주 순식간에 나타났다 사라지게 만들어 볼까요? (난이도 급상승!)</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-purple-400 hover-lift">
+                    <div class="text-4xl mb-4">👯‍♂️</div>
+                    <h3 class="text-xl font-bold text-purple-800 mb-2">미션 3: 두더지 분신술!</h3>
+                    <p class="text-gray-700 text-base">두더지 오브젝트를 마우스 오른쪽 버튼으로 클릭해서 '복제'해 볼까요? 화면에 두 마리의 두더지가 나타나면 게임이 훨씬 더 정신없고 흥미진진해질 거예요!</p>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border-2 border-dashed border-pink-300 text-center">
+                <p class="text-lg text-gray-800 font-medium">
+                    💡 이 밖에도 두더지를 잡았을 때 점수를 100점씩 주거나, 두더지 모양을 다른 동물로 바꾸는 등<br>
+                    여러분의 톡톡 튀는 상상력을 발휘해서 <strong>더 재미있는 기능을 마음껏 추가해 보세요!</strong><br>
+                    선생님을 깜짝 놀라게 해줄 여러분만의 멋진 게임을 기대할게요. 😆
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-12 text-gray-500 mt-8">
+        <p class="text-xl bg-blue-100 text-blue-800 font-bold inline-block px-8 py-4 rounded-full mb-4 shadow-sm">
+            친구들, 모두 준비되었나요? 그럼 신나게 코딩을 시작해 볼까요! 화이팅! ✨
+        </p>
+    </footer>
+
+    <script>
+        function toggleCode(codeId, btnElement) {
+            const codeBox = document.getElementById(codeId);
+            const isHidden = codeBox.classList.contains('hidden');
+            const btnText = btnElement.innerText.replace(' 열어보기', '').replace(' 숨기기', '').trim();
+            
+            if (isHidden) {
+                codeBox.classList.remove('hidden');
+                codeBox.classList.add('code-animate'); 
+                btnElement.innerHTML = `<i class="fas fa-chevron-up"></i> ${btnText} 숨기기`;
+            } else {
+                codeBox.classList.add('hidden');
+                codeBox.classList.remove('code-animate');
+                btnElement.innerHTML = `<i class="fas fa-chevron-down"></i> ${btnText} 열어보기`;
+            }
+        }
+
+        let msgTimeout;
+
+        function checkAnswer(quizId, isCorrect, btnElement) {
+            const parentCard = document.getElementById(quizId);
+            const msgBox = document.getElementById('quiz-msg');
+            const buttons = parentCard.querySelectorAll('button');
+            
+            // 초기화
+            buttons.forEach(btn => {
+                btn.style.backgroundColor = '#f8fafc';
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.color = '#333';
+            });
+
+            clearTimeout(msgTimeout);
+
+            if (isCorrect) {
+                btnElement.style.backgroundColor = '#dcfce7';
+                btnElement.style.borderColor = '#22c55e';
+                btnElement.style.color = '#166534';
+                
+                msgBox.classList.remove('hidden', 'translate-y-full', 'opacity-0');
+                msgBox.className = "mt-8 p-6 rounded-2xl text-2xl font-bold text-center block bg-green-100 text-green-700 border-4 border-green-400 fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 shadow-2xl transition-all duration-300";
+                msgBox.innerHTML = "🎉 우와! 정답이에요! 참 잘했어요. 👏";
+                createConfetti(); 
+            } else {
+                btnElement.style.backgroundColor = '#fee2e2';
+                btnElement.style.borderColor = '#ef4444';
+                btnElement.style.color = '#991b1b';
+
+                msgBox.classList.remove('hidden', 'translate-y-full', 'opacity-0');
+                msgBox.className = "mt-8 p-6 rounded-2xl text-2xl font-bold text-center block bg-red-50 text-red-600 border-4 border-red-400 fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 shadow-2xl transition-all duration-300";
+                msgBox.innerHTML = "😅 아쉽지만 정답이 아니에요. 다시 한 번 천천히 생각해 볼까요?";
+            }
+
+            // 3초 후 메시지 박스 숨기기
+            msgTimeout = setTimeout(() => {
+                msgBox.classList.add('translate-y-full', 'opacity-0');
+                setTimeout(() => msgBox.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        function createConfetti() {
+            const colors = ['#fde047', '#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#ff823a'];
+            for(let i=0; i<40; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                
+                const size = Math.random() * 12 + 6;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.zIndex = '9999';
+                confetti.style.opacity = '0.9';
+                
+                const duration = Math.random() * 2 + 1.5;
+                confetti.style.transition = `top ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform ${duration}s linear, opacity ${duration}s`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.style.top = '100vh';
+                    confetti.style.transform = `rotate(${Math.random() * 720}deg) translateX(${Math.random() * 100 - 50}px)`;
+                    confetti.style.opacity = '0';
+                }, 10);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
