@@ -44,21 +44,17 @@
         
         .data-item { cursor: grab; transition: transform 0.2; z-index: 10; }
         .data-item:active { cursor: grabbing; }
-
-        /* 하단 네비게이션 가림 방지를 위한 충분한 여백 */
-        main { padding-bottom: 280px !important; }
         
         .typing-input:focus { border-color: #4EA8DE; outline: none; box-shadow: 0 0 15px rgba(78, 168, 222, 0.3); }
         
         @media (max-width: 640px) {
-            .nav-btn { font-size: 0.7rem; padding: 0.4rem 0.3rem; }
-            h1 { font-size: 1rem; }
+            .nav-btn { font-size: 1rem; padding: 0.4rem 0.3rem; }
+            h1 { font-size: 1.25rem; }
         }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
-    <!-- 상단 고정 헤더 -->
     <header class="bg-white border-b-4 border-primary sticky top-0 z-50 px-4 py-2 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -66,24 +62,23 @@
                     <i data-lucide="brain-circuit" class="w-5 h-5 text-yellow-900"></i>
                 </div>
                 <div>
-                    <h1 class="text-base font-black text-gray-800 leading-none">데이터 수집가</h1>
-                    <p class="text-[9px] font-bold text-secondary mt-0.5">옥계초 2학년</p>
+                    <h1 class="text-xl font-black text-gray-800 leading-none">데이터 수집가</h1>
+                    <p class="text-sm font-bold text-secondary mt-0.5">옥계초 2학년</p>
                 </div>
             </div>
             <nav class="hidden lg:flex gap-1">
-                <button onclick="showStep(1)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs active" id="nb1">반가워!</button>
-                <button onclick="showStep(2)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs" id="nb2">데이터란?</button>
-                <button onclick="showStep(3)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs" id="nb3">찾아라!</button>
-                <button onclick="showStep(4)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs" id="nb4">모아요!</button>
-                <button onclick="showStep(5)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs" id="nb5">타자왕!</button>
-                <button onclick="showStep(6)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-xs" id="nb6">수료증</button>
+                <button onclick="showStep(1)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base active" id="nb1">반가워!</button>
+                <button onclick="showStep(2)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base" id="nb2">데이터란?</button>
+                <button onclick="showStep(3)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base" id="nb3">찾아라!</button>
+                <button onclick="showStep(4)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base" id="nb4">모아요!</button>
+                <button onclick="showStep(5)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base" id="nb5">타자왕!</button>
+                <button onclick="showStep(6)" class="nav-btn px-3 py-1.5 rounded-lg border border-gray-100 font-bold text-base" id="nb6">수료증</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 md:p-6">
+    <main class="max-w-4xl mx-auto p-4 md:p-6 pb-10">
         
-        <!-- 1단계: 도입 -->
         <section id="step1" class="step-content active">
             <div class="bg-white p-6 rounded-[30px] shadow-lg border-2 border-primary/20 text-center">
                 <div class="robot-head inline-block mb-4">
@@ -98,179 +93,200 @@
                         <circle cx="100" cy="20" r="10" fill="#EF476F" />
                     </svg>
                 </div>
-                <h2 class="text-2xl font-black mb-4 leading-tight">안녕! 나는 로봇 '데잇이'야.<br>나를 똑똑하게 만들어줄래?</h2>
-                <p class="text-base text-gray-600 mb-6 font-bold leading-relaxed">데잇이는 맛있는 밥보다 반짝이는 '데이터'를 먹어야 힘이 난대요. 함께 모험을 떠나요!</p>
-                <button onclick="showStep(2)" class="w-full bg-secondary text-white py-4 rounded-2xl text-lg font-black shadow-md transition-all active:scale-95">시작하기</button>
+                <h2 class="text-4xl font-black mb-4 leading-tight">안녕! 나는 로봇 '데잇이'야.<br>나를 똑똑하게 만들어줄래?</h2>
+                <p class="text-xl text-gray-600 mb-6 font-bold leading-relaxed">데잇이는 맛있는 밥보다 반짝이는 '데이터'를 먹어야 힘이 난다고 해. 함께 모험을 떠나자!</p>
+                <button onclick="showStep(2)" class="w-full bg-secondary text-white py-4 rounded-2xl text-2xl font-black shadow-md transition-all active:scale-95">시작하기</button>
             </div>
         </section>
 
-        <!-- 2단계: 배움 -->
         <section id="step2" class="step-content">
             <div class="bg-white p-6 rounded-[30px] shadow-lg space-y-8 border-2 border-gray-50">
                 <div class="bg-secondary/5 p-5 rounded-2xl">
-                    <h2 class="text-xl font-black mb-4 border-b-2 border-secondary pb-1 inline-block">데이터가 무엇일까요?</h2>
-                    <p class="text-lg font-bold leading-relaxed text-gray-700">
-                        "인공지능이 세상을 공부할 때 필요한 <span class="text-secondary underline decoration-2">모든 재료</span>가 <strong>데이터</strong>예요!"
+                    <h2 class="text-3xl font-black mb-4 border-b-2 border-secondary pb-1 inline-block">데이터란 무엇일까?</h2>
+                    <p class="text-2xl font-bold leading-relaxed text-gray-700">
+                        "인공지능이 세상을 공부할 때 필요한 <span class="text-secondary underline decoration-2">모든 재료</span>가 <strong>데이터</strong>야!"
                     </p>
                     <div class="grid grid-cols-2 gap-3 mt-4 text-center">
-                        <div class="p-3 bg-white border border-pink-100 rounded-xl font-black text-pink-600 text-sm">글자</div>
-                        <div class="p-3 bg-white border border-green-100 rounded-xl font-black text-green-600 text-sm">숫자</div>
-                        <div class="p-3 bg-white border border-purple-100 rounded-xl font-black text-purple-600 text-sm">그림</div>
-                        <div class="p-3 bg-white border border-blue-100 rounded-xl font-black text-blue-600 text-sm">소리</div>
+                        <div class="p-3 bg-white border border-pink-100 rounded-xl font-black text-pink-600 text-lg">글자</div>
+                        <div class="p-3 bg-white border border-green-100 rounded-xl font-black text-green-600 text-lg">숫자</div>
+                        <div class="p-3 bg-white border border-purple-100 rounded-xl font-black text-purple-600 text-lg">그림</div>
+                        <div class="p-3 bg-white border border-blue-100 rounded-xl font-black text-blue-600 text-lg">소리</div>
                     </div>
                 </div>
 
                 <div class="bg-accent/5 p-5 rounded-2xl">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2">
-                        <i data-lucide="help-circle" class="text-accent w-6 h-6"></i> 왜 데이터가 중요하죠?
+                    <h2 class="text-3xl font-black mb-4 flex items-center gap-2">
+                        <i data-lucide="help-circle" class="text-accent w-8 h-8"></i> 왜 데이터가 중요할까?
                     </h2>
                     <div class="space-y-3">
                         <div class="bg-white p-4 rounded-xl border border-accent/20">
-                            <h4 class="font-black text-accent mb-1">1. 더 많이 공부할 수 있어요</h4>
-                            <p class="text-xs text-gray-500 font-bold">사진을 1,000장 본 AI는 강아지를 아주 잘 찾아내요.</p>
+                            <h4 class="font-black text-accent mb-1 text-xl">1. 더 많이 공부할 수 있어</h4>
+                            <p class="text-base text-gray-500 font-bold">사진을 1,000장 본 AI는 강아지를 아주 잘 찾아내.</p>
                         </div>
                         <div class="bg-white p-4 rounded-xl border border-accent/20">
-                            <h4 class="font-black text-accent mb-1">2. 정확한 판단을 도와요</h4>
-                            <p class="text-xs text-gray-500 font-bold">날씨 데이터를 공부하면 비가 올지 미리 알려줘요.</p>
+                            <h4 class="font-black text-accent mb-1 text-xl">2. 정확한 판단을 도와</h4>
+                            <p class="text-base text-gray-500 font-bold">날씨 데이터를 공부하면 비가 올지 미리 알려줘.</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t-2 border-gray-100 flex justify-between items-center">
+                    <button onclick="showStep(1)" class="px-5 py-3 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all text-lg">이전</button>
+                    <button onclick="showStep(3)" class="bg-primary px-6 py-3 rounded-xl font-black text-2xl text-yellow-900 shadow-sm active:scale-95 transition-all flex items-center gap-2">
+                        <span>다음 단계로</span>
+                        <i data-lucide="arrow-right-circle" class="w-7 h-7"></i>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- 3단계: 찾기 -->
         <section id="step3" class="step-content">
             <div class="bg-white p-5 rounded-[30px] shadow-lg">
                 <div class="text-center mb-4">
-                    <h2 class="text-xl font-black mb-1">3. 데이터 찾아라!</h2>
-                    <p class="text-xs font-bold text-gray-400">교실 속 데이터 6개를 모두 수집하세요.</p>
+                    <h2 class="text-3xl font-black mb-1">3. 데이터 찾아라!</h2>
+                    <p class="text-base font-bold text-gray-400">교실 속 데이터 6개를 모두 수집해 보자.</p>
                 </div>
                 <div class="relative bg-sky-100 rounded-[20px] aspect-[4/3] border-4 border-white shadow-inner overflow-hidden">
-                    <!-- 칠판 -->
-                    <button onclick="clickCollect(this, '글자')" class="absolute top-[15%] left-[10%] bg-emerald-900 w-32 h-20 rounded border-2 border-amber-900 flex items-center justify-center shadow">
-                        <span class="text-white font-gaegu text-xs">오늘의 날씨</span>
+                    <button onclick="clickCollect(this, '글자')" class="absolute top-[15%] left-[10%] bg-emerald-900 w-36 h-24 rounded border-2 border-amber-900 flex items-center justify-center shadow">
+                        <span class="text-white font-gaegu text-base">오늘의 날씨</span>
                     </button>
-                    <!-- 시계 -->
-                    <button onclick="clickCollect(this, '숫자')" class="absolute top-5 right-5 bg-white w-14 h-14 rounded-full border-2 border-gray-200 flex items-center justify-center shadow">
-                        <span class="text-[10px] font-black italic">09:30</span>
+                    <button onclick="clickCollect(this, '숫자')" class="absolute top-5 right-5 bg-white w-16 h-16 rounded-full border-2 border-gray-200 flex items-center justify-center shadow">
+                        <span class="text-sm font-black italic">09:30</span>
                     </button>
-                    <!-- 게시판 -->
-                    <button onclick="clickCollect(this, '그림')" class="absolute bottom-1/4 right-3 bg-orange-50 w-20 h-24 rounded border-b-2 border-orange-200 p-1 shadow">
-                        <div class="w-full h-full bg-white flex items-center justify-center text-2xl">🎈</div>
+                    <button onclick="clickCollect(this, '그림')" class="absolute bottom-1/4 right-3 bg-orange-50 w-24 h-28 rounded border-b-2 border-orange-200 p-1 shadow">
+                        <div class="w-full h-full bg-white flex items-center justify-center text-4xl">🎈</div>
                     </button>
-                    <!-- 이름표 -->
-                    <button onclick="clickCollect(this, '글자')" class="absolute bottom-10 left-1/4 bg-white px-3 py-1 rounded shadow border-t-2 border-blue-400 font-bold text-[10px]">김옥계</button>
-                    <!-- 온도계 -->
-                    <button onclick="clickCollect(this, '숫자')" class="absolute top-1/3 left-2 bg-white w-6 h-20 rounded-full border border-gray-100 flex flex-col items-center justify-end p-0.5">
-                        <div class="bg-red-500 w-1 h-10 rounded-full mb-1"></div>
-                        <span class="text-[6px] font-black">24℃</span>
+                    <button onclick="clickCollect(this, '글자')" class="absolute bottom-10 left-1/4 bg-white px-4 py-2 rounded shadow border-t-2 border-blue-400 font-bold text-sm">김옥계</button>
+                    <button onclick="clickCollect(this, '숫자')" class="absolute top-1/3 left-2 bg-white w-8 h-24 rounded-full border border-gray-100 flex flex-col items-center justify-end p-1">
+                        <div class="bg-red-500 w-1.5 h-12 rounded-full mb-1"></div>
+                        <span class="text-[10px] font-black">24℃</span>
                     </button>
-                    <!-- 창문 -->
-                    <button onclick="clickCollect(this, '그림')" class="absolute top-1/2 left-[40%] bg-blue-200 w-20 h-20 rounded-xl border-2 border-white shadow flex items-center justify-center text-3xl">🌈</button>
+                    <button onclick="clickCollect(this, '그림')" class="absolute top-1/2 left-[40%] bg-blue-200 w-24 h-24 rounded-xl border-2 border-white shadow flex items-center justify-center text-5xl">🌈</button>
                 </div>
                 <div class="mt-4 bg-gray-50 h-3 rounded-full overflow-hidden">
                     <div id="collect-progress" class="progress-bar-fill h-full bg-success" style="width: 0%"></div>
                 </div>
-                <p id="collect-status" class="text-center text-[10px] font-bold text-gray-400 mt-2">수집 현황: 0 / 6</p>
+                <p id="collect-status" class="text-center text-sm font-bold text-gray-400 mt-2">수집 현황: 0 / 6</p>
                 <div id="collect-finish" class="hidden mt-4 p-4 bg-success/10 border-2 border-dashed border-success rounded-xl text-center">
-                    <p class="text-sm font-black text-success">미션 클리어! 다음 단계로!</p>
+                    <p class="text-lg font-black text-success">미션 클리어! 다음 단계로!</p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t-2 border-gray-100 flex justify-between items-center">
+                    <button onclick="showStep(2)" class="px-5 py-3 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all text-lg">이전</button>
+                    <button onclick="showStep(4)" class="bg-primary px-6 py-3 rounded-xl font-black text-2xl text-yellow-900 shadow-sm active:scale-95 transition-all flex items-center gap-2">
+                        <span>다음 단계로</span>
+                        <i data-lucide="arrow-right-circle" class="w-7 h-7"></i>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- 4단계: 분류 (중요성 설명 추가) -->
         <section id="step4" class="step-content">
             <div class="bg-white p-6 rounded-[30px] shadow-lg space-y-8">
                 <div class="bg-yellow-50 p-5 rounded-2xl border-2 border-primary/20">
-                    <h2 class="text-xl font-black mb-3 text-yellow-700 flex items-center gap-2">
-                        <i data-lucide="box" class="w-6 h-6"></i> 왜 끼리끼리 모아야 하나요?
+                    <h2 class="text-3xl font-black mb-3 text-yellow-700 flex items-center gap-2">
+                        <i data-lucide="box" class="w-8 h-8"></i> 왜 끼리끼리 모아야 할까?
                     </h2>
-                    <p class="text-sm font-bold text-gray-700 leading-relaxed">
-                        집에서 양말을 찾을 때, 옷더미에 섞여 있으면 찾기 힘들죠? 인공지능도 똑같아요!<br><br>
+                    <p class="text-lg font-bold text-gray-700 leading-relaxed">
+                        집에서 양말을 찾을 때, 옷더미에 섞여 있으면 찾기 힘들지? 인공지능도 똑같아!<br><br>
                         <strong>데이터를 분류하면:</strong><br>
-                        1. 로봇이 필요한 데이터를 <span class="text-blue-500 underline">빨리 찾을 수 있어요.</span><br>
-                        2. 모양이나 특징을 <span class="text-red-500 underline">더 정확하게 배워요.</span><br>
-                        <span class="text-xs text-gray-400 mt-2 block italic">"정리정돈이 잘 된 데이터가 똑똑한 AI를 만들어요!"</span>
+                        1. 로봇이 필요한 데이터를 <span class="text-blue-500 underline">빨리 찾을 수 있어.</span><br>
+                        2. 모양이나 특징을 <span class="text-red-500 underline">더 정확하게 배워.</span><br>
+                        <span class="text-base text-gray-400 mt-2 block italic">"정리정돈이 잘 된 데이터가 똑똑한 AI를 만들어!"</span>
                     </p>
                 </div>
 
                 <div class="bg-gray-50 p-5 rounded-2xl">
-                    <h2 class="text-xl font-black mb-6 text-center">데이터 분류 연습</h2>
+                    <h2 class="text-3xl font-black mb-6 text-center">데이터 분류 연습</h2>
                     <div class="flex flex-wrap gap-2 mb-8 justify-center" id="card-container">
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c1" data-type="text" class="data-item bg-white border border-pink-200 p-3 rounded-xl shadow-sm text-sm font-black text-pink-600">사과</div>
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c2" data-type="num" class="data-item bg-white border border-green-200 p-3 rounded-xl shadow-sm text-sm font-black text-green-600">10살</div>
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c3" data-type="img" class="data-item bg-white border border-purple-200 p-3 rounded-xl shadow-sm text-sm font-black text-purple-600">🐱 그림</div>
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c4" data-type="text" class="data-item bg-white border border-pink-200 p-3 rounded-xl shadow-sm text-sm font-black text-pink-600">학교</div>
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c5" data-type="num" class="data-item bg-white border border-green-200 p-3 rounded-xl shadow-sm text-sm font-black text-green-600">5개</div>
-                        <div draggable="true" ondragstart="onDragStart(event)" id="c6" data-type="img" class="data-item bg-white border border-purple-200 p-3 rounded-xl shadow-sm text-sm font-black text-purple-600">🌸 사진</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c1" data-type="text" class="data-item bg-white border border-pink-200 p-3 rounded-xl shadow-sm text-lg font-black text-pink-600">사과</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c2" data-type="num" class="data-item bg-white border border-green-200 p-3 rounded-xl shadow-sm text-lg font-black text-green-600">10살</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c3" data-type="img" class="data-item bg-white border border-purple-200 p-3 rounded-xl shadow-sm text-lg font-black text-purple-600">🐱 그림</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c4" data-type="text" class="data-item bg-white border border-pink-200 p-3 rounded-xl shadow-sm text-lg font-black text-pink-600">학교</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c5" data-type="num" class="data-item bg-white border border-green-200 p-3 rounded-xl shadow-sm text-lg font-black text-green-600">5개</div>
+                        <div draggable="true" ondragstart="onDragStart(event)" id="c6" data-type="img" class="data-item bg-white border border-purple-200 p-3 rounded-xl shadow-sm text-lg font-black text-purple-600">🌸 사진</div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'text')" class="drop-zone border-pink-100 bg-pink-50 p-4 rounded-xl flex flex-col items-center border-dashed">
-                            <span class="text-[10px] font-black text-pink-700">글자 바구니</span>
+                            <span class="text-sm font-black text-pink-700">글자 바구니</span>
                             <div class="basket-contents flex flex-wrap gap-1 mt-2"></div>
                         </div>
                         <div ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'num')" class="drop-zone border-green-100 bg-green-50 p-4 rounded-xl flex flex-col items-center border-dashed">
-                            <span class="text-[10px] font-black text-green-700">숫자 바구니</span>
+                            <span class="text-sm font-black text-green-700">숫자 바구니</span>
                             <div class="basket-contents flex flex-wrap gap-1 mt-2"></div>
                         </div>
                         <div ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'img')" class="drop-zone border-purple-100 bg-purple-50 p-4 rounded-xl flex flex-col items-center border-dashed">
-                            <span class="text-[10px] font-black text-purple-700">그림 바구니</span>
+                            <span class="text-sm font-black text-purple-700">그림 바구니</span>
                             <div class="basket-contents flex flex-wrap gap-1 mt-2"></div>
                         </div>
                     </div>
                 </div>
+
+                <div class="mt-8 pt-6 border-t-2 border-gray-100 flex justify-between items-center">
+                    <button onclick="showStep(3)" class="px-5 py-3 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all text-lg">이전</button>
+                    <button onclick="showStep(5)" class="bg-primary px-6 py-3 rounded-xl font-black text-2xl text-yellow-900 shadow-sm active:scale-95 transition-all flex items-center gap-2">
+                        <span>타자 연습하러!</span>
+                        <i data-lucide="arrow-right-circle" class="w-7 h-7"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
-        <!-- 5단계: 타자 연습 -->
         <section id="step5" class="step-content">
             <div class="bg-white p-6 md:p-10 rounded-[30px] shadow-lg text-center border-2 border-secondary/20">
                 <div class="mb-6">
-                    <span class="text-4xl">⌨️</span>
-                    <h2 class="text-2xl font-black mt-2">데잇이의 간식 타자 연습</h2>
-                    <p class="text-sm font-bold text-gray-400 mt-1">오늘 배운 단어를 입력해서 500점을 모으세요!</p>
+                    <span class="text-6xl">⌨️</span>
+                    <h2 class="text-4xl font-black mt-2">데잇이의 간식 타자 연습</h2>
+                    <p class="text-lg font-bold text-gray-400 mt-1">오늘 배운 단어를 입력해서 500점을 모아 보자!</p>
                 </div>
                 
                 <div class="bg-secondary/5 p-8 rounded-[30px] border-2 border-secondary/20 mb-6">
-                    <div class="text-sm font-black text-secondary mb-2">현재 목표 점수</div>
-                    <div class="text-4xl font-black text-secondary mb-6"><span id="type-score">0</span> / 500</div>
+                    <div class="text-lg font-black text-secondary mb-2">현재 목표 점수</div>
+                    <div class="text-6xl font-black text-secondary mb-6"><span id="type-score">0</span> / 500</div>
                     
                     <div class="bg-white p-6 rounded-2xl shadow-inner mb-6">
-                        <p id="target-word" class="text-3xl font-black text-gray-800">데이터</p>
+                        <p id="target-word" class="text-5xl font-black text-gray-800">데이터</p>
                     </div>
                     
-                    <input type="text" id="typing-input" placeholder="여기에 따라 쓰세요!" 
-                           class="typing-input w-full p-4 rounded-2xl text-xl font-black text-center border-4 border-gray-100 transition-all">
+                    <input type="text" id="typing-input" placeholder="여기에 따라 써봐!" 
+                           class="typing-input w-full p-4 rounded-2xl text-3xl font-black text-center border-4 border-gray-100 transition-all">
                 </div>
                 
-                <div class="bg-gray-50 p-4 rounded-xl text-xs font-bold text-gray-400">
-                    <p>단어 하나당 10점씩 올라가요! (엔터 키를 누르세요)</p>
+                <div class="bg-gray-50 p-4 rounded-xl text-base font-bold text-gray-400">
+                    <p>단어 하나당 10점씩 올라가! (엔터 키를 눌러봐)</p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t-2 border-gray-100 flex justify-between items-center">
+                    <button onclick="showStep(4)" class="px-5 py-3 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all text-lg">이전</button>
+                    <button onclick="showStep(6)" class="bg-primary px-6 py-3 rounded-xl font-black text-2xl text-yellow-900 shadow-sm active:scale-95 transition-all flex items-center gap-2">
+                        <span>수료증 받기</span>
+                        <i data-lucide="arrow-right-circle" class="w-7 h-7"></i>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- 6단계: 수료증 -->
         <section id="step6" class="step-content">
             <div class="bg-white p-6 md:p-10 rounded-[30px] shadow-lg text-center">
                 <div id="cert-box">
                     <div class="bg-white border-[10px] border-double border-primary p-6 md:p-10 rounded-[40px] shadow-xl max-w-xl mx-auto">
-                        <h2 class="text-4xl font-gaegu font-black text-yellow-600 mb-6 italic">수 료 증</h2>
+                        <h2 class="text-6xl font-gaegu font-black text-yellow-600 mb-6 italic">수 료 증</h2>
                         <div class="space-y-4 mb-10 text-center">
-                            <p class="text-xl font-bold border-b-2 border-dashed border-gray-200 pb-2 inline-block">
-                                이름: <input type="text" placeholder="이름을 적으세요" class="bg-transparent focus:outline-none px-2 text-center w-40 text-secondary">
+                            <p class="text-3xl font-bold border-b-2 border-dashed border-gray-200 pb-2 inline-block">
+                                이름: <input type="text" placeholder="이름을 적으세요" class="bg-transparent focus:outline-none px-2 text-center w-56 text-secondary">
                             </p>
-                            <p class="text-lg text-gray-700 leading-relaxed font-bold px-2">
-                                위 학생은 '데이터' 수집과 분류를 완벽히 해내고<br>타자 연습 500점을 달성했기에<br>이 상장을 드립니다.
+                            <p class="text-2xl text-gray-700 leading-relaxed font-bold px-2">
+                                위 학생은 '데이터' 수집과 분류를 완벽히 해내고<br>타자 연습 500점을 달성했기에<br>이 상장을 줌.
                             </p>
                         </div>
-                        <div class="flex justify-between items-center text-gray-400 font-bold text-[10px]">
+                        <div class="flex justify-between items-center text-gray-400 font-bold text-sm">
                             <span>2024년 5월 9일</span>
                             <span class="text-gray-800">옥계초 인공지능 교실</span>
                         </div>
                     </div>
                     <div class="mt-8 flex flex-col gap-3">
-                        <button onclick="window.print()" class="bg-accent text-white py-4 rounded-2xl text-lg font-black shadow-md">상장 저장 (출력)</button>
-                        <button onclick="location.reload()" class="bg-gray-800 text-white py-4 rounded-2xl text-lg font-black">처음부터 다시하기</button>
+                        <button onclick="window.print()" class="bg-accent text-white py-4 rounded-2xl text-2xl font-black shadow-md">상장 저장 (출력)</button>
+                        <button onclick="location.reload()" class="bg-gray-800 text-white py-4 rounded-2xl text-2xl font-black">처음부터 다시하기</button>
                     </div>
                 </div>
             </div>
@@ -278,24 +294,11 @@
 
     </main>
 
-    <!-- 하단 네비게이션 -->
-    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 border-t-4 border-primary shadow-2xl z-50 flex justify-center items-center gap-4">
-        <button onclick="showStep(prevStep())" class="bg-gray-50 p-3 rounded-full hover:bg-gray-100 transition-all active:scale-90 border border-gray-100">
-            <i data-lucide="chevron-left" class="w-8 h-8 text-gray-600"></i>
-        </button>
-        <div class="h-8 w-px bg-gray-200"></div>
-        <button onclick="showStep(nextStep())" id="footer-next-btn" class="bg-primary px-10 py-4 rounded-2xl font-black text-xl text-yellow-900 shadow-sm active:scale-95 transition-all flex items-center gap-2">
-            <span>다음 모험으로</span>
-            <i data-lucide="arrow-right-circle" class="w-6 h-6"></i>
-        </button>
-    </div>
-
-    <!-- 메시지 모달 -->
     <div id="alert-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
         <div class="bg-white p-8 rounded-[30px] shadow-2xl max-w-xs w-full text-center border-b-8 border-secondary">
             <div id="alert-icon" class="mb-4 flex justify-center"></div>
-            <p id="alert-text" class="text-xl font-black mb-6 text-gray-800"></p>
-            <button onclick="closeAlert()" class="w-full bg-secondary text-white py-3 rounded-xl font-black text-lg shadow-sm">확인!</button>
+            <p id="alert-text" class="text-3xl font-black mb-6 text-gray-800"></p>
+            <button onclick="closeAlert()" class="w-full bg-secondary text-white py-3 rounded-xl font-black text-2xl shadow-sm">확인!</button>
         </div>
     </div>
 
@@ -317,12 +320,6 @@
                 btn.classList.toggle('active', idx + 1 === n);
             });
             document.getElementById('step' + n).classList.add('active');
-            
-            const nextBtnText = document.getElementById('footer-next-btn').querySelector('span');
-            if(n === 4) nextBtnText.innerText = "타자 연습하러!";
-            else if(n === 5) nextBtnText.innerText = "수료증 받기";
-            else if(n === 6) nextBtnText.innerText = "수업 완료";
-            else nextBtnText.innerText = "다음 모험으로";
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
@@ -332,9 +329,6 @@
             }
             lucide.createIcons();
         }
-
-        function nextStep() { return Math.min(currentStep + 1, 6); }
-        function prevStep() { return Math.max(currentStep - 1, 1); }
 
         function clickCollect(btn, type) {
             if (btn.disabled) return;
@@ -348,7 +342,7 @@
             document.getElementById('collect-progress').style.width = percent + '%';
             document.getElementById('collect-status').innerText = `수집 현황: ${collectedNum} / 6`;
             
-            customAlert('success', `${type} 데이터를 수집했어요!`);
+            customAlert('success', `${type} 데이터를 수집했어!`);
             
             if (collectedNum >= totalItems) {
                 setTimeout(() => {
@@ -373,11 +367,11 @@
                 ev.currentTarget.querySelector('.basket-contents').appendChild(draggedEl);
                 draggedEl.setAttribute('draggable', 'false');
                 draggedEl.classList.replace('p-3', 'p-1');
-                draggedEl.classList.add('text-[10px]', 'opacity-60');
+                draggedEl.classList.add('text-sm', 'opacity-60');
                 sortedNum++;
-                customAlert('success', '딩동댕! 잘 분류했어요.');
+                customAlert('success', '딩동댕! 잘 분류했어.');
             } else {
-                customAlert('error', '어라? 분류가 틀렸어요!');
+                customAlert('error', '어라? 분류가 틀렸어!');
             }
         }
 
@@ -397,7 +391,7 @@
                     typingInput.value = '';
                     
                     if(typeScore >= 500) {
-                        customAlert('success', '축하합니다! 500점 달성!\n수료증을 받으러 가요!');
+                        customAlert('success', '축하해! 500점 달성!\n수료증을 받으러 가자!');
                         setTimeout(() => showStep(6), 1500);
                     } else {
                         // 다음 단어 무작위 선택
