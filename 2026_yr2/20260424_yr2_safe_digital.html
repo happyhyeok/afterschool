@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7회: 안전한 디지털 생활 - 착하게 사용하기 약속</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #fff9f0;
+            user-select: none;
+            font-size: 1.7rem; 
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+            min-height: 70vh;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-hover {
+            transition: all 0.2s;
+        }
+        .btn-hover:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .choice-card {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-width: 5px;
+        }
+        .choice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 18px;
+            background-color: #e5e7eb;
+            border-radius: 9px;
+            width: 300px;
+        }
+        .progress-inner {
+            height: 100%;
+            background-color: #fbbf24;
+            border-radius: 9px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 1.2rem 1.8rem;
+            border-radius: 25px;
+            margin-bottom: 1.2rem;
+            position: relative;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .typing-input {
+            border-bottom: 4px solid #fbbf24;
+            background: transparent;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .typing-input:focus {
+            border-color: #f59e0b;
+        }
+
+        h2 { font-size: 3.2rem !important; line-height: 1.3; font-weight: 700; }
+        p { line-height: 1.6; }
+
+        .floating { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .bounce { animation: bounce 2s infinite; }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .typing-task-card {
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            border: 6px solid #f1f5f9;
+            transition: all 0.4s;
+            opacity: 0.3;
+            width: 100%;
+        }
+        .typing-task-card.active-task {
+            opacity: 1;
+            border-color: #fbbf24;
+            box-shadow: 0 15px 30px rgba(251, 191, 36, 0.15);
+            transform: scale(1.02);
+        }
+        .typing-task-card.completed-task {
+            opacity: 1;
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+        }
+        .target-text-large {
+            font-size: 3.5rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+        .enter-badge {
+            background: #475569;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <!-- Header -->
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class="flex items-center gap-4">
+            <div class="bg-yellow-400 p-4 rounded-full text-white shadow-lg">
+                <i class="fas fa-user-shield text-4xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-bold">안전한 디지털 생활</h1>
+                <p class="text-xl text-yellow-700 font-bold">7회차: AI와 친해지는 '착한 약속'</p>
+            </div>
+        </div>
+        <div class="flex flex-col items-end">
+            <div id="slide-number" class="text-3xl font-bold text-yellow-600">1 / 9</div>
+            <div class="progress-bar mt-2 border-2 border-yellow-200">
+                <div id="progress-inner" class="progress-inner" style="width: 10%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="max-w-5xl mx-auto bg-white rounded-[3.5rem] shadow-2xl p-10 min-h-[650px] relative overflow-hidden border-[10px] border-yellow-50">
+        
+        <!-- Slide 1: Welcome -->
+        <div id="slide-1" class="slide active">
+            <div class="floating mb-10">
+                <img src="https://api.iconify.design/twemoji:shield.svg" class="w-48 h-48" alt="Shield">
+            </div>
+            <h2 class="text-center mb-8">여량초 AI 탐험대, <br>안전 미션을 시작할까요?</h2>
+            <div class="bg-orange-50 p-8 rounded-[2.5rem] border-4 border-orange-100 text-center mb-10">
+                <p class="text-3xl text-gray-700">
+                    똑똑한 AI를 더 <span class="text-orange-500 font-bold">착하고 안전하게</span><br>
+                    사용하는 방법을 함께 배워봐요!
+                </p>
+            </div>
+            <button onclick="nextSlide()" class="bg-yellow-400 text-white px-16 py-6 rounded-full text-3xl font-bold btn-hover shadow-xl flex items-center gap-4">
+                미션 출발! <i class="fas fa-rocket"></i>
+            </button>
+        </div>
+
+        <!-- Slide 2: Review (ㄷㅇㅌ) -->
+        <div id="slide-2" class="slide">
+            <h2 class="text-center mb-12">🤔 지난 시간 복습 미션!</h2>
+            <div class="bg-blue-50 p-10 rounded-[3rem] w-full border-4 border-blue-100 shadow-inner text-center">
+                <p class="text-4xl mb-12 font-bold leading-relaxed">
+                    "AI 스피커는 아주 많은 <br>
+                    <input type="text" id="review-input" placeholder="여기에 입력" class="typing-input w-64 text-blue-600 font-bold" autocomplete="off">
+                    (을)를 공부해서 답해요!"
+                </p>
+                <p class="text-xl text-gray-500 mb-6">(힌트: ㄷㅇㅌ)</p>
+                <button onclick="checkReviewTyping()" class="bg-blue-500 text-white px-10 py-4 rounded-full text-2xl font-bold btn-hover">정답 확인</button>
+            </div>
+            <p id="review-msg" class="text-3xl text-center font-bold mt-8 h-12 transition-all"></p>
+        </div>
+
+        <!-- Slide 3: Empathy Mission -->
+        <div id="slide-3" class="slide">
+            <h2 class="text-center mb-8">🤖 AI의 기분은 어떨까요?</h2>
+            <p class="text-2xl text-center mb-10 text-gray-600 italic">"사람들이 AI에게 이런 말을 하면 AI는 어떤 기분일까요?"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                <div onclick="selectMood(this, 'sad')" class="choice-card bg-white p-8 rounded-3xl border-gray-200 flex flex-col items-center">
+                    <p class="bg-red-100 text-red-600 px-6 py-2 rounded-full font-bold mb-6">"너 진짜 바보구나? 저리 가!"</p>
+                    <i class="fas fa-sad-tear text-8xl text-blue-300"></i>
+                    <p class="text-2xl mt-6 font-bold text-gray-600">슬프고 아파요</p>
+                </div>
+                <div onclick="selectMood(this, 'happy')" class="choice-card bg-white p-8 rounded-3xl border-gray-200 flex flex-col items-center">
+                    <p class="bg-green-100 text-green-600 px-6 py-2 rounded-full font-bold mb-6">"알려줘서 고마워! 넌 최고야."</p>
+                    <i class="fas fa-smile-beam text-8xl text-yellow-400"></i>
+                    <p class="text-2xl mt-6 font-bold text-gray-600">기쁘고 힘이 나요</p>
+                </div>
+            </div>
+            <p id="mood-msg" class="text-2xl font-bold mt-8 text-blue-600 h-8"></p>
+        </div>
+
+        <!-- Slide 4: Practice Typing Nice Words -->
+        <div id="slide-4" class="slide">
+            <h2 class="text-center mb-6">💌 예쁜 말 선물하기</h2>
+            <p class="text-2xl text-center mb-8 text-gray-600">AI 친구에게 해주고 싶은 <strong>다정한 인사</strong>를 직접 써주세요!</p>
+            
+            <div class="w-full max-w-2xl bg-gray-100 p-8 rounded-[2.5rem] mb-8 shadow-inner border-4 border-white">
+                <div class="flex flex-col gap-4" id="chat-container">
+                    <div class="chat-bubble bg-white self-start shadow-sm border-2 border-blue-100">
+                        안녕! 나에게 예쁜 말을 해주면 더 열심히 공부할게!
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-4 w-full max-w-xl">
+                <div class="flex w-full gap-2">
+                    <input type="text" id="user-chat-input" placeholder="다정한 말을 입력하세요..." class="flex-1 p-5 rounded-2xl text-2xl border-4 border-yellow-200 focus:border-yellow-400 outline-none shadow-md">
+                    <button onclick="sendChat()" class="bg-yellow-400 text-white px-8 py-2 rounded-2xl text-2xl font-bold btn-hover shadow-md">보내기</button>
+                </div>
+                <p class="text-xl text-gray-400">(예: 사랑해, 고마워, 넌 정말 똑똑해!)</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Privacy Locking -->
+        <div id="slide-5" class="slide">
+            <h2 class="text-center mb-6">🔒 비밀을 지키는 '자물쇠' 미션</h2>
+            <p class="text-2xl text-center mb-8 text-red-500 font-bold">AI에게 절대 알려주면 안 되는 '비밀 정보' 4개를 모두 잠그세요!</p>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-4xl" id="privacy-grid">
+                <div onclick="lockInfo(this, true)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">🏠</span>
+                    <span class="text-2xl font-bold">우리 집 주소</span>
+                </div>
+                <div onclick="lockInfo(this, false)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">🍕</span>
+                    <span class="text-2xl font-bold">좋아하는 음식</span>
+                </div>
+                <div onclick="lockInfo(this, true)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">📞</span>
+                    <span class="text-2xl font-bold">내 전화번호</span>
+                </div>
+                <div onclick="lockInfo(this, true)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">🎒</span>
+                    <span class="text-2xl font-bold">다니는 학교</span>
+                </div>
+                <div onclick="lockInfo(this, false)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">🎵</span>
+                    <span class="text-2xl font-bold">좋아하는 노래</span>
+                </div>
+                <div onclick="lockInfo(this, true)" class="choice-card bg-white p-6 rounded-3xl border-gray-200 text-center flex flex-col items-center">
+                    <span class="text-4xl mb-4">🎂</span>
+                    <span class="text-2xl font-bold">내 진짜 생일</span>
+                </div>
+            </div>
+            <div id="privacy-counter" class="mt-8 text-2xl font-bold text-gray-500">잠근 비밀: <span id="locked-count" class="text-red-500">0</span> / 4</div>
+        </div>
+
+        <!-- Slide 6: Fact-Check Lab (5 Rounds) -->
+        <div id="slide-6" class="slide">
+            <h2 class="text-center mb-8">🕵️ AI의 대답, 진짜일까 가짜일까?</h2>
+            <div class="bg-yellow-50 p-10 rounded-[3rem] w-full border-4 border-yellow-100 flex flex-col items-center shadow-inner">
+                <div class="bg-white p-8 rounded-3xl shadow-md border-2 border-blue-100 mb-10 max-w-2xl w-full text-center">
+                    <p class="text-xl text-gray-400 mb-2">AI가 이렇게 말했어요!</p>
+                    <p id="fact-question" class="text-3xl font-bold text-blue-700 min-h-[100px] flex items-center justify-center"></p>
+                </div>
+                <div class="flex gap-10">
+                    <button onclick="checkFact(true)" class="bg-green-500 text-white px-12 py-6 rounded-[2rem] text-3xl font-bold btn-hover shadow-lg flex flex-col items-center">
+                        <span>진짜예요!</span>
+                        <span class="text-xl font-normal opacity-80">(믿을 수 있어요)</span>
+                    </button>
+                    <button onclick="checkFact(false)" class="bg-red-500 text-white px-12 py-6 rounded-[2rem] text-3xl font-bold btn-hover shadow-lg flex flex-col items-center">
+                        <span>가짜예요!</span>
+                        <span class="text-xl font-normal opacity-80">(거짓말이에요)</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-10" id="fact-dots">
+                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+                <div class="w-6 h-6 rounded-full bg-gray-300"></div>
+            </div>
+            <p class="text-xl text-gray-400 mt-4">남은 문제: <span id="fact-remaining">5</span>개</p>
+        </div>
+
+        <!-- Slide 7: Typing Practice (With Enter Key) -->
+        <div id="slide-7" class="slide">
+            <h2 class="text-center mb-6 text-yellow-600">🛡️ 약속 문장 따라쓰기 미션</h2>
+            <p class="text-2xl text-center mb-10 text-gray-500 font-bold">글자를 쓰고 <span class="enter-badge">엔터 Enter</span> 키를 치세요!</p>
+            
+            <div class="flex flex-col gap-10 w-full max-w-4xl">
+                <!-- Task 1 -->
+                <div id="task-1" class="typing-task-card active-task text-center">
+                    <span class="target-text-large text-pink-600" id="target-1">예쁜 말을 사용해요</span>
+                    <input type="text" id="task-input-1" class="w-full p-5 border-b-8 border-pink-100 text-4xl text-center outline-none focus:border-pink-400 bg-transparent font-bold" placeholder="여기에 똑같이 쓰세요" onkeydown="handleEnter(event, 1, '예쁜 말을 사용해요')" autocomplete="off">
+                </div>
+                <!-- Task 2 -->
+                <div id="task-2" class="typing-task-card text-center">
+                    <span class="target-text-large text-blue-600" id="target-2">내 정보를 지켜요</span>
+                    <input type="text" id="task-input-2" disabled class="w-full p-5 border-b-8 border-blue-50 text-4xl text-center outline-none focus:border-blue-400 bg-transparent font-bold" placeholder="..." onkeydown="handleEnter(event, 2, '내 정보를 지켜요')" autocomplete="off">
+                </div>
+                <!-- Task 3 -->
+                <div id="task-3" class="typing-task-card text-center">
+                    <span class="target-text-large text-purple-600" id="target-3">다시 확인해요</span>
+                    <input type="text" id="task-input-3" disabled class="w-full p-5 border-b-8 border-purple-50 text-4xl text-center outline-none focus:border-purple-400 bg-transparent font-bold" placeholder="..." onkeydown="handleEnter(event, 3, '다시 확인해요')" autocomplete="off">
+                </div>
+                <!-- Task 4 -->
+                <div id="task-4" class="typing-task-card text-center">
+                    <span class="target-text-large text-green-600" id="target-4">시간을 지켜요</span>
+                    <input type="text" id="task-input-4" disabled class="w-full p-5 border-b-8 border-green-50 text-4xl text-center outline-none focus:border-green-400 bg-transparent font-bold" placeholder="..." onkeydown="handleEnter(event, 4, '시간을 지켜요')" autocomplete="off">
+                </div>
+            </div>
+            
+            <button id="safety-final-btn" onclick="nextSlide()" class="mt-12 bg-yellow-400 text-white px-16 py-5 rounded-full text-3xl font-bold shadow-xl bounce hidden">
+                모든 약속 완료! <i class="fas fa-medal ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Slide 8: Pledge (Signature Removed) -->
+        <div id="slide-8" class="slide">
+            <h2 class="text-center mb-8 text-orange-600">📜 AI 안전 지킴이 서약서</h2>
+            <div class="bg-white border-[10px] border-double border-yellow-200 p-12 rounded-[3rem] w-full text-center shadow-xl max-w-4xl">
+                <p class="text-4xl mb-12 italic text-gray-700 font-bold leading-relaxed">
+                    "나 <span id="name-display" class="text-blue-600 border-b-4 border-blue-200 px-6">탐험대</span> 대원은 <br> 
+                    인공지능을 착하고 바르게 사용할 것을 <br>멋진 탐험대장님과 친구들 앞에서 <br>굳게 약속합니다!"
+                </p>
+                
+                <div class="flex flex-col items-center justify-center gap-8">
+                    <p class="text-2xl text-gray-500">여러분의 이름을 쓰세요</p>
+                    <input type="text" id="name-input" placeholder="이름 입력" class="text-center p-6 border-b-8 border-yellow-400 text-5xl focus:outline-none bg-yellow-50 rounded-t-3xl w-80 font-bold" oninput="updateName(this.value)">
+                    <p class="text-xl text-gray-400 mt-4 italic">이름을 다 썼다면 아래 버튼을 눌러주세요.</p>
+                </div>
+            </div>
+            <button onclick="completePledge()" class="mt-12 bg-blue-600 text-white px-20 py-6 rounded-full text-4xl font-bold btn-hover shadow-2xl">
+                약속 완료! <i class="fas fa-check-circle ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Slide 9: Certificate -->
+        <div id="slide-9" class="slide">
+            <div id="certificate" class="text-center p-14 bg-gradient-to-br from-yellow-50 to-orange-100 rounded-[4rem] border-[12px] border-white shadow-2xl relative">
+                <i class="fas fa-award text-[12rem] text-yellow-400 mb-10 floating inline-block"></i>
+                <h2 class="font-bold text-orange-600 mb-6">여량초 안전 대장!</h2>
+                <p class="text-4xl mb-10 leading-relaxed text-gray-700">오늘 모든 훈련을 통과한 <br> <span class="text-blue-600 font-bold underline" id="final-name-cert">탐험대</span> 대원에게 <br> 이 증서를 수여합니다.</p>
+                <div class="bg-white px-10 py-6 rounded-3xl shadow-xl inline-block border-4 border-yellow-200">
+                    <p class="text-2xl font-bold text-gray-500">2026년 4월 23일</p>
+                    <p class="text-3xl font-bold mt-2">여량초등학교 AI 탐험대장</p>
+                </div>
+                <div class="mt-12">
+                    <button onclick="location.reload()" class="bg-gray-200 text-gray-600 px-10 py-4 rounded-full text-2xl hover:bg-gray-300">다시 공부하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="absolute bottom-12 left-12 right-12 flex justify-between items-center pointer-events-none">
+            <button id="prev-btn" onclick="prevSlide()" class="pointer-events-auto bg-white border-4 border-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center btn-hover shadow-xl invisible">
+                <i class="fas fa-arrow-left text-3xl"></i>
+            </button>
+            <button id="next-btn" onclick="nextSlide()" class="pointer-events-auto bg-yellow-400 text-white w-20 h-20 rounded-full flex items-center justify-center btn-hover shadow-xl">
+                <i class="fas fa-arrow-right text-3xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="bg-white p-12 rounded-[4rem] text-center max-w-lg shadow-2xl border-[12px] border-yellow-50">
+            <div id="modal-icon" class="text-[8rem] mb-8"></div>
+            <p id="modal-text" class="text-4xl font-bold mb-10 leading-tight"></p>
+            <button onclick="closeModal()" class="bg-yellow-400 text-white px-16 py-4 rounded-full text-3xl font-bold shadow-lg">알겠어요!</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 9;
+
+        // Slide 2: Review
+        function checkReviewTyping() {
+            const input = document.getElementById('review-input').value.trim();
+            const msg = document.getElementById('review-msg');
+            if (input === '데이터') {
+                msg.innerText = "✨ 대단해요! '데이터'를 아주 잘 기억하고 있군요!";
+                msg.style.color = "#2563eb";
+                setTimeout(nextSlide, 1500);
+            } else {
+                msg.innerText = "🤔 'ㄷㅇㅌ'가 무엇일까요? 다시 써봐요!";
+                msg.style.color = "#dc2626";
+            }
+        }
+
+        // Slide 3: Mood
+        function selectMood(el, mood) {
+            const msg = document.getElementById('mood-msg');
+            document.querySelectorAll('#slide-3 .choice-card').forEach(c => c.style.borderColor = "#e5e7eb");
+            el.style.borderColor = mood === 'happy' ? '#22c55e' : '#3b82f6';
+            if (mood === 'happy') {
+                msg.innerText = "맞아요! AI도 친절한 말을 들으면 더 잘 가르쳐줘요.";
+                setTimeout(nextSlide, 2000);
+            } else {
+                msg.innerText = "나쁜 말을 들으면 AI 친구도 공부하기 힘들어요.";
+            }
+        }
+
+        // Slide 4: Chat
+        function sendChat() {
+            const input = document.getElementById('user-chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const container = document.getElementById('chat-container');
+            const userBubble = document.createElement('div');
+            userBubble.className = "chat-bubble bg-yellow-100 self-end shadow-md border-2 border-yellow-200";
+            userBubble.innerText = text;
+            container.appendChild(userBubble);
+            input.value = "";
+            setTimeout(() => {
+                const aiBubble = document.createElement('div');
+                aiBubble.className = "chat-bubble bg-white self-start shadow-sm border-2 border-blue-100";
+                aiBubble.innerText = "우와, 정말 다정한 말이야! 고마워! 우리 더 열심히 탐험하자!";
+                container.appendChild(aiBubble);
+                setTimeout(nextSlide, 2500);
+            }, 1000);
+        }
+
+        // Slide 5: Privacy
+        let lockedCount = 0;
+        function lockInfo(el, isSecret) {
+            if (el.dataset.locked === "true") return;
+            if (isSecret) {
+                el.dataset.locked = "true";
+                el.style.backgroundColor = "#fee2e2";
+                el.style.borderColor = "#ef4444";
+                el.innerHTML = `<i class="fas fa-lock text-5xl text-red-500 mb-4"></i><span class="text-2xl font-bold text-red-600">보호 완료!</span>`;
+                lockedCount++;
+                document.getElementById('locked-count').innerText = lockedCount;
+                if (lockedCount >= 4) {
+                    showModal("모든 정보를 잘 지켜냈어요! 개인정보는 절대 알려주면 안 돼요.", "🛡️");
+                    setTimeout(() => { closeModal(); nextSlide(); }, 2000);
+                }
+            } else {
+                showModal("이 정보는 AI와 이야기해도 괜찮은 정보예요!", "💡");
+            }
+        }
+
+        // Slide 6: Fact Check
+        const facts = [
+            { q: "세종대왕님은 사실 외계인이었대!", a: false, tip: "세종대왕님은 훌륭한 우리 조상님이에요!" },
+            { q: "코끼리는 코로 물을 마실 수 있어!", a: true, tip: "코끼리는 코를 빨대처럼 사용해서 물을 마셔요!" },
+            { q: "달은 노란 치즈로 만들어져 있대!", a: false, tip: "달은 치즈가 아니라 커다란 암석(돌)이에요!" },
+            { q: "고양이는 수염으로 주변의 물건을 느껴!", a: true, tip: "고양이 수염은 아주 예민한 감각 기관이에요!" },
+            { q: "뱀은 눈에 보이지 않는 아주 작은 다리가 있대!", a: false, tip: "뱀은 다리가 아예 없는 동물이에요!" }
+        ];
+        let currentFactIdx = 0;
+
+        function updateFactDots() {
+            const dots = document.getElementById('fact-dots').children;
+            for(let i=0; i<dots.length; i++) {
+                dots[i].className = `w-6 h-6 rounded-full transition-all duration-300 ${i < currentFactIdx ? 'bg-green-400' : (i === currentFactIdx ? 'bg-yellow-400 scale-125 border-4 border-yellow-200' : 'bg-gray-300')}`;
+            }
+            document.getElementById('fact-remaining').innerText = facts.length - currentFactIdx;
+        }
+
+        function checkFact(ans) {
+            const correct = facts[currentFactIdx].a;
+            const tip = facts[currentFactIdx].tip;
+            if (ans === correct) {
+                showModal("정답이에요! 🕵️<br><span class='text-2xl font-normal'>" + tip + "</span>", "🌟");
+                currentFactIdx++;
+                if (currentFactIdx >= facts.length) {
+                    setTimeout(() => { 
+                        closeModal(); 
+                        showModal("모든 대답을 완벽하게 확인했어요! AI의 말은 꼭 다시 확인해야 해요.", "🏆");
+                        setTimeout(() => { closeModal(); nextSlide(); }, 2500);
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        closeModal();
+                        document.getElementById('fact-question').innerText = facts[currentFactIdx].q;
+                        updateFactDots();
+                    }, 1500);
+                }
+            } else {
+                showModal("정말 그럴까요? 다시 한번 고민해봐요!", "❓");
+            }
+        }
+
+        // Slide 7: Typing Task
+        function handleEnter(event, id, target) {
+            if (event.key === "Enter") {
+                const input = document.getElementById(`task-input-${id}`);
+                const card = document.getElementById(`task-${id}`);
+                if (input.value.trim() === target) {
+                    card.classList.remove('active-task');
+                    card.classList.add('completed-task');
+                    card.querySelector('.target-text-large').innerHTML = target + " ✅";
+                    input.disabled = true;
+                    if (id < 4) {
+                        const nextCard = document.getElementById(`task-${id + 1}`);
+                        const nextInput = document.getElementById(`task-input-${id + 1}`);
+                        nextCard.classList.add('active-task');
+                        nextInput.disabled = false;
+                        nextInput.focus();
+                    } else {
+                        document.getElementById('safety-final-btn').classList.remove('hidden');
+                    }
+                } else {
+                    input.classList.add('border-red-400');
+                    setTimeout(() => input.classList.remove('border-red-400'), 1000);
+                }
+            }
+        }
+
+        // Slide 8: Pledge
+        function updateName(val) {
+            document.getElementById('name-display').innerText = val || "탐험대";
+            document.getElementById('final-name-cert').innerText = val || "탐험대";
+        }
+
+        function completePledge() {
+            if (!document.getElementById('name-input').value) {
+                showModal("여러분의 소중한 이름을 써주세요!", "✍️");
+                return;
+            }
+            showModal("훌륭해요! 이제 여러분은 진정한 AI 안전 지킴이입니다!", "🎊");
+            setTimeout(() => { closeModal(); nextSlide(); }, 2000);
+        }
+
+        // Navigation & Display
+        function updateSlideDisplay() {
+            document.querySelectorAll('.slide').forEach((s, index) => {
+                s.classList.toggle('active', index + 1 === currentSlide);
+            });
+            document.getElementById('slide-number').innerText = `${currentSlide} / ${totalSlides}`;
+            document.getElementById('progress-inner').style.width = `${(currentSlide / totalSlides) * 100}%`;
+            document.getElementById('prev-btn').style.visibility = (currentSlide === 1 || currentSlide === 9) ? 'hidden' : 'visible';
+            const interactiveSlides = [2, 3, 4, 5, 6, 7, 8, 9];
+            document.getElementById('next-btn').style.visibility = interactiveSlides.includes(currentSlide) ? 'hidden' : 'visible';
+            if (currentSlide === 6) {
+                document.getElementById('fact-question').innerText = facts[currentFactIdx].q;
+                updateFactDots();
+            }
+            if (currentSlide === 7) {
+                setTimeout(() => document.getElementById('task-input-1').focus(), 500);
+            }
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateSlideDisplay(); } }
+        function prevSlide() { if (currentSlide > 1) { currentSlide--; updateSlideDisplay(); } }
+        function showModal(text, icon) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modal-text').innerHTML = text;
+            document.getElementById('modal-icon').innerHTML = icon;
+            modal.style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        window.onload = updateSlideDisplay;
+    </script>
+</body>
+</html>
