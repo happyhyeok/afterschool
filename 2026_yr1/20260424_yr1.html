@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7회차: 앗, 진짜일까? 가짜일까?</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FFD166;
+            --secondary: #4EA8DE;
+            --accent: #EF476F;
+            --success: #06D6A0;
+        }
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #FFF9E6;
+            background-image: radial-gradient(#FFD166 1px, transparent 1px);
+            background-size: 30px 30px;
+            word-break: keep-all;
+        }
+        h1, h2, h3, .gaegu {
+            font-family: 'Gaegu', cursive;
+        }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-btn {
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #855d00;
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+            border: 6px solid white;
+        }
+
+        .next-step-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: white;
+            color: #374151;
+            padding: 1.25rem 2.5rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 4px solid #e5e7eb;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .next-step-link:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+
+        .quiz-card {
+            transition: all 0.3s ease;
+        }
+        .quiz-result {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 8rem;
+            font-weight: black;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+        .quiz-result.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .stamp {
+            opacity: 0;
+            transform: scale(3) rotate(-20deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .stamp.show {
+            opacity: 1;
+            transform: scale(1) rotate(-10deg);
+        }
+
+        @keyframes mergeLeft {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(80px); opacity: 0; }
+        }
+        @keyframes mergeRight {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-80px); opacity: 0; }
+        }
+        /* 중앙 정렬을 위한 팝아웃 애니메이션 개선 */
+        @keyframes popOut {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .img-container {
+            width: 100%;
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            background: #f8fafc;
+        }
+        .lesson-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        #step2 .img-container {
+            height: 300px;
+            background: white;
+        }
+        #step2 .lesson-img {
+            border: 4px solid #f1f5f9;
+            border-radius: 1rem;
+            padding: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        .situation-tab.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        #typing-practice-area input::placeholder {
+            color: #d1d5db;
+            font-size: 1.5rem;
+        }
+        #typing-sentence.correct {
+            color: #06D6A0;
+            animation: textPop 0.3s ease-out;
+        }
+        @keyframes textPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <header class="bg-white border-b-8 border-primary p-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary p-3 rounded-2xl shadow-inner">
+                    <i data-lucide="search" class="w-10 h-10 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">7회차: 앗, 진짜일까? 가짜일까?</h1>
+                    <p class="text-lg md:text-xl text-yellow-600 font-bold">진짜 가짜 사진 찾기 탐험대</p>
+                </div>
+            </div>
+
+            <nav class="hidden lg:flex gap-2">
+                <button onclick="showStep(1)" class="nav-btn active bg-white border-4 border-primary px-4 py-2 rounded-full font-bold">1. 생각열기</button>
+                <button onclick="showStep(2)" class="nav-btn bg-white border-4 border-secondary px-4 py-2 rounded-full font-bold">2. 합성이란?</button>
+                <button onclick="showStep(3)" class="nav-btn bg-white border-4 border-success px-4 py-2 rounded-full font-bold">3. 탐험대 퀴즈</button>
+                <button onclick="showStep(4)" class="nav-btn bg-white border-4 border-accent px-4 py-2 rounded-full font-bold">4. 왜 그럴까?</button>
+                <button onclick="showStep(5)" class="nav-btn bg-white border-4 border-purple-400 px-4 py-2 rounded-full font-bold">5. 우리의 약속</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-5xl p-6 mt-4">
+        
+        <section id="step1" class="step-content active space-y-8">
+            <div class="lesson-card text-center">
+                <h2 class="text-4xl font-bold text-gray-800 mb-8 flex justify-center items-center gap-3">
+                    <i data-lucide="image" class="w-10 h-10 text-primary"></i>
+                    인터넷에서 본 신기한 동물들!
+                </h2>
+                <p class="text-2xl text-gray-700 mb-8">
+                    스마트폰이나 텔레비전에서 신기한 사진을 본 적 있나요?<br>
+                    <strong>비밀 상자</strong>를 클릭해서 어떤 동물이 숨어있는지 확인해 보세요!
+                </p>
+                <div class="flex justify-center mb-10">
+                    <button id="magic-box" onclick="openMagicBox()" class="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-3xl shadow-2xl hover:scale-105 transition-transform border-8 border-indigo-300 w-full max-w-md h-96 flex flex-col items-center justify-center cursor-pointer group overflow-hidden">
+                        <div id="box-cover" class="absolute inset-0 flex flex-col items-center justify-center bg-primary rounded-2xl transition-opacity duration-500 z-20">
+                            <span class="text-8xl mb-4">🎁</span>
+                            <span class="text-3xl font-black text-yellow-900">클릭해서 열어보기!</span>
+                        </div>
+                        <div id="box-content" class="text-center opacity-0 transition-opacity duration-500 z-10 w-full h-full flex flex-col items-center justify-center p-4">
+                            <img src="https://happyhyeok.github.io/afterschool/2026_yr1/unicorn.png" class="w-64 h-64 object-contain mb-4 drop-shadow-xl" alt="유니콘">
+                            <span class="text-3xl font-black text-white bg-black/40 px-6 py-2 rounded-full backdrop-blur-sm">무지개 뿔이 달린 말?</span>
+                        </div>
+                    </button>
+                </div>
+                <div id="step1-message" class="hidden mt-8 p-8 bg-blue-50 rounded-3xl border-4 border-dashed border-blue-200">
+                    <p class="text-3xl font-bold text-blue-700 leading-tight mb-6">"우와! 유니콘이 진짜 있을까요?"<br>사실 인터넷에는 <span class="text-accent underline font-black">컴퓨터로 만든 가짜 사진</span>도 아주 많아요!</p>
+                    <button onclick="showStep(2)" class="next-step-link">비밀 알아보러 가기 <i data-lucide="chevron-right" class="w-8 h-8"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section id="step2" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-8">
+                    <i data-lucide="wand-2" class="w-12 h-12 text-secondary"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">사진을 찰칵! 합쳐보아요 (합성)</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-10 mb-12 items-center">
+                    <div class="bg-white border-4 border-success p-6 rounded-3xl shadow-md text-center relative flex flex-col items-center">
+                        <div class="absolute top-0 left-0 bg-success text-white px-6 py-2 rounded-br-2xl font-bold text-xl z-10">진짜</div>
+                        <div class="img-container mb-6 mt-4 p-4 flex justify-center items-center">
+                            <img src="https://happyhyeok.github.io/afterschool/2026_yr1/real_cat.png" class="lesson-img" alt="진짜 고양이">
+                        </div>
+                        <p class="text-2xl font-bold">귀여운 고양이</p>
+                    </div>
+                    <div class="bg-white border-4 border-accent p-6 rounded-3xl shadow-md text-center relative group flex flex-col items-center">
+                        <div class="absolute top-0 left-0 bg-accent text-white px-6 py-2 rounded-br-2xl font-bold text-xl z-10">가짜 (합성)</div>
+                        <div class="img-container mb-6 mt-4 p-4 flex justify-center items-center">
+                            <img src="https://happyhyeok.github.io/afterschool/2026_yr1/fake_cat.png" class="lesson-img group-hover:scale-105 transition-transform" alt="가짜 고양이">
+                        </div>
+                        <p class="text-2xl font-bold">날개 달린 고양이</p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 border-4 border-purple-200 rounded-3xl p-8 text-center mb-8 relative">
+                    <h3 class="text-3xl font-black text-purple-800 mb-6">✨ 나도 합성 마법사! ✨</h3>
+                    <div class="flex items-center justify-center gap-6 text-7xl mb-8 h-64 relative max-w-lg mx-auto">
+                        <div id="merge-item-1" class="transition-all duration-1000 z-0">🐶</div>
+                        <div id="merge-plus" class="text-4xl text-gray-400 font-black z-0">+</div>
+                        <div id="merge-item-2" class="transition-all duration-1000 z-0">🦆</div>
+                        
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div id="merge-result" class="opacity-0 w-64 h-64 bg-white p-3 rounded-3xl shadow-2xl border-4 border-purple-300 flex items-center justify-center scale-0 pointer-events-auto">
+                                <img src="https://happyhyeok.github.io/afterschool/2026_yr1/bridmousedog.png" class="w-full h-full object-cover rounded-xl" alt="합성 결과">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btn-merge" onclick="playMergeAnimation()" class="bg-purple-500 text-white font-bold text-2xl py-4 px-10 rounded-full hover:bg-purple-600 shadow-lg active:scale-95 transition-all relative z-20">합쳐져라 얍! 🪄</button>
+                    <p id="merge-text" class="hidden mt-6 text-2xl font-bold text-purple-700">짜잔! 오리 부리를 가진 강아지가 탄생했어요!</p>
+                </div>
+
+                <div class="text-center"><button onclick="showStep(3)" class="next-step-link border-primary">퀴즈 도전하기! <i data-lucide="gamepad-2" class="w-8 h-8"></i></button></div>
+            </div>
+        </section>
+
+        <section id="step3" class="step-content space-y-8">
+            <div class="lesson-card bg-gradient-to-b from-white to-green-50">
+                <div class="flex items-center gap-4 mb-6">
+                    <i data-lucide="help-circle" class="w-12 h-12 text-success"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">도전! 진짜 가짜 탐험대</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/elephant.png" class="lesson-img" alt="코끼리"></div>
+                        <p class="text-2xl font-bold mb-6">물을 뿜는 코끼리</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, true)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, false)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-success">⭕</div>
+                    </div>
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/fake_dog.png" class="lesson-img" alt="안경 강아지"></div>
+                        <p class="text-2xl font-bold mb-6">안경 쓰고 책 읽는 강아지</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, false)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, true)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-accent">❌</div>
+                    </div>
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/rabbit.png" class="lesson-img" alt="토끼"></div>
+                        <p class="text-2xl font-bold mb-6">당근 먹는 토끼</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, true)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, false)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-success">⭕</div>
+                    </div>
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/fake_tree.png" class="lesson-img" alt="포도 사과나무"></div>
+                        <p class="text-2xl font-bold mb-6">사과나무에 열린 포도</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, false)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, true)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-accent">❌</div>
+                    </div>
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/rainbowapple.png" class="lesson-img" alt="무지개 사과"></div>
+                        <p class="text-2xl font-bold mb-6">무지개 색깔 사과</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, false)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, true)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-accent">❌</div>
+                    </div>
+                    <div class="quiz-card relative bg-white border-4 border-gray-200 rounded-3xl p-6 text-center">
+                        <div class="img-container mb-6"><img src="https://happyhyeok.github.io/afterschool/2026_yr1/mudpig.png" class="lesson-img" alt="진흙 돼지"></div>
+                        <p class="text-2xl font-bold mb-6">진흙 목욕하는 돼지</p>
+                        <div class="flex gap-4"><button onclick="answerQuiz(this, true)" class="bg-green-100 border-4 border-green-300 w-full py-4 rounded-2xl text-2xl font-black">O 진짜</button><button onclick="answerQuiz(this, false)" class="bg-red-100 border-4 border-red-300 w-full py-4 rounded-2xl text-2xl font-black">X 가짜</button></div>
+                        <div class="quiz-result text-success">⭕</div>
+                    </div>
+                </div>
+                <div class="text-center"><button onclick="showStep(4)" class="next-step-link border-accent">왜 만드는 걸까? <i data-lucide="chevron-right" class="w-8 h-8"></i></button></div>
+            </div>
+        </section>
+
+        <section id="step4" class="step-content space-y-8">
+            <div class="lesson-card">
+                <div class="flex items-center gap-4 mb-10">
+                    <i data-lucide="message-square" class="w-12 h-12 text-accent"></i>
+                    <h2 class="text-4xl font-black text-gray-800">가짜 사진을 만드는 마음들</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12">
+                    <button onclick="flipPsychCard(this)" class="group h-64 perspective-1000 w-full cursor-pointer focus:outline-none">
+                        <div class="relative w-full h-full transition-transform duration-700 transform-style-3d">
+                            <div class="absolute inset-0 bg-blue-50 border-4 border-blue-200 rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden shadow-sm">
+                                <span class="text-5xl mb-2 animate-bounce">🤩</span><span class="text-xl font-bold text-blue-800">관심</span>
+                            </div>
+                            <div class="absolute inset-0 bg-blue-500 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-white backface-hidden rotate-y-180 shadow-md">
+                                <p class="text-lg font-bold">친구들에게 멋진 모습을 자랑하고 싶어서!</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button onclick="flipPsychCard(this)" class="group h-64 perspective-1000 w-full cursor-pointer focus:outline-none">
+                        <div class="relative w-full h-full transition-transform duration-700 transform-style-3d">
+                            <div class="absolute inset-0 bg-orange-50 border-4 border-orange-200 rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden shadow-sm">
+                                <span class="text-5xl mb-2 animate-bounce">😆</span><span class="text-xl font-bold text-orange-800">재미</span>
+                            </div>
+                            <div class="absolute inset-0 bg-orange-500 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-white backface-hidden rotate-y-180 shadow-md">
+                                <p class="text-lg font-bold">친구들을 깔깔 웃게 해주고 싶어서!</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button onclick="flipPsychCard(this)" class="group h-64 perspective-1000 w-full cursor-pointer focus:outline-none">
+                        <div class="relative w-full h-full transition-transform duration-700 transform-style-3d">
+                            <div class="absolute inset-0 bg-yellow-50 border-4 border-yellow-200 rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden shadow-sm">
+                                <span class="text-5xl mb-2 animate-bounce">😲</span><span class="text-xl font-bold text-yellow-800">실수</span>
+                            </div>
+                            <div class="absolute inset-0 bg-yellow-400 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-yellow-900 backface-hidden rotate-y-180 shadow-md">
+                                <p class="text-lg font-bold">진짜인 줄 알고 깜빡 속아서 보여줬어!</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button onclick="flipPsychCard(this)" class="group h-64 perspective-1000 w-full cursor-pointer focus:outline-none">
+                        <div class="relative w-full h-full transition-transform duration-700 transform-style-3d">
+                            <div class="absolute inset-0 bg-purple-50 border-4 border-purple-200 rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden shadow-sm">
+                                <span class="text-5xl mb-2 animate-bounce">💭</span><span class="text-xl font-bold text-purple-800">상상</span>
+                            </div>
+                            <div class="absolute inset-0 bg-purple-500 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-white backface-hidden rotate-y-180 shadow-md">
+                                <p class="text-lg font-bold">상상 속 친구를 진짜처럼 보고 싶어서!</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button onclick="flipPsychCard(this)" class="group h-64 perspective-1000 w-full cursor-pointer focus:outline-none">
+                        <div class="relative w-full h-full transition-transform duration-700 transform-style-3d">
+                            <div class="absolute inset-0 bg-red-50 border-4 border-red-200 rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden shadow-sm">
+                                <span class="text-5xl mb-2 animate-bounce">😈</span><span class="text-xl font-bold text-red-800">거짓말</span>
+                            </div>
+                            <div class="absolute inset-0 bg-red-500 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-white backface-hidden rotate-y-180 shadow-md">
+                                <p class="text-lg font-bold">나쁜 마음으로 남을 속이려고 만들 때도 있어.</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="bg-blue-50 border-4 border-blue-200 rounded-3xl p-8 relative">
+                    <h3 class="text-3xl font-black text-blue-800 mb-8 text-center flex items-center justify-center gap-2">
+                        <i data-lucide="shield-question" class="w-10 h-10"></i> 만약에 나라면? (생각의 문 열기)
+                    </h3>
+                    
+                    <div class="flex flex-wrap justify-center gap-3 mb-8">
+                        <button onclick="switchSituation(1)" id="sit-btn-1" class="situation-tab active px-6 py-3 rounded-full border-2 border-blue-300 font-bold bg-white text-blue-600 transition-all">상황 1: 공룡</button>
+                        <button onclick="switchSituation(2)" id="sit-btn-2" class="situation-tab px-6 py-3 rounded-full border-2 border-blue-300 font-bold bg-white text-blue-600 transition-all">상황 2: 친구의 얼굴</button>
+                        <button onclick="switchSituation(3)" id="sit-btn-3" class="situation-tab px-6 py-3 rounded-full border-2 border-blue-300 font-bold bg-white text-blue-600 transition-all">상황 3: 거인 사탕</button>
+                    </div>
+
+                    <div id="sit-content-1" class="situation-content space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border-2 border-blue-100 text-center">
+                            <p class="text-2xl font-bold text-gray-800">"우리 학교 뒷산에 공룡이 나타났대!"<br>친구의 휴대폰에 진짜 같은 티라노사우루스 사진이 있어요.</p>
+                        </div>
+                        <div class="grid gap-3 max-w-xl mx-auto">
+                            <button onclick="answerSituation(false, this, 1)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">A. "진짜?! 친구들한테 빨리 알려주자!"</button>
+                            <button onclick="answerSituation(true, this, 1)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">B. "공룡은 멸종했는데.. 합성 사진 아닐까?"</button>
+                        </div>
+                    </div>
+
+                    <div id="sit-content-2" class="situation-content hidden space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border-2 border-blue-100 text-center">
+                            <p class="text-2xl font-bold text-gray-800">"야! 철수 급식 먹을 때 표정 좀 봐!"<br>어떤 친구가 철수가 아주 이상한 표정으로 밥을 먹는 사진을 보여주며 웃어요.</p>
+                        </div>
+                        <p class="text-center text-lg text-blue-600 font-bold">💡 사진 속 철수는 "난 저런 표정 지은 적 없어!"라고 말해요.</p>
+                        <div class="grid gap-3 max-w-xl mx-auto">
+                            <button onclick="answerSituation(false, this, 2)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">A. "진짜 웃기다! 나도 친구들한테 보여줘야지."</button>
+                            <button onclick="answerSituation(true, this, 2)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">B. "친구가 저런 적 없다잖아! 가짜로 만든 사진일 수 있어. 보지 말자."</button>
+                        </div>
+                    </div>
+
+                    <div id="sit-content-3" class="situation-content hidden space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border-2 border-blue-100 text-center">
+                            <p class="text-2xl font-bold text-gray-800">"내일 학교 운동장에 거대한 막대 사탕이 배달된대!"<br>운동장에 건물만한 사탕이 놓여있는 사진이 문자로 왔어요.</p>
+                        </div>
+                        <div class="grid gap-3 max-w-xl mx-auto">
+                            <button onclick="answerSituation(false, this, 3)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">A. "우와! 내일 아침에 일찍 학교 가서 사탕 먹어야지!"</button>
+                            <button onclick="answerSituation(true, this, 3)" class="p-4 bg-white border-2 border-gray-200 rounded-xl text-xl font-bold hover:bg-gray-50 text-left">B. "그렇게 큰 사탕이 있을 리가 없어. 누군가 우릴 속이는 가짜야!"</button>
+                        </div>
+                    </div>
+
+                    <div id="situation-feedback" class="hidden mt-8 p-6 rounded-2xl text-center text-2xl font-black bg-white border-4"></div>
+                </div>
+
+                <div class="text-center p-8"><button onclick="showStep(5)" class="next-step-link">탐험대 약속 정하기 <i data-lucide="chevron-right" class="w-8 h-8"></i></button></div>
+            </div>
+        </section>
+
+        <section id="step5" class="step-content space-y-8">
+            <div class="lesson-card border-purple-200 bg-purple-50">
+                <div class="flex items-center gap-4 mb-8">
+                    <i data-lucide="shield-check" class="w-12 h-12 text-purple-600"></i>
+                    <h2 class="text-4xl font-bold text-gray-800">멋진 탐험대의 약속!</h2>
+                </div>
+                
+                <div id="typing-practice-area" class="bg-white p-8 rounded-3xl shadow-lg border-4 border-purple-200 mb-10 text-center relative overflow-hidden">
+                    <div class="absolute -left-10 -bottom-10 opacity-10 text-9xl">⌨️</div>
+                    <h3 class="text-3xl font-black text-purple-800 mb-2 flex items-center justify-center gap-2 relative z-10">
+                        <i data-lucide="keyboard" class="w-8 h-8"></i> 오늘 배운 내용 타자연습!
+                    </h3>
+                    <p class="text-xl text-gray-700 mb-6 relative z-10">아래 3개의 문장을 똑같이 따라 쳐보세요! (다 쓰면 엔터 키를 누르세요)</p>
+
+                    <div class="flex justify-center mb-2 relative z-10">
+                        <span id="typing-count" class="bg-purple-100 text-purple-800 px-4 py-1 rounded-full font-bold text-lg">( 1 / 3 )</span>
+                    </div>
+
+                    <div class="bg-gray-100 p-6 rounded-2xl mb-4 border-2 border-gray-200 relative z-10">
+                        <p id="typing-sentence" class="text-3xl font-bold text-gray-800 tracking-wide transition-all">진짜일까 가짜일까</p>
+                    </div>
+
+                    <input type="text" id="typing-input" class="w-full text-3xl p-4 border-4 border-purple-300 rounded-2xl focus:border-purple-500 focus:outline-none mb-4 relative z-10 text-center" placeholder="여기에 따라 쓰세요..." autocomplete="off">
+                </div>
+
+                <div class="bg-white p-10 rounded-3xl shadow-lg border-4 border-purple-200 relative mb-10">
+                    <div class="space-y-4 mb-10 max-w-2xl mx-auto">
+                        <div onclick="toggleCheck(this)" class="check-item cursor-pointer flex items-center gap-4 p-5 border-4 border-gray-200 rounded-2xl text-2xl font-bold bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 border-4 border-gray-400 bg-white rounded-lg flex items-center justify-center check-box shrink-0"></div>
+                            <span>인터넷 사진을 무조건 다 믿지 않아요!</span>
+                        </div>
+                        <div onclick="toggleCheck(this)" class="check-item cursor-pointer flex items-center gap-4 p-5 border-4 border-gray-200 rounded-2xl text-2xl font-bold bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 border-4 border-gray-400 bg-white rounded-lg flex items-center justify-center check-box shrink-0"></div>
+                            <span>헷갈릴 때는 어른에게 꼭 물어봐요!</span>
+                        </div>
+                        <div onclick="toggleCheck(this)" class="check-item cursor-pointer flex items-center gap-4 p-5 border-4 border-gray-200 rounded-2xl text-2xl font-bold bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 border-4 border-gray-400 bg-white rounded-lg flex items-center justify-center check-box shrink-0"></div>
+                            <span>친구를 속이는 가짜 사진은 만들지 않아요!</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button id="btn-stamp" onclick="stampPromise()" disabled class="bg-gray-400 text-white px-12 py-6 rounded-full text-3xl font-black shadow-xl cursor-not-allowed opacity-70 transition-all inline-flex items-center gap-3">
+                            <i data-lucide="stamp" class="w-8 h-8"></i> 약속 도장 쾅! 💮
+                        </button>
+                    </div>
+                    <div id="promise-stamp" class="stamp absolute top-1/2 left-1/2 -ml-24 -mt-24 pointer-events-none z-10">
+                        <div class="border-8 border-red-500 text-red-500 rounded-full w-48 h-48 flex items-center justify-center font-black text-5xl bg-white/80 backdrop-blur-sm rotate-[-15deg]">약속<br>최고!</div>
+                    </div>
+                </div>
+                <div class="text-center font-bold text-purple-800 text-xl">오늘도 멋진 탐험을 마쳤어요! 다음 시간에 만나요!</div>
+            </div>
+        </section>
+    </main>
+
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="showStep(prevStep())" class="bg-gray-100 p-5 rounded-3xl"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="showStep(nextStep())" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl">다음으로</button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // 타자 연습 3문장
+        const typingSentences = [
+            "진짜일까 가짜일까",
+            "어른에게 물어봐요",
+            "멋진 탐험대"
+        ];
+        let currentSentenceIndex = 0;
+
+        function showStep(n) {
+            currentStep = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => btn.classList.toggle('active', idx + 1 === n));
+            document.getElementById('step' + n).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (n === 5 && currentSentenceIndex === 0) {
+                initTypingPractice();
+            }
+        }
+        function nextStep() { return Math.min(currentStep + 1, totalSteps); }
+        function prevStep() { return Math.max(currentStep - 1, 1); }
+
+        function openMagicBox() {
+            document.getElementById('box-cover').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('box-cover').style.display = 'none';
+                document.getElementById('box-content').style.opacity = '1';
+                document.getElementById('step1-message').classList.remove('hidden');
+            }, 500);
+        }
+
+        function playMergeAnimation() {
+            const btn = document.getElementById('btn-merge');
+            if(btn.disabled) return;
+            btn.disabled = true;
+            document.getElementById('merge-item-1').style.animation = 'mergeLeft 1s forwards';
+            document.getElementById('merge-item-2').style.animation = 'mergeRight 1s forwards';
+            document.getElementById('merge-plus').style.opacity = '0';
+            setTimeout(() => {
+                const resultBox = document.getElementById('merge-result');
+                resultBox.style.animation = 'popOut 0.8s forwards';
+                document.getElementById('merge-text').classList.remove('hidden');
+            }, 800);
+        }
+
+        function answerQuiz(btn, isCorrect) {
+            const card = btn.closest('.quiz-card');
+            if(card.classList.contains('solved')) return;
+            card.classList.add('solved');
+            const resultDiv = card.querySelector('.quiz-result');
+            card.querySelectorAll('button').forEach(b => b.style.opacity = '0.3');
+            btn.style.opacity = '1';
+            if(isCorrect) {
+                resultDiv.className = 'quiz-result text-success show';
+                card.style.borderColor = '#06D6A0';
+            } else {
+                resultDiv.className = 'quiz-result text-accent show';
+                card.style.borderColor = '#EF476F';
+            }
+        }
+
+        function flipPsychCard(btn) {
+            btn.querySelector('.transform-style-3d').classList.toggle('rotate-y-180');
+        }
+
+        function switchSituation(n) {
+            document.querySelectorAll('.situation-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.situation-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById('sit-btn-' + n).classList.add('active');
+            document.getElementById('sit-content-' + n).classList.remove('hidden');
+            document.getElementById('situation-feedback').classList.add('hidden');
+        }
+
+        function answerSituation(isCorrect, btn, situNum) {
+            const feedback = document.getElementById('situation-feedback');
+            btn.parentElement.querySelectorAll('button').forEach(b => {
+                b.style.borderColor = '#e5e7eb';
+                b.style.opacity = '0.5';
+            });
+            btn.style.opacity = '1';
+            feedback.classList.remove('hidden');
+            if(isCorrect) {
+                btn.style.borderColor = '#06D6A0';
+                feedback.innerHTML = "🎉 정답! 진짜인지 고민해보는 마음이 중요해요!";
+                feedback.className = "mt-8 p-6 rounded-2xl text-center text-2xl font-black bg-green-50 text-green-700 border-4 border-green-200";
+                createConfetti();
+            } else {
+                btn.style.borderColor = '#EF476F';
+                feedback.innerHTML = "앗! 가짜 사진일 수도 있어요. 다시 한 번 생각해볼까요?";
+                feedback.className = "mt-8 p-6 rounded-2xl text-center text-2xl font-black bg-red-50 text-red-700 border-4 border-red-200";
+            }
+        }
+
+        // 단순화된 타자 연습 로직
+        function initTypingPractice() {
+            const inputField = document.getElementById('typing-input');
+            const displayField = document.getElementById('typing-sentence');
+            const countField = document.getElementById('typing-count');
+
+            currentSentenceIndex = 0;
+            displayField.innerText = typingSentences[currentSentenceIndex];
+            countField.innerText = `( 1 / ${typingSentences.length} )`;
+            inputField.value = '';
+            inputField.disabled = false;
+            
+            const newField = inputField.cloneNode(true);
+            inputField.parentNode.replaceChild(newField, inputField);
+            
+            newField.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const inputText = this.value.trim();
+                    const targetText = displayField.innerText.trim();
+
+                    if (inputText === targetText) {
+                        this.value = '';
+                        displayField.classList.remove('correct');
+                        void displayField.offsetWidth; 
+                        displayField.classList.add('correct');
+
+                        currentSentenceIndex++;
+
+                        if (currentSentenceIndex >= typingSentences.length) {
+                            this.disabled = true;
+                            displayField.innerText = "참 잘했어요! 타자 연습 끝! 🎉";
+                            countField.innerText = "완료!";
+                            createConfetti();
+                            return;
+                        }
+
+                        displayField.innerText = typingSentences[currentSentenceIndex];
+                        countField.innerText = `( ${currentSentenceIndex + 1} / ${typingSentences.length} )`;
+                    } else {
+                        displayField.parentElement.classList.add('bg-red-100');
+                        setTimeout(() => displayField.parentElement.classList.remove('bg-red-100'), 300);
+                    }
+                }
+            });
+        }
+
+        function toggleCheck(el) {
+            el.classList.toggle('checked');
+            const box = el.querySelector('.check-box');
+            if(el.classList.contains('checked')) {
+                box.innerHTML = '✔';
+                box.style.borderColor = '#10b981';
+                box.style.color = '#10b981';
+                box.style.fontSize = '1.5rem';
+            } else {
+                box.innerHTML = '';
+                box.style.borderColor = '#9ca3af';
+            }
+            const allChecked = document.querySelectorAll('.check-item.checked').length === 3;
+            const btn = document.getElementById('btn-stamp');
+            btn.disabled = !allChecked;
+            if(allChecked) {
+                btn.className = "bg-purple-600 text-white px-12 py-6 rounded-full text-3xl font-black shadow-xl cursor-pointer transition-all inline-flex items-center gap-3 hover:bg-purple-700 hover:scale-105";
+            } else {
+                btn.className = "bg-gray-400 text-white px-12 py-6 rounded-full text-3xl font-black shadow-xl cursor-not-allowed opacity-70 transition-all inline-flex items-center gap-3";
+            }
+        }
+
+        function stampPromise() {
+            const stamp = document.getElementById('promise-stamp');
+            stamp.classList.add('show');
+            createConfetti();
+            setTimeout(() => alert('축하합니다! 멋진 미디어 탐험대원이 되었어요!'), 500);
+        }
+
+        function createConfetti() {
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    const emojis = ['🎉', '✨', '🎈', '💖', '💮', '👍'];
+                    emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.position = 'fixed';
+                    emoji.style.left = (50 + (Math.random()*60 - 30)) + 'vw';
+                    emoji.style.top = (50 + (Math.random()*60 - 30)) + 'vh';
+                    emoji.style.fontSize = '3rem';
+                    emoji.style.pointerEvents = 'none';
+                    emoji.style.zIndex = '100';
+                    emoji.style.transition = 'all 1s ease-out';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => {
+                        emoji.style.transform = `translateY(-200px) scale(0) rotate(${Math.random()*360}deg)`;
+                        emoji.style.opacity = '0';
+                    }, 50);
+                    setTimeout(() => emoji.remove(), 1050);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
