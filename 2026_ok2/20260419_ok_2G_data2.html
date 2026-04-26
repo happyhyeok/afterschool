@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2학년 AI 교실: 데이터 분류 박사</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD166',
+                        secondary: '#4EA8DE',
+                        accent: '#EF476F',
+                        success: '#06D6A0',
+                        bgSoft: '#FFF9E6'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Nanum Gothic', sans-serif; background-color: #FFF9E6; user-select: none; }
+        .gaegu { font-family: 'Gaegu', cursive; }
+        
+        /* 탭 컨텐츠 제어 */
+        .step-content { display: none; }
+        #step1.active { display: block; animation: fadeIn 0.4s ease-out; }
+        .step-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-btn { font-size: 0.9rem; white-space: nowrap; transition: all 0.2s; }
+        .nav-btn.active { background-color: #FFD166; color: #854d0e; font-weight: 800; transform: scale(1.05); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        .item-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+        .item-card.selected { border: 6px solid #4EA8DE; background-color: #e0f2fe; transform: translateY(-5px); }
+        
+        .photo-img { width: 100%; height: 100%; object-fit: contain; }
+        .bg-room {
+            background-image: url('https://happyhyeok.github.io/afterschool/2026_ok2/room.png');
+            background-size: cover; background-position: center;
+        }
+        
+        /* 2단계 전용: 세로 스크롤 영역 */
+        .scroll-area {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 1.5rem;
+            border: 4px dashed #e2e8f0;
+        }
+        .scroll-area::-webkit-scrollbar { width: 8px; }
+        .scroll-area::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #4EA8DE; border-radius: 10px; }
+
+        .scanner-light {
+            background: linear-gradient(to bottom, transparent, rgba(6, 214, 160, 0.5), transparent);
+            height: 100%; width: 100%; position: absolute; top: -100%;
+            animation: scanMove 2s infinite linear; display: none;
+        }
+        @keyframes scanMove { 0% { top: -100%; } 100% { top: 100%; } }
+
+        .typing-input:focus { outline: none; border-color: #4EA8DE; box-shadow: 0 0 0 4px rgba(78, 168, 222, 0.2); }
+        .success-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="pb-24 lg:pt-24">
+
+    <header class="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b-4 border-primary z-50">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-2 rounded-xl"><i data-lucide="brain-circuit" class="text-white w-5 h-5"></i></div>
+                <h1 class="text-xl font-black text-gray-800 gaegu lg:text-2xl">옥계초 AI 탐험대</h1>
+            </div>
+            <nav class="flex gap-1 overflow-x-auto no-scrollbar">
+                <button onclick="showStep(1)" class="nav-btn px-3 py-2 rounded-xl font-bold active">1.보물찾기</button>
+                <button onclick="showStep(2)" class="nav-btn px-3 py-2 rounded-xl font-bold">2.분류비법</button>
+                <button onclick="showStep(3)" class="nav-btn px-3 py-2 rounded-xl font-bold">3.데이터수집</button>
+                <button onclick="showStep(4)" class="nav-btn px-3 py-2 rounded-xl font-bold">4.AI공부</button>
+                <button onclick="showStep(5)" class="nav-btn px-3 py-2 rounded-xl font-bold text-accent">5.실력검증</button>
+                <button onclick="showStep(6)" class="nav-btn px-3 py-2 rounded-xl font-bold text-secondary">6.타자연습</button>
+                <button onclick="showStep(7)" class="nav-btn px-3 py-2 rounded-xl font-bold text-accent">7.최종퀴즈</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+
+        <section id="step1" class="step-content active">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-primary">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full font-bold mb-2">미션 1: 숨은 데이터 찾기</span>
+                    <h2 class="text-4xl font-black gaegu tracking-tight text-yellow-900">교실 보물을 찾아라!</h2>
+                    <p class="text-xl text-gray-600 mt-2">방 안에서 <span class="text-accent font-bold">빨간색 물건 3개</span>를 찾아 클릭하세요!</p>
+                </div>
+                <div class="relative w-full aspect-video bg-room rounded-[2rem] border-4 border-primary overflow-hidden mb-8 shadow-inner">
+                    <div id="mission-apple" onclick="findItem('mission-apple')" class="find-mission-item absolute top-[40%] left-[20%] cursor-pointer w-20 h-20 hover:scale-125 transition-transform">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_ok2/redapple.png" class="photo-img drop-shadow-2xl">
+                    </div>
+                    <div id="mission-car" onclick="findItem('mission-car')" class="find-mission-item absolute bottom-[15%] right-[25%] cursor-pointer w-24 h-24 hover:scale-125 transition-transform">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_ok2/fireengine.png" class="photo-img drop-shadow-2xl">
+                    </div>
+                    <div id="mission-block" onclick="findItem('mission-block')" class="find-mission-item absolute top-[20%] right-[15%] cursor-pointer w-20 h-20 hover:scale-125 transition-transform">
+                        <img src="https://happyhyeok.github.io/afterschool/2026_ok2/redbrick.png" class="photo-img drop-shadow-2xl">
+                    </div>
+                    
+                    <div class="absolute top-[10%] left-[40%] w-16 h-16 opacity-60"><img src="https://happyhyeok.github.io/afterschool/2026_ok2/umbrella.png" class="photo-img"></div>
+                    <div class="absolute bottom-[20%] left-[10%] w-16 h-16 opacity-60"><img src="https://happyhyeok.github.io/afterschool/2026_ok2/banana.png" class="photo-img"></div>
+                </div>
+                <div class="flex justify-between items-center bg-gray-50 p-6 rounded-2xl">
+                    <p id="mission-msg" class="text-2xl font-black text-gray-700 gaegu">남은 물건: 3개</p>
+                    <button onclick="showStep(2)" id="btn-next-1" class="hidden bg-primary text-yellow-900 px-8 py-3 rounded-2xl font-black text-xl shadow-lg animate-bounce">2단계로 이동!</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="step2" class="step-content">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-secondary">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold mb-2">미션 2: 분류의 비법</span>
+                    <h2 class="text-4xl font-black gaegu text-blue-900">뒤섞인 데이터를 정리해요!</h2>
+                    <p class="text-lg text-gray-500 mt-1 font-bold">버튼을 눌러 물건들이 어떻게 나뉘는지 관찰하세요. (아래로 스크롤)</p>
+                </div>
+
+                <div class="flex gap-4 justify-center mb-6">
+                    <button onclick="sortItemsInStep2('color')" class="bg-secondary text-white px-6 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-blue-600 transition-all border-b-4 border-blue-800">🎨 색깔별 모으기</button>
+                    <button onclick="sortItemsInStep2('type')" class="bg-primary text-yellow-900 px-6 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-yellow-500 transition-all border-b-4 border-yellow-600">🧸 종류별 모으기</button>
+                </div>
+
+                <div class="p-6 bg-slate-50 rounded-[2rem] border-4 border-dashed border-slate-200 mt-6">
+                    <div id="sort-display-area" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="col-span-1 md:col-span-3 text-center text-gray-400 font-bold py-10">
+                            <i data-lucide="info" class="w-10 h-10 mx-auto mb-2"></i>
+                            <p>기준 버튼을 누르면 여기에 데이터가 모여요!</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 border-t-4 border-dashed border-gray-300 pt-6">
+                        <h3 class="text-center font-black text-gray-500 mb-4">📦 섞여 있는 데이터 꾸러미</h3>
+                        <div id="step2-shuffled-pool" class="flex flex-wrap justify-center gap-3">
+                            </div>
+                    </div>
+                </div>
+
+                <button onclick="showStep(3)" class="w-full bg-secondary text-white py-4 rounded-2xl font-black text-xl mt-8 shadow-lg">3단계 수집 놀이하러 가기</button>
+            </div>
+        </section>
+
+        <section id="step3" class="step-content">
+            <div class="bg-white rounded-[3rem] p-6 shadow-xl border-4 border-accent">
+                <div class="text-center">
+                    <span class="bg-accent text-white px-6 py-1 rounded-full font-bold mb-2">미션 3: 데이터 수집 놀이</span>
+                    <h2 class="text-3xl font-black gaegu mt-2 tracking-tighter">데이터를 바구니에 쏙! ( <span id="game-progress" class="text-4xl text-accent">0</span> / 12 )</h2>
+                    <div id="game-zone" class="grid grid-cols-4 gap-4 my-6 p-4 bg-gray-50 rounded-3xl min-h-[400px]"></div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button onclick="processDrop('red')" class="p-5 bg-red-100 rounded-2xl border-4 border-red-200 font-black text-red-700 hover:bg-red-200 shadow-sm transition-all active:scale-95">빨강</button>
+                        <button onclick="processDrop('blue')" class="p-5 bg-blue-100 rounded-2xl border-4 border-blue-200 font-black text-blue-700 hover:bg-blue-200 shadow-sm transition-all active:scale-95">파랑</button>
+                        <button onclick="processDrop('yellow')" class="p-5 bg-yellow-100 rounded-2xl border-4 border-yellow-200 font-black text-yellow-700 hover:bg-yellow-200 shadow-sm transition-all active:scale-95">노랑</button>
+                    </div>
+                    <button onclick="showStep(4)" id="btn-next-3" class="hidden w-full bg-accent text-white py-4 rounded-2xl font-black text-xl mt-8 shadow-lg animate-bounce">AI 가르치러 가기</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="step4" class="step-content">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-success text-center">
+                <span class="bg-success text-white px-4 py-1 rounded-full font-bold mb-2">미션 4: AI 학습 완료</span>
+                <h2 class="text-4xl font-black gaegu mt-2">AI가 공부를 다 했어요!</h2>
+                <div class="my-10 flex flex-col items-center gap-6">
+                    <div class="p-12 bg-gray-100 rounded-full border-8 border-white shadow-xl scale-110">
+                        <i data-lucide="bot" class="w-32 h-32 text-success"></i>
+                    </div>
+                    <div class="bg-green-50 p-8 rounded-3xl border-4 border-dashed border-success w-full">
+                        <p class="text-2xl text-green-800 font-black gaegu mb-2">"친구들아, 고마워!"</p>
+                        <p class="text-lg text-gray-600 font-bold leading-relaxed">너희가 나눈 데이터를 공부해서<br>이제 <span class="text-accent underline decoration-4">색깔의 특징</span>을 다 알게 됐어!</p>
+                    </div>
+                </div>
+                <button onclick="showStep(5)" class="w-full bg-success text-white py-4 rounded-2xl font-black text-xl shadow-lg">5단계 AI 실력 검증 가기</button>
+            </div>
+        </section>
+
+        <section id="step5" class="step-content">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-accent text-center">
+                <span class="bg-accent text-white px-6 py-1 rounded-full font-bold mb-2">미션 5: AI 실력 검증</span>
+                <h2 class="text-4xl font-black gaegu mt-2">AI야, 이건 무슨 색일까?</h2>
+                <div class="flex flex-col md:flex-row justify-around items-center gap-8 my-10">
+                    
+                    <div id="test-item-display" class="w-48 h-48 bg-gray-50 rounded-3xl border-4 border-dashed border-gray-300 flex items-center justify-center p-4 relative overflow-hidden shadow-inner">
+                         <div id="scanner-line" class="scanner-light"></div>
+                         <i data-lucide="help-circle" class="w-20 h-20 text-gray-300"></i>
+                    </div>
+                    
+                    <button onclick="startValidation()" id="scan-btn" class="bg-accent text-white px-8 py-4 rounded-2xl font-black text-xl shadow-lg hover:scale-105 transition-all">물건 스캔하기</button>
+                    
+                    <div class="bg-white border-4 border-accent rounded-full w-48 h-48 flex flex-col items-center justify-center shadow-xl p-4">
+                        <i data-lucide="bot" class="w-12 h-12 text-accent mb-2 transition-transform" id="bot-icon"></i>
+                        <div id="ai-answer-text" class="w-full text-center break-keep flex flex-col items-center justify-center min-h-[4rem]">
+                            <span class="text-4xl text-gray-300 font-black">?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="validation-result" class="hidden bg-yellow-50 p-8 rounded-[2rem] border-2 border-primary mb-8 animate-bounce">
+                    <p class="text-2xl font-black gaegu mb-4 text-yellow-900">AI가 정답을 맞췄나요?</p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="confirmAIResult(true)" class="bg-success text-white px-10 py-3 rounded-2xl font-bold shadow-md">응! 똑똑해!</button>
+                        <button onclick="confirmAIResult(false)" class="bg-gray-400 text-white px-10 py-3 rounded-2xl font-bold shadow-md">아니, 틀렸어.</button>
+                    </div>
+                </div>
+                <button onclick="showStep(6)" id="btn-to-typing" class="hidden w-full bg-secondary text-white py-4 rounded-2xl font-black text-xl shadow-lg">6단계 타자 연습 가기</button>
+            </div>
+        </section>
+
+        <section id="step6" class="step-content">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-secondary">
+                <div class="text-center mb-8">
+                    <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold mb-2">미션 6: 핵심 문장 타자 연습</span>
+                    <h2 class="text-4xl font-black gaegu">배운 내용을 직접 써봐요!</h2>
+                </div>
+                <div id="typing-container" class="bg-blue-50 p-10 rounded-[3rem] border-4 border-blue-200">
+                    <div class="mb-10 text-center">
+                        <p id="target-text" class="text-3xl font-black text-blue-900 mb-6 tracking-tight leading-relaxed"></p>
+                        <div class="relative">
+                            <input type="text" id="typing-input" class="typing-input w-full p-6 text-2xl font-bold rounded-2xl border-4 border-gray-200 text-center bg-white" placeholder="문장을 입력하세요..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center px-4 font-bold">
+                        <div class="text-xl text-blue-600">문장: <span id="typing-progress">1</span> / 3</div>
+                        <div id="typing-feedback" class="text-2xl font-black"></div>
+                    </div>
+                </div>
+                <button onclick="showStep(7)" id="btn-to-quiz-final" class="hidden w-full bg-secondary text-white py-4 rounded-2xl font-black text-xl mt-8 shadow-lg animate-bounce">7단계 최종 퀴즈 가기</button>
+            </div>
+        </section>
+
+        <section id="step7" class="step-content">
+            <div class="bg-white rounded-[3rem] p-8 shadow-xl border-4 border-accent">
+                <div class="flex flex-col items-center">
+                    <span class="bg-accent text-white px-6 py-2 rounded-full font-bold mb-4">마지막: 분류 박사 인증 퀴즈</span>
+                    <h2 class="text-4xl font-black gaegu tracking-tighter">분류 박사님이 되어 볼까요?</h2>
+                    <div id="quiz-container" class="w-full space-y-12 mt-6"></div>
+                    <button onclick="location.reload()" class="mt-12 bg-accent text-white px-12 py-5 rounded-full text-2xl font-black shadow-xl border-b-4 border-red-900 active:translate-y-1 active:border-b-0 transition-all">처음부터 다시 놀기</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="fixed bottom-0 w-full bg-white/95 backdrop-blur-md p-4 flex justify-center gap-4 border-t-4 border-primary lg:hidden shadow-2xl z-50">
+        <button onclick="prevStep()" class="bg-gray-100 p-5 rounded-3xl active:bg-gray-200"><i data-lucide="arrow-left" class="w-8 h-8"></i></button>
+        <button onclick="nextStep()" class="bg-primary px-10 py-5 rounded-3xl font-black text-2xl text-yellow-900 shadow-md active:translate-y-1 flex-1">다음으로</button>
+    </div>
+
+    <div id="success-overlay" class="success-overlay">
+        <div class="bg-white p-12 rounded-[4rem] text-center shadow-2xl scale-110 border-8 border-success">
+            <i data-lucide="trophy" class="w-24 h-24 text-success mx-auto mb-4"></i>
+            <h2 class="text-5xl font-black gaegu text-success mb-2">미션 성공!</h2>
+            <p class="text-2xl font-bold text-gray-600 mb-6">데이터 분류 탐험을 완료했습니다!</p>
+            <button onclick="document.getElementById('success-overlay').style.display='none'" class="bg-success text-white px-10 py-4 rounded-2xl font-bold text-xl">확인</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedItem = null;
+        let foundCount = 0;
+        let gameScore = 0;
+        let testTargetItem = null;
+        let currentTypingIndex = 0;
+        let currentStepNum = 1;
+
+        const typingSentences = [
+            "비슷한 물건끼리 모으는 것을 분류라고 해요.",
+            "데이터가 정확해야 인공지능이 똑똑해져요.",
+            "우리는 오늘 멋진 데이터 수집가가 되었어요."
+        ];
+
+        const quizData = [
+            { q: "1. 분류를 할 때 가장 중요한 것은 무엇일까요?", opts: ["상자의 색깔", "물건의 크기", "명확한 분류 기준", "물건의 가격"], ans: 2 },
+            { q: "2. 인공지능에게 데이터를 가르치는 과정을 무엇이라고 할까요?", opts: ["학습", "빨래", "산책", "요리"], ans: 0 },
+            { q: "3. 빨간 사과와 빨간 자동차를 같이 모으는 기준은?", opts: ["맛", "색깔", "모양", "크기"], ans: 1 },
+            { q: "4. 우리가 오늘 분류한 '데이터'는 누구의 공부 재료인가요?", opts: ["종이비행기", "인공지능(AI)", "장난감 집", "색종이"], ans: 1 },
+            { q: "5. 데이터 수집가가 하는 일로 알맞은 것은?", opts: ["잠자기", "데이터 모으기", "노래하기", "게임하기"], ans: 1 }
+        ];
+
+        const translate = { red: '빨강', blue: '파랑', yellow: '노랑', food: '먹을 것', toy: '장난감', school: '공부와 생활 도구' };
+
+        const allItems = [
+            { id: 1, name: '사과', color: 'red', type: 'food', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/redapple.png' },
+            { id: 2, name: '소방차', color: 'red', type: 'toy', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/fireengine.png' },
+            { id: 3, name: '블록', color: 'red', type: 'toy', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/redbrick.png' },
+            { id: 4, name: '딸기', color: 'red', type: 'food', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/strawberry.png' },
+            { id: 5, name: '우산', color: 'blue', type: 'school', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/umbrella.png' },
+            { id: 6, name: '자동차', color: 'blue', type: 'toy', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/bluecar.png' },
+            { id: 7, name: '필통', color: 'blue', type: 'school', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/pencilcase.png' },
+            { id: 8, name: '색종이', color: 'blue', type: 'school', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/bluecolorpaper.png' },
+            { id: 9, name: '바나나', color: 'yellow', type: 'food', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/banana.png' },
+            { id: 10, name: '자', color: 'yellow', type: 'school', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/ruler.png' },
+            { id: 11, name: '연필', color: 'yellow', type: 'school', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/pencil.png' },
+            { id: 12, name: '오리', color: 'yellow', type: 'toy', img: 'https://happyhyeok.github.io/afterschool/2026_ok2/duck.png' }
+        ];
+
+        // 무한 로딩 방지 및 안전한 초기화
+        function initializeApp() {
+            try {
+                shuffleArray(allItems);
+                initStep2Content();
+                initGame();
+                initTyping();
+                initQuiz();
+                showStep(1); 
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error("초기화 에러:", error);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function showStep(n) {
+            currentStepNum = n;
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === n);
+            });
+            const target = document.getElementById('step' + n);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo(0,0);
+            }
+            if(n === 2) initStep2Content(); 
+            if(n === 6) setTimeout(() => document.getElementById('typing-input').focus(), 500);
+        }
+
+        function nextStep() {
+            if (currentStepNum < 7) showStep(currentStepNum + 1);
+        }
+        function prevStep() {
+            if (currentStepNum > 1) showStep(currentStepNum - 1);
+        }
+
+        function findItem(id) {
+            const el = document.getElementById(id);
+            if (!el.classList.contains('found')) {
+                el.classList.add('found');
+                foundCount++;
+                document.getElementById('mission-msg').innerText = `남은 물건: ${3 - foundCount}개`;
+                if (foundCount === 3) {
+                    document.getElementById('mission-msg').innerHTML = "✨ 모두 찾았습니다! 탭에서 <span class='text-secondary'>분류비법</span>을 클릭하세요!";
+                    document.getElementById('btn-next-1').classList.remove('hidden');
+                }
+            }
+        }
+
+        function initStep2Content() {
+            const pool = document.getElementById('step2-shuffled-pool');
+            const displayArea = document.getElementById('sort-display-area');
+            
+            pool.innerHTML = '';
+            displayArea.innerHTML = `<div class="col-span-1 md:col-span-3 text-center text-gray-400 font-bold py-10">
+                                        <i data-lucide="info" class="w-10 h-10 mx-auto mb-2"></i>
+                                        <p>기준 버튼을 누르면 데이터가 상자에 모여요!</p>
+                                     </div>`;
+
+            const displayItems = [...allItems];
+            shuffleArray(displayItems);
+            displayItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'w-16 h-16 p-2 bg-white rounded-xl shadow-md flex items-center justify-center animate-pulse hover:animate-none hover:scale-110 transition-all cursor-pointer border border-gray-100';
+                div.innerHTML = `<img src="${item.img}" class="photo-img">`;
+                pool.appendChild(div);
+            });
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function sortItemsInStep2(criteria) {
+            const displayArea = document.getElementById('sort-display-area');
+            const pool = document.getElementById('step2-shuffled-pool');
+            
+            pool.innerHTML = '<p class="text-gray-400 font-bold text-center w-full py-4">모두 분류되었습니다!</p>'; 
+            displayArea.innerHTML = '';
+
+            const groups = [...new Set(allItems.map(item => item[criteria]))];
+            shuffleArray(groups); 
+
+            groups.forEach(groupId => {
+                const box = document.createElement('div');
+                box.className = 'p-4 bg-white rounded-3xl border-4 border-gray-100 shadow-sm flex flex-col items-center';
+                
+                const itemsInGroup = allItems.filter(i => i[criteria] === groupId);
+                shuffleArray(itemsInGroup);
+
+                const labelColor = criteria === 'color' ? 
+                    (groupId === 'red' ? 'text-accent border-accent' : (groupId === 'blue' ? 'text-secondary border-secondary' : 'text-yellow-600 border-primary')) : 
+                    'text-gray-700 border-gray-300';
+
+                box.innerHTML = `<h4 class="text-center font-black mb-4 text-xl border-b-4 pb-2 w-full ${labelColor}">${translate[groupId]} 모음</h4>
+                                 <div class="flex flex-wrap gap-2 justify-center">
+                                    ${itemsInGroup.map(i => `<div class="p-2 bg-gray-50 rounded-xl shadow-sm hover:scale-110 transition-all"><img src="${i.img}" class="w-10 h-10 object-contain"></div>`).join('')}
+                                 </div>`;
+                displayArea.appendChild(box);
+            });
+        }
+
+        function initGame() {
+            const zone = document.getElementById('game-zone'); zone.innerHTML = '';
+            const gameItems = [...allItems];
+            shuffleArray(gameItems);
+            gameItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card bg-white p-2 rounded-2xl shadow-md flex flex-col items-center border-2 border-gray-200 justify-center h-28';
+                div.id = `game-item-${item.id}`;
+                div.onclick = () => {
+                    document.querySelectorAll('.item-card').forEach(c => c.classList.remove('selected'));
+                    div.classList.add('selected'); selectedItem = item;
+                };
+                div.innerHTML = `<img src="${item.img}" class="w-14 h-14 mb-1 object-contain"><span class="text-[10px] font-black">${item.name}</span>`;
+                zone.appendChild(div);
+            });
+        }
+
+        function processDrop(color) {
+            if (!selectedItem) return;
+            if (selectedItem.color === color) {
+                const target = document.getElementById(`game-item-${selectedItem.id}`);
+                target.style.opacity = '0.1'; target.style.pointerEvents = 'none'; target.classList.remove('selected');
+                gameScore++; document.getElementById('game-progress').innerText = gameScore;
+                selectedItem = null;
+                if (gameScore === allItems.length) document.getElementById('btn-next-3').classList.remove('hidden');
+            } else {
+                const target = document.getElementById(`game-item-${selectedItem.id}`);
+                target.classList.add('bg-red-50', 'border-accent', 'animate-bounce');
+                setTimeout(() => target.classList.remove('bg-red-50', 'border-accent', 'animate-bounce'), 500);
+            }
+        }
+
+        // 💡 [오류 수정 핵심] 5단계 AI 검증 로직 완벽 재설계
+        function startValidation() {
+            try {
+                const btn = document.getElementById('scan-btn'); 
+                btn.disabled = true;
+                btn.innerText = "스캔 중...";
+                
+                // 1. 랜덤 타겟 선정
+                testTargetItem = allItems[Math.floor(Math.random() * allItems.length)];
+                
+                // 2. 화면 표시 및 애니메이션 켬 (수정됨: scanner-line을 지우지 않고 함께 렌더링)
+                const display = document.getElementById('test-item-display');
+                display.innerHTML = `
+                    <div id="scanner-line" class="scanner-light" style="display: block;"></div>
+                    <img src="${testTargetItem.img}" class="photo-img animate-pulse" alt="스캔 중">
+                `;
+                
+                // 3. 답변창 초기화
+                const answerBox = document.getElementById('ai-answer-text');
+                answerBox.innerHTML = '<span class="text-xl text-gray-400 font-bold animate-pulse">분석중...</span>';
+                
+                // 4. 일정 시간 후 명확한 HTML 구조로 정답 주입
+                setTimeout(() => {
+                    const scannerLine = document.getElementById('scanner-line');
+                    if (scannerLine) scannerLine.style.display = 'none';
+                    
+                    const colorKor = translate[testTargetItem.color] || '알수없음';
+                    const typeKor = translate[testTargetItem.type] || '알수없음';
+                    
+                    // 텍스트가 짤리지 않게 두 줄로 분리하여 렌더링
+                    answerBox.innerHTML = `
+                        <div class="flex flex-col items-center justify-center">
+                            <span class="text-3xl text-accent font-black">${colorKor}색!</span>
+                            <span class="text-lg text-gray-500 font-bold mt-1">${typeKor}</span>
+                        </div>
+                    `;
+                    
+                    document.getElementById('validation-result').classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerText = "다른 물건 스캔";
+                }, 1500);
+            } catch (e) {
+                console.error("스캔 중 오류 발생:", e);
+            }
+        }
+
+        // 5단계 결과 평가
+        function confirmAIResult(isCorrect) {
+            document.getElementById('validation-result').classList.add('hidden');
+            const answerBox = document.getElementById('ai-answer-text');
+            
+            if(isCorrect) {
+                answerBox.innerHTML = `<span class="text-3xl text-success font-black">천재! 🤖</span>`;
+                document.getElementById('btn-to-typing').classList.remove('hidden');
+                document.getElementById('btn-to-typing').classList.add('animate-bounce');
+            } else {
+                answerBox.innerHTML = `<span class="text-2xl text-accent font-black">더 공부할게 💦</span>`;
+            }
+        }
+
+        function initTyping() {
+            const input = document.getElementById('typing-input');
+            const target = document.getElementById('target-text');
+            const progress = document.getElementById('typing-progress');
+            const feedback = document.getElementById('typing-feedback');
+            target.innerText = typingSentences[currentTypingIndex];
+            input.oninput = function() {
+                const currentText = typingSentences[currentTypingIndex];
+                if(input.value === currentText) {
+                    feedback.innerText = "✨ 참 잘했어요!"; feedback.style.color = "#06D6A0";
+                    setTimeout(() => {
+                        currentTypingIndex++;
+                        if(currentTypingIndex < typingSentences.length) {
+                            target.innerText = typingSentences[currentTypingIndex];
+                            input.value = ""; feedback.innerText = ""; progress.innerText = currentTypingIndex + 1;
+                        } else {
+                            target.innerText = "모두 성공했습니다!";
+                            input.style.display = "none"; document.getElementById('btn-to-quiz-final').classList.remove('hidden');
+                        }
+                    }, 800);
+                } else if(currentText.startsWith(input.value)) {
+                    feedback.innerText = "좋아요!"; feedback.style.color = "#4EA8DE";
+                } else {
+                    feedback.innerText = "틀렸어요!"; feedback.style.color = "#EF476F";
+                }
+            };
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-container'); container.innerHTML = "";
+            quizData.forEach((q, idx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'bg-yellow-50 p-6 rounded-[2rem] border-2 border-yellow-100 shadow-sm';
+                qDiv.innerHTML = `
+                    <p class="text-xl font-black mb-4 text-yellow-900">${q.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${q.opts.map((opt, i) => `<button onclick="checkFinalQuiz(this, ${idx}, ${i})" class="quiz-btn bg-white p-4 rounded-xl border-4 border-gray-100 font-bold text-lg text-left hover:border-secondary transition-all">${i+1}. ${opt}</button>`).join('')}
+                    </div>
+                    <p id="quiz-feed-${idx}" class="mt-4 text-xl font-black text-center"></p>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkFinalQuiz(btn, qIdx, optIdx) {
+            const parent = btn.parentElement; const buttons = parent.querySelectorAll('.quiz-btn');
+            const feedback = document.getElementById(`quiz-feed-${qIdx}`);
+            buttons.forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
+            if(optIdx === quizData[qIdx].ans) {
+                btn.style.borderColor = "#06D6A0"; btn.style.backgroundColor = "#ecfdf5"; btn.style.opacity = "1";
+                feedback.innerText = "정답! ⭕"; feedback.style.color = "#06D6A0";
+            } else {
+                btn.style.borderColor = "#EF476F"; btn.style.backgroundColor = "#fef2f2"; btn.style.opacity = "1";
+                feedback.innerText = "오답! ❌"; feedback.style.color = "#EF476F";
+            }
+            if(document.querySelectorAll('[id^="quiz-feed-"]:not(:empty)').length === quizData.length) {
+                document.getElementById('success-overlay').style.display = 'flex';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+</html>
