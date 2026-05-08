@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 데이터 어워즈 | 엔트리 데이터 분석 1차시</title>
+<style>
+    :root {
+        --bg1:#10162f;
+        --bg2:#241044;
+        --card:#ffffff;
+        --ink:#1f2937;
+        --muted:#64748b;
+        --blue:#3157ff;
+        --gold:#ffd166;
+        --green:#16a34a;
+        --red:#ef4444;
+        --line:#e5e7eb;
+    }
+    * { box-sizing:border-box; }
+    body {
+        margin:0;
+        font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        color:var(--ink);
+        line-height:1.65;
+    }
+    header {
+        color:white;
+        padding:48px 20px 34px;
+        text-align:center;
+    }
+    header .badge {
+        display:inline-block;
+        background:rgba(255,255,255,.12);
+        border:1px solid rgba(255,255,255,.25);
+        padding:8px 14px;
+        border-radius:999px;
+        font-weight:700;
+        margin-bottom:14px;
+    }
+    h1 {
+        margin:0;
+        font-size:clamp(32px, 5vw, 56px);
+        line-height:1.15;
+    }
+    header p {
+        margin:16px auto 0;
+        color:#dbeafe;
+        max-width:760px;
+        font-size:18px;
+    }
+    main {
+        max-width:980px;
+        margin:0 auto 60px;
+        padding:0 18px;
+    }
+    section {
+        background:var(--card);
+        border-radius:24px;
+        padding:28px;
+        margin:22px 0;
+        box-shadow:0 18px 40px rgba(0,0,0,.22);
+    }
+    h2 {
+        margin:0 0 14px;
+        font-size:28px;
+        color:#172554;
+    }
+    h3 {
+        margin:22px 0 10px;
+        font-size:21px;
+        color:#1e3a8a;
+    }
+    .mission {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        gap:14px;
+        margin-top:18px;
+    }
+    .mission div {
+        background:#f8fafc;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:18px;
+        font-weight:700;
+    }
+    .download {
+        display:block;
+        text-align:center;
+        text-decoration:none;
+        background:linear-gradient(135deg, #22c55e, #06b6d4);
+        color:white;
+        padding:18px 20px;
+        border-radius:18px;
+        font-size:20px;
+        font-weight:900;
+        margin:18px 0 6px;
+        box-shadow:0 10px 24px rgba(34,197,94,.25);
+    }
+    .callout {
+        border-left:8px solid var(--blue);
+        background:#eff6ff;
+        padding:18px;
+        border-radius:14px;
+        font-weight:700;
+        margin:16px 0;
+    }
+    .warn {
+        border-left:8px solid #f59e0b;
+        background:#fffbeb;
+        padding:18px;
+        border-radius:14px;
+        margin:16px 0;
+    }
+    .table-wrap {
+        overflow-x:auto;
+        border:1px solid var(--line);
+        border-radius:16px;
+        margin:16px 0;
+    }
+    table {
+        width:100%;
+        border-collapse:collapse;
+        min-width:620px;
+        background:white;
+    }
+    th, td {
+        border-bottom:1px solid var(--line);
+        padding:12px 14px;
+        text-align:center;
+    }
+    th {
+        background:#eef2ff;
+        color:#172554;
+    }
+    tr:last-child td { border-bottom:0; }
+    .compare {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        gap:14px;
+    }
+    .box {
+        border:1px solid var(--line);
+        border-radius:18px;
+        padding:18px;
+        background:#f8fafc;
+    }
+    .box strong {
+        display:block;
+        color:#1d4ed8;
+        font-size:20px;
+        margin-bottom:8px;
+    }
+    img {
+        max-width:100%;
+        border-radius:18px;
+        border:1px solid var(--line);
+        margin:10px 0;
+        background:white;
+    }
+    .step {
+        counter-increment: step;
+        position:relative;
+        padding-left:54px;
+        margin:18px 0;
+    }
+    .step:before {
+        content:counter(step);
+        position:absolute;
+        left:0;
+        top:0;
+        width:38px;
+        height:38px;
+        border-radius:50%;
+        background:var(--blue);
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:900;
+    }
+    .steps { counter-reset: step; }
+    details {
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:14px 16px;
+        background:#f8fafc;
+        margin:12px 0;
+    }
+    summary {
+        cursor:pointer;
+        font-weight:900;
+        color:#172554;
+    }
+    .quiz {
+        background:#f8fafc;
+        border:1px solid var(--line);
+        border-radius:18px;
+        padding:18px;
+        margin:16px 0;
+    }
+    .quiz button {
+        display:block;
+        width:100%;
+        text-align:left;
+        border:1px solid var(--line);
+        background:white;
+        border-radius:12px;
+        padding:13px 14px;
+        margin:8px 0;
+        font-size:16px;
+        cursor:pointer;
+    }
+    .quiz button:hover { border-color:var(--blue); }
+    .result {
+        font-weight:900;
+        margin-top:10px;
+    }
+    .ok { color:var(--green); }
+    .no { color:var(--red); }
+    .bar-chart {
+        display:flex;
+        align-items:end;
+        gap:16px;
+        height:250px;
+        border-left:3px solid #334155;
+        border-bottom:3px solid #334155;
+        padding:12px 12px 0;
+        margin:20px 0 8px;
+        background:linear-gradient(#fff, #f8fafc);
+        overflow-x:auto;
+    }
+    .bar {
+        width:72px;
+        min-width:72px;
+        background:linear-gradient(180deg, #6366f1, #22c55e);
+        border-radius:12px 12px 0 0;
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+        color:white;
+        font-weight:900;
+        padding-top:8px;
+    }
+    .labels {
+        display:flex;
+        gap:16px;
+        padding-left:15px;
+        overflow-x:auto;
+    }
+    .labels span {
+        width:72px;
+        min-width:72px;
+        text-align:center;
+        font-weight:800;
+        font-size:14px;
+    }
+    .footer {
+        text-align:center;
+        color:#cbd5e1;
+        padding:30px;
+    }
+    .print-note {
+        font-size:14px;
+        color:var(--muted);
+    }
+
+    .side-by-side {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+        gap:16px;
+        align-items:start;
+        margin:16px 0;
+    }
+    .mini-card {
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:14px;
+        background:#ffffff;
+    }
+    .mini-card h4 {
+        margin:0 0 8px;
+        color:#172554;
+        font-size:17px;
+    }
+    .block-img {
+        max-width:100%;
+        border:1px solid var(--line);
+        border-radius:12px;
+        background:white;
+        padding:6px;
+        margin:8px 0;
+    }
+
+
+    .download-grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+        gap:16px;
+        margin-top:18px;
+    }
+    .download-card {
+        border:1px solid var(--line);
+        border-radius:18px;
+        background:#f8fafc;
+        padding:18px;
+    }
+    .download-card h3 {
+        margin-top:0;
+    }
+    .short-download {
+        display:block;
+        text-align:center;
+        text-decoration:none;
+        background:linear-gradient(135deg, #22c55e, #06b6d4);
+        color:white;
+        padding:16px;
+        border-radius:16px;
+        font-size:18px;
+        font-weight:900;
+        margin-top:12px;
+    }
+    .qa-grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+        gap:12px;
+        margin-top:16px;
+    }
+    .short-answer {
+        border:1px solid var(--line);
+        border-radius:16px;
+        background:#f8fafc;
+        padding:14px;
+    }
+    .short-answer input {
+        width:100%;
+        padding:12px;
+        border:1px solid var(--line);
+        border-radius:12px;
+        margin:8px 0;
+        font-size:16px;
+    }
+    .short-answer button {
+        border:0;
+        background:var(--blue);
+        color:white;
+        border-radius:10px;
+        padding:10px 12px;
+        cursor:pointer;
+        font-weight:800;
+    }
+    .chart-layout {
+        display:grid;
+        grid-template-columns:minmax(420px, 1.3fr) minmax(240px, .7fr);
+        gap:18px;
+        align-items:start;
+    }
+    .chart-summary {
+        background:#f8fafc;
+        border:1px solid var(--line);
+        border-radius:18px;
+        padding:18px;
+        margin-top:20px;
+    }
+    .quiz-compact-grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+        gap:14px;
+        margin-top:14px;
+    }
+    .quiz-compact-grid .quiz {
+        margin:0;
+    }
+    .wide-table-wrap {
+        width:100%;
+        overflow-x:visible;
+        border:1px solid var(--line);
+        border-radius:16px;
+        margin:16px 0;
+    }
+    .wide-table-wrap table {
+        min-width:0;
+        width:100%;
+        table-layout:fixed;
+    }
+    .wide-table-wrap th, .wide-table-wrap td {
+        padding:10px 8px;
+        font-size:15px;
+        word-break:keep-all;
+    }
+    @media (max-width: 820px) {
+        .chart-layout { grid-template-columns:1fr; }
+    }
+
+
+    .choice-grid {
+        display:grid;
+        grid-template-columns:repeat(4, 1fr);
+        gap:10px;
+        margin-top:12px;
+    }
+    .choice-grid button {
+        width:100%;
+        margin:0 !important;
+        text-align:center !important;
+        font-weight:800;
+    }
+    @media (max-width: 700px) {
+        .choice-grid {
+            grid-template-columns:repeat(2, 1fr);
+        }
+    }
+
+
+    .block-explain {
+        display:flex;
+        flex-direction:column;
+        gap:16px;
+        margin-top:16px;
+    }
+    .block-explain .mini-card {
+        width:100%;
+    }
+    .block-explain .block-img {
+        width:100%;
+        max-width:900px;
+        display:block;
+        margin:10px auto;
+    }
+
+    @media print {
+        body { background:white; }
+        header { color:#111827; padding:20px; }
+        header p { color:#374151; }
+        section { box-shadow:none; border:1px solid #ddd; page-break-inside:avoid; }
+        .download, .quiz button { box-shadow:none; }
+    }
+</style>
+</head>
+<body>
+<header>
+    <div class="badge">엔트리 데이터 분석 1차시</div>
+    <h1>🏆 2026 데이터 어워즈</h1>
+    <p>데이터로 증명하는 올해의 최고 인기 아이돌 시상식</p>
+</header>
+
+<main>
+<section>
+    <h2>오늘의 미션</h2>
+    <p>오늘은 데이터를 이용해 <strong>시상식 작품</strong>을 만들어 봅니다. MC가 후보 데이터를 분석하고, 그래프로 보여 준 뒤, 최고 조회수 그룹을 발표합니다.</p>
+    <div class="mission">
+        <div>1. 데이터가 무엇인지 알기</div>
+        <div>2. 변수·리스트·테이블 비교하기</div>
+        <div>3. 테이블을 그래프로 바꾸기</div>
+        <div>4. 그래프를 읽고 결과 발표하기</div>
+    </div>
+</section>
+
+<section>
+    <h2>1. 데이터란 무엇일까요?</h2>
+    <div class="callout">데이터는 관찰하거나 기록한 정보입니다.</div>
+    <p>예를 들어 아이돌 시상식에서는 다음과 같은 정보가 데이터가 됩니다.</p>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>데이터 예시</th><th>뜻</th></tr></thead>
+            <tbody>
+                <tr><td>그룹명</td><td>후보 이름</td></tr>
+                <tr><td>데뷔연도</td><td>활동을 시작한 해</td></tr>
+                <tr><td>최근_음원순위</td><td>최근 노래 순위</td></tr>
+                <tr><td>최고_조회수</td><td>가장 많이 본 영상 조회수</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h2>2. 변수 → 리스트 → 테이블</h2>
+    <p>데이터를 관리하는 방법은 저장할 데이터의 개수에 따라 달라집니다.</p>
+    <div class="compare">
+        <div class="box"><strong>변수</strong>데이터 1개를 저장합니다.<br>예: 대상 그룹 = 뉴진스</div>
+        <div class="box"><strong>리스트</strong>데이터 여러 개를 순서대로 저장합니다.<br>예: 아이브, 뉴진스, 에스파</div>
+        <div class="box"><strong>테이블</strong>여러 개의 리스트를 붙여 행과 열로 관리합니다.<br>예: 그룹명, 순위, 조회수</div>
+    </div>
+</section>
+
+
+<section>
+    <h2>3. 행과 열 이해하기</h2>
+    <p>테이블은 <strong>행</strong>과 <strong>열</strong>로 데이터를 찾습니다.</p>
+    <div class="callout">행 = 가로줄 / 열 = 세로줄</div>
+    <img src="row_col_quiz_table.png" alt="행과 열 설명 표 이미지">
+
+    <h3>주관식 퀴즈</h3>
+    <p>위 표를 보고 빈칸에 알맞은 값을 입력해 보세요.</p>
+    <div class="qa-grid">
+        <div class="short-answer" data-answer="해변">
+            <strong>Q1. 1행 B열의 값은?</strong>
+            <input type="text" placeholder="답 입력">
+            <button onclick="checkShortAnswer(this)">확인</button>
+            <div class="result"></div>
+        </div>
+        <div class="short-answer" data-answer="지역">
+            <strong>Q2. 3행 C열의 값은?</strong>
+            <input type="text" placeholder="답 입력">
+            <button onclick="checkShortAnswer(this)">확인</button>
+            <div class="result"></div>
+        </div>
+        <div class="short-answer" data-answer="버섯">
+            <strong>Q3. 5행 E열의 값은?</strong>
+            <input type="text" placeholder="답 입력">
+            <button onclick="checkShortAnswer(this)">확인</button>
+            <div class="result"></div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>4. 오늘 사용할 데이터 살펴보기</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>그룹명</th><th>데뷔연도</th><th>최근_음원순위</th><th>최고_조회수</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>아이브</td><td>2021</td><td>2</td><td>5.2</td></tr>
+                <tr><td>뉴진스</td><td>2022</td><td>1</td><td>6.1</td></tr>
+                <tr><td>에스파</td><td>2020</td><td>4</td><td>4.8</td></tr>
+                <tr><td>르세라핌</td><td>2022</td><td>3</td><td>3.9</td></tr>
+                <tr><td>엔믹스</td><td>2022</td><td>7</td><td>2.7</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>조회수 단위는 <strong>억 회</strong>입니다. 예를 들어 5.2는 5.2억 회를 뜻합니다.</p>
+</section>
+
+<section>
+    <h2>5. 테이블을 그래프로 연결하기</h2>
+    <p>엔트리에서 차트를 만들 때는 테이블의 열을 그래프에 연결합니다.</p>
+    <div class="callout">가로축 = 누구? / 계열 = 얼마나?</div>
+<div class="compare">
+        <div class="box"><strong>가로축</strong>이름 데이터가 들어갑니다.<br>오늘은 <b>그룹명</b>을 선택합니다.</div>
+        <div class="box"><strong>계열</strong>숫자 데이터가 들어갑니다.<br>오늘은 <b>최고_조회수</b>를 선택합니다.</div>
+    </div>
+    <p>그래서 이 그래프는 <strong>아이돌 그룹별 최고 조회수 비교 그래프</strong>가 됩니다.</p>
+</section>
+
+
+<section>
+    <h2>6. 그래프 읽기 연습</h2>
+    <p>막대그래프를 보고 데이터를 비교해 봅시다.</p>
+    <div class="chart-layout">
+        <div>
+            <div class="bar-chart" aria-label="아이돌 그룹별 최고 조회수 막대그래프">
+                <div class="bar" style="height:170px">5.2</div>
+                <div class="bar" style="height:220px">6.1</div>
+                <div class="bar" style="height:155px">4.8</div>
+                <div class="bar" style="height:125px">3.9</div>
+                <div class="bar" style="height:90px">2.7</div>
+            </div>
+            <div class="labels">
+                <span>아이브</span><span>뉴진스</span><span>에스파</span><span>르세라핌</span><span>엔믹스</span>
+            </div>
+        </div>
+        <div class="chart-summary">
+            <h3>그래프 읽는 법</h3>
+            <p><strong>막대가 높을수록</strong> 조회수가 높습니다.</p>
+            
+        </div>
+    </div>
+
+    <div class="quiz-compact-grid">
+        <div class="quiz" data-answer="뉴진스">
+            <p><strong>Q1. 가장 조회수가 높은 그룹은?</strong></p>
+            <button onclick="checkQuiz(this, '아이브')">아이브</button>
+            <button onclick="checkQuiz(this, '뉴진스')">뉴진스</button>
+            <button onclick="checkQuiz(this, '엔믹스')">엔믹스</button>
+            <div class="result"></div>
+        </div>
+        <div class="quiz" data-answer="엔믹스">
+            <p><strong>Q2. 가장 조회수가 낮은 그룹은?</strong></p>
+            <button onclick="checkQuiz(this, '에스파')">에스파</button>
+            <button onclick="checkQuiz(this, '르세라핌')">르세라핌</button>
+            <button onclick="checkQuiz(this, '엔믹스')">엔믹스</button>
+            <div class="result"></div>
+        </div>
+    </div>
+</section>
+
+
+<section>
+    <h2>7. 데이터 분석 블록 실행 결과 퀴즈</h2>
+    <p>테이블을 먼저 확인한 뒤, 명령 블록을 실행했을 때 나오는 값을 찾아보세요.</p>
+
+    <h3>아이돌 데이터 테이블</h3>
+    
+<div class="wide-table-wrap">
+    <table>
+        <thead>
+            <tr><th>그룹명</th><th>데뷔연도</th><th>최근_음원순위</th><th>최고_조회수</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>아이브</td><td>2021</td><td>2</td><td>5.2</td></tr>
+            <tr><td>뉴진스</td><td>2022</td><td>1</td><td>6.1</td></tr>
+            <tr><td>에스파</td><td>2020</td><td>4</td><td>4.8</td></tr>
+            <tr><td>르세라핌</td><td>2022</td><td>3</td><td>3.9</td></tr>
+            <tr><td>엔믹스</td><td>2022</td><td>7</td><td>2.7</td></tr>
+        </tbody>
+    </table>
+</div>
+
+
+    <div class="quiz" data-answer="6.1">
+        <p><strong>Q1. 아래 블록을 실행하면 나오는 값은 무엇인가요?</strong></p>
+        <div class="mini-card">
+            <h4>실행할 명령 블록</h4>
+            <img class="block-img" src="block_table_max_correct.png" alt="최고_조회수 최대값 찾기 블록">
+            <p><strong>힌트:</strong> 최고_조회수 열에서 가장 큰 숫자를 찾으세요.</p>
+        </div>
+        <div class="choice-grid">
+            <button onclick="checkQuiz(this, '5.2')">5.2</button>
+            <button onclick="checkQuiz(this, '6.1')">6.1</button>
+            <button onclick="checkQuiz(this, '4.8')">4.8</button>
+            <button onclick="checkQuiz(this, '2.7')">2.7</button>
+        </div>
+        <div class="result"></div>
+    </div>
+
+    <div class="quiz" data-answer="뉴진스">
+        <p><strong>Q2. 최대 조회수 값을 가진 행에서 ‘그룹명’ 값을 찾으면 무엇인가요?</strong></p>
+        <div class="mini-card">
+            <h4>실행할 명령 블록</h4>
+            <img class="block-img" src="block_table_lookup_correct.png" alt="조건에 맞는 행의 그룹명 값 찾기 블록">
+            <p><strong>힌트:</strong> 최고_조회수가 가장 큰 행의 그룹명을 찾으세요.</p>
+        </div>
+        <div class="choice-grid">
+            <button onclick="checkQuiz(this, '아이브')">아이브</button>
+            <button onclick="checkQuiz(this, '뉴진스')">뉴진스</button>
+            <button onclick="checkQuiz(this, '에스파')">에스파</button>
+            <button onclick="checkQuiz(this, '엔믹스')">엔믹스</button>
+        </div>
+        <div class="result"></div>
+    </div>
+
+    <div class="quiz" data-answer="뉴진스, 6.1">
+        <p><strong>Q3. 두 블록을 조합했을 때 알 수 있는 실제 결과로 알맞은 것은?</strong></p>
+        <div class="mini-card">
+            <h4>명령 블록 조합</h4>
+            <img class="block-img" src="block_table_lookup_correct.png" alt="조건에 맞는 행 값 찾기 블록">
+            <p><strong>힌트:</strong> 최대 조회수와 그 그룹명을 함께 찾으세요.</p>
+        </div>
+        <button onclick="checkQuiz(this, '아이브, 5.2')">아이브, 5.2</button>
+        <button onclick="checkQuiz(this, '뉴진스, 6.1')">뉴진스, 6.1</button>
+        <button onclick="checkQuiz(this, '에스파, 4.8')">에스파, 4.8</button>
+        <button onclick="checkQuiz(this, '엔믹스, 2.7')">엔믹스, 2.7</button>
+        <div class="result"></div>
+    </div>
+</section>
+
+<section>
+    <h2>8. 수업 파일 다운로드</h2>
+    <p>아래 두 파일을 다운로드한 뒤 수업 순서에 맞게 사용합니다.</p>
+    <div class="download-grid">
+        <div class="download-card">
+            <h3>1️⃣ 시상식 데이터 CSV</h3>
+            <p>엔트리의 <strong>데이터 분석</strong>에서 불러올 데이터입니다.</p>
+            <a class="short-download" href="아이돌데이터.csv" download>💾 아이돌데이터.csv 다운로드</a>
+        </div>
+        <div class="download-card">
+            <h3>2️⃣ 학생용 엔트리 작품</h3>
+            <p>엔트리에서 <strong>파일 불러오기</strong>로 열어 사용할 작품 파일입니다.</p>
+            <a class="short-download" href="데이터분석_학생용.ent" download>📥 데이터분석_학생용.ent 다운로드</a>
+        </div>
+    </div>
+    <div class="callout">
+        엔트리 → 작품 만들기 → 파일 → 불러오기 → 다운로드한 .ent 파일 선택
+    </div>
+</section>
+
+<section>
+    <h2>9. 엔트리 코딩 미션</h2>
+    <details>
+        <summary>미션 1. 시작 대사 만들기</summary>
+        <p>시작하기 버튼을 클릭했을 때 MC가 “데이터 어워즈를 시작합니다!”라고 말하게 해보세요.</p>
+    </details>
+    <details>
+        <summary>미션 2. 차트 보여주기</summary>
+        <p>그래프 보이기 신호를 받으면 차트 창을 열어 보세요.</p>
+    </details>
+    <details>
+        <summary>미션 3. 결과 발표하기</summary>
+        <p>그래프를 보고 가장 높은 그룹을 찾아 “올해의 대상은 ○○입니다!”라고 발표하게 해보세요.</p>
+    </details>
+</section>
+
+<section>
+    <h2>10. 오류 해결 체크리스트</h2>
+    <div class="warn">
+        <p><strong>그래프가 안 보이나요?</strong></p>
+        <ul>
+            <li>CSV 파일을 제대로 불러왔나요?</li>
+            <li>가로축을 <strong>그룹명</strong>으로 선택했나요?</li>
+            <li>계열을 <strong>최고_조회수</strong>로 선택했나요?</li>
+            <li>숫자 데이터에 글자가 섞여 있지는 않나요?</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>마무리 정리</h2>
+    <div class="callout">변수는 1개, 리스트는 여러 개, 테이블은 행과 열로 많은 데이터를 관리합니다.</div>
+    <p>그래프는 숫자 데이터를 그림으로 바꾸어 비교하기 쉽게 도와줍니다. 오늘 만든 데이터 어워즈 작품은 데이터를 읽고 해석하는 첫 번째 데이터 분석 작품입니다.</p>
+</section>
+</main>
+
+<div class="footer">© 2026 데이터 어워즈 수업자료</div>
+
+<script>
+function checkQuiz(btn, selected) {
+    const quiz = btn.closest('.quiz');
+    const answer = quiz.dataset.answer;
+    const result = quiz.querySelector('.result');
+    if (selected === answer) {
+        result.textContent = "정답입니다! 그래프에서 가장 높은/낮은 막대를 잘 찾았어요.";
+        result.className = "result ok";
+    } else {
+        result.textContent = "다시 확인해 보세요. 막대의 높이를 비교하면 됩니다.";
+        result.className = "result no";
+    }
+}
+
+function checkShortAnswer(btn) {
+    const card = btn.closest('.short-answer');
+    const answer = card.dataset.answer.trim();
+    const input = card.querySelector('input').value.trim();
+    const result = card.querySelector('.result');
+    if (input === answer) {
+        result.textContent = "정답입니다!";
+        result.className = "result ok";
+    } else {
+        result.textContent = "다시 확인해 보세요. 행과 열이 만나는 칸을 찾으면 됩니다.";
+        result.className = "result no";
+    }
+}
+
+</script>
+</body>
+</html>
