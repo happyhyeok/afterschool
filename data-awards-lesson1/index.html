@@ -429,6 +429,17 @@
         margin:10px auto;
     }
 
+
+    .lesson-img {
+        width:100%;
+        max-width:980px;
+        display:block;
+        margin:18px auto;
+        border-radius:18px;
+        border:1px solid var(--line);
+        background:white;
+    }
+
     @media print {
         body { background:white; }
         header { color:#111827; padding:20px; }
@@ -459,6 +470,7 @@
 
 <section>
     <h2>1. 데이터란 무엇일까요?</h2>
+    <img class="lesson-img" src="ppt_data_meaning.png" alt="데이터의 뜻과 예시 설명 이미지">
     <div class="callout">데이터는 관찰하거나 기록한 정보입니다.</div>
     <p>예를 들어 아이돌 시상식에서는 다음과 같은 정보가 데이터가 됩니다.</p>
     <div class="table-wrap">
@@ -477,6 +489,10 @@
 <section>
     <h2>2. 변수 → 리스트 → 테이블</h2>
     <p>데이터를 관리하는 방법은 저장할 데이터의 개수에 따라 달라집니다.</p>
+    <div class="callout">
+        변수 → 리스트 → 테이블 순서로 데이터 관리 방법이 발전합니다.
+    </div>
+    <img class="lesson-img" src="ppt_variable_list_table.png" alt="변수 리스트 테이블 비교 설명 이미지">
     <div class="compare">
         <div class="box"><strong>변수</strong>데이터 1개를 저장합니다.<br>예: 대상 그룹 = 뉴진스</div>
         <div class="box"><strong>리스트</strong>데이터 여러 개를 순서대로 저장합니다.<br>예: 아이브, 뉴진스, 에스파</div>
@@ -489,7 +505,7 @@
     <h2>3. 행과 열 이해하기</h2>
     <p>테이블은 <strong>행</strong>과 <strong>열</strong>로 데이터를 찾습니다.</p>
     <div class="callout">행 = 가로줄 / 열 = 세로줄</div>
-    <img src="row_col_quiz_table.png" alt="행과 열 설명 표 이미지">
+    <img class="lesson-img" src="ppt_row_col.png" alt="행과 열이 교차하는 테이블 설명 이미지">
 
     <h3>주관식 퀴즈</h3>
     <p>위 표를 보고 빈칸에 알맞은 값을 입력해 보세요.</p>
@@ -538,7 +554,8 @@
     <h2>5. 테이블을 그래프로 연결하기</h2>
     <p>엔트리에서 차트를 만들 때는 테이블의 열을 그래프에 연결합니다.</p>
     <div class="callout">가로축 = 누구? / 계열 = 얼마나?</div>
-<div class="compare">
+    <img class="lesson-img" src="ppt_axis_series.png" alt="가로축과 계열 선택 설명 이미지">
+    <div class="compare">
         <div class="box"><strong>가로축</strong>이름 데이터가 들어갑니다.<br>오늘은 <b>그룹명</b>을 선택합니다.</div>
         <div class="box"><strong>계열</strong>숫자 데이터가 들어갑니다.<br>오늘은 <b>최고_조회수</b>를 선택합니다.</div>
     </div>
@@ -549,6 +566,7 @@
 <section>
     <h2>6. 그래프 읽기 연습</h2>
     <p>막대그래프를 보고 데이터를 비교해 봅시다.</p>
+    <img class="lesson-img" src="ppt_graph_meaning.png" alt="테이블 데이터를 그래프로 바꾸어 비교하는 설명 이미지">
     <div class="chart-layout">
         <div>
             <div class="bar-chart" aria-label="아이돌 그룹별 최고 조회수 막대그래프">
