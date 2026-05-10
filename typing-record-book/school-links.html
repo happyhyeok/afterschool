@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>학교별 링크</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+    <script defer src="./school-links.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="title-area">
+        <p class="eyebrow">타자연습 기록장</p>
+        <h1>학교별 링크</h1>
+      </div>
+      <div class="sync-card" aria-live="polite">
+        <span id="syncBadge" class="sync-badge">연결 확인 중</span>
+        <strong id="syncText">Google Sheets와 연결합니다</strong>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="record-board">
+        <div class="board-head">
+          <div>
+            <h2>학생용 링크</h2>
+            <p>학교가 고정된 링크입니다.</p>
+          </div>
+        </div>
+        <div id="schoolLinks" class="school-link-list"></div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

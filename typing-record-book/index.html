@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>타자연습 기록장</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="title-area">
+        <p class="eyebrow">한컴타자 연습 기록</p>
+        <h1>타자연습 기록장</h1>
+      </div>
+
+      <div class="sync-card" aria-live="polite">
+        <span id="syncBadge" class="sync-badge">연결 확인 중</span>
+        <strong id="syncText">Google Sheets와 연결합니다</strong>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section id="setupPanel" class="setup-panel" hidden>
+        <h2>연동 주소 설정 필요</h2>
+        <p>GitHub Pages에 올린 뒤 `config.js`의 Apps Script 주소를 입력하면 학생 명단과 기록이 Google Sheets에 저장됩니다.</p>
+      </section>
+
+      <section id="selectStep" class="step-card" aria-label="1단계 학생 선택">
+        <div class="step-head">
+          <span>1단계</span>
+          <h2>학생 선택</h2>
+        </div>
+        <div id="fixedSchoolNotice" class="fixed-school-notice" hidden>
+          <span>학교</span>
+          <strong id="fixedSchoolName"></strong>
+        </div>
+        <div class="selector-panel">
+          <label id="yearField">
+            <span>연도</span>
+            <select id="yearSelect"></select>
+          </label>
+          <label id="schoolField">
+            <span>학교</span>
+            <select id="schoolSelect"></select>
+          </label>
+          <label>
+            <span>학년</span>
+            <select id="gradeSelect"></select>
+          </label>
+          <label>
+            <span>이름</span>
+            <select id="studentSelect"></select>
+          </label>
+          <div class="selector-actions">
+            <button id="refreshBtn" class="soft-button" type="button">새로고침</button>
+            <button id="startRecordsBtn" class="primary-button" type="button">기록하기</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="recordStep" class="record-step" hidden>
+        <section class="student-panel" aria-label="학생 기록 상태">
+          <div>
+            <div class="context-label">선택한 학생</div>
+            <div id="studentStatus" class="context-value">학생을 선택해주세요</div>
+          </div>
+          <div class="progress-wrap" aria-live="polite">
+            <div class="progress-top">
+              <span>입력 완료</span>
+              <strong id="progressText">0 / 41</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <span id="progressBar"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="record-board" aria-label="2단계 타자연습 기록 입력">
+          <div class="board-head">
+            <div>
+              <span class="step-label">2단계</span>
+              <h2>연습 기록</h2>
+              <p id="recordStatus">학교, 학년, 이름을 선택하면 기록표가 나타납니다.</p>
+            </div>
+            <div class="record-actions">
+              <button id="backToSelectBtn" class="soft-button" type="button">학생 다시 선택</button>
+              <a class="primary-link" href="https://tt.hancomtaja.com/ko" target="_blank" rel="noreferrer">타자연습 열기</a>
+            </div>
+          </div>
+          <div id="entryGrid" class="entry-grid"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
