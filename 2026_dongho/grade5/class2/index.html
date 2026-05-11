@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>동호초 5학년 2반 수업 자료</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #526071;
+      --line: #d7dde6;
+      --paper: #ffffff;
+      --bg: #f5f7fb;
+      --green: #16a34a;
+      --blue: #2563eb;
+      --gray: #8b95a5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .lesson-link,
+    .lesson-soon {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 68px;
+      padding: 16px 18px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .lesson-link {
+      color: inherit;
+      text-decoration: none;
+      transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .lesson-link:hover,
+    .lesson-link:focus {
+      border-color: var(--green);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(20, 33, 61, 0.1);
+      outline: none;
+    }
+
+    .title {
+      font-weight: 800;
+      font-size: 1.08rem;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .lesson-soon {
+      color: var(--gray);
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../">전체 보기</a>
+    <h1>5학년 2반 수업 자료</h1>
+    <p class="lead">동호초 5학년 2반 차시별 활동 자료입니다.</p>
+
+    <ol class="lesson-list">
+      <li>
+        <a class="lesson-link" href="lesson01.html">
+          <span class="title">1회차: 스피드 캐릭터 런칭</span>
+          <span class="tag">열기</span>
+        </a>
+      </li>
+      <li><div class="lesson-soon"><span class="title">2회차</span><span>준비 중</span></div></li>
+      <li><div class="lesson-soon"><span class="title">3회차</span><span>준비 중</span></div></li>
+      <li><div class="lesson-soon"><span class="title">4회차</span><span>준비 중</span></div></li>
+      <li><div class="lesson-soon"><span class="title">5회차</span><span>준비 중</span></div></li>
+      <li><div class="lesson-soon"><span class="title">6회차</span><span>준비 중</span></div></li>
+      <li><div class="lesson-soon"><span class="title">7회차</span><span>준비 중</span></div></li>
+    </ol>
+  </main>
+</body>
+</html>

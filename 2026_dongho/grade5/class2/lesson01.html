@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>레벨업! AI 게임 스튜디오 - 스피드 캐릭터 런칭 (1회차)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+        :root {
+            --primary-color: #06b6d4;
+            --secondary-color: #84cc16;
+            --accent-color: #f43f5e;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 17px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 헤더 스타일 (긴급 미션 느낌 강조) */
+        header {
+            background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 50px 50px;
+            box-shadow: 0 10px 30px rgba(244, 63, 94, 0.3);
+            margin-bottom: 50px;
+        }
+
+        header h1 { margin: 0; font-size: 37px; font-weight: 900; }
+        header p { margin: 10px 0 0; font-size: 21px; font-weight: 700; opacity: 0.9; }
+
+        /* 오늘의 브리핑 섹션 */
+        .briefing {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            border-left: 10px solid var(--accent-color);
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .briefing h2 { color: var(--accent-color); margin-top: 0; }
+        .todo-list { list-style: none; padding: 0; display: flex; gap: 15px; flex-wrap: wrap; }
+        .todo-item { background: #f1f5f9; padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 15px; color: #475569; }
+
+        /* 그리드 시스템 (2x4 대응 - 수평 정렬 유지) */
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: stretch;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+        }
+
+        .guide-card { border-top: 6px solid var(--primary-color); }
+        .practice-card { border-top: 6px solid var(--accent-color); background-color: #fffafb; }
+
+        h3 { margin-top: 0; font-size: 23px; display: flex; align-items: center; gap: 10px; }
+        .guide-card h3 { color: var(--primary-color); }
+        .practice-card h3 { color: var(--accent-color); }
+
+        /* 입력 폼 스타일 */
+        .input-group { margin-bottom: 25px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #64748b; }
+        .input-group input[type="text"], .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 17px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        /* 인브라우저 카메라 미리보기 영역 */
+        .camera-container { width: 100%; margin-bottom: 10px; }
+        .photo-preview {
+            width: 100%; height: 160px;
+            background-color: #f1f5f9; border: 3px dashed #cbd5e1; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; font-weight: bold; font-size: 17px;
+            cursor: pointer; overflow: hidden;
+            background-size: cover; background-position: center; transition: all 0.2s;
+        }
+        .photo-preview:hover { background-color: #e2e8f0; border-color: var(--accent-color); color: var(--accent-color); }
+        video { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; background-color: #000; border: 3px solid var(--accent-color); }
+
+        /* 버튼 스타일 */
+        .btn {
+            display: inline-block; padding: 12px 24px;
+            background-color: var(--primary-color); color: white;
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 15px; text-align: center; border: none; cursor: pointer; font-size: 17px;
+        }
+        .btn:hover { transform: scale(1.05); background-color: #0891b2; }
+        .btn-tm { background-color: #f59e0b; }
+        .btn-tm:hover { background-color: #d97706; }
+        .btn-snap { background-color: #f43f5e; width: 100%; margin-top: 10px; padding: 10px; }
+        .btn-retake { background-color: #64748b; width: 100%; margin-top: 5px; }
+        .btn-copy { background-color: #10b981; width: 100%; margin-top: 5px; }
+
+        /* 아카이빙 강조 박스 (PARA 연계) */
+        .archive-notice {
+            background-color: #fff9db; border: 2px solid #fab005; border-radius: 12px;
+            padding: 20px; margin-top: 15px; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .archive-notice h4 { margin: 0 0 10px 0; color: #d9480f; font-size: 19px; }
+
+        .copy-msg {
+            color: #059669; font-weight: bold; text-align: center; margin-top: 15px;
+            display: none; padding: 10px; background-color: #d1fae5; border-radius: 10px;
+        }
+
+        @media (max-width: 768px) { .row { grid-template-columns: 1fr; } }
+
+        /* 학생 슬라이드 바로가기 */
+        .student-links-section {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            border-left: 10px solid var(--primary-color);
+            margin: 50px 0 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .student-links-section h2 { color: var(--primary-color); margin-top: 0; font-size: 25px; }
+        .student-links-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .student-link-card {
+            display: block;
+            padding: 14px 16px;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+            font-size: 16px;
+        }
+        .student-link-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            background-color: #ecfeff;
+            color: #0891b2;
+        }
+        @media (max-width: 768px) { .student-links-grid { grid-template-columns: 1fr; } }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container" style="padding:0;">
+        <p>🚨 긴급 개발 미션 발동!</p>
+        <h1>스피드 캐릭터 런칭: 전설의 시작</h1>
+    </div>
+</header>
+
+<div class="container">
+    <section class="briefing">
+        <h2>📢 긴급 브리핑 (남은 시간: 40분)</h2>
+        <p><strong>"시간이 없습니다, 수석 개발자 여러분!"</strong><br>다음 달 대규모 업데이트에 들어갈 신규 캐릭터의 뼈대를 오늘 안에 완성해야 합니다. 직관적인 상상력으로 빠르게 캐릭터를 기획하고, AI에게 조종법을 학습시키세요!</p>
+        <div class="todo-list">
+            <span class="todo-item">⚡ 1. 스피드 콘셉트 기획</span>
+            <span class="todo-item">🤖 2. 미니 AI 모션 학습</span>
+            <span class="todo-item">📢 3. 핵심 콘셉트 공유</span>
+        </div>
+    </section>
+
+    <div class="row">
+        <div class="card guide-card">
+            <h3>💡 [도전 1] 스피드 요약 카드 만들기</h3>
+            <p>우리 팀의 AI 보조 기획자와 빠르게 대화해 보세요! 복잡한 설정보다는 직관적인 <strong>'핵심 능력 하나'</strong>와 <strong>'치명적인 약점 하나'</strong>에 집중하세요.</p>
+            <p>오늘 우리는 게임 선택 창에 등장할 <strong>3줄 소개글</strong>을 완성할 거예요.</p>
+            <a href="https://wrtn.ai" target="_blank" class="btn">🚀 AI 기획자 뤼튼 만나기</a>
+        </div>
+        <div class="card practice-card">
+            <h3>✍️ 나의 창작 공간</h3>
+            <div class="input-group"><label>캐릭터 이름</label><input type="text" id="charName" placeholder="기억에 남는 멋진 이름"></div>
+            <div class="input-group"><label>단 하나의 필살기</label><input type="text" id="charPower" placeholder="예: 시공간을 멈추는 얼음 마법"></div>
+            <div class="input-group"><label>공평성을 위한 약점</label><input type="text" id="charWeakness" placeholder="예: 따뜻한 햇볕에 약함"></div>
+            <button class="btn btn-copy" onclick="copyToWrtn()">📋 뤼튼용 프롬프트 1초 만에 복사하기</button>
+            <div id="copyMessage" class="copy-msg">✅ 복사 완료! 뤼튼 창에 붙여넣기(Ctrl+V) 하세요.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card guide-card">
+            <h3>🤖 [도전 2] 미니 AI 모션 인식</h3>
+            <p>우리 캐릭터만의 <b>비밀 수신호(필살기 동작)</b>를 카메라로 찍어보고, 티처블 머신에 빠르게 학습시켜 봅시다!</p>
+            <ol style="font-size: 16px; color: #475569; padding-left: 20px;">
+                <li>'준비'와 '필살기' 클래스 2개만 만드세요.</li>
+                <li>각각 동작을 30장씩 빠르게 촬영합니다.</li>
+                <li><strong>Train Model</strong>을 눌러 학습 후 잘 작동하는지 확인!</li>
+            </ol>
+            <a href="https://teachablemachine.withgoogle.com/" target="_blank" class="btn btn-tm">🤖 티처블 머신 바로가기</a>
+        </div>
+        <div class="card practice-card">
+            <h3>🙌 나만의 수신호 스케치</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label style="font-size: 15px;">1. 기본/준비 동작</label>
+                    <div class="camera-container">
+                        <div class="photo-preview" id="preview1" onclick="startCamera('video1', 'snap1', 'preview1', 'retake1')"><span>📷 켜기</span></div>
+                        <video id="video1" autoplay playsinline style="display:none;"></video>
+                        <button id="snap1" class="btn btn-snap" style="display:none;" onclick="takePhoto('video1', 'preview1', 'snap1', 'retake1')">📸 찰칵</button>
+                        <button id="retake1" class="btn btn-retake" style="display:none;" onclick="startCamera('video1', 'snap1', 'preview1', 'retake1')">🔄 다시</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label style="font-size: 15px;">2. 필살기 동작</label>
+                    <div class="camera-container">
+                        <div class="photo-preview" id="preview2" onclick="startCamera('video2', 'snap2', 'preview2', 'retake2')"><span>⚡ 켜기</span></div>
+                        <video id="video2" autoplay playsinline style="display:none;"></video>
+                        <button id="snap2" class="btn btn-snap" style="display:none;" onclick="takePhoto('video2', 'preview2', 'snap2', 'retake2')">📸 찰칵</button>
+                        <button id="retake2" class="btn btn-retake" style="display:none;" onclick="startCamera('video2', 'snap2', 'preview2', 'retake2')">🔄 다시</button>
+                    </div>
+                </div>
+            </div>
+            <p style="color: #64748b; font-size: 14px; margin-top: 0;">※ 카메라로 미리 구도를 잡아보고 티처블 머신에서 학습시키세요!</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card guide-card">
+            <h3>📢 [도전 3] 콘셉트 공유 및 저장</h3>
+            <p>개발된 훌륭한 아이디어가 날아가지 않도록 안전하게 보관(Archive)하고, 동료 프로듀서들에게 나의 캐릭터를 소개할 시간입니다!</p>
+            <p>오늘 만든 <b>뤼튼 소개글</b>과 <b>티처블 머신 링크</b>를 학급 공유 공간에 올려주세요.</p>
+        </div>
+        <div class="card practice-card">
+            <h3>✅ 런칭 준비 체크리스트</h3>
+            <div class="input-group">
+                <div style="font-size: 17px; color: #1e293b; line-height: 2;">
+                    <label><input type="checkbox" style="width: 18px; height: 18px;"> 뤼튼이 써준 3줄 소개글 복사하기</label><br>
+                    <label><input type="checkbox" style="width: 18px; height: 18px;"> 티처블 머신 모델 <b>업로드(공유 링크)</b> 복사하기</label><br>
+                </div>
+            </div>
+            
+            <div class="archive-notice">
+                <h4>📌 프로젝트 아카이빙 (PARA)</h4>
+                여러분의 <b>개인 개발 기록장(노션 또는 드라이브)</b>의<br>
+                <b>[Project] 캐릭터 기획 폴더</b>에<br>
+                오늘의 결과물과 링크를 잊지 말고 꼭 저장해 주세요! 🚀
+            </div>
+        </div>
+    </div>
+
+
+    <section class="student-links-section">
+        <h2>🔗 5학년 2반 학생 슬라이드 바로가기</h2>
+        <p>아래 버튼을 눌러 각 학생의 수업 결과물 슬라이드로 이동하세요.</p>
+        <div class="student-links-grid">
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1a5HZ8TubUrmbwVQRWsGMDWW3MuSBlFQlKs8TUb2nExA/edit?usp=sharing" target="_blank" rel="noopener noreferrer">01. 권하린</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1gYLkjXMFHoo7KUZXwiUUsdI8QyEqZGrNmuxwmFrMT-I/edit?usp=sharing" target="_blank" rel="noopener noreferrer">02. 김리아</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1gUSWfKZTYWzKLO-euRUel51cYf1z7EfwibLQU7cuIY8/edit?usp=sharing" target="_blank" rel="noopener noreferrer">03. 김문준</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/148viVn-FiwTrGOa17q1dEwxwg1k33YHt9UbglRoQDF4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">04. 김아랑</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1CeSerkaBtb7FQWXsKzA0DLCn596NcsexVRZsLWUy_K0/edit?usp=sharing" target="_blank" rel="noopener noreferrer">05. 김예슬</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1br3TYNZc-ginfPLK8G18t3kEbxKWIa6y2cdehD-ag6k/edit?usp=sharing" target="_blank" rel="noopener noreferrer">06. 김우현</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1Q6Wp4F_9_jQGIQnvc6gFEmZMx5kM78e3vQCqv_XoHFk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">07. 김효건</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1AJop5hMosKi9awVFzDKsRyM0Oe0-GmJeLzi8BFdkZoo/edit?usp=sharing" target="_blank" rel="noopener noreferrer">08. 문서진</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1Gj37_2Uu7b8WCjMzG7wvOrw8lj8ddelVmt-hjJxQlzg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">09. 변수현</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1nK50vbPDCgjTdrffQffrHb5c2DasV59LlUQGG5gBu88/edit?usp=sharing" target="_blank" rel="noopener noreferrer">10. 신예건</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/13CMd2qgOGJBFwRtLn3h8fQTvdj-7_W627PdXxA1z_FU/edit?usp=sharing" target="_blank" rel="noopener noreferrer">11. 심현지</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1hGYwQzhLuwcNm_U6su-yu4hzhFZGY0kkZmzISJ0B5O8/edit?usp=sharing" target="_blank" rel="noopener noreferrer">12. 양승윤</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/189SpaNrBlbkg7qG9VZOSWRbW6MpByYSAqEhA3FWUJgE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">13. 연율</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1XnGSlNBqRaXpqWJboFpLUKNV0tu1rjaiukwrjrAQP88/edit?usp=sharing" target="_blank" rel="noopener noreferrer">14. 이정우</a>
+            <a class="student-link-card" href="https://docs.google.com/presentation/d/1KiKC19fI1BvG7Cks69Fx2Ljv1txdWFDrcNYjm-r5dlc/edit?usp=sharing" target="_blank" rel="noopener noreferrer">15. 최푸른</a>
+        </div>
+    </section>
+
+    <footer style="text-align: center; margin-top: 30px; padding-bottom: 50px; color: #94a3b8;">
+        <p>© 2026 레벨업 게임 스튜디오. 스피드 런칭 대성공!</p>
+    </footer>
+</div>
+
+<script>
+    // 뤼튼 프롬프트 복사 기능
+    function copyToWrtn() {
+        const name = document.getElementById('charName').value || '[이름 없음]';
+        const power = document.getElementById('charPower').value || '[능력 미정]';
+        const weakness = document.getElementById('charWeakness').value || '[약점 없음]';
+        const promptText = `안녕! 나는 게임 개발자야. 신규 게임 캐릭터 런칭을 위해 아주 짧고 강렬한 3문장짜리 캐릭터 소개글을 써줘.\n\n- 캐릭터 이름: ${name}\n- 단 하나의 필살기: ${power}\n- 치명적 약점: ${weakness}\n\n게임 선택 창에 들어갈 멋진 말투로 부탁해!`;
+        navigator.clipboard.writeText(promptText).then(() => {
+            const msg = document.getElementById('copyMessage');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        });
+    }
+
+    // 카메라 제어 로직 (40분 버전: 심플화)
+    let currentStream = null;
+    async function startCamera(videoId, snapBtnId, previewId, retakeBtnId) {
+        const video = document.getElementById(videoId);
+        const snapBtn = document.getElementById(snapBtnId);
+        const preview = document.getElementById(previewId);
+        const retakeBtn = document.getElementById(retakeBtnId);
+        try {
+            if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); // PC/태블릿 환경 고려 전면 카메라 우선
+            currentStream = stream;
+            video.srcObject = stream;
+            preview.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            video.style.display = 'block';
+            snapBtn.style.display = 'block';
+        } catch (err) { alert("카메라 권한을 [허용]해주세요."); }
+    }
+
+    // 사진 촬영 및 박제
+    function takePhoto(videoId, previewId, snapBtnId, retakeBtnId) {
+        const video = document.getElementById(videoId);
+        const preview = document.getElementById(previewId);
+        const snapBtn = document.getElementById(snapBtnId);
+        const retakeBtn = document.getElementById(retakeBtnId);
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        preview.style.backgroundImage = `url(${canvas.toDataURL('image/png')})`;
+        preview.innerHTML = '';
+        if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
+        video.style.display = 'none'; snapBtn.style.display = 'none';
+        preview.style.display = 'flex'; retakeBtn.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

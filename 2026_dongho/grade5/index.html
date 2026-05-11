@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>동호초 5학년 수업 자료</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #526071;
+      --line: #d7dde6;
+      --paper: #ffffff;
+      --bg: #f5f7fb;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --rose: #e11d48;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 44px 20px;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 26px;
+    }
+
+    a.class-link {
+      display: block;
+      min-height: 156px;
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    a.class-link:hover,
+    a.class-link:focus {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(20, 33, 61, 0.12);
+      outline: none;
+    }
+
+    .class-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      height: 32px;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .class1 {
+      background: var(--blue);
+    }
+
+    .class2 {
+      background: var(--green);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.55rem;
+      letter-spacing: 0;
+    }
+
+    .status {
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>동호초 5학년 수업 자료</h1>
+      <p>반별 수업 자료 바로가기입니다. 각 반 페이지에서 차시별 자료를 확인할 수 있습니다.</p>
+    </header>
+
+    <section class="class-grid" aria-label="반별 바로가기">
+      <a class="class-link" href="class1/">
+        <span class="class-label class1">1반</span>
+        <h2>5학년 1반</h2>
+        <p class="status">1회차 자료 등록 완료</p>
+      </a>
+
+      <a class="class-link" href="class2/">
+        <span class="class-label class2">2반</span>
+        <h2>5학년 2반</h2>
+        <p class="status">1회차 자료 등록 완료</p>
+      </a>
+    </section>
+
+    <footer>총 7회차 수업 자료를 이 위치에서 반별로 관리합니다.</footer>
+  </main>
+</body>
+</html>
