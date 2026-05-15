@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브롤 시티 데이터 수사 | 디지털 교과서</title>
+<style>
+:root {
+  --ink: #111827;
+  --muted: #5f6b7c;
+  --paper: #f7fbff;
+  --panel: #ffffff;
+  --line: #d7e1ef;
+  --navy: #0b1830;
+  --deep: #102642;
+  --cyan: #20f4ef;
+  --cyan-dark: #0ca9b4;
+  --gold: #ffd23f;
+  --orange: #ff7a1a;
+  --pink: #ff3d8b;
+  --red: #ef4444;
+  --green: #22c55e;
+  --blue: #2563eb;
+  --shadow: 0 18px 34px rgba(7, 18, 37, .18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  background:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px),
+    radial-gradient(circle at 18% 0%, rgba(32,244,239,.22), transparent 30%),
+    radial-gradient(circle at 78% 10%, rgba(255,210,63,.18), transparent 28%),
+    linear-gradient(145deg, #09111f 0%, #102642 55%, #151a3a 100%);
+  background-size: 42px 42px, 42px 42px, auto, auto, auto;
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 30;
+  background: #fff;
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(18px);
+  background: rgba(8, 17, 34, .78);
+  border-bottom: 1px solid rgba(255,255,255,.16);
+}
+
+.topbar .shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 1000;
+  letter-spacing: .2px;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #061421;
+  background: linear-gradient(135deg, var(--gold), #fff27a);
+  border: 3px solid #111827;
+  border-radius: 10px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.35);
+  font-size: 18px;
+}
+
+.navlinks {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 10px 0;
+}
+
+.navlinks a {
+  color: #dce9ff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.navlinks a:hover {
+  background: rgba(32,244,239,.14);
+  border-color: rgba(32,244,239,.55);
+}
+
+.hero {
+  position: relative;
+  min-height: 640px;
+  overflow: hidden;
+  color: #fff;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6,13,25,.98), rgba(10,27,47,.76) 47%, rgba(8,14,28,.45)),
+    radial-gradient(circle at 66% 22%, rgba(32,244,239,.25), transparent 28%),
+    radial-gradient(circle at 86% 76%, rgba(255,210,63,.25), transparent 30%);
+  z-index: -2;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 34%;
+  background: linear-gradient(transparent, rgba(9,17,31,.98));
+  z-index: -1;
+}
+
+.hero .shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .98fr) minmax(420px, 1.02fr);
+  align-items: center;
+  gap: 28px;
+  min-height: 640px;
+  padding: 54px 0 86px;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  color: #09202a;
+  background: linear-gradient(135deg, var(--cyan), #ccffff);
+  border: 3px solid #111827;
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-weight: 1000;
+  box-shadow: 0 5px 0 rgba(0,0,0,.34);
+}
+
+.hero h1 {
+  margin: 18px 0 18px;
+  font-size: clamp(44px, 6.3vw, 80px);
+  line-height: .98;
+  letter-spacing: 0;
+  text-shadow: 0 7px 0 rgba(0,0,0,.32);
+}
+
+.hero h1 span {
+  display: block;
+}
+
+.hero h1 .title-line {
+  white-space: nowrap;
+  font-size: .78em;
+}
+
+.hero-sub {
+  max-width: 720px;
+  color: #dce9ff;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 800;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  border: 3px solid #111827;
+  border-radius: 12px;
+  color: #07111f;
+  background: linear-gradient(135deg, var(--gold), #fff078);
+  box-shadow: 0 6px 0 rgba(0,0,0,.38);
+  padding: 11px 16px;
+  text-decoration: none;
+  font-weight: 1000;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 rgba(0,0,0,.38);
+  filter: brightness(1.03);
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 rgba(0,0,0,.38);
+}
+
+.btn.cyan {
+  background: linear-gradient(135deg, var(--cyan), #bffcff);
+}
+
+.btn.dark {
+  color: #fff;
+  background: linear-gradient(135deg, #1f2937, #0f172a);
+}
+
+.stage {
+  position: relative;
+  min-height: 540px;
+  overflow: hidden;
+}
+
+.character {
+  position: absolute;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 22px 22px rgba(0,0,0,.38));
+  user-select: none;
+  pointer-events: none;
+}
+
+.character.primo {
+  width: clamp(220px, 24vw, 295px);
+  left: 27%;
+  bottom: 26px;
+  z-index: 6;
+  transform: rotate(-2deg);
+}
+
+.character.bull {
+  width: clamp(190px, 20vw, 240px);
+  right: 6%;
+  bottom: 42px;
+  z-index: 5;
+  transform: rotate(2deg);
+}
+
+.character.rosa {
+  width: clamp(135px, 15vw, 180px);
+  left: 7%;
+  bottom: 78px;
+  z-index: 2;
+  transform: rotate(-3deg);
+}
+
+.character.darryl {
+  width: clamp(100px, 12vw, 140px);
+  right: 2%;
+  top: 150px;
+  z-index: 2;
+  transform: rotate(5deg);
+}
+
+.character.jacky {
+  width: clamp(112px, 13vw, 150px);
+  left: 17%;
+  top: 158px;
+  z-index: 3;
+  transform: rotate(-3deg);
+}
+
+.chapter {
+  position: relative;
+  padding: 64px 0;
+}
+
+.chapter.light {
+  background: var(--paper);
+}
+
+.chapter.white {
+  background: #fff;
+}
+
+.chapter.dark {
+  color: #fff;
+  background:
+    linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
+    linear-gradient(135deg, #06111f, #10233d);
+  background-size: 40px 40px, 40px 40px, auto;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  color: #07111f;
+  background: linear-gradient(135deg, var(--gold), #fff27a);
+  border: 3px solid #111827;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 1000;
+  box-shadow: 0 4px 0 rgba(0,0,0,.2);
+}
+
+.chapter.dark .label {
+  box-shadow: 0 4px 0 rgba(0,0,0,.45);
+}
+
+h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.16;
+  letter-spacing: 0;
+}
+
+h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+.lead {
+  max-width: 820px;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.chapter.dark .lead,
+.chapter.dark .muted {
+  color: #cfe4ff;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mission-card,
+.file-card,
+.concept-card,
+.dossier,
+.quiz,
+.answer-card {
+  border: 2px solid var(--line);
+  background: var(--panel);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+.mission-card {
+  padding: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.mission-card::after {
+  content: "";
+  position: absolute;
+  right: -36px;
+  bottom: -34px;
+  width: 94px;
+  height: 94px;
+  border-radius: 24px;
+  background: rgba(32,244,239,.16);
+  transform: rotate(18deg);
+}
+
+.mission-card strong {
+  display: block;
+  color: #0f3d69;
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.file-card {
+  padding: 22px;
+}
+
+.file-card p {
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.two-col.reverse {
+  grid-template-columns: minmax(360px, 1.08fr) minmax(0, .92fr);
+}
+
+.concept-figure {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 3px solid rgba(15, 23, 42, .9);
+  background: #10233d;
+  box-shadow: var(--shadow);
+}
+
+.concept-figure img {
+  width: 100%;
+  height: auto;
+}
+
+.concept-figure figcaption {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  background: rgba(5, 12, 23, .84);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 12px;
+  padding: 8px 11px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.zoomable {
+  cursor: zoom-in;
+}
+
+.callout {
+  border: 2px solid #87d8ff;
+  background: #ecfbff;
+  border-radius: 14px;
+  padding: 16px;
+  font-weight: 850;
+}
+
+.chapter.dark .callout {
+  color: #eaffff;
+  border-color: rgba(32,244,239,.65);
+  background: rgba(14, 42, 70, .74);
+}
+
+.warning {
+  border-color: #ffdf83;
+  background: #fff7db;
+}
+
+.danger {
+  border-color: #ffb5c8;
+  background: #fff0f4;
+}
+
+.step-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  color: #111827;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  font-weight: 850;
+}
+
+.step-num {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #08111f;
+  background: var(--gold);
+  border: 3px solid #111827;
+  border-radius: 10px;
+  font-weight: 1000;
+  box-shadow: 0 3px 0 rgba(0,0,0,.22);
+}
+
+.formula {
+  margin: 16px 0;
+  padding: 16px;
+  color: #effcff;
+  text-align: center;
+  background: #07111f;
+  border: 3px solid var(--cyan);
+  border-radius: 16px;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 1000;
+  box-shadow: 0 0 0 4px rgba(32,244,239,.15), 0 14px 30px rgba(0,0,0,.22);
+}
+
+.rule-stack {
+  display: grid;
+  gap: 22px;
+}
+
+.rule-stack .concept-figure {
+  width: 100%;
+  margin: 0;
+}
+
+.rule-board {
+  display: grid;
+  gap: 16px;
+}
+
+.rule-board .table-wrap {
+  width: 100%;
+}
+
+.rule-board .formula {
+  margin: 0;
+  padding: 22px;
+  font-size: clamp(28px, 4.4vw, 46px);
+  line-height: 1.18;
+}
+
+.rule-board .callout {
+  margin: 0;
+}
+
+.quiz-title {
+  margin: 26px 0 10px;
+  color: inherit;
+  font-size: 24px;
+  font-weight: 1000;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  color: #111827;
+  border-bottom: 1px solid var(--line);
+  padding: 11px 12px;
+  text-align: center;
+}
+
+th {
+  color: #07111f;
+  background: #e8f2ff;
+  font-weight: 1000;
+}
+
+tbody tr:hover td {
+  background: #f7fbff;
+}
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.quiz {
+  color: #111827;
+  padding: 18px;
+}
+
+.quiz p {
+  font-weight: 900;
+}
+
+.quiz button,
+.smallbtn {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin: 8px 0;
+  padding: 10px 12px;
+  color: #111827;
+  text-align: left;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.quiz button:hover,
+.smallbtn:hover {
+  border-color: var(--cyan-dark);
+  background: #efffff;
+}
+
+.smallbtn.center {
+  text-align: center;
+  font-weight: 1000;
+}
+
+.result {
+  min-height: 24px;
+  margin-top: 8px;
+  font-weight: 1000;
+}
+
+.ok {
+  color: #15803d;
+}
+
+.no {
+  color: #dc2626;
+}
+
+.hidden-step {
+  display: none;
+}
+
+.concept-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.concept-card {
+  overflow: hidden;
+}
+
+.concept-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.concept-card div {
+  padding: 14px;
+}
+
+.concept-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0f3d69;
+  font-size: 18px;
+}
+
+.scatter-lab {
+  color: #111827;
+  background: #f0f6ff;
+  border: 3px solid #0f172a;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-top: 22px;
+}
+
+.lab-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.lab-title {
+  color: #07111f;
+  font-size: 22px;
+  font-weight: 1000;
+}
+
+.selected-panel {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: flex-end;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 9px 12px;
+  font-weight: 900;
+}
+
+.selected-panel small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.valuebig {
+  color: #111827;
+  font-size: 20px;
+}
+
+.lab-main {
+  grid-area: graph;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+#scatterSvg {
+  width: 100%;
+  min-height: 405px;
+  background: linear-gradient(#fff, #f8fbff);
+  border-radius: 12px;
+}
+
+.lab-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+  grid-template-areas:
+    "graph control"
+    "data control";
+  gap: 14px;
+  align-items: stretch;
+}
+
+.lab-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.data-panel,
+.control-panel {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.data-panel {
+  grid-area: data;
+}
+
+.control-panel {
+  grid-area: control;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.data-panel h3,
+.control-panel h3 {
+  margin-bottom: 6px;
+}
+
+.mini-table {
+  max-height: 205px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.mini-table table {
+  min-width: 0;
+  font-size: 15px;
+}
+
+.mini-table th,
+.mini-table td {
+  padding: 8px 9px;
+}
+
+.mini-table tr.active-row td {
+  background: #fff2b9;
+  font-weight: 1000;
+}
+
+.control-panel label {
+  display: block;
+  margin: 4px 0 2px;
+  font-weight: 1000;
+}
+
+select,
+input[type="text"] {
+  width: 100%;
+  min-height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px 10px;
+}
+
+.coordinate-card {
+  margin: 2px 0;
+  padding: 10px;
+  border: 2px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+  font-weight: 850;
+}
+
+.progressbar {
+  height: 12px;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+.progressbar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--orange));
+  transition: width .2s ease;
+}
+
+.legend {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.btn-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.toggle-line {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  margin: 0 !important;
+}
+
+.toggle-line input {
+  width: 20px;
+  height: 20px;
+}
+
+.dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dossier {
+  position: relative;
+  overflow: hidden;
+  min-height: 290px;
+  color: #fff;
+  background:
+    linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+    linear-gradient(145deg, #0b1830, #16345d);
+  background-size: 28px 28px, 28px 28px, auto;
+}
+
+.dossier .portrait {
+  position: absolute;
+  left: 50%;
+  bottom: 58px;
+  width: 74%;
+  max-height: 210px;
+  object-fit: contain;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 13px 13px rgba(0,0,0,.42));
+}
+
+.dossier .dossier-name {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  padding: 10px;
+  color: #08111f;
+  background: linear-gradient(135deg, var(--gold), #fff27a);
+  border: 3px solid #111827;
+  border-radius: 12px;
+  font-weight: 1000;
+  text-align: center;
+  box-shadow: 0 4px 0 rgba(0,0,0,.35);
+}
+
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.answer-card {
+  padding: 18px;
+}
+
+.answer-card strong {
+  display: block;
+  color: #0f3d69;
+  font-size: 20px;
+}
+
+details {
+  margin: 14px 0;
+  padding: 14px 16px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+}
+
+summary {
+  cursor: pointer;
+  color: #0f3d69;
+  font-weight: 1000;
+}
+
+.footer {
+  color: #dce9ff;
+  background: #08111f;
+  padding: 26px 0;
+  text-align: center;
+  font-weight: 800;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 7, 18, .84);
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+.lightbox button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  color: #111827;
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.lightbox img {
+  max-width: min(1100px, 94vw);
+  max-height: 86vh;
+  border-radius: 16px;
+  border: 3px solid #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,.45);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 70;
+  display: none;
+  transform: translateX(-50%);
+  color: #fff;
+  background: #07111f;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px;
+  box-shadow: 0 12px 24px rgba(0,0,0,.28);
+  padding: 12px 16px;
+  font-weight: 1000;
+}
+
+@media (max-width: 1040px) {
+  .hero .shell,
+  .two-col,
+  .two-col.reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .stage {
+    min-height: 440px;
+  }
+
+  .mission-grid,
+  .dossier-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dossier-grid .dossier:last-child {
+    grid-column: span 2;
+  }
+
+  .concept-strip,
+  .answer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .topbar .shell {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+  }
+
+  .hero {
+    min-height: 720px;
+  }
+
+  .hero .shell {
+    min-height: 720px;
+    padding-top: 34px;
+  }
+
+  .hero-actions,
+  .file-grid,
+  .quiz-grid,
+  .lab-top,
+  .lab-workspace,
+  .lab-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-workspace {
+    grid-template-areas:
+      "graph"
+      "control"
+      "data";
+  }
+
+  .file-grid,
+  .quiz-grid {
+    display: grid;
+  }
+
+  .selected-panel {
+    justify-content: space-between;
+  }
+
+  .mission-grid,
+  .dossier-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dossier-grid .dossier:last-child {
+    grid-column: auto;
+  }
+
+  .section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .character.primo {
+    width: 222px;
+    left: 28%;
+    right: auto;
+    bottom: 26px;
+  }
+
+  .character.bull {
+    width: 188px;
+    right: 5%;
+    bottom: 40px;
+  }
+
+  .character.rosa {
+    width: 142px;
+    left: 8%;
+    bottom: 72px;
+  }
+
+  .character.darryl {
+    width: 108px;
+    right: 2%;
+    top: 150px;
+  }
+
+  .character.jacky {
+    width: 112px;
+    left: 18%;
+    top: 158px;
+  }
+
+  .btn-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .shell {
+    width: min(100% - 22px, 1180px);
+  }
+
+  .chapter {
+    padding: 46px 0;
+  }
+
+  .stage {
+    min-height: 380px;
+  }
+
+  .character.primo {
+    width: 188px;
+    left: 27%;
+    right: auto;
+    bottom: 22px;
+  }
+
+  .character.bull {
+    width: 145px;
+    right: 3px;
+    bottom: 34px;
+  }
+
+  .character.rosa {
+    width: 118px;
+    left: 4%;
+    bottom: 76px;
+  }
+
+  .character.darryl {
+    width: 88px;
+    right: 0;
+    top: 140px;
+  }
+
+  .character.jacky {
+    width: 92px;
+    left: 16%;
+    top: 152px;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .topbar,
+  .hero-actions,
+  .toast,
+  .lightbox {
+    display: none !important;
+  }
+
+  .hero,
+  .chapter,
+  .footer {
+    color: #111827;
+    background: #fff !important;
+  }
+
+  .mission-card,
+  .file-card,
+  .concept-card,
+  .dossier,
+  .quiz,
+  .answer-card,
+  .scatter-lab,
+  .concept-figure {
+    box-shadow: none;
+  }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+
+<nav class="topbar" aria-label="교과서 이동 메뉴">
+  <div class="shell">
+    <div class="brand"><span class="brand-mark">BC</span> 브롤 시티 데이터 수사</div>
+    <div class="navlinks">
+      <a href="#briefing">브리핑</a>
+      <a href="#files">수업 파일</a>
+      <a href="#rule">대응 관계</a>
+      <a href="#scatter">산점도</a>
+      <a href="#correlation">상관관계</a>
+      <a href="#case">가설 검증</a>
+      <a href="#finish">마무리</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="briefing">
+  <div class="shell">
+    <div>
+      <div class="hero-kicker">엔트리 데이터 분석 2차시</div>
+      <h1><span>브롤 시티</span><span class="title-line">밸런스 붕괴 사건</span></h1>
+      <p class="hero-sub">게임 데이터 속 규칙을 찾아내고, 산점도로 수상한 브롤러를 검거해야 합니다. 오늘의 무기는 대응 관계, 좌표, 상관관계입니다.</p>
+      <div class="hero-actions">
+        <a class="btn cyan" href="#files">수업 파일 받기</a>
+        <a class="btn" href="#rule">미션 시작</a>
+        <a class="btn dark" href="#scatter">산점도 실습으로 이동</a>
+      </div>
+    </div>
+    <div class="stage" aria-label="브롤스타즈풍 캐릭터 수사 장면">
+      <img class="character jacky" src="brawl_stars_tank_jacky.png" alt="">
+      <img class="character darryl" src="brawl_stars_tank_darryl.png" alt="">
+      <img class="character rosa" src="brawl_stars_tank_rosa.png" alt="">
+      <img class="character primo" src="brawl_stars_tank_el_primo.png" alt="엘 프리모 캐릭터">
+      <img class="character bull" src="brawl_stars_tank_bull.png" alt="">
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="chapter light" id="files">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">READY</span>
+          <h2>수사 자료 준비</h2>
+          <p class="lead">아래 파일을 내려받아 엔트리 실습과 데이터 분석에 사용합니다. 파일은 이 HTML과 같은 폴더에 들어 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="file-grid">
+        <article class="file-card">
+          <h3>브롤스타즈 통합 데이터</h3>
+          <p>체력, 이동속도, 레벨, 기본 공격력이 들어 있는 CSV입니다. 산점도와 표 분석에 사용합니다.</p>
+          <a class="btn cyan" href="브롤스타즈_통합데이터.csv" download>CSV 다운로드</a>
+        </article>
+        <article class="file-card">
+          <h3>엔트리 템플릿</h3>
+          <p>미션 1에서 찾은 공식을 코딩하고, 미션 2에서 산점도를 만들어 볼 엔트리 파일입니다.</p>
+          <a class="btn" href="브롤스타즈_엔트리.ent" download>엔트리 파일 다운로드</a>
+        </article>
+      </div>
+
+      <div class="mission-grid" style="margin-top:18px">
+        <article class="mission-card"><strong>미션 1</strong>레벨과 공격력 사이의 대응 관계를 찾아 공식을 만든다.</article>
+        <article class="mission-card"><strong>미션 2</strong>체력과 이동속도를 좌표로 바꾸어 산점도에 점을 찍는다.</article>
+        <article class="mission-card"><strong>미션 3</strong>점들의 방향을 보고 양의 상관관계, 음의 상관관계, 없음으로 분류한다.</article>
+        <article class="mission-card"><strong>미션 4</strong>가설을 세우고 데이터로 버그 브롤러를 찾아낸다.</article>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter white">
+    <div class="shell">
+      <div class="two-col">
+        <div>
+          <span class="label">CONCEPT 0</span>
+          <h2>상자와 변수로 시작하기</h2>
+          <p class="lead">코딩에서 변수는 숫자나 글자를 잠시 담아 두는 상자입니다. 오늘은 체력, 이동속도, 레벨, 공격력 같은 값을 변수처럼 다루며 규칙을 찾습니다.</p>
+          <div class="step-list">
+            <div class="step"><span class="step-num">1</span><span>데이터 한 줄은 브롤러 한 명의 능력치 카드입니다.</span></div>
+            <div class="step"><span class="step-num">2</span><span>레벨처럼 바뀌는 숫자를 입력값으로 생각합니다.</span></div>
+            <div class="step"><span class="step-num">3</span><span>공격력처럼 따라 바뀌는 숫자를 결과값으로 계산합니다.</span></div>
+          </div>
+        </div>
+        <figure class="concept-figure zoomable">
+          <img src="concept_variable_box.png" alt="코딩의 마법 상자와 변수 설명 이미지">
+          <figcaption>변수는 데이터를 담아 두는 상자입니다. 클릭하면 크게 볼 수 있습니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter dark" id="rule">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">MISSION 1</span>
+          <h2>대응 관계: 레벨업의 비밀 공식</h2>
+          <p class="lead">한 양이 변할 때 다른 양도 일정한 규칙으로 변하면 대응 관계라고 합니다. 레벨이 오를 때 공격력이 어떻게 바뀌는지 찾아봅시다.</p>
+        </div>
+      </div>
+
+      <div class="rule-stack">
+        <figure class="concept-figure zoomable">
+          <img src="concept_growth_rule.png" alt="레벨과 공격력 대응 관계 설명 이미지">
+          <figcaption>한 양이 변할 때 다른 양도 일정하게 변하는 대응 관계 설명입니다.</figcaption>
+        </figure>
+        <div class="rule-board">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>브롤러</th><th>레벨</th><th>기본 공격력</th><th>관찰</th></tr></thead>
+              <tbody>
+                <tr><td>오티스</td><td>1</td><td>1000</td><td>시작값</td></tr>
+                <tr><td>맥스</td><td>2</td><td>1100</td><td>100 증가</td></tr>
+                <tr><td>엘 프리모</td><td>3</td><td>1200</td><td>100 증가</td></tr>
+                <tr><td>콜트</td><td>5</td><td>1400</td><td>같은 규칙</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="formula">공격력 = 1000 + (레벨 - 1) × 100</div>
+          <div class="callout">공식에서 1000은 1레벨 공격력, 100은 레벨이 1 오를 때마다 증가하는 공격력입니다.</div>
+        </div>
+      </div>
+
+      <h3 class="quiz-title">개념 확인 퀴즈</h3>
+      <div class="quiz-grid">
+        <div class="quiz" data-answer="②">
+          <p>미니 퀴즈 1. 레벨이 1씩 커질 때 기본 공격력은 얼마씩 늘어나나요?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① 50</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② 100</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ 500</button>
+          <div class="result"></div>
+        </div>
+        <div class="quiz" data-answer="③" data-unlock="entryStep">
+          <p>미니 퀴즈 2. 레벨을 □, 공격력을 △라고 할 때 알맞은 식은?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① △ = □ + 100</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② △ = 1000 + □ × 100</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ △ = 1000 + (□ - 1) × 100</button>
+          <div class="result"></div>
+        </div>
+      </div>
+
+      <div id="entryStep" class="hidden-step" style="margin-top:18px">
+        <div class="two-col reverse">
+          <figure class="concept-figure zoomable">
+            <img src="concept_formula_key.png" alt="기호는 개발자의 치트키라는 공식 설명 이미지">
+            <figcaption>기호로 바꾸면 모든 레벨을 한 번에 계산할 수 있습니다.</figcaption>
+          </figure>
+          <div class="callout">
+            엔트리 파일을 열고 [레벨업 계산기] 버튼을 완성합니다. 대답으로 입력받은 레벨을 □에 넣어 공격력을 계산하면 됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter light" id="scatter">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">MISSION 2</span>
+          <h2>산점도: 두 숫자를 하나의 점으로 압축하기</h2>
+          <p class="lead">산점도는 X축 숫자와 Y축 숫자가 만나는 위치에 점을 찍어 두 데이터의 관계를 보여주는 그래프입니다.</p>
+        </div>
+      </div>
+
+      <div class="two-col reverse">
+        <figure class="concept-figure zoomable">
+          <img src="concept_coordinate_point.png" alt="체력과 이동속도를 좌표 점으로 찍는 설명 이미지">
+          <figcaption>가로로 체력, 세로로 이동속도를 찾아 하나의 점을 찍습니다.</figcaption>
+        </figure>
+        <div>
+          <div class="step-list">
+            <div class="step"><span class="step-num">1</span><span>표에서 브롤러 한 명을 고릅니다.</span></div>
+            <div class="step"><span class="step-num">2</span><span>X축 값은 체력, Y축 값은 이동속도로 읽습니다.</span></div>
+            <div class="step"><span class="step-num">3</span><span>두 값이 만나는 위치에 점을 찍습니다.</span></div>
+            <div class="step"><span class="step-num">4</span><span>점이 쌓이면 전체 흐름과 수상한 점이 보입니다.</span></div>
+          </div>
+          <div class="callout warning">아래 실습판에서 점을 하나씩 찍어 보세요. 표의 숫자가 그래프 위 좌표로 바뀌는 순간을 확인하는 것이 핵심입니다.</div>
+        </div>
+      </div>
+
+      <div class="scatter-lab">
+        <div class="lab-top">
+          <div class="lab-title">산점도 실습판</div>
+          <div class="selected-panel" aria-live="polite">
+            <div><small>선택된 브롤러</small><span id="selName" class="valuebig">니타</span></div>
+            <div><small id="xLabelTop">체력(HP)</small><span id="selX" class="valuebig">5,000</span></div>
+            <div><small id="yLabelTop">이동속도</small><span id="selY" class="valuebig">68</span></div>
+          </div>
+        </div>
+        <div class="lab-workspace">
+          <div class="lab-main">
+            <svg id="scatterSvg" viewBox="0 0 720 500" role="img" aria-label="브롤러 데이터 산점도"></svg>
+          </div>
+          <div class="data-panel">
+            <h3>브롤러 데이터 명단</h3>
+            <div class="mini-table">
+              <table id="miniDataTable">
+                <thead><tr><th>이름</th><th id="xHead">체력(HP)</th><th id="yHead">이동속도</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="control-panel">
+            <h3>점 찍기 조작판</h3>
+            <label for="mode">분석 모드</label>
+            <select id="mode">
+              <option value="healthSpeed">체력(X) × 이동속도(Y)</option>
+              <option value="levelAttack">레벨(X) × 기본 공격력(Y)</option>
+            </select>
+            <div class="coordinate-card" id="coordGuide">니타는 X축 5,000, Y축 68 지점에 점을 찍습니다.</div>
+            <div class="progressbar"><span id="progressFill"></span></div>
+            <div id="progressText" class="legend">0 / 8개 점을 찍었습니다.</div>
+            <div class="btn-row">
+              <button class="smallbtn center" type="button" onclick="plotNextPoint()">다음 점 찍기</button>
+              <button class="smallbtn center" type="button" onclick="plotAllPoints()">모두 찍기</button>
+              <button class="smallbtn center" type="button" onclick="undoPoint()">이전 점 지우기</button>
+              <button class="smallbtn center" type="button" onclick="resetPlot()">다시 시작</button>
+            </div>
+            <label class="toggle-line"><input type="checkbox" id="trendToggle" onchange="drawScatter()"> 전체 흐름선 보기</label>
+            <button class="smallbtn center" type="button" onclick="revealOutliers()">수상한 점 표시하기</button>
+            <div id="pointInfo" class="callout">[다음 점 찍기]를 눌러 점이 쌓이는 과정을 관찰해 보세요.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter white" id="correlation">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">MISSION 3</span>
+          <h2>상관관계: 점들의 방향 읽기</h2>
+          <p class="lead">점들이 오른쪽 위로 향하면 양의 상관관계, 오른쪽 아래로 향하면 음의 상관관계, 특별한 방향이 없으면 상관관계 없음입니다.</p>
+        </div>
+      </div>
+
+      <div class="concept-strip">
+        <article class="concept-card">
+          <img class="zoomable" src="concept_hp_speed_question.png" alt="체력과 이동속도 비교 질문 이미지">
+          <div><strong>질문 만들기</strong>체력과 이동속도처럼 서로 다른 능력치를 산점도로 비교합니다.</div>
+        </article>
+        <article class="concept-card">
+          <img class="zoomable" src="concept_correlation_types.png" alt="양의 상관관계, 음의 상관관계, 상관관계 없음 설명 이미지">
+          <div><strong>패턴 분류</strong>점들의 방향을 보고 세 가지 상관관계 중 하나로 판단합니다.</div>
+        </article>
+        <article class="concept-card">
+          <img class="zoomable" src="concept_hypothesis_result.png" alt="체력과 이동속도의 음의 상관관계 검증 결과 이미지">
+          <div><strong>결론 쓰기</strong>데이터가 가설과 맞는지 확인하고 수학 문장으로 정리합니다.</div>
+        </article>
+      </div>
+
+      <div class="quiz-grid">
+        <div class="quiz" data-answer="②">
+          <p>미니 퀴즈 3. 체력이 커질수록 이동속도가 작아지는 흐름은?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① 양의 상관관계</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② 음의 상관관계</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ 상관관계 없음</button>
+          <div class="result"></div>
+        </div>
+        <div class="quiz" data-answer="③">
+          <p>미니 퀴즈 4. 점들이 여기저기 흩어져 방향이 보이지 않는 경우는?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① 양의 상관관계</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② 음의 상관관계</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ 상관관계 없음</button>
+          <div class="result"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter dark" id="case">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">MISSION 4</span>
+          <h2>가설 검증: 버그 브롤러 검거</h2>
+          <p class="lead">가설은 “아마 이럴 것이다”라는 예측입니다. 산점도의 점들이 가설과 맞는지 확인하면 수학적 증거가 됩니다.</p>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="callout">오늘의 가설: 체력이 큰 브롤러일수록 이동속도는 대체로 작아질 것이다.</div>
+          <div class="step-list">
+            <div class="step"><span class="step-num">1</span><span>체력과 이동속도 산점도를 완성합니다.</span></div>
+            <div class="step"><span class="step-num">2</span><span>점들이 오른쪽 아래 방향으로 모이는지 확인합니다.</span></div>
+            <div class="step"><span class="step-num">3</span><span>전체 무리에서 혼자 떨어진 점을 이탈값으로 표시합니다.</span></div>
+            <div class="step"><span class="step-num">4</span><span>가설이 맞는지 한 문장으로 결론을 씁니다.</span></div>
+          </div>
+        </div>
+        <figure class="concept-figure zoomable">
+          <img src="concept_hypothesis_result.png" alt="가설 검증 완료 산점도 설명 이미지">
+          <figcaption>점들이 오른쪽 아래로 향하면 음의 상관관계를 발견한 것입니다.</figcaption>
+        </figure>
+      </div>
+
+      <div class="quiz-grid">
+        <div class="quiz" data-answer="③">
+          <p>미니 퀴즈 5. 체력 9500, 이동속도 98인 오른쪽 위의 수상한 브롤러는?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① 프랭크</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② 크로우</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ 메가 쉘리</button>
+          <div class="result"></div>
+        </div>
+        <div class="quiz" data-answer="①">
+          <p>미니 퀴즈 6. 레벨 1인데 공격력이 2500인 성장 규칙 이탈값은?</p>
+          <button type="button" onclick="checkQuiz(this,'①')">① 다크 레온</button>
+          <button type="button" onclick="checkQuiz(this,'②')">② 모티스</button>
+          <button type="button" onclick="checkQuiz(this,'③')">③ 칼</button>
+          <div class="result"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter light">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">DOSSIER</span>
+          <h2>탱커 브롤러 수사 파일</h2>
+          <p class="lead">아래 캐릭터들은 체력이 높은 편인 브롤러입니다. 산점도에서 이들이 어느 위치에 모이는지 관찰해 보세요.</p>
+        </div>
+      </div>
+
+      <div class="dossier-grid">
+        <article class="dossier">
+          <img class="portrait" src="brawl_stars_tank_bull.png" alt="불 캐릭터">
+          <div class="dossier-name">불: 근접 탱커</div>
+        </article>
+        <article class="dossier">
+          <img class="portrait" src="brawl_stars_tank_darryl.png" alt="대릴 캐릭터">
+          <div class="dossier-name">대릴: 굴러가는 탱커</div>
+        </article>
+        <article class="dossier">
+          <img class="portrait" src="brawl_stars_tank_el_primo.png" alt="엘 프리모 캐릭터">
+          <div class="dossier-name">엘 프리모: 체력 좌표 예시</div>
+        </article>
+        <article class="dossier">
+          <img class="portrait" src="brawl_stars_tank_jacky.png" alt="재키 캐릭터">
+          <div class="dossier-name">재키: 높은 체력 후보</div>
+        </article>
+        <article class="dossier">
+          <img class="portrait" src="brawl_stars_tank_rosa.png" alt="로사 캐릭터">
+          <div class="dossier-name">로사: 탱커 데이터 비교</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter white" id="finish">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <span class="label">REPORT</span>
+          <h2>수사 종료 보고서</h2>
+          <p class="lead">오늘 배운 핵심 개념을 직접 입력하며 점검합니다. 띄어쓰기는 달라도 정답으로 인정됩니다.</p>
+        </div>
+      </div>
+
+      <div class="answer-grid">
+        <article class="answer-card">
+          <strong>Q1</strong>
+          <p>한 양이 변할 때 다른 양도 일정한 규칙으로 변하는 관계는?</p>
+          <input data-answer="대응관계" class="ans" type="text" placeholder="정답 입력">
+          <button class="smallbtn center" type="button" onclick="checkInput(this)">확인</button>
+          <div class="result"></div>
+        </article>
+        <article class="answer-card">
+          <strong>Q2</strong>
+          <p>가로축과 세로축이 만나는 위치에 점을 찍어 두 데이터 관계를 보는 그래프는?</p>
+          <input data-answer="산점도" class="ans" type="text" placeholder="정답 입력">
+          <button class="smallbtn center" type="button" onclick="checkInput(this)">확인</button>
+          <div class="result"></div>
+        </article>
+        <article class="answer-card">
+          <strong>Q3</strong>
+          <p>두 데이터가 서로 어떤 관련이 있는지 나타내는 말은?</p>
+          <input data-answer="상관관계" class="ans" type="text" placeholder="정답 입력">
+          <button class="smallbtn center" type="button" onclick="checkInput(this)">확인</button>
+          <div class="result"></div>
+        </article>
+      </div>
+
+      <details>
+        <summary>엔트리 실습 체크리스트</summary>
+        <p>CSV를 데이터 분석에 불러왔는지, X축과 Y축을 정확히 골랐는지, 레벨과 공격력 모드에서 다크 레온을 이탈값으로 찾았는지 확인하세요.</p>
+      </details>
+      <div class="callout danger">이 자료는 수업 활동용 학생 교과서입니다. 수업 범위 안에서만 사용해 주세요.</div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">
+  2026 브롤 시티 데이터 수사국 디지털 교과서
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button type="button" onclick="closeLightbox()" aria-label="닫기">X</button>
+  <img id="lightboxImage" src="" alt="">
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const data = [
+  {"브롤러":"엘 프리모","체력":8500,"이동속도":55,"레벨":3,"기본공격력":1200},
+  {"브롤러":"크로우","체력":3200,"이동속도":88,"레벨":8,"기본공격력":1700},
+  {"브롤러":"콜트","체력":4500,"이동속도":72,"레벨":5,"기본공격력":1400},
+  {"브롤러":"프랭크","체력":9200,"이동속도":50,"레벨":10,"기본공격력":1900},
+  {"브롤러":"맥스","체력":2800,"이동속도":92,"레벨":2,"기본공격력":1100},
+  {"브롤러":"니타","체력":5000,"이동속도":68,"레벨":7,"기본공격력":1600},
+  {"브롤러":"불","체력":7800,"이동속도":58,"레벨":4,"기본공격력":1300},
+  {"브롤러":"다크 레온","체력":3500,"이동속도":85,"레벨":1,"기본공격력":2500},
+  {"브롤러":"스파이크","체력":4200,"이동속도":75,"레벨":9,"기본공격력":1800},
+  {"브롤러":"로사","체력":8800,"이동속도":52,"레벨":6,"기본공격력":1500},
+  {"브롤러":"에드거","체력":3000,"이동속도":90,"레벨":11,"기본공격력":2000},
+  {"브롤러":"보","체력":5500,"이동속도":65,"레벨":3,"기본공격력":1200},
+  {"브롤러":"대릴","체력":7500,"이동속도":60,"레벨":8,"기본공격력":1700},
+  {"브롤러":"모티스","체력":2500,"이동속도":95,"레벨":1,"기본공격력":1000},
+  {"브롤러":"제시","체력":4800,"이동속도":70,"레벨":5,"기본공격력":1400},
+  {"브롤러":"잭키","체력":9000,"이동속도":51,"레벨":10,"기본공격력":1900},
+  {"브롤러":"샌디","체력":3300,"이동속도":87,"레벨":2,"기본공격력":1100},
+  {"브롤러":"페니","체력":5200,"이동속도":66,"레벨":7,"기본공격력":1600},
+  {"브롤러":"팸","체력":8200,"이동속도":56,"레벨":4,"기본공격력":1300},
+  {"브롤러":"바이런","체력":2900,"이동속도":91,"레벨":9,"기본공격력":1800},
+  {"브롤러":"브록","체력":4600,"이동속도":71,"레벨":6,"기본공격력":1500},
+  {"브롤러":"비비","체력":9500,"이동속도":48,"레벨":11,"기본공격력":2000},
+  {"브롤러":"틱","체력":3100,"이동속도":89,"레벨":3,"기본공격력":1200},
+  {"브롤러":"다이너마이크","체력":5800,"이동속도":64,"레벨":8,"기본공격력":1700},
+  {"브롤러":"칼","체력":7200,"이동속도":61,"레벨":1,"기본공격력":1000},
+  {"브롤러":"오티스","체력":4900,"이동속도":69,"레벨":1,"기본공격력":1000},
+  {"브롤러":"타라","체력":3600,"이동속도":84,"레벨":5,"기본공격력":1400},
+  {"브롤러":"엠즈","체력":4100,"이동속도":76,"레벨":10,"기본공격력":1900},
+  {"브롤러":"메가 쉘리","체력":9500,"이동속도":98,"레벨":11,"기본공격력":2000}
+];
+
+let mode = "healthSpeed";
+let plotted = [];
+let selectedIndex = data.findIndex(d => d["브롤러"] === "니타");
+let showOutliersFlag = false;
+
+const orderHealth = ["니타","불","엘 프리모","프랭크","콜트","맥스","로사","메가 쉘리"]
+  .map(name => data.findIndex(d => d["브롤러"] === name))
+  .filter(index => index >= 0);
+const orderLevel = ["오티스","칼","맥스","엘 프리모","불","콜트","다크 레온","에드거"]
+  .map(name => data.findIndex(d => d["브롤러"] === name))
+  .filter(index => index >= 0);
+
+const svg = document.getElementById("scatterSvg");
+const info = document.getElementById("pointInfo");
+const modeEl = document.getElementById("mode");
+const tbody = document.querySelector("#miniDataTable tbody");
+const trendToggle = document.getElementById("trendToggle");
+
+modeEl.addEventListener("change", () => {
+  mode = modeEl.value;
+  resetPlot(false);
+});
+
+function axes() {
+  return mode === "healthSpeed"
+    ? {x:"체력", y:"이동속도", xLabel:"체력(HP)", yLabel:"이동속도", xmin:0, xmax:10000, ymin:40, ymax:100}
+    : {x:"레벨", y:"기본공격력", xLabel:"레벨", yLabel:"기본 공격력", xmin:0, xmax:11, ymin:900, ymax:2600};
+}
+
+function currentOrder() {
+  return mode === "healthSpeed" ? orderHealth : orderLevel;
+}
+
+function comma(value) {
+  return Number(value).toLocaleString("ko-KR");
+}
+
+function sx(value, axis) {
+  return 70 + (value - axis.xmin) / (axis.xmax - axis.xmin) * 590;
+}
+
+function sy(value, axis) {
+  return 430 - (value - axis.ymin) / (axis.ymax - axis.ymin) * 350;
+}
+
+function isOutlier(datum) {
+  return datum["브롤러"] === "메가 쉘리" || datum["브롤러"] === "다크 레온";
+}
+
+function makeSvg(tag, attrs = {}) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+  return el;
+}
+
+function drawLine(x1, y1, x2, y2, color = "#334155", width = 2) {
+  svg.appendChild(makeSvg("line", {x1, y1, x2, y2, stroke: color, "stroke-width": width, "stroke-linecap": "round"}));
+}
+
+function drawText(content, x, y, size = 15, weight = "700", fill = "#172033") {
+  const el = makeSvg("text", {x, y, "font-size": size, "font-weight": weight, fill});
+  el.textContent = content;
+  svg.appendChild(el);
+  return el;
+}
+
+function updateSelectedPanel(datum) {
+  const axis = axes();
+  document.getElementById("selName").textContent = datum["브롤러"];
+  document.getElementById("xLabelTop").textContent = axis.xLabel;
+  document.getElementById("yLabelTop").textContent = axis.yLabel;
+  document.getElementById("selX").textContent = comma(datum[axis.x]);
+  document.getElementById("selY").textContent = comma(datum[axis.y]);
+  document.getElementById("coordGuide").innerHTML =
+    `${datum["브롤러"]}는 <b>X축 ${comma(datum[axis.x])}</b>, <b>Y축 ${comma(datum[axis.y])}</b> 지점에 점을 찍습니다.`;
+}
+
+function renderTable() {
+  const axis = axes();
+  const order = currentOrder();
+  document.getElementById("xHead").textContent = axis.xLabel;
+  document.getElementById("yHead").textContent = axis.yLabel;
+  tbody.innerHTML = "";
+  order.forEach(index => {
+    const datum = data[index];
+    const tr = document.createElement("tr");
+    tr.className = index === selectedIndex ? "active-row" : "";
+    tr.innerHTML = `<td>${datum["브롤러"]}</td><td>${comma(datum[axis.x])}</td><td>${comma(datum[axis.y])}</td>`;
+    tr.onclick = () => {
+      selectedIndex = index;
+      updateSelectedPanel(datum);
+      renderTable();
+      showToast(`${datum["브롤러"]} 선택 완료`);
+    };
+    tbody.appendChild(tr);
+  });
+}
+
+function drawAxes(axis) {
+  svg.innerHTML = "";
+  for (let i = 0; i <= 5; i += 1) {
+    const x = 70 + i * 118;
+    drawLine(x, 80, x, 430, "#e5e7eb", 1);
+  }
+  for (let i = 0; i <= 6; i += 1) {
+    const y = 80 + i * (350 / 6);
+    drawLine(70, y, 660, y, "#e5e7eb", 1);
+  }
+  drawLine(70, 430, 660, 430, "#94a3b8", 2);
+  drawLine(70, 80, 70, 430, "#94a3b8", 2);
+  drawText(axis.yLabel, 10, 75, 14, "900");
+  drawText(axis.xLabel, 325, 478, 14, "900");
+  for (let i = 0; i <= 5; i += 1) {
+    const value = Math.round(axis.xmin + (axis.xmax - axis.xmin) * i / 5);
+    drawText(comma(value), sx(value, axis) - 14, 452, 13, "650", "#111827");
+  }
+  for (let i = 0; i <= 6; i += 1) {
+    const value = Math.round(axis.ymin + (axis.ymax - axis.ymin) * i / 6);
+    drawText(comma(value), 35, sy(value, axis) + 4, 13, "650", "#111827");
+  }
+}
+
+function drawTrendLine(axis) {
+  if (mode === "levelAttack") {
+    drawLine(sx(1, axis), sy(1000, axis), sx(11, axis), sy(2000, axis), "#ff7a1a", 5);
+    drawText("정상 규칙: 레벨 1마다 공격력 100 증가", 360, 62, 15, "1000", "#9a3412");
+    return;
+  }
+  const points = currentOrder().map(index => data[index]);
+  if (points.length < 2) return;
+  const xs = points.map(datum => +datum[axis.x]);
+  const ys = points.map(datum => +datum[axis.y]);
+  const meanX = xs.reduce((sum, value) => sum + value, 0) / xs.length;
+  const meanY = ys.reduce((sum, value) => sum + value, 0) / ys.length;
+  const numerator = xs.reduce((sum, x, index) => sum + (x - meanX) * (ys[index] - meanY), 0);
+  const denominator = xs.reduce((sum, x) => sum + (x - meanX) * (x - meanX), 0);
+  const slope = numerator / denominator;
+  const intercept = meanY - slope * meanX;
+  const x1 = axis.xmin;
+  const x2 = axis.xmax;
+  drawLine(sx(x1, axis), sy(slope * x1 + intercept, axis), sx(x2, axis), sy(slope * x2 + intercept, axis), "#ff7a1a", 5);
+  drawText("전체 흐름: 오른쪽 아래", 410, 62, 15, "1000", "#9a3412");
+}
+
+function drawScatter() {
+  const axis = axes();
+  drawAxes(axis);
+  if (trendToggle.checked) drawTrendLine(axis);
+  plotted.forEach(index => {
+    const datum = data[index];
+    const cx = sx(+datum[axis.x], axis);
+    const cy = sy(+datum[axis.y], axis);
+    if (index === selectedIndex) {
+      drawLine(cx, 430, cx, cy, "#cbd5e1", 2);
+      drawLine(70, cy, cx, cy, "#cbd5e1", 2);
+    }
+    const suspicious = isOutlier(datum) && showOutliersFlag;
+    const circle = makeSvg("circle", {
+      cx,
+      cy,
+      r: suspicious ? 14 : 11,
+      fill: suspicious ? "#ef4444" : (index === selectedIndex ? "#ffd23f" : "#2563eb"),
+      stroke: "#ffffff",
+      "stroke-width": 3
+    });
+    circle.style.cursor = "pointer";
+    circle.onclick = () => {
+      selectedIndex = index;
+      updateSelectedPanel(datum);
+      renderTable();
+      showInfo(datum, axis);
+      drawScatter();
+    };
+    svg.appendChild(circle);
+    drawText(datum["브롤러"], cx + 9, cy - 12, 14, "1000", suspicious ? "#991b1b" : "#111827");
+    if (suspicious) {
+      drawText("BUG", cx - 16, cy + 5, 14, "1000", "#fff");
+    }
+  });
+  if (plotted.length === 0) {
+    drawText("표에서 숫자를 읽고 [다음 점 찍기]를 눌러 좌표를 찍어 보세요.", 112, 260, 18, "900", "#334155");
+  }
+  updateProgress();
+  renderTable();
+}
+
+function showInfo(datum, axis) {
+  const extra = isOutlier(datum)
+    ? "<br><b style='color:#ef4444'>전체 무리에서 떨어진 이탈값 후보입니다.</b>"
+    : "<br>정상 데이터 무리와 비교해 보세요.";
+  info.innerHTML = `<strong>${datum["브롤러"]}</strong><br>${axis.xLabel}: ${comma(datum[axis.x])} / ${axis.yLabel}: ${comma(datum[axis.y])}${extra}`;
+}
+
+function plotNextPoint() {
+  const order = currentOrder();
+  if (plotted.length >= order.length) {
+    showToast("모든 점을 다 찍었습니다.");
+    return;
+  }
+  const index = order[plotted.length];
+  selectedIndex = index;
+  plotted.push(index);
+  showOutliersFlag = false;
+  updateSelectedPanel(data[index]);
+  showInfo(data[index], axes());
+  drawScatter();
+  showToast(`${data[index]["브롤러"]} 점을 찍었습니다.`);
+}
+
+function plotAllPoints() {
+  plotted = [...currentOrder()];
+  selectedIndex = plotted[plotted.length - 1];
+  showOutliersFlag = false;
+  updateSelectedPanel(data[selectedIndex]);
+  info.innerHTML = "전체 점을 표시했습니다. 점들의 방향과 혼자 떨어진 점을 찾아보세요.";
+  drawScatter();
+}
+
+function undoPoint() {
+  if (plotted.length) plotted.pop();
+  selectedIndex = plotted[plotted.length - 1] ?? currentOrder()[0];
+  showOutliersFlag = false;
+  updateSelectedPanel(data[selectedIndex]);
+  drawScatter();
+}
+
+function resetPlot() {
+  plotted = [];
+  showOutliersFlag = false;
+  trendToggle.checked = false;
+  selectedIndex = currentOrder()[0];
+  updateSelectedPanel(data[selectedIndex]);
+  info.innerHTML = "[다음 점 찍기]를 눌러 점이 쌓이는 과정을 관찰해 보세요.";
+  drawScatter();
+}
+
+function revealOutliers() {
+  plotted = [...currentOrder()];
+  showOutliersFlag = true;
+  const outlier = currentOrder().find(index => isOutlier(data[index]));
+  if (outlier !== undefined) selectedIndex = outlier;
+  updateSelectedPanel(data[selectedIndex]);
+  drawScatter();
+  info.innerHTML = "빨간 점이 수상한 이탈값입니다. 전체 무리와 얼마나 떨어져 있는지 확인해 보세요.";
+}
+
+function updateProgress() {
+  const order = currentOrder();
+  document.getElementById("progressFill").style.width = `${plotted.length / order.length * 100}%`;
+  document.getElementById("progressText").textContent = `${plotted.length} / ${order.length}개 점을 찍었습니다.`;
+}
+
+function checkQuiz(button, selected) {
+  const quiz = button.closest(".quiz");
+  const result = quiz.querySelector(".result");
+  if (selected === quiz.dataset.answer) {
+    result.textContent = "정답입니다. 다음 단계로 이동하세요.";
+    result.className = "result ok";
+    if (quiz.dataset.unlock) {
+      document.getElementById(quiz.dataset.unlock).style.display = "block";
+    }
+  } else {
+    result.textContent = "다시 확인해 보세요. 표, 공식, 산점도 패턴을 근거로 판단하면 됩니다.";
+    result.className = "result no";
+  }
+}
+
+function checkInput(button) {
+  const card = button.closest(".answer-card");
+  const input = card.querySelector("input");
+  const answer = input.dataset.answer.replaceAll(" ", "");
+  const value = input.value.trim().replaceAll(" ", "");
+  const result = card.querySelector(".result");
+  if (value === answer) {
+    result.textContent = "정답입니다.";
+    result.className = "result ok";
+  } else {
+    result.textContent = "조금 더 생각해 보세요.";
+    result.className = "result no";
+  }
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => {
+    toast.style.display = "none";
+  }, 1200);
+}
+
+document.querySelectorAll(".zoomable").forEach(element => {
+  element.addEventListener("click", () => {
+    const image = element.tagName.toLowerCase() === "img" ? element : element.querySelector("img");
+    if (!image) return;
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt || "확대 이미지";
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+  });
+});
+
+function closeLightbox() {
+  const lightbox = document.getElementById("lightbox");
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("lightbox").addEventListener("click", event => {
+  if (event.target.id === "lightbox") closeLightbox();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeLightbox();
+});
+
+resetPlot(false);
+</script>
+</body>
+</html>
