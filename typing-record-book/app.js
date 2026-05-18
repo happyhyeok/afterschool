@@ -402,7 +402,8 @@ function createEntryRow(entry, record) {
 
   const accuracyValue = fieldValue(record.accuracy);
   const durationValue = accuracyValue ? normalizeDuration(record.duration) : "";
-  const datetimeLabel = makeLabeledInput("날짜", "date", "datetime", toDateFieldValue(record.datetime));
+  const datetimeValue = hasRecordMetrics({ accuracy: accuracyValue, duration: durationValue }) ? toDateFieldValue(record.datetime) : "";
+  const datetimeLabel = makeLabeledInput("날짜", "date", "datetime", datetimeValue);
   const accuracyLabel = makeLabeledInput("정확도 %", "number", "accuracy", accuracyValue);
   const durationLabel = makeLabeledInput("소요시간", "text", "duration", durationValue);
 
@@ -435,6 +436,10 @@ function makeLabeledInput(labelText, type, field, value) {
 
 function fieldValue(value) {
   return value === undefined || value === null ? "" : String(value);
+}
+
+function hasRecordMetrics(record) {
+  return Boolean(fieldValue(record?.accuracy).trim() || fieldValue(record?.duration).trim());
 }
 
 function handleEntryInput(event) {
@@ -684,8 +689,27 @@ function updateRecordFromRow(row) {
     accuracy: row.querySelector('[data-field="accuracy"]').value.trim(),
     duration: row.querySelector('[data-field="duration"]').value.trim(),
   };
+  syncRecordDate(row, record);
   records[entryId] = record;
   return record;
+}
+
+function syncRecordDate(row, record) {
+  const datetimeInput = row.querySelector('[data-field="datetime"]');
+  if (!hasRecordMetrics(record)) {
+    record.datetime = "";
+    if (datetimeInput) {
+      datetimeInput.value = "";
+    }
+    return;
+  }
+
+  if (!record.datetime) {
+    record.datetime = toDateInputValue(new Date());
+    if (datetimeInput) {
+      datetimeInput.value = record.datetime;
+    }
+  }
 }
 
 function scheduleSave(entryId, delay = 650) {
@@ -711,7 +735,9 @@ async function saveRecord(entryId) {
     return;
   }
 
-  if (!record.datetime && (record.accuracy || record.duration)) {
+  if (!hasRecordMetrics(record)) {
+    record.datetime = "";
+  } else if (!record.datetime) {
     record.datetime = toDateInputValue(new Date());
     const datetimeInput = row?.querySelector('[data-field="datetime"]');
     if (datetimeInput) {

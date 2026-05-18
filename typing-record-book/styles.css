@@ -602,7 +602,24 @@ input.invalid {
 }
 
 .entry-row.complete {
-  background: #f5fcf8;
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.entry-row.complete .stage-name,
+.entry-row.complete label span {
+  color: #ffffff;
+}
+
+.entry-row.complete .attempt-badge {
+  background: rgba(219, 234, 254, 0.18);
+  color: #ffffff;
+}
+
+.entry-row.complete input {
+  border-color: rgba(191, 219, 254, 0.72);
+  background: #eff6ff;
+  color: #17202a;
 }
 
 .entry-row.saving {
