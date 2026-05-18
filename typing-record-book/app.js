@@ -356,7 +356,7 @@ function renderEntries() {
   const fragment = document.createDocumentFragment();
   for (const group of PRACTICE_GROUPS) {
     const section = document.createElement("section");
-    section.className = "stage-section";
+    section.className = `stage-section ${group.entries.length === POSITION_STAGES.length ? "position-section" : ""}`;
 
     const title = document.createElement("div");
     title.className = "stage-title";
@@ -367,9 +367,12 @@ function renderEntries() {
     title.append(heading, subtitle);
     section.append(title);
 
+    const entries = document.createElement("div");
+    entries.className = "stage-entries";
     for (const entry of group.entries) {
-      section.append(createEntryRow(entry, records[entry.id] || {}));
+      entries.append(createEntryRow(entry, records[entry.id] || {}));
     }
+    section.append(entries);
 
     fragment.append(section);
   }
@@ -397,11 +400,9 @@ function createEntryRow(entry, record) {
   stageName.textContent = entry.stage;
   nameCell.append(badge, stageName);
 
-  const datetimeLabel = makeLabeledInput("날짜/시간", "datetime-local", "datetime", record.datetime || "");
+  const datetimeLabel = makeLabeledInput("날짜", "date", "datetime", toDateFieldValue(record.datetime));
   const accuracyLabel = makeLabeledInput("정확도 %", "number", "accuracy", record.accuracy || "");
   const durationLabel = makeLabeledInput("소요시간", "text", "duration", record.duration || "");
-  const actions = document.createElement("div");
-  actions.className = "row-actions";
 
   accuracyLabel.querySelector("input").setAttribute("min", "0");
   accuracyLabel.querySelector("input").setAttribute("max", "100");
@@ -412,24 +413,7 @@ function createEntryRow(entry, record) {
   durationLabel.querySelector("input").setAttribute("autocomplete", "off");
   durationLabel.querySelector("input").setAttribute("maxlength", "5");
 
-  const nowButton = document.createElement("button");
-  nowButton.type = "button";
-  nowButton.dataset.action = "set-now";
-  nowButton.textContent = "지금";
-
-  const saveButton = document.createElement("button");
-  saveButton.type = "button";
-  saveButton.dataset.action = "save-entry";
-  saveButton.textContent = "저장";
-
-  const clearButton = document.createElement("button");
-  clearButton.type = "button";
-  clearButton.dataset.action = "clear-entry";
-  clearButton.className = "clear-entry";
-  clearButton.textContent = "비움";
-
-  actions.append(nowButton, saveButton, clearButton);
-  row.append(nameCell, datetimeLabel, accuracyLabel, durationLabel, actions);
+  row.append(nameCell, accuracyLabel, durationLabel, datetimeLabel);
   updateRowState(row, record);
   return row;
 }
@@ -495,20 +479,6 @@ function handleEntryClick(event) {
 
   const row = button.closest("[data-entry-id]");
   const entryId = row.dataset.entryId;
-
-  if (button.dataset.action === "set-now") {
-    row.querySelector('[data-field="datetime"]').value = toDatetimeLocalValue(new Date());
-    const record = updateRecordFromRow(row);
-    updateRowState(row, record);
-    updateProgress();
-    scheduleSave(entryId, 0);
-  }
-
-  if (button.dataset.action === "save-entry") {
-    const record = updateRecordFromRow(row);
-    updateRowState(row, record);
-    saveRecord(entryId);
-  }
 
   if (button.dataset.action === "clear-entry") {
     clearRecord(entryId, row);
@@ -736,7 +706,7 @@ async function saveRecord(entryId) {
   }
 
   if (!record.datetime && (record.accuracy || record.duration)) {
-    record.datetime = toDatetimeLocalValue(new Date());
+    record.datetime = toDateInputValue(new Date());
     const datetimeInput = row?.querySelector('[data-field="datetime"]');
     if (datetimeInput) {
       datetimeInput.value = record.datetime;
@@ -1005,6 +975,24 @@ function secondsToDuration(totalSeconds) {
 function toDatetimeLocalValue(date) {
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
   return local.toISOString().slice(0, 16);
+}
+
+function toDateInputValue(date) {
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
+function toDateFieldValue(value) {
+  const text = String(value || "").trim();
+  if (!text) {
+    return toDateInputValue(new Date());
+  }
+  const isoDate = text.match(/\d{4}-\d{2}-\d{2}/);
+  if (isoDate) {
+    return isoDate[0];
+  }
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? toDateInputValue(new Date()) : toDateInputValue(parsed);
 }
 
 function sortStudents(a, b) {

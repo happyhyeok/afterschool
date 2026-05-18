@@ -529,7 +529,7 @@ input.invalid {
 
 .entry-grid {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   margin-top: 16px;
 }
 
@@ -538,6 +538,10 @@ input.invalid {
   border-radius: 8px;
   overflow: hidden;
   background: #fff;
+}
+
+.position-section {
+  overflow-x: auto;
 }
 
 .stage-title {
@@ -562,13 +566,35 @@ input.invalid {
   font-weight: 800;
 }
 
+.stage-entries {
+  display: grid;
+}
+
+.position-section .stage-entries {
+  grid-template-columns: repeat(7, minmax(118px, 1fr));
+  min-width: 860px;
+}
+
 .entry-row {
   display: grid;
-  grid-template-columns: minmax(120px, 0.75fr) minmax(200px, 1.1fr) minmax(110px, 0.6fr) minmax(116px, 0.65fr) auto;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(110px, 0.6fr) minmax(116px, 0.65fr) minmax(130px, 0.7fr);
   gap: 10px;
   align-items: end;
   padding: 12px;
   border-bottom: 1px solid #edf1f6;
+}
+
+.position-section .entry-row {
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  min-width: 118px;
+  padding: 10px;
+  border-right: 1px solid #edf1f6;
+  border-bottom: 0;
+}
+
+.position-section .entry-row:last-child {
+  border-right: 0;
 }
 
 .entry-row:last-child {
@@ -603,6 +629,10 @@ input.invalid {
   min-height: 40px;
 }
 
+.position-section .entry-name {
+  min-height: 32px;
+}
+
 .attempt-badge {
   display: inline-flex;
   min-width: 54px;
@@ -618,6 +648,19 @@ input.invalid {
 
 .stage-name {
   font-weight: 900;
+}
+
+.position-section .attempt-badge {
+  display: none;
+}
+
+.position-section label {
+  gap: 5px;
+  font-size: 12px;
+}
+
+.position-section input {
+  padding: 0 8px;
 }
 
 .row-actions {
