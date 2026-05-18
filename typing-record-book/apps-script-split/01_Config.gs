@@ -25,3 +25,4 @@ const RECORD_HEADERS = [
   "complete",
   "source",
 ];
+const RECORD_DURATION_COLUMN = RECORD_HEADERS.indexOf("duration") + 1;

@@ -402,13 +402,13 @@ function createEntryRow(entry, record) {
 
   const datetimeLabel = makeLabeledInput("날짜", "date", "datetime", toDateFieldValue(record.datetime));
   const accuracyLabel = makeLabeledInput("정확도 %", "number", "accuracy", record.accuracy || "");
-  const durationLabel = makeLabeledInput("소요시간", "text", "duration", record.duration || "");
+  const durationLabel = makeLabeledInput("소요시간", "text", "duration", normalizeDuration(record.duration) || "");
 
   accuracyLabel.querySelector("input").setAttribute("min", "0");
   accuracyLabel.querySelector("input").setAttribute("max", "100");
   accuracyLabel.querySelector("input").setAttribute("step", "0.01");
   accuracyLabel.querySelector("input").placeholder = "99.01";
-  durationLabel.querySelector("input").placeholder = "01:05";
+  durationLabel.querySelector("input").placeholder = "";
   durationLabel.querySelector("input").inputMode = "numeric";
   durationLabel.querySelector("input").setAttribute("autocomplete", "off");
   durationLabel.querySelector("input").setAttribute("maxlength", "5");
@@ -936,6 +936,19 @@ function durationToSeconds(value) {
     return null;
   }
 
+  if (/^0?\.\d+$/.test(text)) {
+    return sheetTimeSerialToSeconds(Number(text));
+  }
+
+  const dateTimeMatch = text.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+  if (dateTimeMatch && /GMT|UTC|\d{4}|[A-Za-z]{3}/.test(text)) {
+    const minutes = Number(dateTimeMatch[1]);
+    const seconds = Number(dateTimeMatch[2]);
+    if (Number.isInteger(minutes) && Number.isInteger(seconds) && minutes >= 0 && seconds >= 0 && seconds < 60) {
+      return minutes * 60 + seconds;
+    }
+  }
+
   const parts = text.split(":").map((part) => part.trim());
   if (parts.length === 2) {
     const minutes = Number(parts[0]);
@@ -964,6 +977,17 @@ function durationToSeconds(value) {
   }
 
   return null;
+}
+
+function sheetTimeSerialToSeconds(value) {
+  if (!Number.isFinite(value) || value < 0 || value >= 1) {
+    return null;
+  }
+
+  const totalMinutes = Math.round(value * 24 * 60);
+  const minutes = Math.floor(totalMinutes / 60);
+  const seconds = totalMinutes % 60;
+  return minutes * 60 + seconds;
 }
 
 function secondsToDuration(totalSeconds) {

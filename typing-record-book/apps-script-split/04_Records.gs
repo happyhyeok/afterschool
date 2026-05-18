@@ -19,7 +19,7 @@ function listRecords_(year, school, grade, studentId) {
       records[row.entryId] = {
         datetime: String(row.practicedAt || ""),
         accuracy: row.accuracy === "" ? "" : String(row.accuracy),
-        duration: String(row.duration || ""),
+        duration: normalizeDuration_(row.duration),
       };
     }
   });
@@ -37,8 +37,10 @@ function saveRecord_(payload) {
   const sheet = getSheet_(SHEETS.RECORDS, RECORD_HEADERS);
   const recordKey = makeRecordKey_(payload.year, payload.school, payload.grade, payload.studentId, payload.entryId);
   const rowNumber = findRecordRow_(sheet, recordKey);
+  const targetRow = rowNumber || sheet.getLastRow() + 1;
   const savedAt = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd'T'HH:mm:ss");
-  const complete = Boolean(payload.datetime && payload.accuracy !== "" && payload.duration);
+  const duration = normalizeDuration_(payload.duration);
+  const complete = Boolean(payload.datetime && payload.accuracy !== "" && duration);
   const row = [
     recordKey,
     savedAt,
@@ -53,13 +55,14 @@ function saveRecord_(payload) {
     payload.entryId,
     payload.datetime || "",
     payload.accuracy === undefined ? "" : payload.accuracy,
-    payload.duration || "",
+    duration,
     complete ? "Y" : "N",
     "github-pages",
   ];
 
-  if (rowNumber) sheet.getRange(rowNumber, 1, 1, RECORD_HEADERS.length).setValues([row]);
-  else sheet.appendRow(row);
+  if (targetRow > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 1);
+  sheet.getRange(targetRow, RECORD_DURATION_COLUMN).setNumberFormat("@");
+  sheet.getRange(targetRow, 1, 1, RECORD_HEADERS.length).setValues([row]);
 
   return { recordKey: recordKey, savedAt: savedAt, complete: complete };
 }

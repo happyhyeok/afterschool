@@ -24,6 +24,7 @@ const RECORD_HEADERS = [
   "complete",
   "source",
 ];
+const RECORD_DURATION_COLUMN = RECORD_HEADERS.indexOf("duration") + 1;
 
 function doGet(event) {
   const params = event.parameter || {};
@@ -143,7 +144,7 @@ function listRecords_(year, school, grade, studentId) {
       records[row.entryId] = {
         datetime: String(row.practicedAt || ""),
         accuracy: row.accuracy === "" ? "" : String(row.accuracy),
-        duration: String(row.duration || ""),
+        duration: normalizeDuration_(row.duration),
       };
     }
   });
@@ -161,8 +162,10 @@ function saveRecord_(payload) {
   const sheet = getSheet_(SHEETS.RECORDS, RECORD_HEADERS);
   const recordKey = makeRecordKey_(payload.year, payload.school, payload.grade, payload.studentId, payload.entryId);
   const rowNumber = findRecordRow_(sheet, recordKey);
+  const targetRow = rowNumber || sheet.getLastRow() + 1;
   const savedAt = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd'T'HH:mm:ss");
-  const complete = Boolean(payload.datetime && payload.accuracy !== "" && payload.duration);
+  const duration = normalizeDuration_(payload.duration);
+  const complete = Boolean(payload.datetime && payload.accuracy !== "" && duration);
   const row = [
     recordKey,
     savedAt,
@@ -177,16 +180,16 @@ function saveRecord_(payload) {
     payload.entryId,
     payload.datetime || "",
     payload.accuracy === undefined ? "" : payload.accuracy,
-    payload.duration || "",
+    duration,
     complete ? "Y" : "N",
     "github-pages",
   ];
 
-  if (rowNumber) {
-    sheet.getRange(rowNumber, 1, 1, RECORD_HEADERS.length).setValues([row]);
-  } else {
-    sheet.appendRow(row);
+  if (targetRow > sheet.getMaxRows()) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), 1);
   }
+  sheet.getRange(targetRow, RECORD_DURATION_COLUMN).setNumberFormat("@");
+  sheet.getRange(targetRow, 1, 1, RECORD_HEADERS.length).setValues([row]);
 
   return {
     recordKey,
@@ -258,6 +261,70 @@ function readObjects_(sheet, headers) {
     });
     return object;
   });
+}
+
+function normalizeDuration_(value) {
+  if (value === undefined || value === null || value === "") return "";
+
+  if (typeof value === "number" && isFinite(value) && value >= 0 && value < 1) {
+    return sheetTimeSerialToDuration_(value);
+  }
+
+  if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value.getTime())) {
+    const minutes = value.getHours();
+    const seconds = value.getMinutes();
+    return pad2_(minutes) + ":" + pad2_(seconds);
+  }
+
+  const text = String(value).trim();
+  if (!text) return "";
+
+  const dateTimeMatch = text.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+  if (dateTimeMatch && /GMT|UTC|\d{4}|[A-Za-z]{3}/.test(text)) {
+    const minutes = Number(dateTimeMatch[1]);
+    const seconds = Number(dateTimeMatch[2]);
+    if (minutes >= 0 && seconds >= 0 && seconds < 60) return pad2_(minutes) + ":" + pad2_(seconds);
+  }
+
+  const parts = text.split(":");
+  if (parts.length === 2) {
+    const minutes = Number(parts[0]);
+    const seconds = Number(parts[1]);
+    if (Number.isInteger(minutes) && Number.isInteger(seconds) && minutes >= 0 && seconds >= 0 && seconds < 60) {
+      return pad2_(minutes) + ":" + pad2_(seconds);
+    }
+  }
+
+  if (parts.length === 3) {
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+    const seconds = Number(parts[2]);
+    if (
+      Number.isInteger(hours) &&
+      Number.isInteger(minutes) &&
+      Number.isInteger(seconds) &&
+      hours >= 0 &&
+      minutes >= 0 &&
+      minutes < 60 &&
+      seconds >= 0 &&
+      seconds < 60
+    ) {
+      return pad2_(hours * 60 + minutes) + ":" + pad2_(seconds);
+    }
+  }
+
+  return "";
+}
+
+function pad2_(value) {
+  return String(value).padStart(2, "0");
+}
+
+function sheetTimeSerialToDuration_(value) {
+  const totalMinutes = Math.round(value * 24 * 60);
+  const minutes = Math.floor(totalMinutes / 60);
+  const seconds = totalMinutes % 60;
+  return pad2_(minutes) + ":" + pad2_(seconds);
 }
 
 function findRecordRow_(sheet, recordKey) {
