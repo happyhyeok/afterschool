@@ -400,9 +400,11 @@ function createEntryRow(entry, record) {
   stageName.textContent = entry.stage;
   nameCell.append(badge, stageName);
 
+  const accuracyValue = fieldValue(record.accuracy);
+  const durationValue = accuracyValue ? normalizeDuration(record.duration) : "";
   const datetimeLabel = makeLabeledInput("날짜", "date", "datetime", toDateFieldValue(record.datetime));
-  const accuracyLabel = makeLabeledInput("정확도 %", "number", "accuracy", record.accuracy || "");
-  const durationLabel = makeLabeledInput("소요시간", "text", "duration", normalizeDuration(record.duration) || "");
+  const accuracyLabel = makeLabeledInput("정확도 %", "number", "accuracy", accuracyValue);
+  const durationLabel = makeLabeledInput("소요시간", "text", "duration", durationValue);
 
   accuracyLabel.querySelector("input").setAttribute("min", "0");
   accuracyLabel.querySelector("input").setAttribute("max", "100");
@@ -429,6 +431,10 @@ function makeLabeledInput(labelText, type, field, value) {
   input.disabled = !selectedStudent;
   label.append(span, input);
   return label;
+}
+
+function fieldValue(value) {
+  return value === undefined || value === null ? "" : String(value);
 }
 
 function handleEntryInput(event) {
@@ -812,11 +818,13 @@ function isRecordComplete(record) {
     return false;
   }
 
-  const accuracy = Number(record.accuracy);
+  const accuracyText = fieldValue(record.accuracy).trim();
+  const accuracy = Number(accuracyText);
   return Boolean(
     record.datetime &&
       record.duration &&
       normalizeDuration(record.duration) &&
+      accuracyText &&
       Number.isFinite(accuracy) &&
       accuracy >= 0 &&
       accuracy <= 100,

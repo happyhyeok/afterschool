@@ -16,10 +16,11 @@ function listRecords_(year, school, grade, studentId) {
       String(row.studentId) === String(studentId) &&
       row.entryId
     ) {
+      const accuracy = row.accuracy === "" ? "" : String(row.accuracy);
       records[row.entryId] = {
         datetime: String(row.practicedAt || ""),
-        accuracy: row.accuracy === "" ? "" : String(row.accuracy),
-        duration: normalizeDuration_(row.duration),
+        accuracy,
+        duration: accuracy ? normalizeDuration_(row.duration) : "",
       };
     }
   });
