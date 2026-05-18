@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>순서대로 척척! 순차구조 배우기</title>
+<style>
+    :root {
+        --bg: #f8fbff;
+        --card: #ffffff;
+        --primary: #4f8cff;
+        --primary-dark: #2f6fe6;
+        --primary-light: #e8f1ff;
+        --success: #35b86b;
+        --success-light: #e8f8ef;
+        --warning: #ffad33;
+        --warning-light: #fff5df;
+        --danger: #ff6b6b;
+        --danger-light: #fff0f0;
+        --text: #263245;
+        --subtext: #5d6b82;
+        --line: #dbe7ff;
+        --radius: 28px;
+        --shadow: 0 10px 28px rgba(46, 86, 130, 0.08);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 20px;
+        line-height: 1.8;
+        word-break: keep-all;
+    }
+
+    a, button, .card-item {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 18px 80px;
+    }
+
+    .top-nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(248, 251, 255, 0.96);
+        backdrop-filter: blur(8px);
+        padding: 14px 0;
+        margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+        background: #edf4ff;
+        border-radius: 999px;
+        height: 18px;
+        overflow: hidden;
+        border: 2px solid #d8e8ff;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), #7ab3ff);
+        transition: width 0.4s ease;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        color: var(--subtext);
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .hero {
+        background: var(--card);
+        border-radius: 34px;
+        padding: 44px 28px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        border: 2px solid #edf4ff;
+        margin-bottom: 30px;
+    }
+
+    .hero .label {
+        display: inline-block;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-weight: 800;
+        margin-bottom: 18px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3rem);
+        line-height: 1.35;
+        letter-spacing: -0.03em;
+    }
+
+    .hero p {
+        margin: 18px auto 0;
+        max-width: 760px;
+        color: var(--subtext);
+        font-size: 1.2rem;
+    }
+
+    .quick-menu {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .quick-menu a {
+        display: block;
+        padding: 16px 12px;
+        background: #f4f8ff;
+        color: var(--text);
+        text-decoration: none;
+        border-radius: 20px;
+        border: 2px solid var(--line);
+        font-weight: 800;
+        font-size: 1rem;
+    }
+
+    .lesson-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 34px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+        border: 2px solid #edf4ff;
+    }
+
+    .step-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 64px;
+        height: 64px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 900;
+        font-size: 1.45rem;
+        margin-bottom: 18px;
+    }
+
+    h2 {
+        margin: 0 0 18px;
+        font-size: clamp(1.55rem, 4vw, 2.1rem);
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+    }
+
+    h3 {
+        margin: 0 0 16px;
+        font-size: 1.25rem;
+    }
+
+    p {
+        margin: 0 0 16px;
+        color: var(--subtext);
+    }
+
+    strong {
+        color: var(--text);
+        background: linear-gradient(transparent 60%, #fff2a8 60%);
+        padding: 0 2px;
+    }
+
+    .concept-box, .activity-box, .teacher-box {
+        border-radius: 24px;
+        padding: 24px;
+        margin-top: 24px;
+    }
+
+    .concept-box {
+        background: #f4f8ff;
+        border: 2px solid var(--line);
+    }
+
+    .teacher-box {
+        background: var(--warning-light);
+        border: 2px solid #ffe0a3;
+    }
+
+    .activity-box {
+        background: #f7fbff;
+        border: 2px dashed #c9dcff;
+    }
+
+    .robot-screen {
+        background: #f4f8ff;
+        color: var(--text);
+        padding: 24px;
+        border-radius: 22px;
+        border: 2px solid var(--line);
+        font-weight: 800;
+        font-size: 1.15rem;
+        min-height: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin: 18px 0;
+    }
+
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+    }
+
+    .big-button {
+        min-height: 72px;
+        padding: 16px 20px;
+        border: none;
+        border-radius: 22px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 7px 16px rgba(79, 140, 255, 0.22);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .big-button:hover, .big-button:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(79, 140, 255, 0.28);
+        outline: 4px solid #cfe2ff;
+    }
+
+    .big-button.warning {
+        background: var(--warning);
+        box-shadow: 0 7px 16px rgba(255, 173, 51, 0.24);
+    }
+
+    .big-button.success {
+        background: var(--success);
+        box-shadow: 0 7px 16px rgba(53, 184, 107, 0.24);
+    }
+
+    .big-button.gray {
+        background: #7b8798;
+        box-shadow: none;
+    }
+
+    .workspace-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .box {
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 24px;
+        padding: 20px;
+        min-height: 300px;
+    }
+
+    .box.workspace {
+        background: #f4f8ff;
+    }
+
+    .box h3 {
+        text-align: center;
+        color: var(--subtext);
+        margin-bottom: 18px;
+    }
+
+    .card-item {
+        background: #fff;
+        border: 3px solid #dbe7ff;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 14px;
+        min-height: 68px;
+        font-weight: 900;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .card-item:hover, .card-item:focus-visible {
+        transform: scale(1.02);
+        border-color: var(--primary);
+        outline: 4px solid #cfe2ff;
+    }
+
+    .feedback {
+        min-height: 70px;
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 22px;
+        background: #f4f8ff;
+        border: 2px solid var(--line);
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--subtext);
+    }
+
+    .check-row {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 14px;
+        align-items: stretch;
+        margin-top: 20px;
+    }
+
+    .check-row .big-button {
+        flex: 0 0 185px;
+        min-height: 90px;
+        margin: 0;
+    }
+
+    .check-row .feedback {
+        flex: 1;
+        min-height: 90px;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .summary-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .summary-item {
+        background: #f4f8ff;
+        border: 2px solid var(--line);
+        border-radius: 22px;
+        padding: 22px;
+        text-align: center;
+        font-weight: 900;
+    }
+
+    .link-button {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: var(--primary);
+        color: #fff;
+        padding: 24px 20px;
+        border-radius: 26px;
+        text-decoration: none;
+        font-size: 1.35rem;
+        font-weight: 900;
+        box-shadow: 0 10px 22px rgba(79, 140, 255, 0.24);
+        margin-top: 22px;
+    }
+
+    .audio-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 2px solid var(--line);
+        background: #fff;
+        color: var(--primary-dark);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 900;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 18px;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @media (max-width: 820px) {
+        body {
+            font-size: 18px;
+        }
+
+        .lesson-card {
+            padding: 26px 20px;
+        }
+
+        .quick-menu,
+        .button-grid,
+        .workspace-area,
+        .summary-list,
+        .check-row {
+            grid-template-columns: 1fr;
+        }
+
+        .box {
+            min-height: 220px;
+        }
+
+        .check-row {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 14px;
+        align-items: stretch;
+        margin-top: 20px;
+    }
+
+        .check-row .big-button {
+            flex: none;
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <nav class="top-nav" aria-label="학습 진행 상황">
+        <div class="progress-wrap" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-label"><span>학습 진행</span><span id="progressText">0 / 6 완료</span></div>
+    </nav>
+
+    <header class="hero">
+        <span class="label">컴퓨터 활용 · 코딩</span>
+        <h1>🤖 순서대로 척척!<br>컴퓨터에게 일 시키기</h1>
+        <p>컴퓨터와 인공지능(AI)이 잘 이해할 수 있도록, 일을 <strong>차례대로</strong> 알려주는 방법을 배워요.</p>
+        <div class="quick-menu" aria-label="바로가기 메뉴">
+            <a href="#step1">1. 개념</a>
+            <a href="#step2">2. 알고리즘</a>
+            <a href="#step3">3. 명령</a>
+            <a href="#mission1">4. 미션</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="lesson-card" id="step1" data-complete="false">
+            <span class="step-badge">1</span>
+            <h2>컴퓨터는 친절한 설명이 필요해요</h2>
+            <p>컴퓨터와 인공지능은 일을 아주 빠르게 할 수 있어요. 하지만 우리가 생각한 것을 스스로 눈치껏 알지는 못해요.</p>
+            <div class="concept-box">
+                <p><strong>중요한 약속:</strong> 컴퓨터에게는 “무엇을, 어떤 순서로 할지” 하나씩 알려주어야 해요.</p>
+            </div>
+            <div class="activity-box">
+                <h3>선생님과 함께 해보기</h3>
+                <div class="robot-screen" id="robot-chat" role="status" aria-live="polite">🤖 로봇 요리사: 어떤 일을 할까요?</div>
+                <div class="button-grid">
+                    <button class="big-button warning" onclick="talkToRobot('bad')">대충 말하기<br>“샌드위치 줘!”</button>
+                    <button class="big-button success" onclick="talkToRobot('good')">자세히 말하기<br>“빵 꺼내고 잼 발라줘!”</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="step2" data-complete="false">
+            <span class="step-badge">2</span>
+            <h2>알고리즘은 순서가 있는 계획표예요</h2>
+            <p>문제를 해결하기 위해 차근차근 순서대로 적어 놓은 계획표를 <strong>알고리즘</strong>이라고 해요.</p>
+            <div class="teacher-box">
+                <p>아래 카드를 눌러 작업 공간으로 옮겨 보세요. 다시 누르면 도구 상자로 돌아갑니다.</p>
+            </div>
+            <div class="activity-box">
+                <h3>딸기잼 샌드위치 만들기</h3>
+                <div class="workspace-area">
+                    <div class="box" id="tb-algo"><h3>📁 도구 상자</h3>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-algo', 'tb-algo')" onkeydown="keyToggle(event, this, 'ws-algo', 'tb-algo')" data-val="3">빵 한 장에 딸기잼 바르기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-algo', 'tb-algo')" onkeydown="keyToggle(event, this, 'ws-algo', 'tb-algo')" data-val="1">식빵 봉지 열기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-algo', 'tb-algo')" onkeydown="keyToggle(event, this, 'ws-algo', 'tb-algo')" data-val="4">나머지 빵으로 덮기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-algo', 'tb-algo')" onkeydown="keyToggle(event, this, 'ws-algo', 'tb-algo')" data-val="2">식빵 두 장 꺼내기</div>
+                    </div>
+                    <div class="box workspace" id="ws-algo"><h3>📝 작업 공간</h3></div>
+                </div>
+                <div class="check-row">
+                    <button class="big-button" onclick="checkAnswer('ws-algo', '1,2,3,4', 'algo-fb', 'step2')">결과 확인하기</button>
+                    <button class="big-button gray" onclick="resetWorkspace('tb-algo', 'ws-algo', 'algo-fb', '카드를 순서대로 놓고 확인해 보세요.', 'step2')">다시하기</button>
+                    <div class="feedback" id="algo-fb" role="status" aria-live="polite">카드를 순서대로 놓고 확인해 보세요.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="step3" data-complete="false">
+            <span class="step-badge">3</span>
+            <h2>명령 블록으로 컴퓨터에게 말해요</h2>
+            <p>알고리즘을 만들었다면, 이제 컴퓨터가 알아듣는 <strong>명령 블록</strong>으로 바꾸어 말해요.</p>
+            <div class="activity-box">
+                <h3>순서대로 블록 누르기</h3>
+                <div class="robot-screen" id="coding-screen" role="status" aria-live="polite">입력 대기중...</div>
+                <div class="button-grid">
+                    <button class="big-button" onclick="addCode('🍞 식빵 꺼내기')">🍞 식빵 블록</button>
+                    <button class="big-button" onclick="addCode('🍓 잼 바르기')">🍓 잼 블록</button>
+                    <button class="big-button" onclick="addCode('🥪 빵 덮기')">🥪 덮기 블록</button>
+                    <button class="big-button gray" onclick="resetCode()">↩ 지우기</button>
+                </div>
+                <div class="feedback" id="coding-fb" role="status" aria-live="polite">식빵 → 잼 → 덮기 순서로 눌러 보세요.</div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="mission1" data-complete="false">
+            <span class="step-badge">M1</span>
+            <h2>미션 1. 반짝반짝 양치질 순서</h2>
+            <p>양치질도 순서가 있어요. 알맞은 순서로 카드를 옮겨 보세요.</p>
+            <div class="activity-box">
+                <div class="workspace-area">
+                    <div class="box" id="tb-teeth"><h3>📁 도구 상자</h3>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-teeth', 'tb-teeth')" onkeydown="keyToggle(event, this, 'ws-teeth', 'tb-teeth')" data-val="3">이 닦기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-teeth', 'tb-teeth')" onkeydown="keyToggle(event, this, 'ws-teeth', 'tb-teeth')" data-val="4">물로 입 헹구기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-teeth', 'tb-teeth')" onkeydown="keyToggle(event, this, 'ws-teeth', 'tb-teeth')" data-val="2">치약 짜기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-teeth', 'tb-teeth')" onkeydown="keyToggle(event, this, 'ws-teeth', 'tb-teeth')" data-val="1">칫솔 준비하기</div>
+                    </div>
+                    <div class="box workspace" id="ws-teeth"><h3>📝 작업 공간</h3></div>
+                </div>
+                <div class="check-row">
+                    <button class="big-button" onclick="checkAnswer('ws-teeth', '1,2,3,4', 'teeth-fb', 'mission1')">결과 확인하기</button>
+                    <button class="big-button gray" onclick="resetWorkspace('tb-teeth', 'ws-teeth', 'teeth-fb', '카드를 모두 옮겨 순서를 완성하세요.', 'mission1')">다시하기</button>
+                    <div class="feedback" id="teeth-fb" role="status" aria-live="polite">카드를 모두 옮겨 순서를 완성하세요.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="mission2" data-complete="false">
+            <span class="step-badge">M2</span>
+            <h2>미션 2. 맛있는 햄버거 탑 쌓기</h2>
+            <p>햄버거 재료도 알맞은 순서로 차곡차곡 쌓아야 해요.</p>
+            <div class="activity-box">
+                <div class="workspace-area">
+                    <div class="box" id="tb-burger"><h3>📁 도구 상자</h3>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-burger', 'tb-burger')" onkeydown="keyToggle(event, this, 'ws-burger', 'tb-burger')" data-val="2">고기 패티 올리기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-burger', 'tb-burger')" onkeydown="keyToggle(event, this, 'ws-burger', 'tb-burger')" data-val="4">위쪽 빵 덮기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-burger', 'tb-burger')" onkeydown="keyToggle(event, this, 'ws-burger', 'tb-burger')" data-val="1">아래쪽 빵 놓기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-burger', 'tb-burger')" onkeydown="keyToggle(event, this, 'ws-burger', 'tb-burger')" data-val="3">야채 올리기</div>
+                    </div>
+                    <div class="box workspace" id="ws-burger"><h3>📝 작업 공간</h3></div>
+                </div>
+                <div class="check-row">
+                    <button class="big-button" onclick="checkAnswer('ws-burger', '1,2,3,4', 'burger-fb', 'mission2')">결과 확인하기</button>
+                    <button class="big-button gray" onclick="resetWorkspace('tb-burger', 'ws-burger', 'burger-fb', '카드를 모두 옮겨 순서를 완성하세요.', 'mission2')">다시하기</button>
+                    <div class="feedback" id="burger-fb" role="status" aria-live="polite">카드를 모두 옮겨 순서를 완성하세요.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="mission3" data-complete="false">
+            <span class="step-badge">M3</span>
+            <h2>미션 3. 새싹을 틔우는 순서</h2>
+            <p>씨앗을 심을 때도 순서가 중요해요. 새싹이 잘 자라도록 순서를 맞춰 보세요.</p>
+            <div class="activity-box">
+                <div class="workspace-area">
+                    <div class="box" id="tb-seed"><h3>📁 도구 상자</h3>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-seed', 'tb-seed')" onkeydown="keyToggle(event, this, 'ws-seed', 'tb-seed')" data-val="4">물뿌리개로 물 주기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-seed', 'tb-seed')" onkeydown="keyToggle(event, this, 'ws-seed', 'tb-seed')" data-val="2">흙 파고 씨앗 넣기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-seed', 'tb-seed')" onkeydown="keyToggle(event, this, 'ws-seed', 'tb-seed')" data-val="1">화분에 흙 담기</div>
+                        <div class="card-item" tabindex="0" onclick="toggleCard(this, 'ws-seed', 'tb-seed')" onkeydown="keyToggle(event, this, 'ws-seed', 'tb-seed')" data-val="3">씨앗 위를 흙으로 덮기</div>
+                    </div>
+                    <div class="box workspace" id="ws-seed"><h3>📝 작업 공간</h3></div>
+                </div>
+                <div class="check-row">
+                    <button class="big-button" onclick="checkAnswer('ws-seed', '1,2,3,4', 'seed-fb', 'mission3')">결과 확인하기</button>
+                    <button class="big-button gray" onclick="resetWorkspace('tb-seed', 'ws-seed', 'seed-fb', '카드를 모두 옮겨 순서를 완성하세요.', 'mission3')">다시하기</button>
+                    <div class="feedback" id="seed-fb" role="status" aria-live="polite">카드를 모두 옮겨 순서를 완성하세요.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-card" id="summary">
+            <span class="step-badge">정리</span>
+            <h2>오늘 배운 내용</h2>
+            <div class="summary-list">
+                <div class="summary-item">1️⃣ 컴퓨터는 자세한 설명이 필요해요</div>
+                <div class="summary-item">2️⃣ 알고리즘은 순서가 있는 계획표예요</div>
+                <div class="summary-item">3️⃣ 순차구조는 차례대로 실행하는 방법이에요</div>
+            </div>
+            
+        </section>
+    </main>
+</div>
+
+<script>
+    const completedSections = new Set();
+    const totalSections = 6;
+
+    function updateProgress() {
+        const count = completedSections.size;
+        document.getElementById('progressBar').style.width = Math.round((count / totalSections) * 100) + '%';
+        document.getElementById('progressText').innerText = `${count} / ${totalSections} 완료`;
+    }
+
+    function markComplete(sectionId) {
+        completedSections.add(sectionId);
+        updateProgress();
+    }
+
+    function talkToRobot(type) {
+        const chat = document.getElementById('robot-chat');
+        if(type === 'bad') {
+            chat.innerText = '🤖 로봇 요리사: 음... 무엇부터 해야 할지 모르겠어요. 순서를 알려 주세요!';
+            chat.style.background = 'var(--warning-light)';
+            chat.style.borderColor = '#ffe0a3';
+            chat.style.color = '#9a6200';
+        } else {
+            chat.innerText = '🤖 로봇 요리사: 좋아요! 빵을 꺼내고, 잼을 바르고, 덮으면 되겠군요!';
+            chat.style.background = 'var(--success-light)';
+            chat.style.borderColor = '#bdebcf';
+            chat.style.color = '#187344';
+            markComplete('step1');
+        }
+    }
+
+    let currentCode = [];
+    function addCode(blockName) {
+        if(currentCode.length >= 3) return;
+        currentCode.push(blockName);
+        document.getElementById('coding-screen').innerText = currentCode.join(' → ');
+        checkCodingSequence();
+    }
+
+    function resetCode() {
+        currentCode = [];
+        document.getElementById('coding-screen').innerText = '입력 대기중...';
+        const feedback = document.getElementById('coding-fb');
+        feedback.innerText = '식빵 → 잼 → 덮기 순서로 눌러 보세요.';
+        feedback.style.background = '#f4f8ff';
+        feedback.style.color = 'var(--subtext)';
+    }
+
+    function checkCodingSequence() {
+        const feedback = document.getElementById('coding-fb');
+        const correctSequence = '🍞 식빵 꺼내기,🍓 잼 바르기,🥪 빵 덮기';
+        if(currentCode.join(',') === correctSequence) {
+            feedback.innerText = '🎉 성공! 명령 블록이 올바른 순서로 전달되었어요.';
+            feedback.style.background = 'var(--success-light)';
+            feedback.style.color = '#187344';
+            markComplete('step3');
+        } else if (currentCode.length >= 3) {
+            feedback.innerText = '🤔 순서가 조금 달라요. 지우기를 누르고 다시 해보세요.';
+            feedback.style.background = 'var(--danger-light)';
+            feedback.style.color = '#b22222';
+        }
+    }
+
+    function toggleCard(element, workspaceId, toolboxId) {
+        const workspace = document.getElementById(workspaceId);
+        const toolbox = document.getElementById(toolboxId);
+        if(element.parentElement.id === toolboxId) {
+            workspace.appendChild(element);
+        } else {
+            toolbox.appendChild(element);
+        }
+    }
+
+
+    function resetWorkspace(toolboxId, workspaceId, feedbackId, defaultMessage, sectionId) {
+        const toolbox = document.getElementById(toolboxId);
+        const workspace = document.getElementById(workspaceId);
+        const feedback = document.getElementById(feedbackId);
+
+        const cards = Array.from(workspace.querySelectorAll('.card-item'));
+        cards.forEach(card => toolbox.appendChild(card));
+
+        completedSections.delete(sectionId);
+        updateProgress();
+
+        feedback.innerText = defaultMessage;
+        feedback.style.background = '#f4f8ff';
+        feedback.style.color = 'var(--subtext)';
+        feedback.style.borderColor = 'var(--line)';
+    }
+
+    function keyToggle(event, element, workspaceId, toolboxId) {
+        if(event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleCard(element, workspaceId, toolboxId);
+        }
+    }
+
+    function checkAnswer(workspaceId, correctOrder, feedbackId, sectionId) {
+        const workspace = document.getElementById(workspaceId);
+        const cards = workspace.querySelectorAll('.card-item');
+        const feedback = document.getElementById(feedbackId);
+
+        if(cards.length < 4) {
+            feedback.innerText = '카드를 모두 작업 공간으로 옮겨 주세요.';
+            feedback.style.background = 'var(--warning-light)';
+            feedback.style.color = '#9a6200';
+            return;
+        }
+
+        const currentOrder = Array.from(cards).map(card => card.getAttribute('data-val')).join(',');
+
+        if(currentOrder === correctOrder) {
+            feedback.innerText = '🎉 성공! 아주 좋은 순서예요.';
+            feedback.style.background = 'var(--success-light)';
+            feedback.style.color = '#187344';
+            markComplete(sectionId);
+        } else {
+            feedback.innerText = '🤔 순서가 조금 달라요. 카드를 눌러 다시 옮겨 보세요.';
+            feedback.style.background = 'var(--danger-light)';
+            feedback.style.color = '#b22222';
+        }
+    }
+
+    updateProgress();
+</script>
+</body>
+</html>
