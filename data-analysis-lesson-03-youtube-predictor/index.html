@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100만 유튜버까지 몇 개월? | 엔트리 데이터 분석 3차시</title>
+<style>
+:root {
+  --ink: #172033;
+  --muted: #5a6475;
+  --paper: #fffaf5;
+  --white: #ffffff;
+  --line: #d9e1ec;
+  --red: #e7353f;
+  --red-dark: #b91f2a;
+  --blue: #2357d6;
+  --blue-dark: #153a91;
+  --green: #16a064;
+  --gold: #f4b83f;
+  --cream: #fff3df;
+  --gray: #f4f7fb;
+  --shadow: 0 16px 30px rgba(17, 32, 54, .12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  background: var(--paper);
+  line-height: 1.68;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -64px;
+  z-index: 50;
+  padding: 10px 14px;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, .92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+}
+
+.topbar .shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: max-content;
+  color: var(--red-dark);
+  font-weight: 1000;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--white);
+  background: var(--red);
+  border-radius: 8px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .12);
+}
+
+.brand-mark::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 12px solid var(--white);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  margin-left: 3px;
+}
+
+.navlinks {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 10px 0;
+}
+
+.navlinks a {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: var(--blue-dark);
+  border: 1px solid #c8d5ea;
+  border-radius: 8px;
+  background: #f8fbff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.navlinks a:hover {
+  color: var(--red-dark);
+  border-color: #f2b2b6;
+  background: #fff7f7;
+}
+
+.hero {
+  position: relative;
+  color: var(--white);
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(116, 16, 27, .97) 0%, rgba(207, 44, 52, .94) 45%, rgba(31, 82, 179, .94) 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px);
+  background-size: auto, 36px 36px, 36px 36px;
+}
+
+.hero .shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, .9fr);
+  align-items: center;
+  gap: 36px;
+  min-height: 620px;
+  padding: 58px 0 76px;
+}
+
+.kicker {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  color: #5c1017;
+  background: #fff2d1;
+  border: 2px solid rgba(255, 255, 255, .58);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 1000;
+}
+
+.hero h1 {
+  margin: 18px 0 18px;
+  max-width: 760px;
+  font-size: 58px;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.hero-sub {
+  max-width: 690px;
+  margin: 0;
+  color: #fff7e8;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 10px 16px;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, .64);
+  border-radius: 8px;
+  font-weight: 1000;
+  box-shadow: 0 10px 24px rgba(20, 20, 20, .18);
+}
+
+.action.primary {
+  color: var(--red-dark);
+  background: var(--white);
+}
+
+.action.secondary {
+  color: var(--white);
+  background: rgba(255, 255, 255, .14);
+}
+
+.button-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: currentColor;
+}
+
+.button-icon::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 3px solid var(--white);
+  border-bottom: 3px solid var(--white);
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.action.primary .button-icon::before {
+  border-color: var(--white);
+}
+
+.studio {
+  position: relative;
+  min-height: 420px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, .34);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+}
+
+.studio-screen {
+  height: 100%;
+  min-height: 388px;
+  padding: 18px;
+  color: var(--ink);
+  border-radius: 8px;
+  background: var(--white);
+  overflow: hidden;
+}
+
+.studio-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-weight: 1000;
+}
+
+.screen-chip {
+  color: var(--white);
+  background: var(--red);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.metric {
+  min-height: 76px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f7f9fd;
+}
+
+.metric b {
+  display: block;
+  color: var(--blue-dark);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chart-card {
+  position: relative;
+  min-height: 230px;
+  border: 1px solid #cfd9e8;
+  border-radius: 8px;
+  background:
+    linear-gradient(#edf2fa 1px, transparent 1px),
+    linear-gradient(90deg, #edf2fa 1px, transparent 1px),
+    #ffffff;
+  background-size: 36px 36px;
+}
+
+.chart-line {
+  position: absolute;
+  left: 40px;
+  right: 26px;
+  bottom: 48px;
+  height: 7px;
+  background: var(--blue);
+  transform: rotate(-28deg);
+  transform-origin: left center;
+  border-radius: 99px;
+}
+
+.chart-line::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  width: 18px;
+  height: 18px;
+  border-right: 7px solid var(--blue);
+  border-top: 7px solid var(--blue);
+  transform: rotate(45deg);
+}
+
+.dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--red);
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .24);
+}
+
+.dot.d1 { left: 52px; bottom: 46px; }
+.dot.d2 { left: 90px; bottom: 58px; }
+.dot.d3 { left: 130px; bottom: 74px; }
+.dot.d4 { left: 170px; bottom: 94px; }
+.dot.d5 { left: 210px; bottom: 118px; }
+.dot.d6 { left: 250px; bottom: 150px; }
+.dot.d7 { left: 292px; bottom: 180px; }
+
+.badge-million {
+  position: absolute;
+  right: 20px;
+  top: 22px;
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  color: #5c3510;
+  background: linear-gradient(145deg, #ffe09b, var(--gold));
+  border: 4px solid #8c5b16;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 1000;
+  line-height: 1.1;
+}
+
+.band {
+  padding: 64px 0;
+  background: var(--white);
+}
+
+.band.alt {
+  background: #f3f7fc;
+}
+
+.band.warm {
+  background: var(--cream);
+}
+
+.section-head {
+  max-width: 820px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 5px 9px;
+  color: var(--red-dark);
+  background: #ffe6e7;
+  border: 1px solid #f5c1c5;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+h2 {
+  margin: 12px 0 8px;
+  font-size: 34px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  line-height: 1.28;
+  color: var(--blue-dark);
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.desktop-break {
+  display: block;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.panel,
+.mini-card,
+.quiz,
+.mission-card,
+.step-card,
+.download-card,
+.result-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  padding: 22px;
+}
+
+.mini-card,
+.mission-card,
+.step-card,
+.download-card {
+  padding: 18px;
+}
+
+.mini-card b,
+.mission-card b,
+.download-card b {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--blue-dark);
+  font-size: 18px;
+}
+
+.mission-card {
+  min-height: 156px;
+}
+
+.mission-number {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 12px;
+  color: var(--white);
+  background: var(--blue);
+  border-radius: 8px;
+  font-weight: 1000;
+}
+
+.download-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.download-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 178px;
+}
+
+.download-card p {
+  color: var(--muted);
+}
+
+.download-card .download-link {
+  margin-top: auto;
+}
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--white);
+  background: var(--blue);
+  border-radius: 8px;
+  font-weight: 1000;
+}
+
+.download-link.red {
+  background: var(--red);
+}
+
+.callout {
+  padding: 16px 18px;
+  border-left: 6px solid var(--blue);
+  border-radius: 8px;
+  background: #eef4ff;
+  font-weight: 800;
+}
+
+.callout.gold {
+  border-left-color: var(--gold);
+  background: #fff7df;
+}
+
+.key-idea {
+  position: relative;
+  margin: 18px 0 0;
+  padding: 22px 24px;
+  color: #731923;
+  background: linear-gradient(135deg, #fff1bf 0%, #ffe4e7 55%, #eaf1ff 100%);
+  border: 2px solid #f2b23a;
+  border-radius: 8px;
+  box-shadow: 0 16px 28px rgba(139, 31, 42, .13);
+  font-size: 22px;
+  line-height: 1.55;
+  font-weight: 1000;
+}
+
+.key-idea::before {
+  content: "기억하기";
+  display: inline-flex;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  color: var(--white);
+  background: var(--red);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  vertical-align: middle;
+}
+
+.key-idea.blue {
+  color: #103a80;
+  background: linear-gradient(135deg, #edf5ff 0%, #e6fff4 100%);
+  border-color: #8bb8f6;
+}
+
+.key-idea.blue::before {
+  background: var(--blue);
+}
+
+.mission-command {
+  padding: 28px 24px;
+  color: var(--red-dark);
+  background: #fff4d6;
+  border: 2px solid #f2b23a;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 30px;
+  line-height: 1.35;
+  font-weight: 1000;
+  text-align: center;
+}
+
+.review-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.quiz {
+  padding: 18px;
+}
+
+.wide-quiz {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.quiz p {
+  font-weight: 900;
+}
+
+.choices {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wide-quiz .choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choices button {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  text-align: left;
+  color: var(--ink);
+  background: #f8fbff;
+  border: 1px solid #cdd8e8;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.choices button:hover {
+  border-color: var(--blue);
+}
+
+.choices button.correct {
+  color: #075336;
+  border-color: #8bd7b9;
+  background: #e8fff4;
+}
+
+.choices button.wrong {
+  color: #7b1720;
+  border-color: #f4b0b7;
+  background: #fff0f1;
+}
+
+.feedback {
+  min-height: 24px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.concept-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.flow-box {
+  display: grid;
+  place-items: center;
+  min-height: 118px;
+  padding: 16px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  text-align: center;
+  font-weight: 1000;
+}
+
+.flow-box span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.flow-arrow {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  color: var(--red);
+  font-size: 28px;
+  font-weight: 1000;
+}
+
+.data-layout {
+  display: grid;
+  grid-template-columns: minmax(290px, .78fr) minmax(0, 1.22fr);
+  gap: 18px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 360px;
+  background: var(--white);
+}
+
+th,
+td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  color: var(--blue-dark);
+  background: #edf3ff;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+.chart-lab {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.chart-box {
+  width: 100%;
+  min-height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.small-button {
+  min-height: 40px;
+  padding: 8px 12px;
+  color: var(--blue-dark);
+  background: #eef4ff;
+  border: 1px solid #c7d5ef;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.small-button.active,
+.small-button:hover {
+  color: var(--white);
+  background: var(--blue);
+}
+
+.step-list {
+  display: grid;
+  gap: 12px;
+  counter-reset: step;
+}
+
+.step-card {
+  position: relative;
+  padding-left: 64px;
+}
+
+.step-card::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--white);
+  background: var(--red);
+  border-radius: 8px;
+  font-weight: 1000;
+}
+
+.settings-table {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f9fbff;
+}
+
+.setting-row b {
+  color: var(--blue-dark);
+}
+
+.predictor {
+  display: grid;
+  grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.input-row input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid #c6d1e3;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.input-row button {
+  min-height: 48px;
+  padding: 10px 14px;
+  color: var(--white);
+  background: var(--red);
+  border: 0;
+  border-radius: 8px;
+  font-weight: 1000;
+}
+
+.result-panel {
+  position: relative;
+  min-height: 260px;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.result-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(35, 87, 214, .07) 1px, transparent 1px),
+    linear-gradient(rgba(35, 87, 214, .07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.result-content {
+  position: relative;
+}
+
+.result-number {
+  margin: 8px 0 4px;
+  color: var(--red-dark);
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 1000;
+}
+
+.result-note {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.test-card {
+  min-height: 132px;
+  padding: 16px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.test-card b {
+  display: block;
+  color: var(--red-dark);
+  font-size: 26px;
+}
+
+details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+details + details {
+  margin-top: 10px;
+}
+
+summary {
+  padding: 16px 18px;
+  color: var(--blue-dark);
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+details div {
+  padding: 0 18px 18px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.summary-fill {
+  display: grid;
+  gap: 12px;
+}
+
+.fill-row {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  font-weight: 900;
+}
+
+.blank {
+  display: inline-block;
+  min-width: 86px;
+  margin-left: 6px;
+  padding: 2px 10px;
+  color: rgba(35, 87, 214, .28);
+  border: 2px dashed rgba(35, 87, 214, .24);
+  border-radius: 8px;
+  background: rgba(35, 87, 214, .05);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 1000;
+  letter-spacing: 0;
+}
+
+.short-quiz {
+  display: grid;
+  gap: 12px;
+}
+
+.short-quiz label {
+  display: block;
+}
+
+.short-answer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.short-answer-row input {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 2px solid #cad6e8;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.short-answer-row button {
+  min-height: 44px;
+  padding: 9px 14px;
+  color: var(--white);
+  background: var(--blue);
+  border: 0;
+  border-radius: 8px;
+  font-weight: 1000;
+}
+
+.short-feedback {
+  min-height: 24px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.footer {
+  padding: 36px 0 48px;
+  color: #edf2ff;
+  background: #1d2638;
+}
+
+.footer .shell {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  color: #fff5cf;
+  font-weight: 900;
+}
+
+@media (max-width: 940px) {
+  .hero .shell,
+  .grid-2,
+  .data-layout,
+  .predictor {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-quiz .choices {
+    grid-template-columns: 1fr;
+  }
+
+  .hero .shell {
+    min-height: auto;
+    padding: 44px 0 58px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .studio {
+    min-height: auto;
+  }
+
+  .studio-screen {
+    min-height: 340px;
+  }
+
+  .review-row,
+  .grid-3,
+  .download-list,
+  .test-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 620px) {
+  .shell {
+    width: min(100% - 22px, 1120px);
+  }
+
+  .desktop-break {
+    display: none;
+  }
+
+  .topbar .shell {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+  }
+
+  .brand {
+    padding: 2px 0 0;
+  }
+
+  .navlinks {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero-sub,
+  .lead {
+    font-size: 16px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    min-height: 210px;
+  }
+
+  .badge-million {
+    width: 70px;
+    height: 70px;
+    font-size: 14px;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .short-answer-row {
+    grid-template-columns: 1fr;
+  }
+
+  .setting-row {
+    grid-template-columns: 1fr;
+  }
+
+  .step-card {
+    padding-left: 18px;
+    padding-top: 58px;
+  }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 이동</a>
+
+<nav class="topbar" aria-label="차시 이동">
+  <div class="shell">
+    <a class="brand" href="#top" aria-label="3차시 처음으로">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>엔트리 데이터 분석 3차시</span>
+    </a>
+    <div class="navlinks">
+      <a href="#files">미션 파일</a>
+      <a href="#review">복습</a>
+      <a href="#concept">예측 원리</a>
+      <a href="#data">데이터</a>
+      <a href="#entry">엔트리 실습</a>
+      <a href="#predictor">예측 실험</a>
+      <a href="#wrap">마무리</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="shell">
+    <div>
+      <div class="kicker">AI 크리에이터 스튜디오</div>
+      <h1>100만 유튜버까지 몇 <br class="desktop-break">개월?</h1>
+      <p class="hero-sub">
+        구독자 성장 기록을 살펴보고, AI에게 그 흐름을 배우게 합니다.<br class="desktop-break">
+        개월 수를 입력하면 몇 만 명까지 성장할지 알려 주는 예측기를 완성해 봅시다.
+      </p>
+      <div class="hero-actions">
+        <a class="action primary" href="#files"><span class="button-icon" aria-hidden="true"></span>미션 파일 받기</a>
+        <a class="action secondary" href="#entry">미션 시작</a>
+        <a class="action secondary" href="#predictor">예측 실험으로 이동</a>
+      </div>
+    </div>
+
+    <div class="studio" aria-label="AI 크리에이터 스튜디오 대시보드 그림">
+      <div class="studio-screen">
+        <div class="studio-top">
+          <span>Creator Growth Lab</span>
+          <span class="screen-chip">AI 예측 준비</span>
+        </div>
+        <div class="dashboard-grid">
+          <div class="metric"><b>12개월</b><span>학습 데이터</span></div>
+          <div class="metric"><b>102만</b><span>현재 구독자</span></div>
+          <div class="metric"><b>24개월</b><span>예측 목표</span></div>
+        </div>
+        <div class="chart-card" aria-hidden="true">
+          <span class="dot d1"></span>
+          <span class="dot d2"></span>
+          <span class="dot d3"></span>
+          <span class="dot d4"></span>
+          <span class="dot d5"></span>
+          <span class="dot d6"></span>
+          <span class="dot d7"></span>
+          <span class="chart-line"></span>
+          <span class="badge-million">100만<br>가능?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="band warm" id="mission">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">미션 브리핑</span>
+        <h2>AI 구독자 예측기 만들기</h2>
+        <p class="lead">
+          크리에이터는 조회수, 좋아요, 댓글, 구독자 수 같은 기록을 보며 채널을 키웁니다.<br class="desktop-break">
+          이번 미션에서는 구독자 수가 늘어난 기록을 보고, 앞으로의 구독자 수를 예측합니다.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <article class="mission-card">
+          <span class="mission-number">1</span>
+          <b>데이터 흐름 읽기</b>
+          <p>개월 수가 커질수록 구독자 수가 어떤 방향으로 움직이는지 찾아봅니다.</p>
+        </article>
+        <article class="mission-card">
+          <span class="mission-number">2</span>
+          <b>AI에게 알려 주기</b>
+          <p>AI가 <strong>개월</strong>을 보고 <strong>구독자수_만명</strong>을 예상하도록 설정합니다.</p>
+        </article>
+        <article class="mission-card">
+          <span class="mission-number">3</span>
+          <b>예측 버튼 완성</b>
+          <p>입력값 저장, 예측값 저장, 반올림 블록을 이어 붙여 결과를 보여 줍니다.</p>
+        </article>
+      </div>
+
+      <div class="key-idea">
+        과거 기록의 흐름을 따라가면 아직 없는 미래의 숫자도 예상해 볼 수 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="files">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">준비</span>
+        <h2>미션 파일 챙기기</h2>
+        <p class="lead">아래 두 파일을 내려받습니다. CSV는 AI가 배울 데이터이고, 엔트리 파일은 오늘 완성할 예측기입니다.</p>
+      </div>
+
+      <div class="download-list">
+        <article class="download-card">
+          <b>유튜버 구독자 데이터 CSV</b>
+          <p>개월과 구독자수_만명 열이 들어 있는 학습 데이터입니다. AI가 숫자 흐름을 배울 때 사용합니다.</p>
+          <a class="download-link" href="./개월,구독자수_만명.csv" download>CSV 다운로드</a>
+        </article>
+        <article class="download-card">
+          <b>엔트리 예측기 템플릿</b>
+          <p>배경, 캐릭터, 버튼, 결과판이 준비되어 있습니다. 예측하기 버튼의 블록을 완성합니다.</p>
+          <a class="download-link red" href="https://drive.google.com/uc?export=download&id=1D8evW2VDwZ-t4MYnswK3YN4mkhxNAVKx">엔트리 파일 다운로드</a>
+        </article>
+      </div>
+
+      <div class="callout" style="margin-top:18px;">
+        엔트리에서 작품 만들기 화면을 연 뒤, 파일 메뉴에서 내려받은 <strong>.ent</strong> 파일을 불러옵니다.
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt" id="review">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">워밍업</span>
+        <h2>복습하기</h2>
+        <p class="lead">
+          지난 시간에는 산점도를 활용하여 두 숫자의 관계를 살펴봤습니다.<br class="desktop-break">
+          기억을 떠올리며 문제를 풀어보세요.
+        </p>
+      </div>
+
+      <div class="review-row">
+        <article class="quiz" data-answer="0">
+          <p>1. 산점도는 무엇을 보기 위해 사용할까요?</p>
+          <div class="choices">
+            <button type="button">두 숫자 사이의 관계</button>
+            <button type="button">캐릭터의 움직임</button>
+            <button type="button">버튼의 색깔</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+        <article class="quiz" data-answer="0">
+          <p>2. 점들이 오른쪽 위로 올라가면?</p>
+          <div class="choices">
+            <button type="button">한 값이 커질수록 다른 값도 커진다</button>
+            <button type="button">한 값이 커질수록 다른 값은 작아진다</button>
+            <button type="button">아무 관계가 없다</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+        <article class="quiz" data-answer="1">
+          <p>3. 오늘은 관계를 이용해 무엇을 할까요?</p>
+          <div class="choices">
+            <button type="button">그림 분류</button>
+            <button type="button">미래 숫자 예측</button>
+            <button type="button">소리 녹음</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="concept">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">예측 원리</span>
+        <h2>AI는 흐름에 선을 그어 예측해요</h2>
+        <p class="lead">
+          점들이 흩어져 있어도 전체적으로 올라가는 방향이 보일 수 있습니다.<br class="desktop-break">
+          AI는 그 방향에 어울리는 선을 찾고, 선을 더 이어서 다음 값을 예상합니다.
+        </p>
+      </div>
+
+      <div class="concept-flow" aria-label="선형 회귀 흐름">
+        <div class="flow-box">과거 데이터 점<span>1개월 3만, 2개월 7만...</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">예측선 찾기<span>점들의 흐름에 맞는 직선</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">미래 숫자 예측<span>24개월 뒤는 몇 만 명?</span></div>
+      </div>
+
+      <div class="key-idea blue">
+        선형 회귀는 점들의 흐름에 잘 맞는 선을 찾고,<br class="desktop-break">
+        그 선을 따라 미래의 숫자를 예측하는 방법입니다.
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>점 사이에 길 그리기</h3>
+          <p>선형 회귀는 점들 사이에 자연스럽게 길을 하나 그어 보는 방법입니다. 그 길을 더 따라가면 미래의 값을 예상할 수 있습니다.</p>
+          <div class="callout">오늘은 AI에게 “개월 수를 보면 구독자 수를 예측해 줘!”라고 알려 줍니다.</div>
+        </div>
+        <div class="panel">
+          <h3>세 단어만 기억하기</h3>
+          <p>어려운 계산식보다 먼저 <strong>흐름</strong>, <strong>선</strong>, <strong>예측</strong>을 떠올려 봅니다.</p>
+          <article class="quiz" data-answer="0" style="box-shadow:none;margin-top:12px;">
+            <p>선형 회귀가 가장 잘하는 일은?</p>
+            <div class="choices">
+              <button type="button">점들의 흐름을 보고 숫자 예측하기</button>
+              <button type="button">게임 캐릭터 조종하기</button>
+              <button type="button">사진 속 물체 색칠하기</button>
+            </div>
+            <div class="feedback" aria-live="polite"></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band warm" id="attributes">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">AI에게 알려 줄 것</span>
+        <h2>무엇을 보고, 무엇을 맞힐까?</h2>
+        <p class="lead">AI 숫자 예측 모델을 만들 때는 <br class="desktop-break">AI가 볼 단서와 AI가 예상할 결과를 골라야 합니다.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="mini-card">
+          <b>핵심 속성</b>
+          <p>AI가 참고하는 단서입니다. 이번 작품에서는 <strong>개월</strong>입니다.</p>
+        </article>
+        <article class="mini-card">
+          <b>AI 모델</b>
+          <p>개월과 구독자 수의 흐름을 배운 뒤, 새로운 개월 수에 대한 결과를 계산합니다.</p>
+        </article>
+        <article class="mini-card">
+          <b>예측 속성</b>
+          <p>AI가 예측할 결과입니다. 이번 작품에서는 <strong>구독자수_만명</strong>입니다.</p>
+        </article>
+      </div>
+
+      <div class="key-idea blue">
+        <strong>핵심 속성</strong>: AI가 참고하는 단서.<br>
+        <strong>예측 속성</strong>: AI가 예측할 결과.
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="data">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">데이터 확인</span>
+        <h2>유튜버 성장 데이터 살펴보기</h2>
+        <p class="lead">AI에게 맡기기 전에 먼저 눈으로 읽어 봅시다. <br class="desktop-break">개월 수가 늘어날수록 구독자 수는 어떤 방향으로 움직이나요?</p>
+      </div>
+
+      <div class="data-layout">
+        <div class="panel">
+          <h3>월별 구독자 수</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>개월</th><th>구독자수_만명</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>3</td></tr>
+                <tr><td>2</td><td>7</td></tr>
+                <tr><td>3</td><td>12</td></tr>
+                <tr><td>4</td><td>18</td></tr>
+                <tr><td>5</td><td>25</td></tr>
+                <tr><td>6</td><td>33</td></tr>
+                <tr><td>7</td><td>42</td></tr>
+                <tr><td>8</td><td>52</td></tr>
+                <tr><td>9</td><td>63</td></tr>
+                <tr><td>10</td><td>75</td></tr>
+                <tr><td>11</td><td>88</td></tr>
+                <tr><td>12</td><td>102</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="chart-lab">
+          <svg class="chart-box" id="growthChart" viewBox="0 0 720 420" role="img" aria-label="월별 구독자 수 산점도와 예측선">
+            <rect x="0" y="0" width="720" height="420" fill="#ffffff"></rect>
+            <g stroke="#dce5f2" stroke-width="1">
+              <line x1="70" y1="50" x2="70" y2="340"></line>
+              <line x1="70" y1="340" x2="660" y2="340"></line>
+              <line x1="70" y1="282" x2="660" y2="282"></line>
+              <line x1="70" y1="224" x2="660" y2="224"></line>
+              <line x1="70" y1="166" x2="660" y2="166"></line>
+              <line x1="70" y1="108" x2="660" y2="108"></line>
+            </g>
+            <g fill="#5a6475" font-size="14" font-weight="800">
+              <text x="28" y="344">0</text>
+              <text x="24" y="286">25</text>
+              <text x="24" y="228">50</text>
+              <text x="24" y="170">75</text>
+              <text x="16" y="112">100</text>
+              <text x="318" y="392">개월</text>
+              <text x="12" y="36">만 명</text>
+            </g>
+            <g id="pointLayer"></g>
+            <g id="lineLayer"></g>
+            <g id="futureLayer"></g>
+          </svg>
+          <div class="chart-controls">
+            <button class="small-button active" type="button" data-chart="points">점 보기</button>
+            <button class="small-button" type="button" data-chart="line">예측선 보기</button>
+            <button class="small-button" type="button" data-chart="future">24개월 예측 보기</button>
+          </div>
+          <div class="key-idea blue">점들이 오른쪽 위로 올라가면 <br class="desktop-break">“개월 수가 늘수록 구독자 수도 늘어나는 흐름”이 있다는 뜻입니다.</div>
+        </div>
+
+        <article class="quiz wide-quiz" data-answer="1">
+          <p>개월 수가 커질수록 구독자 수는?</p>
+          <div class="choices">
+            <button type="button">줄어든다</button>
+            <button type="button">늘어난다</button>
+            <button type="button">관계가 없다</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt" id="entry">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">엔트리 실습</span>
+        <h2>엔트리에서 AI 모델 만들기</h2>
+        <p class="lead">템플릿을 열고 CSV를 불러온 뒤, <br class="desktop-break">AI가 개월과 구독자 수의 관계를 배우게 합니다.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>모델 만들기 순서</h3>
+          <div class="step-list">
+            <div class="step-card">인공지능 메뉴에서 <strong>인공지능 모델 학습하기</strong>를 엽니다.</div>
+            <div class="step-card"><strong>예측: 숫자</strong> 모델을 선택합니다.</div>
+            <div class="step-card">데이터 입력에서 월별구독자수 테이블을 선택합니다.</div>
+            <div class="step-card">핵심 속성에 <strong>개월</strong>을 넣습니다.</div>
+            <div class="step-card">예측 속성에 <strong>구독자수_만명</strong>을 넣습니다.</div>
+            <div class="step-card">학습 조건은 그대로 두고 <strong>학습하기</strong>를 누릅니다.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>선택할 값</h3>
+          <div class="settings-table">
+            <div class="setting-row"><b>모델 종류</b><span>예측: 숫자</span></div>
+            <div class="setting-row"><b>알고리즘</b><span>선형 회귀</span></div>
+            <div class="setting-row"><b>데이터</b><span>월별구독자수</span></div>
+            <div class="setting-row"><b>핵심 속성</b><span>개월</span></div>
+            <div class="setting-row"><b>예측 속성</b><span>구독자수_만명</span></div>
+          </div>
+          <div class="callout gold" style="margin-top:14px;">파란 막대가 100%가 되면 예측 준비가 끝납니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="blocks">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">코딩 미션</span>
+        <h2>예측하기 버튼 완성하기</h2>
+        <p class="lead">버튼을 눌렀을 때 입력한 개월 수를 AI 모델에 넣고, <br class="desktop-break">결과를 보기 좋게 표시합니다.</p>
+      </div>
+
+      <div class="panel">
+        <div class="mission-command">
+          예측하기 버튼을 완성하세요.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band warm" id="predictor">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">테스트 센터</span>
+        <h2>몇 개월 뒤 구독자 수를 예측해 볼까요?</h2>
+        <p class="lead">개월 수를 바꿔 입력하면서 구독자 수가 어떻게 달라지는지 확인합니다.</p>
+      </div>
+
+      <div class="predictor">
+        <div class="panel">
+          <h3>개월 수 입력</h3>
+          <p>6, 12, 24를 차례대로 입력해 보며 결과가 어떻게 달라지는지 비교합니다.</p>
+          <div class="input-row">
+            <input id="monthInput" type="number" min="1" max="60" value="24" aria-label="예측할 개월 수">
+            <button id="predictButton" type="button">예측하기</button>
+          </div>
+          <div class="key-idea">예측은 정답을 맞히는 마법이 아니라, <br class="desktop-break">지금까지의 데이터 흐름을 보고 가장 그럴듯한 값을 계산하는 것입니다.</div>
+        </div>
+        <div class="result-panel">
+          <div class="result-content">
+            <h3>예상 결과</h3>
+            <p id="resultSentence">24개월 뒤 예상 구독자는 약</p>
+            <div class="result-number" id="resultNumber">201만 명</div>
+            <p class="result-note" id="resultNote">100만 유튜버 달성 가능성이 있습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-grid" style="margin-top:18px;">
+        <article class="test-card"><b>6</b>개월 입력 후 실제 데이터와 비슷한지 확인</article>
+        <article class="test-card"><b>12</b>개월 입력 후 100만 근처인지 확인</article>
+        <article class="test-card"><b>24</b>개월 입력 후 100만을 넘는지 확인</article>
+        <article class="test-card"><b>다시</b>시작 상태로 돌아가는지 확인</article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt" id="help">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">막혔을 때</span>
+        <h2>예측이 이상하게 나오나요?</h2>
+        <p class="lead">막혔을 때는 아래 항목을 하나씩 확인합니다.</p>
+      </div>
+
+      <details>
+        <summary>예측값이 안 나와요</summary>
+        <div>숫자 예측 모델을 학습했는지, 학습 막대가 100%가 되었는지 확인합니다.</div>
+      </details>
+      <details>
+        <summary>결과가 이상해요</summary>
+        <div>핵심 속성에 개월, 예측 속성에 구독자수_만명을 넣었는지 확인합니다. 두 값을 반대로 넣으면 결과가 어색해질 수 있습니다.</div>
+      </details>
+      <details>
+        <summary>학습하기 버튼이 안 눌려요</summary>
+        <div>CSV를 제대로 불러왔는지, 열 이름이 개월과 구독자수_만명으로 보이는지 확인합니다.</div>
+      </details>
+      <details>
+        <summary>100만 표시가 안 나와요</summary>
+        <div>예측구독자수 값이 100 이상인지 확인합니다. 여기서 100은 100만 명을 뜻합니다.</div>
+      </details>
+    </div>
+  </section>
+
+  <section class="band" id="wrap">
+    <div class="shell">
+      <div class="section-head">
+        <span class="eyebrow">주관식 퀴즈</span>
+        <h2>미션 완료 체크</h2>
+        <p class="lead">초성 힌트를 보고 알맞은 답을 직접 입력해 보세요.</p>
+      </div>
+
+      <div class="summary-fill">
+        <div class="fill-row short-quiz" data-text-answer="개월">
+          <label>Q1. AI가 참고한 단서는 무엇인가요? <span class="blank">ㄱㅇ</span></label>
+          <div class="short-answer-row">
+            <input type="text" aria-label="AI가 참고한 단서 답 입력">
+            <button type="button">확인</button>
+          </div>
+          <div class="short-feedback" aria-live="polite"></div>
+        </div>
+        <div class="fill-row short-quiz" data-text-answer="구독자수">
+          <label>Q2. AI가 예측한 결과는 무엇인가요? <span class="blank">ㄱㄷㅈㅅ</span></label>
+          <div class="short-answer-row">
+            <input type="text" aria-label="AI가 예측한 결과 답 입력">
+            <button type="button">확인</button>
+          </div>
+          <div class="short-feedback" aria-live="polite"></div>
+        </div>
+        <div class="fill-row short-quiz" data-text-answer="숫자">
+          <label>Q3. 선형 회귀는 데이터의 흐름을 보고 새로운 무엇을 예측하는 방법인가요? <span class="blank">ㅅㅈ</span></label>
+          <div class="short-answer-row">
+            <input type="text" aria-label="선형 회귀가 예측하는 것 답 입력">
+            <button type="button">확인</button>
+          </div>
+          <div class="short-feedback" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px;">
+        <article class="quiz" data-answer="0">
+          <p>Q1. 핵심 속성은 무엇인가요?</p>
+          <div class="choices">
+            <button type="button">AI가 참고하는 단서</button>
+            <button type="button">AI가 맞혀야 하는 결과</button>
+            <button type="button">버튼의 모양</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+        <article class="quiz" data-answer="1">
+          <p>Q2. 이번 작품의 예측 속성은?</p>
+          <div class="choices">
+            <button type="button">개월</button>
+            <button type="button">구독자수_만명</button>
+            <button type="button">다시하기 버튼</button>
+          </div>
+          <div class="feedback" aria-live="polite"></div>
+        </article>
+      </div>
+
+      <div class="key-idea" style="margin-top:18px;">
+        표와 그래프로 데이터를 읽고, 점들의 방향을 살핀 뒤,<br class="desktop-break">
+        이번에는 AI가 그 흐름을 배워 미래 값을 예측하게 만들었습니다.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div>2026 엔트리 데이터 분석 3차시 · AI 크리에이터 스튜디오</div>
+    <div>
+      참고:
+      <a href="https://happyhyeok.github.io/afterschool/data-analysis-lesson-01-data-awards/">1차시</a>
+      ·
+      <a href="https://happyhyeok.github.io/afterschool/data-analysis-lesson-02-brawl-city/">2차시</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const data = [
+  [1, 3], [2, 7], [3, 12], [4, 18], [5, 25], [6, 33],
+  [7, 42], [8, 52], [9, 63], [10, 75], [11, 88], [12, 102]
+];
+
+const model = (() => {
+  const n = data.length;
+  const sumX = data.reduce((sum, item) => sum + item[0], 0);
+  const sumY = data.reduce((sum, item) => sum + item[1], 0);
+  const sumXY = data.reduce((sum, item) => sum + item[0] * item[1], 0);
+  const sumX2 = data.reduce((sum, item) => sum + item[0] * item[0], 0);
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  return { slope, intercept };
+})();
+
+function predict(month) {
+  return Math.max(0, model.slope * month + model.intercept);
+}
+
+function handleQuizClick(event) {
+  const button = event.target.closest("button");
+  if (!button) return;
+  const quiz = button.closest(".quiz");
+  const buttons = [...quiz.querySelectorAll("button")];
+  const answer = Number(quiz.dataset.answer);
+  const selected = buttons.indexOf(button);
+  buttons.forEach((choice) => {
+    choice.classList.remove("correct", "wrong");
+  });
+  button.classList.add(selected === answer ? "correct" : "wrong");
+  if (selected !== answer) {
+    buttons[answer].classList.add("correct");
+  }
+  const feedback = quiz.querySelector(".feedback");
+  feedback.textContent = selected === answer ? "정답입니다." : "다시 확인해 보세요. 초록색이 정답입니다.";
+}
+
+document.querySelectorAll(".quiz .choices").forEach((choiceGroup) => {
+  choiceGroup.addEventListener("click", handleQuizClick);
+});
+
+function normalizeAnswer(value) {
+  return value.replace(/\s+/g, "").toLowerCase();
+}
+
+document.querySelectorAll(".short-quiz").forEach((quiz) => {
+  const input = quiz.querySelector("input");
+  const button = quiz.querySelector("button");
+  const feedback = quiz.querySelector(".short-feedback");
+  const answer = normalizeAnswer(quiz.dataset.textAnswer || "");
+
+  function checkShortAnswer() {
+    if (normalizeAnswer(input.value) === answer) {
+      feedback.textContent = "정답입니다.";
+      feedback.style.color = "#075336";
+      input.style.borderColor = "#8bd7b9";
+      input.style.background = "#f0fff7";
+    } else {
+      feedback.textContent = "초성 힌트를 보고 다시 입력해 보세요.";
+      feedback.style.color = "#7b1720";
+      input.style.borderColor = "#f4b0b7";
+      input.style.background = "#fff7f8";
+    }
+  }
+
+  button.addEventListener("click", checkShortAnswer);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") checkShortAnswer();
+  });
+});
+
+const pointLayer = document.querySelector("#pointLayer");
+const lineLayer = document.querySelector("#lineLayer");
+const futureLayer = document.querySelector("#futureLayer");
+const chartButtons = document.querySelectorAll("[data-chart]");
+
+function xScale(month) {
+  return 70 + (month - 1) * (590 / 23);
+}
+
+function yScale(value) {
+  return 340 - value * (290 / 210);
+}
+
+function renderChart(mode = "points") {
+  pointLayer.innerHTML = "";
+  lineLayer.innerHTML = "";
+  futureLayer.innerHTML = "";
+
+  data.forEach(([month, value]) => {
+    const point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    point.setAttribute("cx", xScale(month));
+    point.setAttribute("cy", yScale(value));
+    point.setAttribute("r", 7);
+    point.setAttribute("fill", "#e7353f");
+    point.setAttribute("stroke", "#ffffff");
+    point.setAttribute("stroke-width", "3");
+    pointLayer.appendChild(point);
+  });
+
+  if (mode === "line" || mode === "future") {
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", xScale(1));
+    line.setAttribute("y1", yScale(predict(1)));
+    line.setAttribute("x2", xScale(24));
+    line.setAttribute("y2", yScale(predict(24)));
+    line.setAttribute("stroke", "#2357d6");
+    line.setAttribute("stroke-width", "6");
+    line.setAttribute("stroke-linecap", "round");
+    lineLayer.appendChild(line);
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", xScale(14));
+    label.setAttribute("y", yScale(predict(14)) - 16);
+    label.setAttribute("fill", "#153a91");
+    label.setAttribute("font-size", "16");
+    label.setAttribute("font-weight", "900");
+    label.textContent = "AI 예측선";
+    lineLayer.appendChild(label);
+  }
+
+  if (mode === "future") {
+    const month = 24;
+    const value = predict(month);
+    const guide = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    guide.setAttribute("x1", xScale(month));
+    guide.setAttribute("y1", yScale(value));
+    guide.setAttribute("x2", xScale(month));
+    guide.setAttribute("y2", 340);
+    guide.setAttribute("stroke", "#f4b83f");
+    guide.setAttribute("stroke-width", "4");
+    guide.setAttribute("stroke-dasharray", "8 8");
+    futureLayer.appendChild(guide);
+
+    const point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    point.setAttribute("cx", xScale(month));
+    point.setAttribute("cy", yScale(value));
+    point.setAttribute("r", 11);
+    point.setAttribute("fill", "#f4b83f");
+    point.setAttribute("stroke", "#8c5b16");
+    point.setAttribute("stroke-width", "4");
+    futureLayer.appendChild(point);
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", xScale(month) - 110);
+    text.setAttribute("y", yScale(value) - 20);
+    text.setAttribute("fill", "#8c3510");
+    text.setAttribute("font-size", "17");
+    text.setAttribute("font-weight", "1000");
+    text.textContent = "24개월 뒤 약 " + Math.round(value) + "만 명";
+    futureLayer.appendChild(text);
+  }
+}
+
+chartButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    chartButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    renderChart(button.dataset.chart);
+  });
+});
+
+function updatePrediction() {
+  const input = document.querySelector("#monthInput");
+  const month = Math.max(1, Number(input.value) || 1);
+  const rounded = Math.round(predict(month));
+  document.querySelector("#resultSentence").textContent = month + "개월 뒤 예상 구독자는 약";
+  document.querySelector("#resultNumber").textContent = rounded + "만 명";
+  document.querySelector("#resultNote").textContent = rounded >= 100
+    ? "100만 유튜버 달성 가능성이 있습니다."
+    : "아직 성장 중입니다. 더 오래 운영하면 100만에 가까워질 수 있습니다.";
+}
+
+document.querySelector("#predictButton").addEventListener("click", updatePrediction);
+document.querySelector("#monthInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") updatePrediction();
+});
+
+renderChart("points");
+updatePrediction();
+</script>
+</body>
+</html>
