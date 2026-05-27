@@ -12,17 +12,18 @@ const FIXED_YEAR = String(URL_PARAMS.get("year") || CONFIG.FIXED_YEAR || DEFAULT
 const POSITION_STAGES = [
   "기본자리",
   "왼손윗자리",
-  "오른손윗자리",
   "왼손아랫자리",
+  "가운데자리",
+  "오른손윗자리",
   "오른손아래자리",
-  "숫자자리",
   "전체자리",
+  "숫자자리",
 ];
 
 const PRACTICE_GROUPS = [
   ...Array.from({ length: 3 }, (_, index) => ({
     title: `자리연습 ${index + 1}회차`,
-    subtitle: "기본자리부터 전체자리까지",
+    subtitle: "기본자리부터 숫자자리까지",
     entries: POSITION_STAGES.map((stage) => makeEntry(stage, index + 1)),
   })),
   {
@@ -103,6 +104,7 @@ function slug(value) {
     기본자리: "base",
     왼손윗자리: "left-top",
     왼손아랫자리: "left-bottom",
+    가운데자리: "center",
     오른손윗자리: "right-top",
     오른손아래자리: "right-bottom",
     숫자자리: "number",

@@ -571,8 +571,8 @@ input.invalid {
 }
 
 .position-section .stage-entries {
-  grid-template-columns: repeat(7, minmax(118px, 1fr));
-  min-width: 860px;
+  grid-template-columns: repeat(8, minmax(118px, 1fr));
+  min-width: 980px;
 }
 
 .entry-row {
