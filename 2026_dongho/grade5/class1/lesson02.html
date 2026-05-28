@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나만의 신규 게임 캐릭터 공식 일러스트 만들기 - 80분용</title>
+<style>
+:root{
+  --bg:#f5f7fb;
+  --paper:#ffffff;
+  --ink:#1f2a3a;
+  --muted:#637083;
+  --primary:#2d8f83;
+  --primary-dark:#19756c;
+  --accent:#ffb84c;
+  --accent2:#7c6df2;
+  --soft:#e8f6f4;
+  --soft2:#fff4df;
+  --line:#d9e3ea;
+  --danger:#e85d75;
+  --success:#00a878;
+  --shadow:0 14px 30px rgba(31,42,58,.10);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(180deg,#eaf8f6 0,#f5f7fb 260px,#f5f7fb 100%);
+  color:var(--ink);
+  line-height:1.65;
+}
+a{color:inherit}
+.header{
+  position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.86);
+  border-bottom:1px solid rgba(217,227,234,.85);
+}
+.nav{
+  max-width:1120px;margin:0 auto;padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--primary-dark)}
+.brand-badge{width:34px;height:34px;border-radius:12px;background:var(--primary);display:grid;place-items:center;color:#fff;box-shadow:0 8px 18px rgba(45,143,131,.25)}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.nav-links a{font-size:14px;text-decoration:none;padding:8px 10px;border-radius:999px;background:#f0f5f7;color:#334155;font-weight:700}
+.nav-links a:hover{background:var(--soft);color:var(--primary-dark)}
+.wrap{max-width:1120px;margin:0 auto;padding:26px 18px 80px}
+.hero{
+  background:radial-gradient(circle at top right,rgba(124,109,242,.18),transparent 36%), linear-gradient(135deg,#ffffff 0,#f8fffe 100%);
+  border:1px solid rgba(45,143,131,.20);border-radius:30px;padding:34px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.hero:before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(180deg,var(--primary),var(--accent2))}
+.kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--primary-dark);font-weight:900;font-size:14px;margin-bottom:12px}
+h1{font-size:clamp(30px,5vw,52px);line-height:1.08;margin:0 0 14px;font-weight:1000;letter-spacing:-.04em}
+.hero p{font-size:18px;color:var(--muted);margin:0;max-width:780px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.btn{border:0;border-radius:16px;padding:13px 18px;font-weight:900;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s transform,.2s box-shadow,.2s background;font-size:15px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(31,42,58,.12)}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+.btn-accent{background:var(--accent);color:#43250a}.btn-soft{background:var(--soft);color:var(--primary-dark)}
+.btn-dark{background:#202a3a;color:#fff}.btn-outline{background:#fff;border:1px solid var(--line);color:#344054}
+.section{margin-top:28px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 22px rgba(31,42,58,.06);padding:26px}
+.section-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+.section h2{font-size:26px;line-height:1.2;margin:0;font-weight:1000;letter-spacing:-.025em}
+.section .desc{color:var(--muted);margin:8px 0 0;font-size:16px}.tag{display:inline-flex;align-items:center;gap:6px;background:var(--soft2);color:#9b5b00;border:1px solid #ffe1aa;border-radius:999px;padding:6px 10px;font-size:13px;font-weight:900;white-space:nowrap}
+.grid{display:grid;gap:14px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;min-height:92px;transition:.18s;border-bottom-width:3px}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--muted);font-size:14px}.card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,42,58,.09)}.canva-activity-card{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px;min-height:auto}.canva-activity-card h3{margin:0;white-space:nowrap}.canva-activity-card p{font-size:16px;line-height:1.7}.canva-limit-note{margin:12px 0 0;color:#9b5b00;background:#fff8ec;border:1px solid #ffe1aa;border-radius:14px;padding:12px 14px;font-weight:900;line-height:1.65}
+.step-card{background:linear-gradient(180deg,#fff,#f9fbfc);border:1px solid var(--line);border-radius:20px;padding:18px;position:relative;overflow:hidden}.step-num{width:34px;height:34px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:1000;margin-bottom:12px}.step-card h3{margin:0 0 8px;font-size:18px}.step-card p{margin:0;color:var(--muted);font-size:14px}
+.mini-illustration{height:120px;border-radius:16px;background:#f8fbfc;border:1px dashed #c7d7df;display:grid;place-items:center;margin-top:12px;overflow:hidden}
+.choice-group{margin-top:18px}.setting-choice-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:18px}.setting-choice-grid .choice-group{margin-top:0}.choice-group h3{font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}.choices{display:flex;flex-wrap:wrap;gap:10px}.choice{border:2px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px;font-weight:900;cursor:pointer;color:#344054;transition:.16s;min-width:92px;text-align:center}.choice:hover{border-color:var(--primary);background:var(--soft)}.choice.selected{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 8px 16px rgba(45,143,131,.22)}
+.result-box{margin-top:18px;border:2px solid rgba(45,143,131,.30);background:linear-gradient(180deg,#f7fffd,#fff);border-radius:20px;padding:18px}.result-line{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.result-label{font-weight:1000;color:var(--primary-dark);min-width:88px}.result-value{font-weight:900}.placeholder{color:#94a3b8;font-weight:700}.warning{margin-top:12px;background:#fff5f5;border:1px solid #ffd3da;color:#a33a4a;border-radius:14px;padding:12px;font-weight:800;display:none}.warning.show{display:block}
+.textarea-wrap{display:grid;gap:10px}.generated{width:100%;min-height:190px;border:1px solid var(--line);border-radius:16px;padding:16px;font-size:15px;line-height:1.65;color:#243142;background:#fbfdff;resize:vertical;font-family:inherit}.short{min-height:138px}.copy-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.copy-msg{font-weight:900;color:var(--success);display:none}.copy-msg.show{display:inline-flex}.muted{color:var(--muted);font-size:14px}
+.timeline{display:grid;gap:8px;background:#f9fbfc;border:1px solid var(--line);border-radius:16px;padding:16px}.timeline-item{display:flex;gap:8px;align-items:flex-start;line-height:1.55}.timeline-time{background:var(--primary);color:white;border-radius:999px;padding:5px 9px;font-weight:1000;font-size:13px;min-width:76px;text-align:center}.timeline-item strong{flex:0 0 auto;color:var(--primary-dark)}.timeline-item span{color:#475467}
+.promise{background:linear-gradient(135deg,#fff8ec,#fff);border-color:#ffe0a6}.checklist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.checklist li{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #f2d9a4;border-radius:14px;padding:12px}.check{color:var(--success);font-weight:1000}.footer{text-align:center;color:var(--muted);padding:34px 0 0;font-size:14px}.sticky-canva{position:fixed;right:18px;bottom:18px;z-index:50}.sticky-canva .btn{box-shadow:0 12px 24px rgba(31,42,58,.2)}
+.problem-card{border:2px solid var(--line);background:#fff;border-radius:16px;padding:14px;cursor:pointer;font-weight:900}.problem-card small{display:block;color:var(--muted);font-weight:700;margin-top:6px}.problem-card.selected{border-color:var(--accent2);background:#f3f0ff;color:#4035a8}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.code-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#4938cc;font-size:12px;font-weight:900}
+@media(max-width:850px){.grid-4,.grid-3,.grid-2,.split,.setting-choice-grid{grid-template-columns:1fr}.canva-activity-card{grid-template-columns:1fr}.canva-activity-card h3{white-space:normal}.nav{align-items:flex-start;flex-direction:column}.hero{padding:28px 22px}.section{padding:20px}.sticky-canva{position:static;margin:18px 18px 0}.sticky-canva .btn{width:100%}.nav-links a{font-size:13px}.timeline-time{min-width:auto}}
+@media print{.header,.sticky-canva,.btn,.nav-links{display:none}.section,.hero{break-inside:avoid;box-shadow:none}.wrap{padding:0}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="header">
+  <nav class="nav">
+    <div class="brand"><span class="brand-badge">🎮</span><span>레벨업 게임 스튜디오</span></div>
+    <div class="nav-links">
+      <a href="#briefing">브리핑</a><a href="#ai">AI 원리</a><a href="#name">캐릭터 선택</a><a href="#prompt">문장 복사</a><a href="#canva">Canva</a><a href="#revise">수정 요청</a><a href="#compare">비교 기록</a><a href="#submit">제출 확인</a>
+    </div>
+  </nav>
+</header>
+<div class="sticky-canva"><a class="btn btn-primary" href="https://canva.link/cbq4l6d51am1rp5" target="_blank" rel="noopener">Canva 기록장 열기 ↗</a></div>
+<main class="wrap">
+  <section class="hero" id="briefing">
+    <div class="kicker">🕹️ 제2회차 · 80분 활동자료</div>
+    <h1>나만의 신규 게임 캐릭터<br>공식 일러스트 만들기</h1>
+    <p>지난 시간 기록이 부족해도 괜찮습니다. 오늘은 카드를 눌러 캐릭터를 빠르게 정하고, AI 이미지 생성 문장을 복사해 Canva에서 공식 캐릭터 카드를 완성합니다.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#name">캐릭터 만들기 시작</a>
+      <a class="btn btn-accent" href="https://canva.link/cbq4l6d51am1rp5" target="_blank" rel="noopener">Canva 기록장 열기</a>
+      <a class="btn btn-soft" href="#flow">오늘 순서 보기</a>
+    </div>
+  </section>
+
+  <section class="section" id="flow">
+    <div class="section-title"><div><h2>🚩 오늘의 개발 브리핑</h2><p class="desc">오늘은 캐릭터를 정하고, Canva에서 이미지와 기록을 완성합니다.</p></div></div>
+    <div class="timeline">
+      <div class="timeline-item"><strong>1. 설정</strong><span>이름·능력·약점·성격·색 선택</span></div>
+      <div class="timeline-item"><strong>2. 이미지</strong><span>Canva에서 1차 이미지 생성</span></div>
+      <div class="timeline-item"><strong>3. 개선</strong><span>최종 이미지와 카드 문구 정리</span></div>
+      <div class="timeline-item"><strong>4. 기록</strong><span>설정·수정점·선택 이유 저장</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="ai">
+    <div class="section-title"><div><h2>🤖 AI는 글을 보고 어떻게 그림을 만들까?</h2><p class="desc">생성형 AI는 우리가 쓴 글에서 중요한 특징을 찾고, 그 특징을 바탕으로 새로운 이미지를 만들어 봅니다.</p></div><span class="tag">인공지능 기초</span></div>
+    <div class="grid grid-4">
+      <div class="step-card"><div class="step-num">1</div><h3>글로 설명하기</h3><p>사람이 원하는 모습을 문장으로 씁니다.</p><div class="mini-illustration"><svg width="210" height="110" viewBox="0 0 210 110" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="20" width="180" height="70" rx="16" fill="#fff" stroke="#2d8f83" stroke-width="3"/><circle cx="38" cy="44" r="10" fill="#ffb84c"/><rect x="55" y="36" width="112" height="10" rx="5" fill="#d9e3ea"/><rect x="55" y="56" width="88" height="10" rx="5" fill="#d9e3ea"/><path d="M174 52l11 8-11 8z" fill="#2d8f83"/><text x="30" y="105" font-size="13" fill="#637083">글로 설명하기</text></svg></div></div>
+      <div class="step-card"><div class="step-num">2</div><h3>특징 찾기</h3><p>AI가 색, 능력, 동물, 분위기 같은 단어를 찾습니다.</p><div class="mini-illustration"><svg width="210" height="110" viewBox="0 0 210 110" xmlns="http://www.w3.org/2000/svg"><rect x="78" y="20" width="54" height="46" rx="16" fill="#e8f6f4" stroke="#2d8f83" stroke-width="3"/><circle cx="94" cy="40" r="5" fill="#2d8f83"/><circle cx="116" cy="40" r="5" fill="#2d8f83"/><path d="M96 55h18" stroke="#2d8f83" stroke-width="4" stroke-linecap="round"/><rect x="27" y="76" width="45" height="20" rx="10" fill="#fff4df"/><rect x="82" y="76" width="45" height="20" rx="10" fill="#eef2ff"/><rect x="137" y="76" width="45" height="20" rx="10" fill="#e8f6f4"/><text x="37" y="90" font-size="11" fill="#444">번개</text><text x="92" y="90" font-size="11" fill="#444">고양이</text><text x="147" y="90" font-size="11" fill="#444">빠름</text></svg></div></div>
+      <div class="step-card"><div class="step-num">3</div><h3>이미지 후보 만들기</h3><p>AI가 여러 모습의 그림 후보를 만들어 봅니다.</p><div class="mini-illustration"><svg width="210" height="110" viewBox="0 0 210 110" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="15" width="150" height="80" rx="18" fill="#fbfdff" stroke="#d9e3ea"/><g fill="#7c6df2" opacity=".35"><circle cx="58" cy="39" r="5"/><circle cx="86" cy="59" r="4"/><circle cx="125" cy="34" r="6"/><circle cx="151" cy="62" r="5"/><circle cx="105" cy="78" r="4"/></g><path d="M73 76c13-40 53-42 66 0" fill="none" stroke="#2d8f83" stroke-width="5" stroke-linecap="round" opacity=".8"/><circle cx="87" cy="51" r="8" fill="#ffb84c"/><circle cx="123" cy="51" r="8" fill="#ffb84c"/><path d="M92 70c8 6 18 6 26 0" fill="none" stroke="#2d8f83" stroke-width="4" stroke-linecap="round"/></svg></div></div>
+      <div class="step-card"><div class="step-num">4</div><h3>사람이 선택·수정하기</h3><p>사람이 결과를 고르고, 필요하면 다시 요청합니다.</p><div class="mini-illustration"><svg width="210" height="110" viewBox="0 0 210 110" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="20" width="70" height="62" rx="14" fill="#fff" stroke="#d9e3ea"/><rect x="115" y="20" width="70" height="62" rx="14" fill="#e8f6f4" stroke="#2d8f83" stroke-width="3"/><path d="M144 49l9 9 18-22" fill="none" stroke="#00a878" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60" cy="48" r="16" fill="#ffb84c" opacity=".65"/><text x="52" y="102" font-size="13" fill="#637083">고르고 수정하기</text></svg></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title"><div><h2>🧭 이런 기술은 어디에 쓰일까?</h2><p class="desc">텍스트로 이미지를 만드는 기술은 게임, 웹툰, 광고, 교육 자료, 제품 디자인, 가상 공간 제작 등에 활용될 수 있습니다.</p></div></div>
+    <div class="grid grid-3">
+      <div class="card"><h3>🎮 게임</h3><p>캐릭터, 아이템, 배경 아이디어를 빠르게 그려 봅니다.</p></div>
+      <div class="card"><h3>📚 웹툰·애니메이션</h3><p>장면 분위기와 캐릭터 콘셉트를 상상해 봅니다.</p></div>
+      <div class="card"><h3>📢 포스터·광고</h3><p>행사 포스터나 홍보 이미지를 만듭니다.</p></div>
+      <div class="card"><h3>🏫 교육 자료</h3><p>수업 설명 그림이나 활동지 이미지를 준비합니다.</p></div>
+      <div class="card"><h3>🧸 제품 디자인</h3><p>장난감, 옷, 가방, 로봇의 모습을 미리 생각해 봅니다.</p></div>
+      <div class="card"><h3>🌐 가상 공간</h3><p>메타버스 배경, 아바타, 소품 아이디어를 만듭니다.</p></div>
+    </div>
+    <div class="result-box"><strong>기억하기:</strong> AI는 도구이고, 무엇을 만들지 정하고 결과를 고르는 사람은 우리입니다.</div>
+  </section>
+
+  
+    <section class="section" id="name">
+      <div class="section-title"><div><h2>🎮 1단계. 캐릭터 이름 정하기</h2><p class="desc">카드를 눌러 이름을 빠르게 정합니다. 오래 고민하지 말고, 마음에 드는 조합을 선택해 보세요.</p></div><span class="tag">목표: 이름 확정</span></div>
+      <div class="grid grid-3">
+        <div class="choice-group"><h3>① 속성 카드</h3><div class="choices"><button class="choice" data-group="attr" data-value="번개" type="button">번개</button><button class="choice" data-group="attr" data-value="얼음" type="button">얼음</button><button class="choice" data-group="attr" data-value="불꽃" type="button">불꽃</button><button class="choice" data-group="attr" data-value="그림자" type="button">그림자</button><button class="choice" data-group="attr" data-value="바람" type="button">바람</button><button class="choice" data-group="attr" data-value="별빛" type="button">별빛</button></div></div>
+        <div class="choice-group"><h3>② 대상 카드</h3><div class="choices"><button class="choice" data-group="target" data-value="고양이" type="button">고양이</button><button class="choice" data-group="target" data-value="여우" type="button">여우</button><button class="choice" data-group="target" data-value="로봇" type="button">로봇</button><button class="choice" data-group="target" data-value="용" type="button">용</button><button class="choice" data-group="target" data-value="토끼" type="button">토끼</button><button class="choice" data-group="target" data-value="펭귄" type="button">펭귄</button></div></div>
+        <div class="choice-group"><h3>③ 이름 끝말 카드</h3><div class="choices"><button class="choice" data-group="ending" data-value="루미" type="button">루미</button><button class="choice" data-group="ending" data-value="코코" type="button">코코</button><button class="choice" data-group="ending" data-value="타로" type="button">타로</button><button class="choice" data-group="ending" data-value="미루" type="button">미루</button><button class="choice" data-group="ending" data-value="제트" type="button">제트</button><button class="choice" data-group="ending" data-value="라온" type="button">라온</button></div></div>
+      </div>
+      <div class="result-box">
+        <div class="result-line"><span class="result-label">내 캐릭터 이름</span><span id="resultName" class="result-value placeholder">아직 이름이 완성되지 않았어요</span></div>
+        <p class="muted">예: 번개 + 고양이 + 루미 → <strong>번개냥 루미</strong></p>
+      </div>
+    </section>
+
+    <section class="section" id="setting">
+      <div class="section-title"><div><h2>🧩 2단계. 캐릭터 설정하기</h2><p class="desc">AI가 캐릭터를 잘 그리도록 능력, 약점, 성격, 대표 색을 하나씩 선택합니다.</p></div></div>
+      <div class="setting-choice-grid">
+      <div class="choice-group"><h3>⚡ 능력 카드</h3><div class="choices"><button class="choice" data-group="ability" data-value="번개처럼 빠르게 이동한다" type="button">번개처럼 빠르게 이동한다</button><button class="choice" data-group="ability" data-value="얼음 방패를 만든다" type="button">얼음 방패를 만든다</button><button class="choice" data-group="ability" data-value="불꽃 에너지를 발사한다" type="button">불꽃 에너지를 발사한다</button><button class="choice" data-group="ability" data-value="그림자 속으로 숨는다" type="button">그림자 속으로 숨는다</button><button class="choice" data-group="ability" data-value="친구를 회복시킨다" type="button">친구를 회복시킨다</button><button class="choice" data-group="ability" data-value="바람을 타고 높이 점프한다" type="button">바람을 타고 높이 점프한다</button></div></div>
+      <div class="choice-group"><h3>🛡️ 약점 카드</h3><div class="choices"><button class="choice" data-group="weakness" data-value="물에 닿으면 힘이 약해진다" type="button">물에 닿으면 힘이 약해진다</button><button class="choice" data-group="weakness" data-value="오래 싸우면 쉽게 지친다" type="button">오래 싸우면 쉽게 지친다</button><button class="choice" data-group="weakness" data-value="큰 소리가 나면 집중하지 못한다" type="button">큰 소리가 나면 집중하지 못한다</button><button class="choice" data-group="weakness" data-value="밝은 빛에 약하다" type="button">밝은 빛에 약하다</button><button class="choice" data-group="weakness" data-value="혼자 있으면 힘이 약해진다" type="button">혼자 있으면 힘이 약해진다</button><button class="choice" data-group="weakness" data-value="움직임이 너무 빨라 가끔 방향을 잃는다" type="button">움직임이 너무 빨라 가끔 방향을 잃는다</button></div></div>
+      <div class="choice-group"><h3>🙂 성격 카드</h3><div class="choices"><button class="choice" data-group="personality" data-value="장난꾸러기" type="button">장난꾸러기</button><button class="choice" data-group="personality" data-value="용감함" type="button">용감함</button><button class="choice" data-group="personality" data-value="조용하지만 똑똑함" type="button">조용하지만 똑똑함</button><button class="choice" data-group="personality" data-value="신비로움" type="button">신비로움</button><button class="choice" data-group="personality" data-value="따뜻함" type="button">따뜻함</button><button class="choice" data-group="personality" data-value="자신감이 넘침" type="button">자신감이 넘침</button></div></div>
+      <div class="choice-group"><h3>🎨 대표 색 카드</h3><div class="choices"><button class="choice" data-group="colors" data-value="노랑과 하늘색" type="button">노랑과 하늘색</button><button class="choice" data-group="colors" data-value="파랑과 흰색" type="button">파랑과 흰색</button><button class="choice" data-group="colors" data-value="빨강과 주황" type="button">빨강과 주황</button><button class="choice" data-group="colors" data-value="검정과 보라" type="button">검정과 보라</button><button class="choice" data-group="colors" data-value="초록과 민트" type="button">초록과 민트</button><button class="choice" data-group="colors" data-value="분홍과 연보라" type="button">분홍과 연보라</button></div></div>
+      </div>
+      <div class="result-box">
+        <div class="result-line"><span class="result-label">이름</span><span id="resultName2" class="result-value placeholder">아직 이름이 완성되지 않았어요</span></div>
+        <div class="result-line"><span class="result-label">능력</span><span id="resultAbility" class="result-value placeholder">아직 선택하지 않았어요</span></div>
+        <div class="result-line"><span class="result-label">약점</span><span id="resultWeakness" class="result-value placeholder">아직 선택하지 않았어요</span></div>
+        <div class="result-line"><span class="result-label">성격</span><span id="resultPersonality" class="result-value placeholder">아직 선택하지 않았어요</span></div>
+        <div class="result-line"><span class="result-label">대표 색</span><span id="resultColors" class="result-value placeholder">아직 선택하지 않았어요</span></div>
+      </div>
+      <div class="warning need-warning"></div>
+    </section>
+    
+
+  <section class="section" id="prompt">
+    <div class="section-title"><div><h2>📋 3단계. AI 이미지 생성 문장 복사하기</h2><p class="desc">아래 문장은 선택한 카드 내용을 바탕으로 자동 완성됩니다. 복사해서 Canva 이미지 생성창에 붙여넣으세요.</p></div><span class="tag">복사 1번</span></div>
+    <div class="warning need-warning"></div>
+    <div class="textarea-wrap">
+      <textarea id="promptText" class="generated" readonly></textarea>
+      <div class="copy-row"><button class="btn btn-primary" onclick="copyText('promptText','promptMsg')">① 이미지 생성 문장 복사</button><span id="promptMsg" class="copy-msg"></span></div>
+      <p class="muted">복사 후 Canva 기록장에서 <strong>요소 → 생성</strong> 기능을 열고 붙여넣습니다.</p>
+    </div>
+  </section>
+
+  <section class="section" id="canva">
+    <div class="section-title"><div><h2>🖼️ 4단계. Canva에서 캐릭터 이미지 만들기</h2><p class="desc">Canva 기록장에서 AI 이미지를 만들고, 가장 마음에 드는 이미지 1개를 기록장에 넣습니다.</p></div><span class="tag">Canva 작업</span></div>
+    <div class="grid">
+      <div class="card canva-activity-card"><h3>학생 활동 순서</h3><p>① Canva 기록장 열기 → ② 요소 → 생성 → ③ 문장 붙여넣기 → ④ 이미지 생성 → ⑤ 이미지 1개 선택 → ⑥ 기록장에 넣기</p></div>
+    </div>
+    <p class="canva-limit-note">1차 이미지를 만든 뒤 수정 요청을 추가해 최종 이미지를 한 번 더 만들어 봅니다.<br>다만 이미지는 2~3번까지만 사용합니다. 많이 사용하면 더 이상 만들어 주지 않아요.</p>
+    <div class="hero-actions"><a class="btn btn-accent" href="https://canva.link/cbq4l6d51am1rp5" target="_blank" rel="noopener">Canva 기록장 열기 ↗</a></div>
+  </section>
+
+  <section class="section" id="cardcopy">
+    <div class="section-title"><div><h2>🪪 5단계. 캐릭터 카드 문구 복사하기</h2><p class="desc">Canva의 공식 캐릭터 카드 페이지에 붙여넣을 문구입니다.</p></div><span class="tag">복사 2번</span></div>
+    <textarea id="cardText" class="generated short" readonly></textarea>
+    <div class="copy-row"><button class="btn btn-primary" onclick="copyText('cardText','cardMsg')">② 캐릭터 카드 문구 복사</button><span id="cardMsg" class="copy-msg"></span></div>
+  </section>
+
+  <section class="section" id="recordcopy">
+    <div class="section-title"><div><h2>📝 6단계. 오늘의 기록 복사하기</h2><p class="desc">Canva의 오늘의 기록 페이지에 붙여넣을 내용입니다. 타이핑을 줄이기 위해 자동으로 만들어집니다.</p></div><span class="tag">복사 3번</span></div>
+    <textarea id="recordText" class="generated short" readonly></textarea>
+    <div class="copy-row"><button class="btn btn-primary" onclick="copyText('recordText','recordMsg')">③ 오늘의 기록 복사</button><span id="recordMsg" class="copy-msg"></span></div>
+  </section>
+
+  
+    <section class="section" id="revise">
+      <div class="section-title"><div><h2>🔧 7단계. 이미지 수정 요청 만들기</h2><p class="desc">첫 번째 이미지가 마음에 들지 않는다면, 무엇을 바꿀지 골라 AI에게 다시 요청합니다.</p></div><span class="tag">80분 수업 추가</span></div>
+      <div class="grid grid-3">
+        <button class="problem-card" type="button" data-problem="너무 무섭게 나왔습니다." data-request="더 귀엽고 밝은 초등학생용 게임 캐릭터 느낌으로 바꿔줘.">너무 무섭게 나왔을 때<small>더 귀엽고 밝게</small></button>
+        <button class="problem-card" type="button" data-problem="캐릭터의 능력이 잘 보이지 않았습니다." data-request="캐릭터의 능력 효과가 더 잘 보이게 해줘.">능력이 잘 보이지 않을 때<small>효과가 보이게</small></button>
+        <button class="problem-card" type="button" data-problem="대표 색이 잘 보이지 않았습니다." data-request="대표 색이 더 잘 보이게 해줘.">대표 색이 약할 때<small>색이 잘 보이게</small></button>
+        <button class="problem-card" type="button" data-problem="배경이 너무 복잡했습니다." data-request="배경을 단순하게 하고 캐릭터가 더 잘 보이게 해줘.">배경이 복잡할 때<small>배경 단순하게</small></button>
+        <button class="problem-card" type="button" data-problem="이미지 안에 글자가 들어갔습니다." data-request="이미지 안에 글자는 넣지 마.">글자가 들어갔을 때<small>글자 제거</small></button>
+        <button class="problem-card" type="button" data-problem="캐릭터 자세가 잘 보이지 않았습니다." data-request="캐릭터가 게임 선택창에 잘 보이도록 정면 또는 살짝 비스듬한 자세로 표현해줘.">자세가 애매할 때<small>선택창용 자세</small></button>
+      </div>
+      <div class="textarea-wrap" style="margin-top:18px">
+        <textarea id="modifyText" class="generated short" readonly></textarea>
+        <div class="copy-row"><button class="btn btn-accent" onclick="copyText('modifyText','modifyMsg')">④ 수정 요청 문구 복사</button><span id="modifyMsg" class="copy-msg"></span></div>
+      </div>
+    </section>
+
+    <section class="section" id="compare">
+      <div class="section-title"><div><h2>🆚 8단계. 1차 이미지와 최종 이미지 비교 기록</h2><p class="desc">Canva 기록장에 붙여넣을 비교 기록입니다. 1차 이미지에서 무엇을 고쳤는지 남깁니다.</p></div><span class="tag">과정 기록</span></div>
+      <textarea id="compareText" class="generated short" readonly></textarea>
+      <div class="copy-row"><button class="btn btn-primary" onclick="copyText('compareText','compareMsg')">⑤ 비교 기록 복사</button><span id="compareMsg" class="copy-msg"></span></div>
+    </section>
+        
+
+  <section class="section promise" id="promise">
+    <div class="section-title"><div><h2>✅ AI 이미지 만들기 약속</h2><p class="desc">AI 이미지를 만들 때도 창작자로서 지켜야 할 약속이 있습니다.</p></div></div>
+    <ul class="checklist">
+      <li><span class="check">✓</span><span>유명 게임 캐릭터를 그대로 따라 만들지 않습니다.</span></li>
+      <li><span class="check">✓</span><span>애니메이션 캐릭터 이름을 그대로 사용하지 않습니다.</span></li>
+      <li><span class="check">✓</span><span>다른 사람 얼굴을 마음대로 사용하지 않습니다.</span></li>
+      <li><span class="check">✓</span><span>비슷하게 나온 부분은 색, 옷, 능력, 이름 중 하나 이상을 바꿉니다.</span></li>
+      <li><span class="check">✓</span><span>AI는 도구이고, 최종 선택과 책임은 창작자인 나에게 있습니다.</span></li>
+    </ul>
+  </section>
+
+  <div class="result-box"><strong>마무리:</strong> 오늘 우리는 AI에게 그림을 맡긴 것이 아니라, AI가 원하는 결과를 만들 수 있도록 설명하고 선택하는 창작자가 되었습니다.</div>
+
+  <div class="footer">© 2026 레벨업 게임 스튜디오. 모든 개발자 여러분의 꿈을 응원합니다.</div>
+</main>
+<script>
+const state = {
+  attr: '', target: '', ending: '', ability: '', weakness: '', personality: '', colors: '', problem: '', problemText: ''
+};
+const targetMap = { '고양이':'냥', '여우':'여우', '로봇':'로봇', '용':'드래곤', '토끼':'토끼', '펭귄':'펭귄' };
+function characterName(){
+  if(!state.attr || !state.target || !state.ending) return '';
+  const mid = targetMap[state.target] || state.target;
+  return `${state.attr}${mid} ${state.ending}`;
+}
+function missingList(){
+  const pairs = [['속성',state.attr],['대상',state.target],['이름 끝말',state.ending],['능력',state.ability],['약점',state.weakness],['성격',state.personality],['대표 색',state.colors]];
+  return pairs.filter(p=>!p[1]).map(p=>p[0]);
+}
+function updateSelectedUI(group, value){
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(btn=>{
+    btn.classList.toggle('selected', btn.dataset.value === value);
+  });
+}
+function updateAll(){
+  const name = characterName();
+  const fields = {
+    resultName: name || '아직 이름이 완성되지 않았어요',
+    resultAbility: state.ability || '아직 선택하지 않았어요',
+    resultWeakness: state.weakness || '아직 선택하지 않았어요',
+    resultPersonality: state.personality || '아직 선택하지 않았어요',
+    resultColors: state.colors || '아직 선택하지 않았어요'
+  };
+  Object.entries(fields).forEach(([id,val])=>{
+    const el=document.getElementById(id); if(el){ el.textContent=val; el.classList.toggle('placeholder', val.includes('아직')); }
+  });
+  const missing = missingList();
+  document.querySelectorAll('.need-warning').forEach(el=>{
+    if(missing.length){ el.classList.add('show'); el.textContent = `아직 ${missing.join(', ')}을/를 선택하지 않았어요.`; }
+    else{ el.classList.remove('show'); el.textContent = ''; }
+  });
+  const prompt = makePrompt();
+  const cardText = makeCardText();
+  const recordText = makeRecordText();
+  const modifyText = makeModifyText();
+  const compareText = makeCompareText();
+  setText('promptText', prompt);
+  setText('cardText', cardText);
+  setText('recordText', recordText);
+  setText('modifyText', modifyText);
+  setText('compareText', compareText);
+}
+function setText(id, text){ const el=document.getElementById(id); if(el) el.value=text; }
+function safeName(){ return characterName() || '[캐릭터 이름]'; }
+function safe(v, label){ return v || `[${label}]`; }
+function makePrompt(){
+  return `초등학생 게임에 등장할 나만의 신규 게임 캐릭터 일러스트를 만들어줘.\n캐릭터 이름은 ${safeName()}이야.\n이 캐릭터는 ${safe(state.ability,'능력')}을 사용할 수 있어.\n하지만 ${safe(state.weakness,'약점')}이라는 약점이 있어.\n성격은 ${safe(state.personality,'성격')} 느낌이 나게 표현해줘.\n대표 색은 ${safe(state.colors,'대표 색')}이야.\n귀엽고 밝은 2D 게임 캐릭터 스타일로 만들어줘.\n게임 캐릭터 선택창에 들어갈 수 있도록 캐릭터가 잘 보이게 해줘.\n배경은 단순하게 해줘.\n이미지 안에 글자는 넣지 마.`;
+}
+function makeCardText(){
+  return `캐릭터 이름: ${safeName()}\n\n능력: ${safe(state.ability,'능력')}\n\n약점: ${safe(state.weakness,'약점')}\n\n한 줄 소개:\n${safeName()}은/는 ${safe(state.ability,'능력')} 능력을 가지고 있지만, ${safe(state.weakness,'약점')} 캐릭터입니다.`;
+}
+function makeRecordText(){
+  return `캐릭터 이름: ${safeName()}\n능력: ${safe(state.ability,'능력')}\n약점: ${safe(state.weakness,'약점')}\n성격: ${safe(state.personality,'성격')}\n대표 색: ${safe(state.colors,'대표 색')}\n\n선택 이유:\n최종 이미지가 캐릭터의 능력과 대표 색을 잘 보여 주기 때문입니다.\n\n저작권 체크:\n유명 캐릭터를 그대로 따라 하지 않았습니다.\n비슷하게 나온 부분은 바꾸었습니다.`;
+}
+function makeModifyText(){
+  if(!state.problemText){
+    return `첫 번째 이미지에서 고치고 싶은 점을 선택하세요.\n선택하면 Canva 이미지 생성창에 추가할 수정 요청 문장이 만들어집니다.`;
+  }
+  return `${state.problemText}\n대표 색은 ${safe(state.colors,'대표 색')}이 잘 보이게 해줘.\n배경은 단순하게 해줘.\n이미지 안에 글자는 넣지 마.`;
+}
+function makeCompareText(){
+  return `1차 이미지에서 아쉬웠던 점:\n${state.problem || '[수정 이유]'}\n\n수정 요청:\n${makeModifyText()}\n\n최종 이미지가 좋아진 점:\n캐릭터의 능력과 색깔이 더 잘 보이게 되었습니다.`;
+}
+async function copyText(id, msgId){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.focus(); el.select();
+  let ok=false;
+  try{ await navigator.clipboard.writeText(el.value); ok=true; }
+  catch(e){ try{ document.execCommand('copy'); ok=true; } catch(err){} }
+  const msg=document.getElementById(msgId);
+  if(msg){ msg.textContent = ok ? '✅ 복사 완료! Canva에 붙여넣기(Ctrl+V) 하세요.' : '복사가 안 되면 문장을 직접 선택해서 Ctrl+C로 복사하세요.'; msg.classList.add('show'); setTimeout(()=>msg.classList.remove('show'),3200); }
+}
+document.addEventListener('click', (e)=>{
+  const btn=e.target.closest('[data-group]');
+  if(btn){
+    const group=btn.dataset.group, value=btn.dataset.value;
+    state[group]=value;
+    updateSelectedUI(group,value);
+    updateAll();
+  }
+  const problem=e.target.closest('[data-problem]');
+  if(problem){
+    state.problem=problem.dataset.problem;
+    state.problemText=problem.dataset.request;
+    document.querySelectorAll('[data-problem]').forEach(x=>x.classList.toggle('selected', x===problem));
+    updateAll();
+  }
+});
+document.addEventListener('DOMContentLoaded', updateAll);
+
+// mirror name into second display
+const _origUpdateAll = updateAll; updateAll = function(){ _origUpdateAll(); const a=document.getElementById('resultName'); const b=document.getElementById('resultName2'); if(a&&b){ b.textContent=a.textContent; b.className=a.className; } }; document.addEventListener('DOMContentLoaded', updateAll);
+</script>
+</body>
+</html>
