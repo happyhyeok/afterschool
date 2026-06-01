@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>점메추 봇 | 엔트리 데이터 분석 4차시</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header class="hero" id="top">
+      <nav class="top-nav" aria-label="수업 바로가기">
+        <a href="#files">수업 파일</a>
+        <a href="#review">복습</a>
+        <a href="#decision-tree">결정 트리</a>
+        <a href="#entry">엔트리 실습</a>
+        <a href="#final-quiz">마무리</a>
+      </nav>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="lesson-label">엔트리 데이터 분석 4차시</p>
+          <h1>점메추 봇</h1>
+          <p class="hero-subtitle">AI가 오늘의 점심 메뉴를 추천해요!</p>
+          <p class="hero-description">
+            날씨, 용돈, 배고픔 정도를 입력하면 결정 트리 AI가 어울리는 점심 메뉴를 골라 주는 챗봇을 만들어 봅니다.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#mission">미션 시작</a>
+            <a class="secondary-link" href="#data">데이터 보기</a>
+          </div>
+        </div>
+
+        <div class="hero-panel hero-visual" aria-label="점심 메뉴를 추천하는 AI 로봇">
+          <div class="menu-orbit menu-orbit-a">삼각김밥</div>
+          <div class="menu-orbit menu-orbit-b">우동</div>
+          <div class="menu-orbit menu-orbit-c">치킨마요</div>
+          <img class="hero-robot" src="assets/menu_robot.png" alt="점심 메뉴를 추천하는 AI 로봇">
+          <div class="recommend-badge">
+            <span>AI 추천 메뉴</span>
+            <strong>오늘은 우동!</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section-card" id="mission">
+        <div class="section-heading">
+          <p class="section-kicker">MISSION 1</p>
+          <h2>오늘의 미션</h2>
+        </div>
+        <p>
+          오늘은 AI가 날씨, 용돈, 배고픔 정도를 보고 나에게 어울리는 점심 메뉴를 추천하는 챗봇을 만들어 봅니다.
+        </p>
+        <div class="highlight-box">
+          <strong>오늘 완성할 작품</strong>
+          <p>날씨, 용돈, 배고픔 정도를 입력하면 AI가 점심 메뉴를 추천해 주는 챗봇</p>
+        </div>
+        <div class="step-grid">
+          <article>
+            <span>1</span>
+            <p>지난 시간 복습하기</p>
+          </article>
+          <article>
+            <span>2</span>
+            <p>선형회귀와 결정 트리 비교하기</p>
+          </article>
+          <article>
+            <span>3</span>
+            <p>점메추 데이터 살펴보기</p>
+          </article>
+          <article>
+            <span>4</span>
+            <p>엔트리에서 결정 트리 모델 학습하기</p>
+          </article>
+          <article>
+            <span>5</span>
+            <p>오늘의 핵심 정리하기</p>
+          </article>
+          <article>
+            <span>6</span>
+            <p>마무리 퀴즈 풀기</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card" id="files">
+        <div class="section-heading">
+          <p class="section-kicker">READY</p>
+          <h2>수업 파일 준비</h2>
+        </div>
+        <p>아래 두 파일을 내려받아 엔트리 실습과 데이터 분석에 사용합니다.</p>
+        <div class="download-grid">
+          <a class="download-card" href="menu.csv" download>
+            <span class="file-type">CSV</span>
+            <strong>점메추 데이터 받기</strong>
+            <span class="download-arrow" aria-hidden="true">↓</span>
+          </a>
+          <a class="download-card" href="점메추_결정트리__학생용.ent" download>
+            <span class="file-type">ENT</span>
+            <strong>학생용 엔트리 작품 받기</strong>
+            <span class="download-arrow" aria-hidden="true">↓</span>
+          </a>
+        </div>
+        <div class="mini-note">엔트리에서 파일 불러오기를 선택한 뒤, 다운로드한 .ent 파일을 열어 사용합니다.</div>
+      </section>
+
+      <section class="section-card" id="review">
+        <div class="section-heading">
+          <p class="section-kicker">REVIEW</p>
+          <h2>지난 시간 복습</h2>
+        </div>
+        <p>
+          지난 시간에는 데이터를 살펴보고, 데이터 사이의 관계를 찾고, AI가 숫자를 예측하는 활동을 했습니다.
+          아래 문제를 풀며 지난 내용을 떠올려 봅시다.
+        </p>
+        <div class="quiz-list">
+          <article class="quiz-card" data-quiz>
+            <h3>복습 퀴즈 1</h3>
+            <p>데이터를 보기 쉽게 표현하기 위해 사용할 수 있는 것은 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button" data-correct="true">표, 그래프, 차트</button>
+              <button type="button">지우개, 연필, 공책</button>
+              <button type="button">소리, 냄새, 온도</button>
+              <button type="button">문장만 길게 쓰기</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>복습 퀴즈 2</h3>
+            <p>두 숫자의 관계를 확인할 때 사용한 그래프는 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button">원그래프</button>
+              <button type="button" data-correct="true">산점도</button>
+              <button type="button">그림일기</button>
+              <button type="button">시간표</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>복습 퀴즈 3</h3>
+            <p>AI가 사용한 선형회귀는 어떤 일을 했나요?</p>
+            <div class="quiz-options">
+              <button type="button">사진을 예쁘게 바꾸었다</button>
+              <button type="button" data-correct="true">숫자의 흐름을 보고 미래 숫자를 예측했다</button>
+              <button type="button">메뉴를 무작위로 골랐다</button>
+              <button type="button">글자를 모두 지웠다</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+        </div>
+        <div class="highlight-box key-message">
+          <p>선형회귀는 숫자의 흐름을 보고 앞으로의 숫자를 예측하는 AI 방법입니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">CONCEPT 1</p>
+          <h2>오늘 배울 AI는?</h2>
+        </div>
+        <p>
+          지난 시간의 선형회귀는 숫자를 예측하는 AI였습니다.
+          오늘 배울 결정 트리는 조건을 보고 미리 정해진 결과 범주 중 어디에 속하는지 판단하는 AI입니다.
+        </p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>하는 일</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>선형회귀</td>
+                <td>숫자를 예측함</td>
+                <td>구독자 수 예측, 공부 시간에 따른 점수 예측</td>
+              </tr>
+              <tr>
+                <td>결정 트리</td>
+                <td>결과를 분류함</td>
+                <td>점심 메뉴 추천, 동물 종류 분류, 날씨에 맞는 옷차림 추천</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="concept-explain">
+          <article>
+            <strong>선형회귀</strong>
+            <p class="concept-question">숫자가 얼마나 될까?</p>
+            <p>숫자의 흐름을 보고 앞으로의 값을 예상할 때 사용합니다.</p>
+          </article>
+          <article>
+            <strong>결정 트리</strong>
+            <p class="concept-question">여러 가지 중 무엇이 알맞을까?</p>
+            <p>조건을 따라가며 알맞은 종류나 결과를 판단할 때 사용합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card" id="decision-tree">
+        <div class="section-heading">
+          <p class="section-kicker">CONCEPT 2</p>
+          <h2>결정 트리란?</h2>
+        </div>
+        <p>결정 트리는 질문을 하나씩 따라가며 결과를 찾는 AI입니다. 쉽게 말하면 AI 스무고개와 비슷합니다.</p>
+        <figure class="decision-tree-figure">
+          <img src="assets/decision_tree_example.png" alt="날씨, 용돈, 배고픔 정도를 따라 점심 메뉴를 고르는 결정 트리 예시">
+        </figure>
+        <div class="highlight-box key-message">
+          <p>결정 트리는 조건을 보고 길을 나눕니다. 질문을 따라가다 보면 AI가 결과를 고릅니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">CONDITION</p>
+          <h2>오늘 사용할 조건</h2>
+        </div>
+        <p>AI 점메추 봇은 세 가지 조건을 보고 메뉴를 추천합니다.</p>
+        <div class="info-grid">
+          <article>
+            <h3>날씨</h3>
+            <p><strong>맑음</strong> 날씨가 맑고 따뜻한 날</p>
+            <p><strong>비</strong> 비가 오는 날</p>
+            <p><strong>추움</strong> 날씨가 춥게 느껴지는 날</p>
+          </article>
+          <article>
+            <h3>용돈수준</h3>
+            <p><strong>적음</strong> 오늘 쓸 수 있는 돈이 적음</p>
+            <p><strong>보통</strong> 오늘 쓸 수 있는 돈이 보통</p>
+            <p><strong>많음</strong> 오늘 쓸 수 있는 돈이 많음</p>
+          </article>
+          <article>
+            <h3>배고픔정도</h3>
+            <p><strong>조금</strong> 조금만 배고픔</p>
+            <p><strong>보통</strong> 보통 정도로 배고픔</p>
+            <p><strong>매우</strong> 아주 많이 배고픔</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">ENCODING</p>
+          <h2>숫자 인코딩</h2>
+        </div>
+        <p>
+          AI가 데이터를 쉽게 배울 수 있도록 글자로 된 조건을 숫자로 바꾸어 사용합니다.
+          이렇게 글자를 숫자로 바꾸는 것을 숫자 인코딩이라고 합니다.
+        </p>
+        <div class="encoding-grid">
+          <div class="encoding-card">
+            <h3>날씨</h3>
+            <p><span>1</span> 맑음</p>
+            <p><span>2</span> 비</p>
+            <p><span>3</span> 추움</p>
+          </div>
+          <div class="encoding-card">
+            <h3>용돈수준</h3>
+            <p><span>1</span> 적음</p>
+            <p><span>2</span> 보통</p>
+            <p><span>3</span> 많음</p>
+          </div>
+          <div class="encoding-card">
+            <h3>배고픔정도</h3>
+            <p><span>1</span> 조금</p>
+            <p><span>2</span> 보통</p>
+            <p><span>3</span> 매우</p>
+          </div>
+        </div>
+        <div class="highlight-box key-message">
+          <p>맑음, 비, 추움 같은 글자를 1, 2, 3 같은 숫자로 바꾸면 AI가 데이터를 더 쉽게 배울 수 있습니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card" id="data">
+        <div class="section-heading">
+          <p class="section-kicker">DATA</p>
+          <h2>점메추 데이터 살펴보기</h2>
+        </div>
+        <p>먼저 결정 트리가 예시를 보고 규칙을 찾은 뒤, 새로운 상황에 맞게 추천하는 과정을 살펴봅시다.</p>
+        <figure class="learning-figure">
+          <img src="assets/ai_학습과_추천_시스템_설명.png" alt="AI가 예시를 보고 규칙을 찾아 새로운 상황에 맞게 추천하는 과정 설명 이미지">
+        </figure>
+        <p class="data-intro">이제 우리가 만들 점메추 봇의 데이터 예시를 살펴봅시다. AI는 처음부터 메뉴를 알고 있지 않아서, 먼저 여러 가지 예시를 보여 주어야 합니다.</p>
+        <div class="example-grid">
+          <div>맑음 + 용돈 적음 + 조금 배고픔 <strong>삼각김밥</strong></div>
+          <div>비 + 용돈 적음 + 매우 배고픔 <strong>우동</strong></div>
+          <div>추움 + 용돈 많음 + 매우 배고픔 <strong>갈비탕</strong></div>
+        </div>
+        <div class="menu-matrix-grid" id="menu-matrix" aria-label="날씨별 점메추 메뉴표"></div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">CHECK</p>
+          <h2>데이터 확인하기</h2>
+        </div>
+        <p>조건이 바뀌면 추천 메뉴도 바뀝니다. 표를 보고 알맞은 메뉴를 찾아봅시다.</p>
+        <div class="quiz-list">
+          <article class="quiz-card" data-quiz>
+            <h3>데이터 퀴즈 1</h3>
+            <p>날씨가 1, 용돈수준이 1, 배고픔정도가 1이면?</p>
+            <div class="quiz-options">
+              <button type="button" data-correct="true">삼각김밥</button>
+              <button type="button">치킨마요</button>
+              <button type="button">우동</button>
+              <button type="button">갈비탕</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>데이터 퀴즈 2</h3>
+            <p>날씨가 3, 용돈수준이 3, 배고픔정도가 3이면?</p>
+            <div class="quiz-options">
+              <button type="button">김밥</button>
+              <button type="button">라면</button>
+              <button type="button" data-correct="true">갈비탕</button>
+              <button type="button">샌드위치</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>데이터 퀴즈 3</h3>
+            <p>날씨가 2, 용돈수준이 2, 배고픔정도가 3이면?</p>
+            <div class="quiz-options">
+              <button type="button">햄버거</button>
+              <button type="button" data-correct="true">국밥</button>
+              <button type="button">호빵</button>
+              <button type="button">삼각김밥</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+        </div>
+        <div class="highlight-box key-message">
+          <p>AI는 조건을 보고 가장 알맞은 메뉴를 고릅니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card" id="entry">
+        <div class="section-heading">
+          <p class="section-kicker">ENTRY AI</p>
+          <h2>엔트리에서 AI 모델 학습하기</h2>
+        </div>
+        <p>이제 엔트리에서 AI에게 데이터를 학습시켜 봅니다.</p>
+        <ol class="mission-list">
+          <li>엔트리 작품을 엽니다.</li>
+          <li>점메추 CSV 데이터를 업로드합니다.</li>
+          <li>인공지능 모델 학습하기를 엽니다.</li>
+          <li>분류 모델을 선택합니다.</li>
+          <li>알고리즘에서 결정 트리를 선택합니다.</li>
+          <li>학습에 사용할 속성으로 날씨, 용돈수준, 배고픔정도를 선택합니다.</li>
+          <li>예측할 속성으로 추천메뉴를 선택합니다.</li>
+          <li>학습하기를 누릅니다.</li>
+          <li>학습이 끝나면 모델을 저장합니다.</li>
+        </ol>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>학습에 사용할 속성</th>
+                <th>뜻</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>날씨</td>
+                <td>오늘 날씨 정보</td>
+              </tr>
+              <tr>
+                <td>용돈수준</td>
+                <td>오늘 사용할 수 있는 돈</td>
+              </tr>
+              <tr>
+                <td>배고픔정도</td>
+                <td>지금 얼마나 배고픈지</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mini-note key-message">
+          <p>예측할 속성은 추천메뉴입니다. AI가 최종으로 골라야 하는 결과이기 때문입니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">SUMMARY</p>
+          <h2>오늘의 핵심 정리</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>개념</th>
+                <th>뜻</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>선형회귀</td>
+                <td>숫자의 흐름을 보고 숫자를 예측하는 방법</td>
+              </tr>
+              <tr>
+                <td>분류</td>
+                <td>데이터의 특징을 보고 미리 정해진 종류나 범주 중 어디에 속하는지 판단하는 것</td>
+              </tr>
+              <tr>
+                <td>결정 트리</td>
+                <td>질문을 따라가며 결과를 고르는 AI 방법</td>
+              </tr>
+              <tr>
+                <td>숫자 인코딩</td>
+                <td>글자 조건을 숫자로 바꾸는 것</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="highlight-box key-message">
+          <p>선형회귀는 숫자를 예측하고, 결정 트리는 조건을 보고 결과를 분류합니다.</p>
+        </div>
+      </section>
+
+      <section class="section-card" id="final-quiz">
+        <div class="section-heading">
+          <p class="section-kicker">FINAL QUIZ</p>
+          <h2>마무리 퀴즈</h2>
+        </div>
+        <div class="quiz-list">
+          <article class="quiz-card" data-quiz>
+            <h3>퀴즈 1</h3>
+            <p>선형회귀는 어떤 일을 하나요?</p>
+            <div class="quiz-options">
+              <button type="button" data-correct="true">숫자의 흐름을 보고 숫자를 예측한다</button>
+              <button type="button">메뉴를 무조건 랜덤으로 고른다</button>
+              <button type="button">그림을 색칠한다</button>
+              <button type="button">데이터를 삭제한다</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>퀴즈 2</h3>
+            <p>결정 트리에 가장 가까운 설명은 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button" data-correct="true">질문을 따라가며 결과를 고르는 방법</button>
+              <button type="button">숫자를 무조건 크게 만드는 방법</button>
+              <button type="button">소리를 녹음하는 방법</button>
+              <button type="button">글씨를 꾸미는 방법</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>퀴즈 3</h3>
+            <p>“맑음=1, 비=2, 추움=3”처럼 글자를 숫자로 바꾸는 이유는 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button" data-correct="true">AI가 조건을 더 쉽게 학습할 수 있도록 하기 위해</button>
+              <button type="button">글자를 모두 없애기 위해</button>
+              <button type="button">메뉴 이름을 숨기기 위해</button>
+              <button type="button">표를 사용하지 않기 위해</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>퀴즈 4</h3>
+            <p>오늘 AI가 추천메뉴를 고를 때 사용하는 조건이 아닌 것은 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button">날씨</button>
+              <button type="button">용돈수준</button>
+              <button type="button">배고픔정도</button>
+              <button type="button" data-correct="true">키</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+
+          <article class="quiz-card" data-quiz>
+            <h3>퀴즈 5</h3>
+            <p>오늘 AI가 예측해야 하는 것은 무엇인가요?</p>
+            <div class="quiz-options">
+              <button type="button">날씨</button>
+              <button type="button">용돈수준</button>
+              <button type="button" data-correct="true">추천메뉴</button>
+              <button type="button">배고픔정도</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card closing-card">
+        <div class="section-heading">
+          <p class="section-kicker">FINISH</p>
+          <h2>마무리</h2>
+        </div>
+        <p>
+          오늘 우리는 결정 트리를 사용해 AI 점심 메뉴 추천 챗봇을 만들었습니다.
+          AI는 데이터를 보고 규칙을 찾고, 새로운 상황에 맞는 결과를 추천할 수 있습니다.
+        </p>
+        <div class="highlight-box">
+          <p>데이터는 AI가 배우는 예시이고, 결정 트리는 AI가 생각하는 길이에요.</p>
+        </div>
+        <a class="top-button" href="#top">처음으로 이동</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>2026 엔트리 데이터 분석 4차시 학생용 디지털 교과서</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
