@@ -75,7 +75,7 @@ h1{font-size:clamp(30px,5vw,52px);line-height:1.08;margin:0 0 14px;font-weight:1
 .result-box{margin-top:18px;border:2px solid rgba(45,143,131,.30);background:linear-gradient(180deg,#f7fffd,#fff);border-radius:20px;padding:18px}.result-line{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.result-label{font-weight:1000;color:var(--primary-dark);min-width:88px}.result-value{font-weight:900}.placeholder{color:#94a3b8;font-weight:700}.warning{margin-top:12px;background:#fff5f5;border:1px solid #ffd3da;color:#a33a4a;border-radius:14px;padding:12px;font-weight:800;display:none}.warning.show{display:block}
 .textarea-wrap{display:grid;gap:10px}.generated{width:100%;min-height:190px;border:1px solid var(--line);border-radius:16px;padding:16px;font-size:15px;line-height:1.65;color:#243142;background:#fbfdff;resize:vertical;font-family:inherit}.short{min-height:138px}.copy-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.copy-msg{font-weight:900;color:var(--success);display:none}.copy-msg.show{display:inline-flex}.muted{color:var(--muted);font-size:14px}
 .timeline{display:grid;gap:8px;background:#f9fbfc;border:1px solid var(--line);border-radius:16px;padding:16px}.timeline-item{display:flex;gap:8px;align-items:flex-start;line-height:1.55}.timeline-time{background:var(--primary);color:white;border-radius:999px;padding:5px 9px;font-weight:1000;font-size:13px;min-width:76px;text-align:center}.timeline-item strong{flex:0 0 auto;color:var(--primary-dark)}.timeline-item span{color:#475467}
-.promise{background:linear-gradient(135deg,#fff8ec,#fff);border-color:#ffe0a6}.checklist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.checklist li{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid #f2d9a4;border-radius:14px;padding:12px}.check{color:var(--success);font-weight:1000}.footer{text-align:center;color:var(--muted);padding:34px 0 0;font-size:14px}.sticky-canva{position:fixed;right:18px;bottom:18px;z-index:50}.sticky-canva .btn{box-shadow:0 12px 24px rgba(31,42,58,.2)}
+.promise{background:linear-gradient(135deg,#fff8ec,#fff);border-color:#ffe0a6}.checklist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.checklist li{list-style:none}.promise-item{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid #f2d9a4;border-radius:14px;padding:12px;font:inherit;color:#243142;cursor:pointer;transition:.18s}.promise-item:hover{border-color:var(--accent);background:#fffaf0}.check{display:inline-flex;color:#c49a4f;font-weight:1000;transition:.18s}.promise-item.checked{border-color:var(--primary);background:#f4fffc;box-shadow:0 8px 18px rgba(45,143,131,.12)}.promise-item.checked .check{color:var(--primary);transform:scale(1.1)}.promise-complete{display:none;margin:14px 0 0;background:#e8f6f4;border:1px solid rgba(45,143,131,.28);color:var(--primary-dark);border-radius:14px;padding:14px 16px;font-weight:1000}.promise-complete.show{display:block}.footer{text-align:center;color:var(--muted);padding:34px 0 0;font-size:14px}.sticky-canva{position:fixed;right:18px;bottom:18px;z-index:50}.sticky-canva .btn{box-shadow:0 12px 24px rgba(31,42,58,.2)}
 .problem-card{border:2px solid var(--line);background:#fff;border-radius:16px;padding:14px;cursor:pointer;font-weight:900}.problem-card small{display:block;color:var(--muted);font-weight:700;margin-top:6px}.problem-card.selected{border-color:var(--accent2);background:#f3f0ff;color:#4035a8}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.code-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#4938cc;font-size:12px;font-weight:900}
 @media(max-width:850px){.grid-4,.grid-3,.grid-2,.split,.setting-choice-grid{grid-template-columns:1fr}.canva-activity-card{grid-template-columns:1fr}.canva-activity-card h3{white-space:normal}.nav{align-items:flex-start;flex-direction:column}.hero{padding:28px 22px}.section{padding:20px}.sticky-canva{position:static;margin:18px 18px 0}.sticky-canva .btn{width:100%}.nav-links a{font-size:13px}.timeline-time{min-width:auto}}
 @media print{.header,.sticky-canva,.btn,.nav-links{display:none}.section,.hero{break-inside:avoid;box-shadow:none}.wrap{padding:0}body{background:#fff}}
@@ -204,13 +204,14 @@ h1{font-size:clamp(30px,5vw,52px);line-height:1.08;margin:0 0 14px;font-weight:1
 
   <section class="section promise" id="promise">
     <div class="section-title"><div><h2>✅ AI 이미지 만들기 약속</h2><p class="desc">AI 이미지를 만들 때도 창작자로서 지켜야 할 약속이 있습니다.</p></div></div>
-    <ul class="checklist">
-      <li><span class="check">✓</span><span>유명 게임 캐릭터를 그대로 따라 만들지 않습니다.</span></li>
-      <li><span class="check">✓</span><span>애니메이션 캐릭터 이름을 그대로 사용하지 않습니다.</span></li>
-      <li><span class="check">✓</span><span>다른 사람 얼굴을 마음대로 사용하지 않습니다.</span></li>
-      <li><span class="check">✓</span><span>비슷하게 나온 부분은 색, 옷, 능력, 이름 중 하나 이상을 바꿉니다.</span></li>
-      <li><span class="check">✓</span><span>AI는 도구이고, 최종 선택과 책임은 창작자인 나에게 있습니다.</span></li>
+    <ul class="checklist" data-promise-list>
+      <li><button class="promise-item" type="button" data-promise-item aria-pressed="false"><span class="check">✓</span><span>유명 게임 캐릭터를 그대로 따라 만들지 않습니다.</span></button></li>
+      <li><button class="promise-item" type="button" data-promise-item aria-pressed="false"><span class="check">✓</span><span>애니메이션 캐릭터 이름을 그대로 사용하지 않습니다.</span></button></li>
+      <li><button class="promise-item" type="button" data-promise-item aria-pressed="false"><span class="check">✓</span><span>다른 사람 얼굴을 마음대로 사용하지 않습니다.</span></button></li>
+      <li><button class="promise-item" type="button" data-promise-item aria-pressed="false"><span class="check">✓</span><span>비슷하게 나온 부분은 색, 옷, 능력, 이름 중 하나 이상을 바꿉니다.</span></button></li>
+      <li><button class="promise-item" type="button" data-promise-item aria-pressed="false"><span class="check">✓</span><span>AI는 도구이고, 최종 선택과 책임은 창작자인 나에게 있습니다.</span></button></li>
     </ul>
+    <p class="promise-complete" data-promise-complete>모든 약속을 확인했습니다. AI 이미지 만들기 약속을 꼭 지켜 주세요.</p>
   </section>
 
   <div class="result-box"><strong>마무리:</strong> 오늘 우리는 AI에게 그림을 맡긴 것이 아니라, AI가 원하는 결과를 만들 수 있도록 설명하고 선택하는 창작자가 되었습니다.</div>
@@ -322,6 +323,13 @@ async function copyText(id, msgId){
   const msg=document.getElementById(msgId);
   if(msg){ msg.textContent = ok ? '✅ 복사 완료! Canva에 붙여넣기(Ctrl+V) 하세요.' : '복사가 안 되면 문장을 직접 선택해서 Ctrl+C로 복사하세요.'; msg.classList.add('show'); setTimeout(()=>msg.classList.remove('show'),3200); }
 }
+function updatePromiseComplete(){
+  const items = Array.from(document.querySelectorAll('[data-promise-item]'));
+  const complete = document.querySelector('[data-promise-complete]');
+  if(!items.length || !complete) return;
+  const allChecked = items.every(item=>item.classList.contains('checked'));
+  complete.classList.toggle('show', allChecked);
+}
 document.addEventListener('click', (e)=>{
   const btn=e.target.closest('[data-group]');
   if(btn){
@@ -337,6 +345,13 @@ document.addEventListener('click', (e)=>{
     document.querySelectorAll('[data-problem]').forEach(x=>x.classList.toggle('selected', x===problem));
     updateAll();
   }
+  const promiseItem=e.target.closest('[data-promise-item]');
+  if(promiseItem){
+    const checked = !promiseItem.classList.contains('checked');
+    promiseItem.classList.toggle('checked', checked);
+    promiseItem.setAttribute('aria-pressed', checked ? 'true' : 'false');
+    updatePromiseComplete();
+  }
 });
 document.addEventListener('input', (e)=>{
   const input=e.target.closest('[data-custom-group]');
@@ -348,6 +363,7 @@ document.addEventListener('input', (e)=>{
   updateAll();
 });
 setupCustomInputs();
+updatePromiseComplete();
 document.addEventListener('DOMContentLoaded', updateAll);
 
 // mirror name into second display
