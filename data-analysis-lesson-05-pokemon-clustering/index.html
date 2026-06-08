@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI 포켓몬 도감 자동 그룹핑 | 엔트리 데이터 분석 5차시</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header class="hero" id="top">
+      <nav class="top-nav" aria-label="수업 바로가기">
+        <a href="#files">수업 파일</a>
+        <a href="#review">복습</a>
+        <a href="#concept">핵심 개념</a>
+        <a href="#cluster-graph">군집 그래프</a>
+        <a href="#cluster-model">군집 모델</a>
+        <a href="#final-quiz">마무리</a>
+      </nav>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="lesson-label">엔트리 데이터 분석 5차시</p>
+          <h1>AI 포켓몬 도감 자동 그룹핑</h1>
+          <p class="hero-subtitle">비슷한 캐릭터끼리 AI가 스스로 묶어요!</p>
+          <p class="hero-description">
+            포켓몬 도감에 캐릭터가 너무 많아졌어요.<br>
+            AI에게 공격력과 귀여움지수를 알려 주면,<br>
+            비슷한 캐릭터끼리 3개의 그룹으로 자동 정리할 수 있어요.
+          </p>
+          <div class="hero-actions" id="files">
+            <a class="primary-link" href="./assets/lesson05_pokemon_clustering_data_48.csv" download>📁 데이터 다운로드</a>
+            <a class="secondary-link" href="./assets/lesson05_pokemon_clustering_student.ent" download>🎮 엔트리 다운로드</a>
+            <a class="secondary-link" href="#cluster-model">🤖 AI 모델 만들기 순서 보기</a>
+          </div>
+          <p class="file-note" id="entry-file-coming" aria-live="polite">
+            데이터 파일과 엔트리 파일을 내려받아 수업에 사용합니다.
+          </p>
+        </div>
+
+        <div class="hero-panel hero-visual card-hero" aria-label="포켓몬 도감 카드가 세 그룹으로 나뉘는 예시">
+          <div class="collector-card-stack">
+            <article class="collector-card cute-card">
+              <div class="card-topline">
+                <strong>피카츄</strong>
+                <span>귀여움형</span>
+              </div>
+              <div class="card-art electric-art" aria-hidden="true">
+                <span></span>
+              </div>
+              <div class="card-stats">
+                <span>공격력 55</span>
+                <span>귀여움 96</span>
+              </div>
+            </article>
+            <article class="collector-card balance-card">
+              <div class="card-topline">
+                <strong>어니부기</strong>
+                <span>균형형</span>
+              </div>
+              <div class="card-art wave-art" aria-hidden="true">
+                <span></span>
+              </div>
+              <div class="card-stats">
+                <span>공격력 63</span>
+                <span>귀여움 70</span>
+              </div>
+            </article>
+            <article class="collector-card power-card">
+              <div class="card-topline">
+                <strong>괴력몬</strong>
+                <span>전투형</span>
+              </div>
+              <div class="card-art power-art" aria-hidden="true">
+                <span></span>
+              </div>
+              <div class="card-stats">
+                <span>공격력 130</span>
+                <span>귀여움 28</span>
+              </div>
+            </article>
+          </div>
+          <div class="cluster-badge">
+            <span>K=3</span>
+            <strong>도감 카드 3개 그룹</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section-card" id="mission">
+        <div class="section-heading">
+          <p class="section-kicker">MISSION 1</p>
+          <h2>오늘의 미션</h2>
+        </div>
+        <p>
+          포켓몬 캐릭터 데이터를 엔트리에 추가하고,<br>
+          AI 군집 모델을 만들어 비슷한 캐릭터끼리 자동으로 묶어 봅시다.
+        </p>
+        <div class="highlight-box">
+          <strong>오늘 완성할 작품</strong>
+          <p>공격력과 귀여움지수를 보고 포켓몬 카드를 3개 그룹으로 나누는 AI 도감</p>
+        </div>
+        <div class="step-grid">
+          <article>
+            <span>1</span>
+            <p>포켓몬 능력치 데이터를 불러옵니다.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <p>공격력과 귀여움지수를 AI에게 알려 줍니다.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <p>AI가 캐릭터를 3개 그룹으로 나눕니다.</p>
+          </article>
+          <article>
+            <span>4</span>
+            <p>같은 그룹에 모인 캐릭터의 특징을 해석합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card" id="review">
+        <div class="section-heading">
+          <p class="section-kicker">REVIEW</p>
+          <h2>지난 시간 복습</h2>
+        </div>
+        <div class="review-flow" aria-label="1차시부터 5차시까지의 학습 흐름">
+          <span>1차시<br><strong>데이터 정리</strong></span>
+          <span>2차시<br><strong>관계 찾기</strong></span>
+          <span>3차시<br><strong>숫자 예측</strong></span>
+          <span>4차시<br><strong>정답 판단</strong></span>
+          <span class="today-step">5차시<br><strong>비슷한 것끼리 묶기</strong></span>
+        </div>
+        <div class="highlight-box key-message">
+          <p>
+            지난 시간까지는 데이터를 보고, 관계를 찾고, 예측하고, 정답을 판단해 보았습니다.<br>
+            오늘은 정답이 없는 데이터에서 AI가 비슷한 캐릭터끼리 스스로 묶는 과정을 체험합니다.
+          </p>
+        </div>
+      </section>
+
+      <section class="section-card" id="concept">
+        <div class="section-heading">
+          <p class="section-kicker">CONCEPT</p>
+          <h2>오늘의 핵심 개념</h2>
+        </div>
+        <div class="concept-grid">
+          <article>
+            <h3>군집</h3>
+            <p>군집은 비슷한 데이터끼리 자동으로 묶는 방법입니다.</p>
+          </article>
+          <article>
+            <h3>K-평균</h3>
+            <p>K는 몇 개의 그룹으로 나눌지를 뜻합니다.</p>
+            <p><strong>K=3</strong>은 3개의 그룹으로 나눈다는 뜻입니다.</p>
+          </article>
+          <article>
+            <h3>핵심 속성</h3>
+            <p>핵심 속성은 AI가 그룹을 나눌 때 참고하는 기준입니다.</p>
+            <p>오늘은 <strong>공격력</strong>과 <strong>귀여움지수</strong>를 사용합니다.</p>
+          </article>
+        </div>
+        <div class="use-case-strip">
+          <h3>군집 모델은 언제 사용할까요?</h3>
+          <div>
+            <span>정답 이름이 아직 없을 때</span>
+            <span>비슷한 것끼리 먼저 정리하고 싶을 때</span>
+            <span>많은 데이터를 몇 그룹으로 나누고 싶을 때</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card" id="data">
+        <div class="section-heading">
+          <p class="section-kicker">DATA</p>
+          <h2>오늘 사용할 데이터와 예시</h2>
+        </div>
+        <div class="data-column-strip" aria-label="데이터 열 설명">
+          <span><strong>캐릭터명</strong> 한글 이름</span>
+          <span><strong>영문명</strong> 영어 이름</span>
+          <span><strong>공격력</strong> 첫 번째 숫자</span>
+          <span><strong>귀여움지수</strong> 두 번째 숫자</span>
+        </div>
+        <div class="data-example-layout">
+          <div class="table-wrapper data-table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>캐릭터명</th>
+                  <th class="number-cell">공격력</th>
+                  <th class="number-cell">귀여움지수</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>피카츄</td>
+                  <td class="number-cell">55</td>
+                  <td class="number-cell">96</td>
+                </tr>
+                <tr>
+                  <td>이브이</td>
+                  <td class="number-cell">55</td>
+                  <td class="number-cell">98</td>
+                </tr>
+                <tr>
+                  <td>푸린</td>
+                  <td class="number-cell">45</td>
+                  <td class="number-cell">95</td>
+                </tr>
+                <tr>
+                  <td>이상해풀</td>
+                  <td class="number-cell">62</td>
+                  <td class="number-cell">68</td>
+                </tr>
+                <tr>
+                  <td>어니부기</td>
+                  <td class="number-cell">63</td>
+                  <td class="number-cell">70</td>
+                </tr>
+                <tr>
+                  <td>리자몽</td>
+                  <td class="number-cell">84</td>
+                  <td class="number-cell">44</td>
+                </tr>
+                <tr>
+                  <td>괴력몬</td>
+                  <td class="number-cell">130</td>
+                  <td class="number-cell">28</td>
+                </tr>
+                <tr>
+                  <td>갸라도스</td>
+                  <td class="number-cell">125</td>
+                  <td class="number-cell">26</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="question-card data-question-card">
+            <h3>생각해 보기</h3>
+            <ol>
+              <li>피카츄, 이브이, 푸린은 공격력이 45~55이고 귀여움지수가 95 이상입니다. 이 세 캐릭터는 서로 가까운 그룹일까요?</li>
+              <li>괴력몬과 갸라도스는 공격력이 120보다 높고 귀여움지수는 30보다 낮습니다. 피카츄와 같은 그룹이 되기 어려운 이유는 무엇일까요?</li>
+              <li>이상해풀과 어니부기는 공격력과 귀여움지수가 둘 다 중간쯤입니다. 이 그룹에 이름을 붙인다면 어떤 이름이 어울릴까요?</li>
+            </ol>
+          </div>
+        </div>
+        <div class="highlight-box key-message">
+          <p>
+            이번 데이터에는 정답 그룹이 없습니다.<br>
+            AI가 공격력과 귀여움지수를 보고 비슷한 캐릭터끼리 직접 그룹을 만듭니다.
+          </p>
+        </div>
+      </section>
+
+      <section class="section-card" id="card-preview">
+        <div class="section-heading">
+          <p class="section-kicker">CARD PREVIEW</p>
+          <h2>카드에서 숫자 찾기</h2>
+        </div>
+        <p>
+          AI가 학습하기 전에 사람이 먼저 대략 나누어 보는 활동입니다.<br>
+          카드의 공격력과 귀여움지수를 보고 어느 그룹에 가까울지 예상해 봅니다.
+        </p>
+        <div class="card-reading-guide">
+          <article>
+            <span>1</span>
+            <p>카드에서 공격력과 귀여움지수를 찾습니다.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <p>공격력이 높은지, 귀여움지수가 높은지 살펴봅니다.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <p>AI 결과를 보기 전에 어떤 그룹일지 먼저 예상합니다.</p>
+          </article>
+        </div>
+        <div class="card-gallery" aria-label="포켓몬 도감 카드 미리보기">
+          <article class="collector-card cute-card">
+            <div class="card-topline">
+              <strong>피카츄</strong>
+              <span>전기 느낌</span>
+            </div>
+            <div class="card-art electric-art" aria-hidden="true">
+              <span></span>
+            </div>
+            <div class="card-stats">
+              <span>공격력 55</span>
+              <span>귀여움 96</span>
+            </div>
+          </article>
+          <article class="collector-card balance-card">
+            <div class="card-topline">
+              <strong>이상해풀</strong>
+              <span>균형형</span>
+            </div>
+            <div class="card-art leaf-art" aria-hidden="true">
+              <span></span>
+            </div>
+            <div class="card-stats">
+              <span>공격력 62</span>
+              <span>귀여움 68</span>
+            </div>
+          </article>
+          <article class="collector-card power-card">
+            <div class="card-topline">
+              <strong>괴력몬</strong>
+              <span>전투형</span>
+            </div>
+            <div class="card-art power-art" aria-hidden="true">
+              <span></span>
+            </div>
+            <div class="card-stats">
+              <span>공격력 130</span>
+              <span>귀여움 28</span>
+            </div>
+          </article>
+        </div>
+        <div class="mini-note">
+          이 활동은 정답을 맞히는 활동이 아닙니다. AI가 묶기 전에 사람이 먼저 기준을 생각해 보는 준비 활동입니다.
+        </div>
+      </section>
+
+      <section class="section-card" id="cluster-graph">
+        <div class="section-heading">
+          <p class="section-kicker">CLUSTER MAP</p>
+          <h2>군집 그래프 미리보기</h2>
+        </div>
+        <p>
+          카드를 점으로 바꾸어 보면 더 쉽게 보입니다.<br>
+          가로는 공격력, 세로는 귀여움지수입니다.
+        </p>
+        <div class="graph-preview-grid">
+          <div class="cluster-graph-panel" aria-label="공격력과 귀여움지수로 캐릭터가 세 그룹에 모이는 군집 그래프 예시">
+            <div class="scatter-board">
+              <div class="axis-label x-axis">공격력</div>
+              <div class="axis-label y-axis">귀여움지수</div>
+              <span class="dot cute" style="--x: 24%; --y: 14%;">피</span>
+              <span class="dot cute" style="--x: 28%; --y: 10%;">이</span>
+              <span class="dot cute" style="--x: 20%; --y: 18%;">푸</span>
+              <span class="dot cute" style="--x: 33%; --y: 24%;">파</span>
+              <span class="dot balance" style="--x: 46%; --y: 43%;">이</span>
+              <span class="dot balance" style="--x: 51%; --y: 39%;">어</span>
+              <span class="dot balance" style="--x: 57%; --y: 47%;">고</span>
+              <span class="dot power" style="--x: 72%; --y: 65%;">리</span>
+              <span class="dot power" style="--x: 82%; --y: 76%;">괴</span>
+              <span class="dot power" style="--x: 78%; --y: 80%;">갸</span>
+            </div>
+          </div>
+          <div class="cluster-legend">
+            <article>
+              <span class="legend-dot cute"></span>
+              <div>
+                <h3>귀여움이 높은 쪽</h3>
+                <p>피카츄, 이브이, 푸린처럼 귀여움지수가 높은 캐릭터가 가까이 모일 수 있어요.</p>
+              </div>
+            </article>
+            <article>
+              <span class="legend-dot balance"></span>
+              <div>
+                <h3>중간에 모이는 쪽</h3>
+                <p>공격력과 귀여움지수가 둘 다 중간인 캐릭터가 한 그룹이 될 수 있어요.</p>
+              </div>
+            </article>
+            <article>
+              <span class="legend-dot power"></span>
+              <div>
+                <h3>공격력이 높은 쪽</h3>
+                <p>괴력몬, 갸라도스처럼 공격력이 높은 캐릭터가 가까이 모일 수 있어요.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="highlight-box key-message">
+          <p>
+            그래프의 점들이 가까울수록 비슷한 데이터입니다.<br>
+            AI는 가까운 점들을 보고 그룹을 나눕니다.
+          </p>
+        </div>
+      </section>
+
+      <section class="section-card" id="csv-step">
+        <div class="section-heading">
+          <p class="section-kicker">ENTRY 1</p>
+          <h2>CSV 데이터 추가하기</h2>
+        </div>
+        <p>먼저 AI가 공부할 데이터를 엔트리에 넣어야 합니다.</p>
+        <ol class="mission-list">
+          <li>엔트리 작품을 엽니다.</li>
+          <li>왼쪽 메뉴에서 [데이터 분석] 또는 [테이블]을 찾습니다.</li>
+          <li>[테이블 추가하기]를 클릭합니다.</li>
+          <li>오늘 받은 CSV 파일을 업로드합니다.</li>
+          <li>표에 캐릭터명, 영문명, 공격력, 귀여움지수가 보이는지 확인합니다.</li>
+        </ol>
+        <div class="check-question">
+          <strong>확인 질문</strong>
+          <p>표에 공격력과 귀여움지수가 숫자로 보이나요?</p>
+        </div>
+      </section>
+
+      <section class="section-card" id="cluster-model">
+        <div class="section-heading">
+          <p class="section-kicker">ENTRY AI</p>
+          <h2>군집 모델 만들기</h2>
+        </div>
+        <p>
+          이제 AI가 캐릭터들을 비슷한 친구끼리 묶도록 모델을 만들어 봅시다.
+        </p>
+        <div class="k-reason-box">
+          <div>
+            <strong>왜 K=3으로 할까요?</strong>
+            <p>처음부터 너무 많은 그룹을 만들면 해석하기 어렵습니다. 오늘은 결과를 쉽게 비교하기 위해 3개 그룹으로 나누어 봅니다.</p>
+          </div>
+          <ul>
+            <li>귀여움지수가 높은 캐릭터</li>
+            <li>공격력과 귀여움지수가 중간인 캐릭터</li>
+            <li>공격력이 높은 캐릭터</li>
+          </ul>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>설정 항목</th>
+                <th>선택할 값</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>모델 종류</td>
+                <td>군집: 숫자</td>
+              </tr>
+              <tr>
+                <td>알고리즘</td>
+                <td>K-평균</td>
+              </tr>
+              <tr>
+                <td>모델 이름</td>
+                <td>포켓몬_군집모델</td>
+              </tr>
+              <tr>
+                <td>핵심 속성</td>
+                <td>공격력, 귀여움지수</td>
+              </tr>
+              <tr>
+                <td>군집 개수</td>
+                <td>3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ol class="mission-list compact">
+          <li>[인공지능] 메뉴를 클릭합니다.</li>
+          <li>[인공지능 모델 학습하기]를 클릭합니다.</li>
+          <li>[새로 만들기]를 선택합니다.</li>
+          <li>[군집: 숫자]를 선택합니다.</li>
+          <li>모델 이름을 ‘포켓몬_군집모델’로 입력합니다.</li>
+          <li>데이터 테이블을 선택합니다.</li>
+          <li>핵심 속성으로 ‘공격력’과 ‘귀여움지수’를 선택합니다.</li>
+          <li>군집 개수를 3으로 설정합니다.</li>
+          <li>[학습하기]를 클릭합니다.</li>
+          <li>결과 차트에서 점들이 3개 그룹으로 나뉘는지 확인합니다.</li>
+        </ol>
+      </section>
+
+      <section class="section-card" id="tree-vs-cluster">
+        <div class="section-heading">
+          <p class="section-kicker">COMPARE</p>
+          <h2>결정 트리와 군집의 차이</h2>
+        </div>
+        <div class="comparison-cards" aria-label="결정 트리와 군집 비교">
+          <article class="comparison-card tree-card">
+            <div class="comparison-icon tree-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <h3>결정 트리</h3>
+            <p class="comparison-label">정답 데이터 있음</p>
+            <p>날씨, 용돈, 배고픔 정도를 보고 추천메뉴를 맞혔어요.</p>
+            <strong>조건을 따라가며 정답을 분류합니다.</strong>
+          </article>
+          <article class="comparison-card cluster-card">
+            <div class="comparison-icon cluster-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <h3>군집</h3>
+            <p class="comparison-label">정답 데이터 없음</p>
+            <p>공격력과 귀여움지수를 보고 비슷한 캐릭터끼리 묶어요.</p>
+            <strong>가까운 데이터를 찾아 자동으로 그룹화합니다.</strong>
+          </article>
+        </div>
+        <div class="highlight-box key-message">
+          <p>
+            결정 트리는 정답을 보고 배웁니다.<br>
+            군집은 정답 없이 비슷한 것끼리 묶습니다.
+          </p>
+        </div>
+      </section>
+
+      <section class="section-card" id="card-demo">
+        <div class="section-heading">
+          <p class="section-kicker">ENTRY 3</p>
+          <h2>캐릭터 카드 움직이기</h2>
+        </div>
+        <p>
+          AI가 판단한 군집 번호에 따라<br>
+          캐릭터 카드가 1번, 2번, 3번 그룹 영역으로 이동하게 만들어 봅시다.
+        </p>
+        <div class="flow-card-grid">
+          <article>
+            <h3>흐름 1</h3>
+            <p>[그룹분류하기 버튼을 클릭했을 때]</p>
+            <strong>그룹분류시작 신호 보내기</strong>
+          </article>
+          <article>
+            <h3>흐름 2</h3>
+            <p>[캐릭터 카드가 그룹분류시작 신호를 받았을 때]</p>
+            <strong>AI 모델에 숫자 넣기 → 군집 번호 확인하기 → 위치 이동하기</strong>
+          </article>
+        </div>
+        <div class="demo-board" aria-label="다중 복제 UI 예시">
+          <div class="demo-source">
+            <h3>캐릭터 카드 여러 개</h3>
+            <div class="pokemon-card-pool" id="pokemon-card-pool">
+              <article class="pokemon-card" data-group="1">
+                <div class="mini-card-art electric-art" aria-hidden="true"></div>
+                <strong>피카츄</strong>
+                <span>공격력 55</span>
+                <span>귀여움 96</span>
+              </article>
+              <article class="pokemon-card" data-group="1">
+                <div class="mini-card-art soft-art" aria-hidden="true"></div>
+                <strong>이브이</strong>
+                <span>공격력 55</span>
+                <span>귀여움 98</span>
+              </article>
+              <article class="pokemon-card" data-group="2">
+                <div class="mini-card-art wave-art" aria-hidden="true"></div>
+                <strong>어니부기</strong>
+                <span>공격력 63</span>
+                <span>귀여움 70</span>
+              </article>
+              <article class="pokemon-card" data-group="3">
+                <div class="mini-card-art power-art" aria-hidden="true"></div>
+                <strong>괴력몬</strong>
+                <span>공격력 130</span>
+                <span>귀여움 28</span>
+              </article>
+            </div>
+            <div class="demo-actions">
+              <button class="primary-button" type="button" id="sort-demo">그룹분류하기</button>
+              <button class="secondary-button" type="button" id="reset-demo">다시 보기</button>
+            </div>
+          </div>
+          <div class="demo-targets">
+            <section class="group-zone" data-zone="1">
+              <h3>1번 그룹</h3>
+              <div class="group-drop" id="group-1"></div>
+            </section>
+            <section class="group-zone" data-zone="2">
+              <h3>2번 그룹</h3>
+              <div class="group-drop" id="group-2"></div>
+            </section>
+            <section class="group-zone" data-zone="3">
+              <h3>3번 그룹</h3>
+              <div class="group-drop" id="group-3"></div>
+            </section>
+          </div>
+        </div>
+        <p class="mini-note">화면 예시는 이해를 돕기 위한 예시입니다. 실제 엔트리 AI 결과와 다를 수 있습니다.</p>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">CARD EXAMPLE</p>
+          <h2>캐릭터 카드 예시</h2>
+        </div>
+        <div class="character-example-grid">
+          <article>
+            <h3>피카츄 카드</h3>
+            <p>공격력: 55<br>귀여움지수: 96</p>
+            <div class="code-flow">
+              <p>군집번호 = 포켓몬_군집모델에 공격력 55, 귀여움지수 96을 넣은 결과</p>
+              <ul>
+                <li>만약 군집번호가 1이면 → 1번 그룹으로 이동</li>
+                <li>만약 군집번호가 2이면 → 2번 그룹으로 이동</li>
+                <li>만약 군집번호가 3이면 → 3번 그룹으로 이동</li>
+              </ul>
+            </div>
+          </article>
+          <article>
+            <h3>괴력몬 카드</h3>
+            <p>공격력: 130<br>귀여움지수: 28</p>
+            <div class="question-card compact-question">
+              <h4>생각 질문</h4>
+              <p>괴력몬은 어떤 캐릭터들과 같은 그룹에 들어갈까요?<br>왜 그렇게 생각하나요?</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card" id="interpret">
+        <div class="section-heading">
+          <p class="section-kicker">INTERPRET</p>
+          <h2>결과 해석하기</h2>
+        </div>
+        <p>
+          AI가 그룹을 나눈 뒤에는 사람이 결과를 해석해야 합니다.
+        </p>
+        <div class="question-card">
+          <h3>활동 질문</h3>
+          <ol>
+            <li>1번 그룹에는 어떤 캐릭터들이 모였나요?</li>
+            <li>2번 그룹에는 어떤 캐릭터들이 모였나요?</li>
+            <li>3번 그룹에는 어떤 캐릭터들이 모였나요?</li>
+          </ol>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>그룹</th>
+                <th>내가 붙인 이름</th>
+                <th>이유</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1번 그룹</td>
+                <td><input class="student-input" type="text" aria-label="1번 그룹 내가 붙인 이름" placeholder="예: 귀여움형 그룹"></td>
+                <td><textarea class="student-textarea" aria-label="1번 그룹 이유" placeholder="어떤 캐릭터들이 모였는지 보고 이유를 써 봅니다."></textarea></td>
+              </tr>
+              <tr>
+                <td>2번 그룹</td>
+                <td><input class="student-input" type="text" aria-label="2번 그룹 내가 붙인 이름" placeholder="예: 균형형 그룹"></td>
+                <td><textarea class="student-textarea" aria-label="2번 그룹 이유" placeholder="공격력과 귀여움지수가 어떤지 써 봅니다."></textarea></td>
+              </tr>
+              <tr>
+                <td>3번 그룹</td>
+                <td><input class="student-input" type="text" aria-label="3번 그룹 내가 붙인 이름" placeholder="예: 전투형 그룹"></td>
+                <td><textarea class="student-textarea" aria-label="3번 그룹 이유" placeholder="다른 그룹과 다른 점을 써 봅니다."></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="example-name-list">
+          <span>전투형 그룹</span>
+          <span>귀여움형 그룹</span>
+          <span>균형형 그룹</span>
+          <span>강하지만 귀여운 그룹</span>
+          <span>약하지만 귀여운 그룹</span>
+        </div>
+        <div class="highlight-box key-message">
+          <p>
+            AI가 만든 1번 그룹이 항상 전투형이라는 뜻은 아닙니다.<br>
+            군집 번호는 학습 결과에 따라 달라질 수 있습니다.<br>
+            그래서 결과를 보고 직접 해석해야 합니다.
+          </p>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-heading">
+          <p class="section-kicker">HELP</p>
+          <h2>오류 해결</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>문제 상황</th>
+                <th>확인할 것</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CSV 파일이 안 보여요</td>
+                <td>테이블을 먼저 추가했는지 확인하세요.</td>
+              </tr>
+              <tr>
+                <td>모델 학습이 안 돼요</td>
+                <td>공격력, 귀여움지수가 숫자로 되어 있는지 확인하세요.</td>
+              </tr>
+              <tr>
+                <td>군집 결과가 안 보여요</td>
+                <td>군집 개수를 3으로 설정했는지 확인하세요.</td>
+              </tr>
+              <tr>
+                <td>캐릭터가 안 움직여요</td>
+                <td>그룹분류시작 신호를 보냈는지 확인하세요.</td>
+              </tr>
+              <tr>
+                <td>모든 캐릭터가 같은 곳으로 가요</td>
+                <td>군집번호 조건을 1, 2, 3으로 나누었는지 확인하세요.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section-card" id="final-quiz">
+        <div class="section-heading">
+          <p class="section-kicker">FINAL QUIZ</p>
+          <h2>마무리 퀴즈</h2>
+        </div>
+        <div class="quiz-list">
+          <article class="quiz-card">
+            <h3>퀴즈 1</h3>
+            <p>군집은 어떤 일을 하나요?</p>
+            <ol class="choice-list">
+              <li>숫자를 더한다</li>
+              <li>비슷한 데이터끼리 묶는다</li>
+              <li>이미지를 삭제한다</li>
+              <li>글자를 번역한다</li>
+            </ol>
+            <button class="answer-button" type="button" data-answer-button>정답 보기</button>
+            <p class="answer" hidden>정답: ② 비슷한 데이터끼리 묶는다</p>
+          </article>
+          <article class="quiz-card">
+            <h3>퀴즈 2</h3>
+            <p>오늘 K=3으로 설정한 이유는 무엇인가요?</p>
+            <ol class="choice-list">
+              <li>캐릭터를 3개 그룹으로 나누기 위해</li>
+              <li>공격력을 3배로 만들기 위해</li>
+              <li>캐릭터 이름을 3글자로 만들기 위해</li>
+              <li>데이터를 3개만 사용하기 위해</li>
+            </ol>
+            <button class="answer-button" type="button" data-answer-button>정답 보기</button>
+            <p class="answer" hidden>정답: ① 캐릭터를 3개 그룹으로 나누기 위해</p>
+          </article>
+          <article class="quiz-card">
+            <h3>퀴즈 3</h3>
+            <p>군집 모델에서 오늘 사용한 핵심 속성은 무엇인가요?</p>
+            <ol class="choice-list">
+              <li>캐릭터명, 영문명</li>
+              <li>공격력, 귀여움지수</li>
+              <li>추천메뉴, 날씨</li>
+              <li>구독자 수, 개월 수</li>
+            </ol>
+            <button class="answer-button" type="button" data-answer-button>정답 보기</button>
+            <p class="answer" hidden>정답: ② 공격력, 귀여움지수</p>
+          </article>
+          <article class="quiz-card">
+            <h3>퀴즈 4</h3>
+            <p>결정 트리와 군집의 가장 큰 차이는 무엇인가요?</p>
+            <ol class="choice-list">
+              <li>결정 트리는 정답 데이터가 있고, 군집은 정답 데이터 없이 묶는다</li>
+              <li>결정 트리는 그림을 그리고, 군집은 소리를 낸다</li>
+              <li>결정 트리는 데이터가 필요 없고, 군집은 버튼만 필요하다</li>
+              <li>둘은 완전히 같은 모델이다</li>
+            </ol>
+            <button class="answer-button" type="button" data-answer-button>정답 보기</button>
+            <p class="answer" hidden>정답: ① 결정 트리는 정답 데이터가 있고, 군집은 정답 데이터 없이 묶는다</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-card closing-card">
+        <div class="section-heading">
+          <p class="section-kicker">SUMMARY</p>
+          <h2>오늘의 정리</h2>
+        </div>
+        <p>
+          오늘은 AI 군집 모델을 사용해<br>
+          포켓몬 캐릭터를 비슷한 친구끼리 자동으로 묶어 보았습니다.
+        </p>
+        <p>
+          군집은 정답을 맞히는 AI가 아니라,<br>
+          많은 데이터를 비슷한 것끼리 정리해 주는 AI입니다.
+        </p>
+        <div class="highlight-box key-message">
+          <p>
+            AI가 만든 그룹을 보고<br>
+            그 그룹이 어떤 특징을 가지고 있는지 해석하는 것은 우리의 역할입니다.
+          </p>
+        </div>
+        <a class="top-button" href="#top">처음으로 이동</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>2026 엔트리 데이터 분석 5차시 학생용 디지털 교과서</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
