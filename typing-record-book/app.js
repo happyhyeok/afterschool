@@ -504,6 +504,10 @@ function handleDurationFocusIn(event) {
     return;
   }
 
+  if (!input.value) {
+    input.dataset.durationMode = "sequence";
+    input.dataset.durationDigits = "";
+  }
   input.dataset.durationPart = input.dataset.durationPart || "minute";
   input.dataset.secondBuffer = "";
   window.setTimeout(() => selectDurationPart(input, input.dataset.durationPart), 0);
@@ -576,6 +580,8 @@ function handleDurationPaste(event) {
     return;
   }
 
+  input.dataset.durationMode = "sequence";
+  input.dataset.durationDigits = digits;
   input.value = formatDurationDigits(digits);
   input.dataset.durationPart = "second";
   input.dataset.secondBuffer = "";
@@ -589,6 +595,11 @@ function getDurationInput(target) {
 }
 
 function applyDurationDigit(input, digit) {
+  if (input.dataset.durationMode === "sequence" || !input.value) {
+    applyDurationSequenceDigit(input, digit);
+    return;
+  }
+
   const parts = readDurationParts(input);
   const part = input.dataset.durationPart || "minute";
 
@@ -621,7 +632,35 @@ function applyDurationDigit(input, digit) {
   selectDurationPart(input, "second");
 }
 
+function applyDurationSequenceDigit(input, digit) {
+  const digits = `${input.dataset.durationDigits || ""}${digit}`.slice(0, 4);
+  input.dataset.durationMode = "sequence";
+  input.dataset.durationDigits = digits;
+  input.value = formatDurationDigits(digits);
+  input.dataset.durationPart = digits.length <= 1 ? "minute" : "second";
+  input.dataset.secondBuffer = "";
+  commitDurationInput(input);
+  selectDurationPart(input, input.dataset.durationPart);
+}
+
 function clearDurationPart(input) {
+  if (input.dataset.durationMode === "sequence") {
+    const digits = (input.dataset.durationDigits || "").slice(0, -1);
+    input.dataset.durationDigits = digits;
+    input.dataset.secondBuffer = "";
+    if (!digits) {
+      input.value = "";
+      input.dataset.durationPart = "minute";
+      commitDurationInput(input);
+      return;
+    }
+    input.value = formatDurationDigits(digits);
+    input.dataset.durationPart = digits.length <= 1 ? "minute" : "second";
+    commitDurationInput(input);
+    selectDurationPart(input, input.dataset.durationPart);
+    return;
+  }
+
   const parts = readDurationParts(input);
   const part = input.dataset.durationPart || "minute";
 
@@ -678,9 +717,24 @@ function commitDurationInput(input) {
 }
 
 function formatDurationDigits(digits) {
-  const padded = digits.padStart(4, "0");
-  const minutes = padded.slice(0, -2).slice(-2);
-  const seconds = Math.min(Number(padded.slice(-2)), 59);
+  if (digits.length <= 1) {
+    return `0${digits || "0"}:00`;
+  }
+
+  if (digits.length === 2) {
+    return `0${digits.slice(0, 1)}:0${digits.slice(1)}`;
+  }
+
+  if (digits.length === 3) {
+    const secondsCandidate = Number(digits.slice(1));
+    if (secondsCandidate < 60) {
+      return `0${digits.slice(0, 1)}:${digits.slice(1)}`;
+    }
+    return `${digits.slice(0, 2)}:0${digits.slice(2)}`;
+  }
+
+  const minutes = digits.slice(0, -2).slice(-2);
+  const seconds = Math.min(Number(digits.slice(-2)), 59);
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
