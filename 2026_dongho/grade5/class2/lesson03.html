@@ -1,0 +1,1418 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐릭터 로어 만들기</title>
+<style>
+:root{
+  --bg:#f5f7fb;
+  --paper:#ffffff;
+  --ink:#1f2a3a;
+  --muted:#637083;
+  --primary:#2d8f83;
+  --primary-dark:#19756c;
+  --accent:#ffb84c;
+  --accent2:#7c6df2;
+  --danger:#e85d75;
+  --success:#00a878;
+  --soft:#e8f6f4;
+  --soft2:#fff4df;
+  --line:#d9e3ea;
+  --shadow:0 14px 30px rgba(31,42,58,.10);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(180deg,#eaf8f6 0,#f5f7fb 260px,#f5f7fb 100%);
+  color:var(--ink);
+  line-height:1.65;
+  font-size:16px;
+}
+a{color:inherit}
+button,input,textarea{font:inherit}
+.header{
+  position:sticky;
+  top:0;
+  z-index:40;
+  backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.88);
+  border-bottom:1px solid rgba(217,227,234,.9);
+}
+.nav{
+  max-width:1120px;
+  margin:0 auto;
+  padding:12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--primary-dark);white-space:nowrap}
+.brand-badge{width:34px;height:34px;border-radius:12px;background:var(--primary);display:grid;place-items:center;color:#fff;box-shadow:0 8px 18px rgba(45,143,131,.25)}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.nav-links a{font-size:13px;text-decoration:none;padding:8px 10px;border-radius:999px;background:#f0f5f7;color:#334155;font-weight:800}
+.nav-links a:hover,.nav-links a:focus{background:var(--soft);color:var(--primary-dark);outline:none}
+.wrap{max-width:1120px;margin:0 auto;padding:26px 18px 80px}
+.hero{
+  background:radial-gradient(circle at top right,rgba(124,109,242,.18),transparent 36%),linear-gradient(135deg,#ffffff 0,#f8fffe 100%);
+  border:1px solid rgba(45,143,131,.20);
+  border-radius:30px;
+  padding:34px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.hero:before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(180deg,var(--primary),var(--accent2))}
+.kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--primary-dark);font-weight:900;font-size:14px;margin-bottom:12px}
+h1{font-size:46px;line-height:1.12;margin:0 0 14px;font-weight:1000;letter-spacing:0}
+.hero p{font-size:18px;color:var(--muted);margin:0;max-width:830px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:13px 18px;
+  font-weight:900;
+  text-decoration:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:.2s transform,.2s box-shadow,.2s background,.2s border-color;
+  font-size:15px;
+  line-height:1.25;
+}
+.btn:hover,.btn:focus{transform:translateY(-1px);box-shadow:0 10px 22px rgba(31,42,58,.12);outline:none}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover,.btn-primary:focus{background:var(--primary-dark)}
+.btn-accent{background:var(--accent);color:#43250a}
+.btn-soft{background:var(--soft);color:var(--primary-dark)}
+.btn-dark{background:#202a3a;color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--line);color:#344054}
+.btn-danger{background:var(--danger);color:#fff}
+.btn:disabled{cursor:not-allowed;background:#e2e8f0;color:#94a3b8;transform:none;box-shadow:none}
+.section{
+  margin-top:28px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:0 8px 22px rgba(31,42,58,.06);
+  padding:26px;
+  scroll-margin-top:110px;
+}
+.section-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+.section h2{font-size:26px;line-height:1.22;margin:0;font-weight:1000;letter-spacing:0}
+.section .desc{color:var(--muted);margin:8px 0 0;font-size:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--soft2);color:#9b5b00;border:1px solid #ffe1aa;border-radius:999px;padding:6px 10px;font-size:13px;font-weight:900;white-space:nowrap}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  min-height:92px;
+  border-bottom-width:3px;
+}
+.card h3{margin:0 0 6px;font-size:18px;line-height:1.35}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.project-intro{
+  background:linear-gradient(135deg,#ffffff 0,#f7fffd 100%);
+  border-color:rgba(45,143,131,.22);
+  position:relative;
+  overflow:hidden;
+}
+.project-intro:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  right:0;
+  height:8px;
+  background:linear-gradient(90deg,var(--primary),var(--accent),var(--accent2));
+}
+.intro-lead{display:grid;gap:12px;margin-bottom:18px;color:#344054;font-weight:800}
+.intro-lead p{margin:0}
+.progress-card{
+  position:relative;
+  min-height:150px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:8px;
+}
+.progress-card.current{
+  border-color:var(--primary);
+  background:linear-gradient(180deg,#f4fffc,#fff);
+  box-shadow:0 12px 24px rgba(45,143,131,.14);
+}
+.status-pill{
+  justify-self:start;
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:5px 10px;
+  background:#eef2f7;
+  color:#536173;
+  font-size:13px;
+  font-weight:1000;
+}
+.status-pill.done{background:#e8f6f4;color:var(--primary-dark)}
+.status-pill.today{background:var(--primary);color:#fff}
+.status-pill.soon{background:#fff4df;color:#9b5b00}
+.lore-reason{
+  margin-top:18px;
+  border:2px solid #ffe1aa;
+  background:#fffaf0;
+  border-radius:20px;
+  padding:18px;
+  position:relative;
+}
+.lore-reason h3{margin:0 0 8px;font-size:20px;color:#9b5b00}
+.lore-reason p{margin:8px 0;color:#475467;font-weight:800}
+.highlight-note{
+  margin-top:16px;
+  border:2px solid rgba(124,109,242,.28);
+  background:#f3f0ff;
+  color:#4035a8;
+  border-radius:20px;
+  padding:18px;
+  font-size:18px;
+  font-weight:1000;
+}
+.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px}
+.quick-dialog{
+  width:min(980px,calc(100vw - 28px));
+  max-height:88vh;
+  border:0;
+  border-radius:24px;
+  padding:0;
+  box-shadow:0 24px 70px rgba(31,42,58,.28);
+  color:var(--ink);
+}
+.quick-dialog::backdrop{background:rgba(15,23,42,.46);backdrop-filter:blur(4px)}
+.quick-modal{background:#fff;border-radius:24px;overflow:hidden}
+.quick-modal-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:22px;
+  background:linear-gradient(135deg,#f7fffd,#f3f0ff);
+  border-bottom:1px solid var(--line);
+}
+.quick-modal-head h2{margin:0;font-size:24px;line-height:1.25}
+.quick-modal-head p{margin:6px 0 0;color:var(--muted);font-weight:800}
+.icon-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  color:#334155;
+  cursor:pointer;
+  font-weight:1000;
+}
+.quick-modal-body{padding:22px;display:grid;gap:18px;overflow:auto;max-height:calc(88vh - 166px)}
+.quick-step{
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+  background:#fbfdff;
+}
+.quick-step h3{margin:0 0 12px;font-size:20px}
+.quick-result{
+  margin-top:14px;
+  border:2px solid rgba(45,143,131,.30);
+  background:#f7fffd;
+  border-radius:16px;
+  padding:14px;
+  font-weight:1000;
+  color:var(--primary-dark);
+}
+.quick-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.quick-choice-group{display:grid;gap:10px}
+.quick-choice-group h4{margin:0;font-size:16px;color:#243142}
+.quick-choice-list{display:flex;flex-wrap:wrap;gap:8px}
+.quick-choice{
+  border:2px solid var(--line);
+  background:#fff;
+  border-radius:14px;
+  padding:10px 12px;
+  font-weight:900;
+  cursor:pointer;
+  color:#344054;
+  text-align:left;
+}
+.quick-choice:hover,.quick-choice:focus{border-color:var(--primary);background:var(--soft);outline:none}
+.quick-choice.selected{border-color:var(--primary);background:var(--primary);color:#fff}
+.quick-custom{
+  width:100%;
+  border:2px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  background:#fff;
+}
+.quick-custom:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(45,143,131,.12)}
+.quick-modal-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:16px 22px;
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+.mission-card{display:grid;grid-template-columns:auto 1fr;align-items:flex-start;gap:14px}
+.step-num{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--primary);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-weight:1000;
+  font-size:20px;
+  flex:0 0 auto;
+}
+.step-label{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.step-label .step-num{width:50px;height:50px;font-size:23px}
+.timeline{display:grid;gap:8px;background:#f9fbfc;border:1px solid var(--line);border-radius:16px;padding:16px}
+.timeline-item{display:flex;gap:10px;align-items:flex-start;line-height:1.55}
+.timeline-item strong{color:var(--primary-dark);min-width:88px}
+.timeline-item span{color:#475467}
+.studio-note{margin-top:18px;border:2px solid rgba(45,143,131,.30);background:linear-gradient(180deg,#f7fffd,#fff);border-radius:20px;padding:18px;font-weight:800}
+.complete-message{
+  display:none;
+  margin-top:16px;
+  border:2px solid rgba(45,143,131,.32);
+  background:linear-gradient(135deg,#e8f6f4,#fff);
+  color:var(--primary-dark);
+  border-radius:20px;
+  padding:18px;
+  font-size:18px;
+  font-weight:1000;
+}
+.complete-message.show{display:block}
+.field{display:grid;gap:7px;margin-bottom:14px}
+.field label,.label{font-weight:900;color:#44546a}
+.field input,.field textarea{
+  width:100%;
+  border:2px solid var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  color:#243142;
+  background:#fbfdff;
+}
+.field textarea{resize:vertical;min-height:110px}
+.field textarea.tall-textarea{min-height:220px}
+.field textarea.cut-textarea{min-height:160px}
+.field input:focus,.field textarea:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(45,143,131,.12);
+}
+.student-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.student-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px;border-bottom-width:3px}
+.student-name{font-weight:1000;color:#1f2a3a}
+.student-status{font-size:13px;color:var(--muted);font-weight:800}
+.empty-state{display:none;color:var(--muted);font-weight:900;background:#f8fafc;border:1px dashed #c7d7df;border-radius:16px;padding:16px;text-align:center}
+.choice-group{display:grid;gap:10px}
+.choice-title{font-size:18px;font-weight:1000;color:#243142}
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.choice{
+  border:2px solid var(--line);
+  background:#fff;
+  border-radius:16px;
+  padding:12px 14px;
+  font-weight:900;
+  cursor:pointer;
+  color:#344054;
+  transition:.16s;
+  text-align:left;
+}
+.choice:hover,.choice:focus{border-color:var(--primary);background:var(--soft);outline:none}
+.choice.selected{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 8px 16px rgba(45,143,131,.22)}
+.example-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.example-table th,.example-table td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.example-table tr:last-child th,.example-table tr:last-child td{border-bottom:0}
+.example-table th{width:130px;background:#f8fafc;color:#475467}
+.weak{color:#a33a4a;font-weight:900}
+.good{color:var(--primary-dark);font-weight:900}
+.radio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.radio-card{
+  border:2px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  display:flex;
+  gap:12px;
+  cursor:pointer;
+  background:#fff;
+}
+.radio-card:has(input:checked){border-color:var(--accent2);background:#f3f0ff}
+.radio-card input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent2)}
+.radio-card strong{display:block;margin-bottom:4px}
+.check-grid{display:grid;gap:10px}
+.check-grid.compact-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.check-item{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  color:#243142;
+  font-weight:800;
+}
+.check-item input{width:20px;height:20px;margin-top:2px;accent-color:var(--primary);flex:0 0 auto}
+.generated{
+  width:100%;
+  min-height:370px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  font-size:15px;
+  line-height:1.65;
+  color:#243142;
+  background:#fbfdff;
+  resize:vertical;
+  font-family:inherit;
+}
+.generated.short{min-height:180px}
+.copy-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.copy-msg{font-weight:900;color:var(--success);display:none}
+.copy-msg.show{display:inline-flex}
+.muted{color:var(--muted);font-size:14px}
+.split{display:grid;grid-template-columns:1fr 1.35fr;gap:16px;align-items:start}
+.canva-result .split{grid-template-columns:1fr}
+.cut-fix-grid,.canva-prompt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.canva-plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.canva-plan-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  min-height:72px;
+}
+.canva-plan-card span{display:block;color:#475467;font-weight:900;line-height:1.45}
+.cut-fix-card,.canva-prompt-card{
+  background:#fbfdff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+.cut-fix-card{display:grid;gap:8px}
+.cut-fix-card span,.canva-prompt-card .field span{font-weight:1000;color:var(--primary-dark)}
+.canva-prompt-card .field{margin-bottom:0}
+.canva-prompt-card .copy-row{margin-top:10px}
+.preview-mini{background:#f9fbfc;border:1px solid var(--line);border-radius:16px;padding:16px}
+.preview-mini h3{margin-top:0}
+.preview-mini p{margin:8px 0;color:#475467;white-space:pre-line}
+.canva-result{background:#fff8ec;border-color:#ffe1aa}
+.footer{text-align:center;color:var(--muted);padding:34px 0 0;font-size:14px}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%) translateY(20px);
+  background:#202a3a;
+  color:white;
+  padding:12px 16px;
+  border-radius:999px;
+  box-shadow:0 12px 24px rgba(31,42,58,.24);
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:90;
+  font-weight:900;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){
+  .nav{align-items:flex-start;flex-direction:column}
+  h1{font-size:36px}
+  .grid-4,.grid-3,.grid-2,.student-grid,.radio-grid,.split,.cut-fix-grid,.canva-prompt-grid,.canva-plan-grid{grid-template-columns:1fr}
+  .check-grid.compact-2{grid-template-columns:1fr}
+  .section{padding:20px}
+  .hero{padding:28px 22px}
+  .timeline-item{display:grid;gap:2px}
+  .timeline-item strong{min-width:auto}
+}
+@media(max-width:540px){
+  body{font-size:15px}
+  h1{font-size:30px}
+  .nav-links a{font-size:12px;padding:7px 9px}
+  .hero p{font-size:16px}
+  .section h2{font-size:23px}
+  .section-title{display:grid}
+  .tag{justify-self:start;white-space:normal}
+  .btn{width:100%}
+  .quick-modal-head{display:grid}
+  .quick-choice-grid{grid-template-columns:1fr}
+  .quick-modal-foot{display:grid}
+  .icon-btn{width:100%}
+  .copy-row .copy-msg{width:100%;justify-content:center}
+  .example-table th,.example-table td{display:block;width:100%}
+  .example-table th{border-bottom:0}
+}
+@media print{
+  .header,.btn,.toast{display:none}
+  body{background:#fff}
+  .section,.hero{break-inside:avoid;box-shadow:none}
+}
+</style>
+<script>
+const CLASS_OVERRIDE = "";
+
+// 여기에 학생 슬라이드 링크를 입력하세요. url을 비워 두면 화면에 "아직 링크가 등록되지 않았어요"라고 나옵니다.
+const STUDENT_SLIDE_LINKS_CLASS1 = [
+  { name: "01. 곽예준", url: "https://docs.google.com/presentation/d/1Qb6iiRj6OnIR1pK8GaTV63eBMH9Lk01csPWHtmhTcds/edit?usp=sharing" },
+  { name: "02. 김민주", url: "https://docs.google.com/presentation/d/1W27mLvNC5KZCLous1YAyh6oK03tdmmb8--BLH6MWKuI/edit?usp=sharing" },
+  { name: "03. 김우람", url: "https://docs.google.com/presentation/d/138xrtjcIrfEjDEY_4WqBUsoypre5j-ThiCuOvAgZMWA/edit?usp=sharing" },
+  { name: "04. 김태양", url: "https://docs.google.com/presentation/d/1Ob39Ukwku3MOZQkGKQkB8VYji8_ey31vivHP3sIFMiA/edit?usp=sharing" },
+  { name: "05. 김태현", url: "https://docs.google.com/presentation/d/1kDT3tPh5FbPP2y3ZnhGFtx8RNkQVDn_kIq5NeanRwJI/edit?usp=sharing" },
+  { name: "06. 김효민", url: "https://docs.google.com/presentation/d/1UFB1dd3-JSkvMkbiHCL3r3XJ34eomcS34eo3hkNS_6w/edit?usp=sharing" },
+  { name: "07. 박민준", url: "https://docs.google.com/presentation/d/1Oo8hV7-7wBHlwGXR1MnJ1GbSS7jmfTPcQ-RQmp-yjOs/edit?usp=sharing" },
+  { name: "08. 박하율", url: "https://docs.google.com/presentation/d/1Fkdn_3VL1LBWtLGrNlq1WnNNUHelyj_8Tel63sl_Lzo/edit?usp=sharing" },
+  { name: "09. 서자건", url: "https://docs.google.com/presentation/d/1aVIDgrrWaibRmLx2S3Mv3JidAzItM8eFfw-ZmoS_beQ/edit?usp=sharing" },
+  { name: "10. 이정우", url: "https://docs.google.com/presentation/d/16oaJwvE9k410AidM2Iy8lw2jqyudoymucTfEZQOafg4/edit?usp=sharing" },
+  { name: "11. 조예빈", url: "https://docs.google.com/presentation/d/1TqM_2HIGgQP88nUjXg8ljZMQr_3-FHCBqhgd5EWoIaY/edit?usp=sharing" },
+  { name: "12. 지현서", url: "https://docs.google.com/presentation/d/1xLLacOZxlJh7m1gp2lheAb8xr4OZiQG-znLmr2RGlkc/edit?usp=sharing" },
+  { name: "13. 차소민", url: "https://docs.google.com/presentation/d/10-jjlA0jtvQW4EKnKNrBi275xi_msezghd3VLBD3zOo/edit?usp=sharing" },
+  { name: "14. 채종후", url: "https://docs.google.com/presentation/d/1797LteZ11_v_41H_AQFxQ0FhzNSr6Ra_GhMdzP7KHJo/edit?usp=sharing" }
+];
+
+// 여기에 학생 슬라이드 링크를 입력하세요. url을 비워 두면 화면에 "아직 링크가 등록되지 않았어요"라고 나옵니다.
+const STUDENT_SLIDE_LINKS_CLASS2 = [
+  { name: "01. 권하린", url: "https://docs.google.com/presentation/d/1a5HZ8TubUrmbwVQRWsGMDWW3MuSBlFQlKs8TUb2nExA/edit?usp=sharing" },
+  { name: "02. 김리아", url: "https://docs.google.com/presentation/d/1gYLkjXMFHoo7KUZXwiUUsdI8QyEqZGrNmuxwmFrMT-I/edit?usp=sharing" },
+  { name: "03. 김문준", url: "https://docs.google.com/presentation/d/1gUSWfKZTYWzKLO-euRUel51cYf1z7EfwibLQU7cuIY8/edit?usp=sharing" },
+  { name: "04. 김아랑", url: "https://docs.google.com/presentation/d/148viVn-FiwTrGOa17q1dEwxwg1k33YHt9UbglRoQDF4/edit?usp=sharing" },
+  { name: "05. 김예슬", url: "https://docs.google.com/presentation/d/1CeSerkaBtb7FQWXsKzA0DLCn596NcsexVRZsLWUy_K0/edit?usp=sharing" },
+  { name: "06. 김우현", url: "https://docs.google.com/presentation/d/1br3TYNZc-ginfPLK8G18t3kEbxKWIa6y2cdehD-ag6k/edit?usp=sharing" },
+  { name: "07. 김효건", url: "https://docs.google.com/presentation/d/1Q6Wp4F_9_jQGIQnvc6gFEmZMx5kM78e3vQCqv_XoHFk/edit?usp=sharing" },
+  { name: "08. 문서진", url: "https://docs.google.com/presentation/d/1AJop5hMosKi9awVFzDKsRyM0Oe0-GmJeLzi8BFdkZoo/edit?usp=sharing" },
+  { name: "09. 변수현", url: "https://docs.google.com/presentation/d/1Gj37_2Uu7b8WCjMzG7wvOrw8lj8ddelVmt-hjJxQlzg/edit?usp=sharing" },
+  { name: "10. 신예건", url: "https://docs.google.com/presentation/d/1nK50vbPDCgjTdrffQffrHb5c2DasV59LlUQGG5gBu88/edit?usp=sharing" },
+  { name: "11. 심현지", url: "https://docs.google.com/presentation/d/13CMd2qgOGJBFwRtLn3h8fQTvdj-7_W627PdXxA1z_FU/edit?usp=sharing" },
+  { name: "12. 양승윤", url: "https://docs.google.com/presentation/d/1hGYwQzhLuwcNm_U6su-yu4hzhFZGY0kkZmzISJ0B5O8/edit?usp=sharing" },
+  { name: "13. 연율", url: "https://docs.google.com/presentation/d/189SpaNrBlbkg7qG9VZOSWRbW6MpByYSAqEhA3FWUJgE/edit?usp=sharing" },
+  { name: "14. 이정우", url: "https://docs.google.com/presentation/d/1XnGSlNBqRaXpqWJboFpLUKNV0tu1rjaiukwrjrAQP88/edit?usp=sharing" },
+  { name: "15. 최푸른", url: "https://docs.google.com/presentation/d/1KiKC19fI1BvG7Cks69Fx2Ljv1txdWFDrcNYjm-r5dlc/edit?usp=sharing" }
+];
+</script>
+</head>
+<body>
+<header class="header">
+  <nav class="nav" aria-label="수업 섹션 이동">
+    <div class="brand"><span class="brand-badge" aria-hidden="true">🎮</span><span>레벨업 게임 스튜디오</span></div>
+    <div class="nav-links">
+      <a href="#mission">오늘의 미션</a>
+      <a href="#slides">내 슬라이드 열기</a>
+      <a href="#lore">로어란?</a>
+      <a href="#floor1">프롬프트 1층</a>
+      <a href="#floor2">프롬프트 2층</a>
+      <a href="#floor3">프롬프트 3층</a>
+      <a href="#floor4">프롬프트 4층</a>
+      <a href="#floor5">프롬프트 5층</a>
+      <a href="#final">최종 프롬프트</a>
+      <a href="#check">AI 결과 점검</a>
+      <a href="#canva">Canva 제작</a>
+      <a href="#learning-check">마무리 체크</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="section project-intro" id="project-flow">
+    <div class="section-title">
+      <div>
+        <h2>지금 우리는 게임 캐릭터 개발의 어디까지 왔을까?</h2>
+        <p class="desc">우리는 지금 “신규 OP 캐릭터 런칭 프로젝트”를 진행하고 있어요.</p>
+      </div>
+      <span class="tag">개발 진행 기록</span>
+    </div>
+    <div class="intro-lead">
+      <p>여러분은 게임 회사의 캐릭터 개발자가 되어, 새로운 게임 캐릭터를 하나씩 완성해 가고 있습니다.</p>
+      <p>1차시에는 이름, 능력, 약점, 성격, 스킬처럼 캐릭터가 게임 안에서 어떻게 움직이고 싸우는지를 정했어요.</p>
+      <p>2차시에는 AI 이미지 도구를 활용해 캐릭터의 공식 일러스트와 분위기를 시각적으로 표현했습니다.</p>
+      <p>이제 3차시에서는 왜 이런 능력과 약점이 생겼는지, 어떤 목표를 가지고 게임 세계에 등장하는지를 이야기로 정리합니다.</p>
+    </div>
+    <div class="grid grid-4">
+      <article class="card progress-card">
+        <h3>1차시. 캐릭터 설정</h3>
+        <p>이름, 능력, 약점, 성격, 스킬을 정했어요.</p>
+        <span class="status-pill done">완료</span>
+      </article>
+      <article class="card progress-card">
+        <h3>2차시. 캐릭터 비주얼</h3>
+        <p>AI 이미지로 공식 캐릭터 모습을 만들었어요.</p>
+        <span class="status-pill done">완료</span>
+      </article>
+      <article class="card progress-card current">
+        <h3>3차시. 캐릭터 로어</h3>
+        <p>캐릭터가 왜 그런 능력과 약점을 갖게 되었는지 이야기로 만듭니다.</p>
+        <span class="status-pill today">오늘 진행</span>
+      </article>
+      <article class="card progress-card">
+        <h3>다음 단계. 런칭 준비</h3>
+        <p>오늘 만든 이야기를 바탕으로 음악, 포스터, 카드, 쇼케이스로 확장해 갑니다.</p>
+        <span class="status-pill soon">예정</span>
+      </article>
+    </div>
+    <div class="lore-reason">
+      <h3>로어가 왜 필요할까?</h3>
+      <p>캐릭터 로어는 캐릭터의 숨겨진 이야기입니다. 게임 캐릭터는 능력치와 그림만으로 완성되지 않습니다.</p>
+      <p>같은 불 능력을 가진 캐릭터라도, 친구를 지키기 위해 불을 쓰는 캐릭터와 잃어버린 기억을 찾기 위해 불을 쓰는 캐릭터는 전혀 다른 느낌을 줍니다.</p>
+      <p>로어가 있으면 캐릭터의 능력, 약점, 성격, 목표가 서로 연결됩니다. 그래서 유저는 캐릭터를 더 잘 기억하고, “이 캐릭터를 선택하고 싶다”고 느끼게 됩니다.</p>
+    </div>
+    <div class="highlight-note">
+      오늘 우리는 캐릭터의 “겉모습”에서 한 걸음 더 나아가, 캐릭터가 게임 세계 안에서 살아 움직이게 만드는 “이야기”를 만들 거예요.
+    </div>
+  </section>
+
+  <section class="hero" id="top">
+    <div class="kicker">신규 OP 캐릭터 런칭 프로젝트 · 제3차시</div>
+    <h1>캐릭터 로어 만들기<br>프롬프트를 쌓아 숨겨진 이야기를 완성해요</h1>
+    <p>오늘은 AI에게 한 번에 부탁하지 않습니다. 내 캐릭터 정보를 하나씩 쌓아 가며, 더 정확한 스토리 프롬프트를 만들어 봅니다.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#slides">내 슬라이드 먼저 열기</a>
+      <a class="btn btn-accent" href="#floor1">프롬프트 쌓기 시작</a>
+      <a class="btn btn-soft" href="#final">최종 프롬프트 보기</a>
+    </div>
+  </section>
+
+  <section class="section" id="mission">
+    <div class="section-title">
+      <div>
+        <h2>오늘의 미션</h2>
+        <p class="desc">프롬프트는 한 번에 쓰는 긴 명령문이 아니라, 원하는 결과를 얻기 위해 정보를 차곡차곡 쌓아 가는 설계도야.</p>
+      </div>
+      <span class="tag" id="classBadge">3차시</span>
+    </div>
+    <div class="grid grid-4">
+      <div class="card mission-card"><div class="step-num">1</div><div><h3>캐릭터 확인</h3><p>1차시 설정과 2차시 비주얼을 다시 살펴봐.</p></div></div>
+      <div class="card mission-card"><div class="step-num">2</div><div><h3>재료 쌓기</h3><p>이름, 능력, 약점, 사건, 목표를 한 층씩 넣어.</p></div></div>
+      <div class="card mission-card"><div class="step-num">3</div><div><h3>갈등 연결</h3><p>약점이 이야기 속 문제로 이어지게 만들어.</p></div></div>
+      <div class="card mission-card"><div class="step-num">4</div><div><h3>결과물 제작</h3><p id="missionResult">AI 결과를 확인하고 Canva 결과물로 완성해.</p></div></div>
+    </div>
+    <div class="studio-note">오늘 우리는 AI에게 이야기를 맡기는 사람이 아니라, AI가 좋은 이야기를 만들 수 있게 설계도를 주는 게임 스토리 디렉터야.</div>
+  </section>
+
+  <section class="section" id="slides">
+    <div class="section-title">
+      <div>
+        <h2>내 슬라이드 열기</h2>
+        <p class="desc">1차시와 2차시에 만든 내 캐릭터 슬라이드를 먼저 열어 보자. 오늘은 그 캐릭터의 숨겨진 이야기를 이어서 만들 거야.</p>
+      </div>
+      <span class="tag">개인 개발 기록장</span>
+    </div>
+    <div class="student-grid" id="studentGrid" aria-live="polite"></div>
+    <p class="empty-state" id="studentEmpty">아직 등록된 학생 슬라이드 링크가 없어.</p>
+  </section>
+
+  <section class="section" id="lore">
+    <div class="section-title">
+      <div>
+        <h2>로어란?</h2>
+        <p class="desc">로어는 캐릭터가 왜 그런 능력을 갖게 되었는지, 어떤 목표를 향해 움직이는지 알려 주는 숨겨진 이야기야.</p>
+      </div>
+      <span class="tag">게임 세계관</span>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><h3>탄생 이유</h3><p>캐릭터가 힘을 얻게 된 순간이나 중요한 사건이 들어가.</p></div>
+      <div class="card"><h3>목표</h3><p>캐릭터가 무엇을 이루고 싶은지 정해 주면 이야기가 앞으로 나아가.</p></div>
+      <div class="card"><h3>갈등</h3><p>약점 때문에 생기는 문제가 있어야 장면이 더 흥미로워져.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="floor1">
+    <div class="section-title">
+      <div>
+        <div class="step-label"><span class="step-num">1</span><h2>프롬프트 1층. 내 캐릭터 기본 정보</h2></div>
+        <p class="desc">먼저 AI에게 내 캐릭터가 누구인지 알려 줘. 이 정보가 부족하면 AI는 엉뚱한 이야기를 만들 수 있어.</p>
+        <div class="quick-actions">
+          <button class="btn btn-accent" type="button" id="openQuickBuilder">2차시 카드로 캐릭터 빠르게 정하기</button>
+        </div>
+      </div>
+      <span class="tag">기본 정보</span>
+    </div>
+    <div class="grid grid-2">
+      <label class="field" for="charName"><span>캐릭터 이름</span><input id="charName" data-field="charName" type="text" placeholder="예: 루미온"></label>
+      <label class="field" for="ability"><span>능력</span><input id="ability" data-field="ability" type="text" placeholder="예: 빛으로 길을 만든다"></label>
+      <label class="field" for="weakness"><span>약점</span><input id="weakness" data-field="weakness" type="text" placeholder="예: 어두운 곳에서는 힘이 약해진다"></label>
+      <label class="field" for="personality"><span>성격</span><input id="personality" data-field="personality" type="text" placeholder="예: 조심스럽지만 친구를 아낀다"></label>
+      <label class="field" for="color"><span>대표 색</span><input id="color" data-field="color" type="text" placeholder="예: 민트색과 금색"></label>
+    </div>
+    <div class="preview-mini">
+      <h3>자동으로 쌓이는 문장</h3>
+      <p id="basicPreview">내 캐릭터의 이름은 [캐릭터 이름]입니다.</p>
+    </div>
+  </section>
+
+  <section class="section" id="floor2">
+    <div class="section-title">
+      <div>
+        <div class="step-label"><span class="step-num">2</span><h2>프롬프트 2층. 이야기 재료 고르기</h2></div>
+        <p class="desc">카드를 눌러 빠르게 고를 수도 있고, 입력칸에 직접 써도 돼. 카드 내용도 자유롭게 고쳐서 내 캐릭터에 맞게 만들자.</p>
+      </div>
+      <span class="tag">이야기 재료</span>
+    </div>
+    <div class="grid grid-2">
+      <div class="choice-group">
+        <div class="choice-title">탄생 사건</div>
+        <div class="choices">
+          <button class="choice" type="button" data-fill="birth" data-value="실험실 사고로 능력이 생겼다">실험실 사고로 능력이 생겼다</button>
+          <button class="choice" type="button" data-fill="birth" data-value="친구를 구하려다 힘이 깨어났다">친구를 구하려다 힘이 깨어났다</button>
+          <button class="choice" type="button" data-fill="birth" data-value="금지된 숲에서 특별한 힘을 얻었다">금지된 숲에서 특별한 힘을 얻었다</button>
+          <button class="choice" type="button" data-fill="birth" data-value="오래된 게임 서버 안에서 태어났다">오래된 게임 서버 안에서 태어났다</button>
+        </div>
+        <label class="field" for="birth"><span>카드 선택 또는 직접 입력</span><input id="birth" data-field="birth" type="text" placeholder="카드를 누르거나 탄생 사건을 직접 써 봐"></label>
+      </div>
+      <div class="choice-group">
+        <div class="choice-title">목표</div>
+        <div class="choices">
+          <button class="choice" type="button" data-fill="goal" data-value="친구를 지키고 싶다">친구를 지키고 싶다</button>
+          <button class="choice" type="button" data-fill="goal" data-value="잃어버린 기억을 찾고 싶다">잃어버린 기억을 찾고 싶다</button>
+          <button class="choice" type="button" data-fill="goal" data-value="위험한 서버를 복구하고 싶다">위험한 서버를 복구하고 싶다</button>
+          <button class="choice" type="button" data-fill="goal" data-value="진짜 용기를 배우고 싶다">진짜 용기를 배우고 싶다</button>
+        </div>
+        <label class="field" for="goal"><span>카드 선택 또는 직접 입력</span><input id="goal" data-field="goal" type="text" placeholder="카드를 누르거나 목표를 직접 써 봐"></label>
+      </div>
+      <div class="choice-group">
+        <div class="choice-title">갈등</div>
+        <div class="choices">
+          <button class="choice" type="button" data-fill="conflict" data-value="약점 때문에 중요한 순간 망설인다">약점 때문에 중요한 순간 망설인다</button>
+          <button class="choice" type="button" data-fill="conflict" data-value="힘을 조절하지 못한다">힘을 조절하지 못한다</button>
+          <button class="choice" type="button" data-fill="conflict" data-value="라이벌에게 오해를 받는다">라이벌에게 오해를 받는다</button>
+          <button class="choice" type="button" data-fill="conflict" data-value="팀원과 생각이 달라 충돌한다">팀원과 생각이 달라 충돌한다</button>
+        </div>
+        <label class="field" for="conflict"><span>카드 선택 또는 직접 입력</span><input id="conflict" data-field="conflict" type="text" placeholder="카드를 누르거나 갈등을 직접 써 봐"></label>
+      </div>
+      <div class="choice-group">
+        <div class="choice-title">라이벌 또는 방해 요소</div>
+        <div class="choices">
+          <button class="choice" type="button" data-fill="rival" data-value="같은 능력을 가진 라이벌">같은 능력을 가진 라이벌</button>
+          <button class="choice" type="button" data-fill="rival" data-value="해킹된 AI 캐릭터">해킹된 AI 캐릭터</button>
+          <button class="choice" type="button" data-fill="rival" data-value="과거의 친구">과거의 친구</button>
+          <button class="choice" type="button" data-fill="rival" data-value="게임 세계의 보스">게임 세계의 보스</button>
+        </div>
+        <label class="field" for="rival"><span>카드 선택 또는 직접 입력</span><input id="rival" data-field="rival" type="text" placeholder="카드를 누르거나 방해 요소를 직접 써 봐"></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="floor3">
+    <div class="section-title">
+      <div>
+        <div class="step-label"><span class="step-num">3</span><h2>프롬프트 3층. 약점과 갈등 연결하기</h2></div>
+        <p class="desc">좋은 이야기는 약점이 그냥 적혀 있는 것이 아니라, 이야기 속 문제로 연결돼.</p>
+      </div>
+      <span class="tag">오늘의 핵심</span>
+    </div>
+    <table class="example-table" aria-label="약점과 갈등 연결 예시">
+      <tr>
+        <th>약한 연결</th>
+        <td><span class="weak">물을 무서워한다.</span></td>
+        <th>좋은 연결</th>
+        <td><span class="good">친구가 물가에 갇혔지만, 물이 무서워 쉽게 다가가지 못한다.</span></td>
+      </tr>
+      <tr>
+        <th>약한 연결</th>
+        <td><span class="weak">소리에 약하다.</span></td>
+        <th>좋은 연결</th>
+        <td><span class="good">적이 큰 소리를 내자 능력이 흔들리고, 팀을 도와야 할지 도망칠지 고민한다.</span></td>
+      </tr>
+    </table>
+    <label class="field" for="weakConflict" style="margin-top:18px">
+      <span>내 캐릭터는 약점 때문에 어떤 어려움을 겪나요?</span>
+      <textarea id="weakConflict" data-field="weakConflict" placeholder="예: 친구가 위험에 빠졌지만, 내 캐릭터는 자신의 약점 때문에 바로 도와주지 못합니다."></textarea>
+    </label>
+  </section>
+
+  <section class="section" id="floor4">
+    <div class="section-title">
+      <div>
+        <div class="step-label"><span class="step-num">4</span><h2>프롬프트 4층. 결과물 형식 정하기</h2></div>
+        <p class="desc">AI가 어떤 모양으로 이야기를 정리해야 하는지 알려 줘.</p>
+      </div>
+      <span class="tag">결과물 형식</span>
+    </div>
+    <div class="preview-mini">
+      <h3>4컷 웹툰 대본</h3>
+      <p id="formatPreview"></p>
+    </div>
+  </section>
+
+  <section class="section" id="floor5">
+    <div class="section-title">
+      <div>
+        <div class="step-label"><span class="step-num">5</span><h2>프롬프트 5층. AI에게 지켜야 할 조건 넣기</h2></div>
+      </div>
+      <span class="tag">안전한 창작</span>
+    </div>
+    <div class="check-grid compact-2" id="conditionGrid"></div>
+  </section>
+
+  <section class="section" id="final">
+    <div class="section-title">
+      <div>
+        <h2>최종 프롬프트 미리보기</h2>
+        <p class="desc">아래 프롬프트를 복사해서 뤼튼에 붙여넣으세요.</p>
+      </div>
+      <span class="tag">복사하기</span>
+    </div>
+    <textarea id="finalPrompt" class="generated" readonly aria-label="최종 프롬프트 미리보기"></textarea>
+    <div class="copy-row">
+      <button class="btn btn-primary" type="button" data-copy-target="finalPrompt" data-copy-message="finalCopyMsg">최종 프롬프트 복사하기</button>
+      <a class="btn btn-accent" href="https://wrtn.ai" target="_blank" rel="noopener noreferrer">뤼튼 가기</a>
+      <button class="btn btn-danger" type="button" id="resetBtn">입력 내용 초기화하기</button>
+      <span class="copy-msg" id="finalCopyMsg">복사 완료!</span>
+    </div>
+  </section>
+
+  <section class="section" id="check">
+    <div class="section-title">
+      <div>
+        <h2>AI 결과 점검</h2>
+        <p class="desc">뤼튼 결과를 그대로 쓰지 말고, 내 캐릭터에 맞게 고쳐 보자.</p>
+      </div>
+      <span class="tag">디렉터 체크</span>
+    </div>
+    <div class="check-grid compact-2" id="aiCheckGrid"></div>
+    <div class="field" style="margin-top:18px">
+      <span>AI가 만든 이야기를 컷별로 확인하고 나의 생각과 일치 하지 않는 부분을 고쳐보세요.</span>
+      <div class="cut-fix-grid">
+        <label class="cut-fix-card" for="aiFixCut1"><span>1컷</span><textarea id="aiFixCut1" class="cut-textarea" data-field="aiFixCut1" placeholder="1컷에서 내가 고친 장면, 대사, 분위기를 써 봐"></textarea></label>
+        <label class="cut-fix-card" for="aiFixCut2"><span>2컷</span><textarea id="aiFixCut2" class="cut-textarea" data-field="aiFixCut2" placeholder="2컷에서 내가 고친 장면, 대사, 분위기를 써 봐"></textarea></label>
+        <label class="cut-fix-card" for="aiFixCut3"><span>3컷</span><textarea id="aiFixCut3" class="cut-textarea" data-field="aiFixCut3" placeholder="3컷에서 내가 고친 장면, 대사, 분위기를 써 봐"></textarea></label>
+        <label class="cut-fix-card" for="aiFixCut4"><span>4컷</span><textarea id="aiFixCut4" class="cut-textarea" data-field="aiFixCut4" placeholder="4컷에서 내가 고친 장면, 대사, 분위기를 써 봐"></textarea></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="section canva-result" id="canva">
+    <div class="section-title">
+      <div>
+        <h2>Canva 제작 안내</h2>
+        <p class="desc" id="canvaDesc">오늘의 최종 결과물을 Canva에서 완성해 보자.</p>
+        <div class="hero-actions">
+          <a class="btn btn-accent" id="canvaClassLink" href="https://canva.link/0n7bz7scsmj7joe" target="_blank" rel="noopener noreferrer">Canva 바로 가기</a>
+        </div>
+      </div>
+      <span class="tag">최종 결과물</span>
+    </div>
+    <div class="split">
+      <div>
+        <div class="preview-mini">
+          <h3 id="canvaTitle">오늘의 최종 결과물</h3>
+          <div id="canvaPlan"></div>
+        </div>
+      </div>
+      <div class="canva-prompt-grid">
+        <article class="canva-prompt-card">
+          <label class="field" for="canvaPrompt1"><span>1컷 Canva 프롬프트</span><textarea id="canvaPrompt1" class="generated short" readonly aria-label="1컷 Canva 이미지 생성용 프롬프트"></textarea></label>
+          <div class="copy-row"><button class="btn btn-accent" type="button" data-copy-target="canvaPrompt1" data-copy-message="canvaCopyMsg1">1컷 프롬프트 복사</button><span class="copy-msg" id="canvaCopyMsg1">복사 완료!</span></div>
+        </article>
+        <article class="canva-prompt-card">
+          <label class="field" for="canvaPrompt2"><span>2컷 Canva 프롬프트</span><textarea id="canvaPrompt2" class="generated short" readonly aria-label="2컷 Canva 이미지 생성용 프롬프트"></textarea></label>
+          <div class="copy-row"><button class="btn btn-accent" type="button" data-copy-target="canvaPrompt2" data-copy-message="canvaCopyMsg2">2컷 프롬프트 복사</button><span class="copy-msg" id="canvaCopyMsg2">복사 완료!</span></div>
+        </article>
+        <article class="canva-prompt-card">
+          <label class="field" for="canvaPrompt3"><span>3컷 Canva 프롬프트</span><textarea id="canvaPrompt3" class="generated short" readonly aria-label="3컷 Canva 이미지 생성용 프롬프트"></textarea></label>
+          <div class="copy-row"><button class="btn btn-accent" type="button" data-copy-target="canvaPrompt3" data-copy-message="canvaCopyMsg3">3컷 프롬프트 복사</button><span class="copy-msg" id="canvaCopyMsg3">복사 완료!</span></div>
+        </article>
+        <article class="canva-prompt-card">
+          <label class="field" for="canvaPrompt4"><span>4컷 Canva 프롬프트</span><textarea id="canvaPrompt4" class="generated short" readonly aria-label="4컷 Canva 이미지 생성용 프롬프트"></textarea></label>
+          <div class="copy-row"><button class="btn btn-accent" type="button" data-copy-target="canvaPrompt4" data-copy-message="canvaCopyMsg4">4컷 프롬프트 복사</button><span class="copy-msg" id="canvaCopyMsg4">복사 완료!</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="learning-check">
+    <div class="section-title">
+      <div>
+        <h2>마무리 체크</h2>
+        <p class="desc">오늘의 목표는 멋진 결과물만 만드는 것이 아니야. 프롬프트를 어떻게 쌓는지, AI를 사용할 때 무엇을 조심해야 하는지 확인해 보자.</p>
+      </div>
+      <span class="tag">오늘 배운 것</span>
+    </div>
+    <div class="check-grid" id="learningCheckGrid"></div>
+    <div class="complete-message" id="learningCompleteMessage">오늘 꼭 기억해요. AI는 대신 만들어 주는 마법이 아니라, 내 생각을 더 잘 표현하도록 도와주는 도구예요. 앞으로도 원하는 결과를 얻기 위해 정보를 차곡차곡 쌓고, 결과는 내가 확인하고 고치며 똑똑하게 활용해 봅시다!</div>
+    <div class="studio-note">프롬프트는 한 번에 쓰는 긴 명령문이 아니라, 원하는 결과를 얻기 위해 정보를 차곡차곡 쌓아 가는 설계도야.</div>
+  </section>
+
+  <div class="footer">© 2026 레벨업 게임 스튜디오. 모든 개발자 여러분의 꿈을 응원합니다.</div>
+</main>
+
+<dialog class="quick-dialog" id="quickBuilderModal" aria-labelledby="quickBuilderTitle">
+  <div class="quick-modal">
+    <div class="quick-modal-head">
+      <div>
+        <h2 id="quickBuilderTitle">캐릭터 이름과 설정 빠르게 정하기</h2>
+        <p>2차시에서 사용한 카드로 이름, 능력, 약점, 성격, 대표 색을 빠르게 골라 보자.</p>
+      </div>
+      <button class="icon-btn" type="button" id="closeQuickBuilder" aria-label="팝업 닫기">X</button>
+    </div>
+    <div class="quick-modal-body">
+      <section class="quick-step">
+        <h3>1단계. 캐릭터 이름 정하기</h3>
+        <div class="quick-choice-grid">
+          <div class="quick-choice-group">
+            <h4>속성 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="attr" placeholder="직접 입력: 예: 달빛" aria-label="속성 직접 입력">
+            <div class="quick-choice-list" data-quick-group="attr"></div>
+          </div>
+          <div class="quick-choice-group">
+            <h4>대상 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="target" placeholder="직접 입력: 예: 늑대" aria-label="대상 직접 입력">
+            <div class="quick-choice-list" data-quick-group="target"></div>
+          </div>
+          <div class="quick-choice-group">
+            <h4>이름 끝말 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="ending" placeholder="직접 입력: 예: 하루" aria-label="이름 끝말 직접 입력">
+            <div class="quick-choice-list" data-quick-group="ending"></div>
+          </div>
+        </div>
+        <div class="quick-result">캐릭터 이름: <span id="quickNameResult">아직 이름이 완성되지 않았어</span></div>
+      </section>
+      <section class="quick-step">
+        <h3>2단계. 캐릭터 설정하기</h3>
+        <div class="quick-choice-grid">
+          <div class="quick-choice-group">
+            <h4>능력 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="ability" placeholder="직접 입력: 예: 순간이동을 한다" aria-label="능력 직접 입력">
+            <div class="quick-choice-list" data-quick-group="ability"></div>
+          </div>
+          <div class="quick-choice-group">
+            <h4>약점 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="weakness" placeholder="직접 입력: 예: 물에 닿으면 작아진다" aria-label="약점 직접 입력">
+            <div class="quick-choice-list" data-quick-group="weakness"></div>
+          </div>
+          <div class="quick-choice-group">
+            <h4>성격 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="personality" placeholder="직접 입력: 예: 차분하고 다정함" aria-label="성격 직접 입력">
+            <div class="quick-choice-list" data-quick-group="personality"></div>
+          </div>
+          <div class="quick-choice-group">
+            <h4>대표 색 카드</h4>
+            <input class="quick-custom" type="text" data-quick-custom="color" placeholder="직접 입력: 예: 은색과 초록" aria-label="대표 색 직접 입력">
+            <div class="quick-choice-list" data-quick-group="color"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="quick-modal-foot">
+      <button class="btn btn-outline" type="button" id="clearQuickBuilder">팝업 선택 초기화</button>
+      <button class="btn btn-primary" type="button" id="applyQuickBuilder">기본 정보에 넣기</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite">복사 완료!</div>
+
+<script>
+const CURRENT_CLASS = CLASS_OVERRIDE || (location.pathname.includes("/class2/") ? "class2" : "class1");
+const STUDENT_SLIDE_LINKS = CURRENT_CLASS === "class2" ? STUDENT_SLIDE_LINKS_CLASS2 : STUDENT_SLIDE_LINKS_CLASS1;
+const STORAGE_KEY = `dongho-grade5-lesson03-${CURRENT_CLASS}-v1`;
+
+const CLASS_CONFIG = {
+  class1: {
+    label: "5학년 1반",
+    canvaLink: "https://canva.link/0n7bz7scsmj7joe",
+    defaultFormat: "four",
+    missionResult: "AI 결과를 확인하고 4컷 로어 웹툰으로 완성해.",
+    canvaTitle: "오늘의 최종 결과물: 4컷 로어 웹툰",
+    canvaDesc: "Canva에서 4컷 로어 웹툰을 완성해 보자.",
+    canvaPlan: [
+      "1컷: 캐릭터가 힘을 얻게 된 순간",
+      "2컷: 약점 때문에 어려움을 겪는 순간",
+      "3컷: 도망치지 않고 선택하는 순간",
+      "4컷: 능력을 바르게 사용하며 다음 모험을 예고하는 순간"
+    ]
+  },
+  class2: {
+    label: "5학년 2반",
+    canvaLink: "https://canva.link/jgatshmhral024k",
+    defaultFormat: "four",
+    missionResult: "AI 결과를 확인하고 4컷 로어 웹툰으로 완성해.",
+    canvaTitle: "오늘의 최종 결과물: 4컷 로어 웹툰",
+    canvaDesc: "Canva에서 4컷 로어 웹툰을 완성해 보자.",
+    canvaPlan: [
+      "1컷: 캐릭터가 힘을 얻게 된 순간",
+      "2컷: 약점 때문에 어려움을 겪는 순간",
+      "3컷: 도망치지 않고 선택하는 순간",
+      "4컷: 능력을 바르게 사용하며 다음 모험을 예고하는 순간"
+    ]
+  }
+};
+
+const CONDITIONS = [
+  "유명 게임, 애니메이션, 웹툰 캐릭터를 따라 하지 마세요.",
+  "너무 폭력적이거나 무서운 표현은 빼 주세요.",
+  "내 캐릭터의 능력과 약점이 이야기 속에 꼭 들어가야 합니다.",
+  "AI가 마음대로 새로운 설정을 너무 많이 만들지 마세요.",
+  "장면마다 그림으로 표현하기 쉽게 써 주세요."
+];
+
+const AI_CHECKS = [
+  "내 캐릭터 이름이 맞게 들어갔다.",
+  "내 캐릭터의 능력과 약점이 이야기 속에 들어갔다.",
+  "유명 게임, 애니메이션, 웹툰 캐릭터와 너무 비슷하지 않다.",
+  "너무 잔인하거나 무서운 내용은 없다.",
+  "AI가 마음대로 만든 이상한 설정은 내가 수정했다.",
+  "그림으로 만들기 쉬운 장면으로 정리되었다."
+];
+
+const LEARNING_CHECKS = [
+  "프롬프트는 한 번에 길게 쓰는 문장이 아니라, 정보를 단계별로 쌓는 설계도라는 것을 알았다.",
+  "캐릭터 기본 정보, 이야기 재료, 약점과 갈등, 결과물 형식, 조건을 나누어 프롬프트에 넣었다.",
+  "이야기 재료는 카드로 고를 수도 있고, 내 캐릭터에 맞게 직접 바꿔 쓸 수도 있다는 것을 알았다.",
+  "약점은 그냥 적는 것보다 이야기 속 문제로 연결하면 더 좋은 로어가 된다는 것을 확인했다.",
+  "AI가 만든 결과를 그대로 쓰지 않고, 내 캐릭터 설정과 맞는지 점검했다.",
+  "유명 게임, 애니메이션, 웹툰 캐릭터를 따라 하지 않도록 확인했다.",
+  "너무 무섭거나 폭력적인 표현, AI가 마음대로 만든 이상한 설정은 내가 수정했다.",
+  "최종 선택과 수정은 AI가 아니라 창작자인 내가 해야 한다는 것을 기억했다."
+];
+
+const FORMAT_TEXT = "이 이야기를 4컷 웹툰 대본으로 만들어 주세요.\n각 컷은 장면 설명, 캐릭터 대사, 분위기로 나누어 주세요.";
+
+const CANVA_CUTS = [
+  { number: 1, title: "캐릭터가 힘을 얻게 된 순간", field: "aiFixCut1" },
+  { number: 2, title: "약점 때문에 어려움을 겪는 순간", field: "aiFixCut2" },
+  { number: 3, title: "도망치지 않고 선택하는 순간", field: "aiFixCut3" },
+  { number: 4, title: "능력을 바르게 사용하며 다음 모험을 예고하는 순간", field: "aiFixCut4" }
+];
+
+const QUICK_OPTIONS = {
+  attr: ["번개", "얼음", "불꽃", "그림자", "바람", "별빛"],
+  target: ["고양이", "여우", "로봇", "용", "토끼", "펭귄"],
+  ending: ["루미", "코코", "타로", "미루", "제트", "라온"],
+  ability: ["번개처럼 빠르게 이동한다", "얼음 방패를 만든다", "불꽃 에너지를 발사한다", "그림자 속으로 숨는다", "친구를 회복시킨다", "바람을 타고 높이 점프한다"],
+  weakness: ["물에 닿으면 힘이 약해진다", "오래 싸우면 쉽게 지친다", "큰 소리가 나면 집중하지 못한다", "밝은 빛에 약하다", "혼자 있으면 힘이 약해진다", "움직임이 너무 빨라 가끔 방향을 잃는다"],
+  personality: ["장난꾸러기", "용감함", "조용하지만 똑똑함", "신비로움", "따뜻함", "자신감이 넘침"],
+  color: ["노랑과 하늘색", "파랑과 흰색", "빨강과 주황", "검정과 보라", "초록과 민트", "분홍과 연보라"]
+};
+
+const QUICK_TARGET_MAP = {
+  "고양이": "냥",
+  "여우": "여우",
+  "로봇": "로봇",
+  "용": "드래곤",
+  "토끼": "토끼",
+  "펭귄": "펭귄"
+};
+
+function defaultState(){
+  return {
+    charName:"",
+    ability:"",
+    weakness:"",
+    personality:"",
+    color:"",
+    birth:"",
+    goal:"",
+    conflict:"",
+    rival:"",
+    weakConflict:"",
+    format:"four",
+    conditions:CONDITIONS.map(() => true),
+    aiChecks:AI_CHECKS.map(() => false),
+    aiFixCut1:"",
+    aiFixCut2:"",
+    aiFixCut3:"",
+    aiFixCut4:"",
+    learningChecks:LEARNING_CHECKS.map(() => false)
+  };
+}
+
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    const base = defaultState();
+    if(!saved) return base;
+    return {
+      ...base,
+      ...saved,
+      format:"four",
+      conditions:CONDITIONS.map((_, index) => saved.conditions?.[index] ?? true),
+      aiChecks:AI_CHECKS.map((_, index) => saved.aiChecks?.[index] ?? false),
+      learningChecks:LEARNING_CHECKS.map((_, index) => saved.learningChecks?.[index] ?? false)
+    };
+  }catch(error){
+    return defaultState();
+  }
+}
+
+let state = loadState();
+let quickState = {
+  attr:"",
+  target:"",
+  ending:"",
+  ability:"",
+  weakness:"",
+  personality:"",
+  color:""
+};
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function $(selector){
+  return document.querySelector(selector);
+}
+
+function safe(value, label){
+  const text = String(value || "").trim();
+  return text || `[${label}]`;
+}
+
+function setText(id, value){
+  const element = document.getElementById(id);
+  if(element) element.textContent = value;
+}
+
+function setValue(id, value){
+  const element = document.getElementById(id);
+  if(element) element.value = value;
+}
+
+function renderStudentLinks(){
+  const grid = $("#studentGrid");
+  const empty = $("#studentEmpty");
+  grid.innerHTML = "";
+  const filtered = STUDENT_SLIDE_LINKS;
+  filtered.forEach(student => {
+    const card = document.createElement("article");
+    card.className = "student-card";
+    const hasUrl = Boolean(student.url);
+    card.innerHTML = `
+      <div class="student-name">${student.name}</div>
+      ${hasUrl ? "" : '<div class="student-status">아직 링크가 등록되지 않았어요</div>'}
+      <button class="btn ${hasUrl ? "btn-primary" : "btn-outline"}" type="button" ${hasUrl ? "" : "disabled"} aria-label="${student.name} 내 슬라이드 열기">내 슬라이드 열기</button>
+    `;
+    const button = card.querySelector("button");
+    if(hasUrl){
+      button.addEventListener("click", () => {
+        const opened = window.open(student.url, "_blank", "noopener,noreferrer");
+        if(opened) opened.opener = null;
+      });
+    }
+    grid.appendChild(card);
+  });
+  empty.style.display = filtered.length ? "none" : "block";
+}
+
+function renderQuickBuilder(){
+  Object.entries(QUICK_OPTIONS).forEach(([group, values]) => {
+    const container = document.querySelector(`[data-quick-group="${group}"]`);
+    if(!container) return;
+    container.innerHTML = values.map(value => `<button class="quick-choice" type="button" data-quick-select="${group}" data-quick-value="${value}">${value}</button>`).join("");
+  });
+  syncQuickBuilder();
+}
+
+function quickCharacterName(){
+  if(!quickState.attr || !quickState.target || !quickState.ending) return "";
+  const middle = QUICK_TARGET_MAP[quickState.target] || quickState.target;
+  return `${quickState.attr}${middle} ${quickState.ending}`;
+}
+
+function syncQuickBuilder(){
+  document.querySelectorAll("[data-quick-select]").forEach(button => {
+    const group = button.dataset.quickSelect;
+    button.classList.toggle("selected", quickState[group] === button.dataset.quickValue);
+  });
+  document.querySelectorAll("[data-quick-custom]").forEach(input => {
+    const group = input.dataset.quickCustom;
+    if(input !== document.activeElement) input.value = quickState[group] || "";
+  });
+  setText("quickNameResult", quickCharacterName() || "아직 이름이 완성되지 않았어");
+}
+
+function resetQuickBuilder(){
+  quickState = {
+    attr:"",
+    target:"",
+    ending:"",
+    ability:"",
+    weakness:"",
+    personality:"",
+    color:""
+  };
+  syncQuickBuilder();
+}
+
+function openQuickBuilder(){
+  const modal = document.getElementById("quickBuilderModal");
+  syncQuickBuilder();
+  if(modal.showModal) modal.showModal();
+  else modal.setAttribute("open", "");
+}
+
+function closeQuickBuilder(){
+  const modal = document.getElementById("quickBuilderModal");
+  if(modal.close) modal.close();
+  else modal.removeAttribute("open");
+}
+
+function applyQuickBuilder(){
+  const quickName = quickCharacterName();
+  const nextValues = {
+    charName: quickName,
+    ability: quickState.ability,
+    weakness: quickState.weakness,
+    personality: quickState.personality,
+    color: quickState.color
+  };
+  const hasAnyValue = Object.values(nextValues).some(Boolean);
+  if(!hasAnyValue){
+    showToast("먼저 카드나 직접 입력으로 정해 봐.");
+    return;
+  }
+  Object.entries(nextValues).forEach(([key, value]) => {
+    if(value) state[key] = value;
+  });
+  saveState();
+  syncInputs();
+  updatePreview();
+  closeQuickBuilder();
+  showToast("기본 정보에 넣었어.");
+}
+
+function renderChecks(containerId, list, stateKey){
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  list.forEach((text, index) => {
+    const label = document.createElement("label");
+    label.className = "check-item";
+    label.innerHTML = `<input type="checkbox" data-check-group="${stateKey}" data-check-index="${index}" aria-label="${text}"><span>${text}</span>`;
+    label.querySelector("input").checked = Boolean(state[stateKey][index]);
+    container.appendChild(label);
+  });
+}
+
+function syncInputs(){
+  document.querySelectorAll("[data-field]").forEach(input => {
+    input.value = state[input.dataset.field] || "";
+  });
+  document.querySelectorAll("[data-format]").forEach(input => {
+    input.checked = input.value === state.format;
+  });
+  renderChecks("conditionGrid", CONDITIONS, "conditions");
+  renderChecks("aiCheckGrid", AI_CHECKS, "aiChecks");
+  renderChecks("learningCheckGrid", LEARNING_CHECKS, "learningChecks");
+  updateChoiceSelections();
+  updateLearningComplete();
+}
+
+function updateChoiceSelections(){
+  document.querySelectorAll("[data-fill]").forEach(button => {
+    const key = button.dataset.fill;
+    button.classList.toggle("selected", state[key] === button.dataset.value);
+  });
+}
+
+function updateLearningComplete(){
+  const message = document.getElementById("learningCompleteMessage");
+  if(!message) return;
+  const complete = state.learningChecks.length > 0 && state.learningChecks.every(Boolean);
+  message.classList.toggle("show", complete);
+}
+
+function basicPreview(){
+  return `내 캐릭터의 이름은 ${safe(state.charName,"캐릭터 이름")}입니다.
+${safe(state.ability,"능력")} 능력이 있습니다.
+하지만 ${safe(state.weakness,"약점")}이라는 약점이 있습니다.
+성격은 ${safe(state.personality,"성격")}입니다.
+대표 색은 ${safe(state.color,"대표 색")}입니다.`;
+}
+
+function finalPrompt(){
+  const selectedConditions = CONDITIONS
+    .filter((_, index) => state.conditions[index])
+    .map((condition, index) => `${index + 1}. ${condition}`)
+    .join("\n");
+
+  return `너는 초등학교 5학년을 위한 게임 공식 웹툰 스토리 작가야.
+
+[캐릭터 기본 정보]
+내 캐릭터의 이름은 ${safe(state.charName,"캐릭터 이름")}입니다.
+${safe(state.ability,"능력")} 능력이 있습니다.
+하지만 ${safe(state.weakness,"약점")}이라는 약점이 있습니다.
+성격은 ${safe(state.personality,"성격")}입니다.
+대표 색은 ${safe(state.color,"대표 색")}입니다.
+
+[이야기 재료]
+이 캐릭터는 "${safe(state.birth,"탄생 사건")}" 사건으로 이야기가 시작됩니다.
+목표는 ${safe(state.goal,"목표")}입니다.
+주요 갈등은 ${safe(state.conflict,"갈등")}입니다.
+라이벌 또는 방해 요소는 ${safe(state.rival,"라이벌 또는 방해 요소")}입니다.
+
+[약점과 갈등의 연결]
+내 캐릭터는 약점 때문에 ${safe(state.weakConflict,"어떤 어려움")} 어려움을 겪습니다.
+
+[결과물 형식]
+${FORMAT_TEXT}
+
+[조건]
+${selectedConditions || "조건을 다시 체크해 주세요."}`;
+}
+
+function makeCanvaCutPrompt(cut){
+  const cutText = safe(state[cut.field], `${cut.number}컷 장면 내용`);
+  return `초등학생용 게임 공식 웹툰의 ${cut.number}컷 장면,
+장면 주제: ${cut.title},
+학생이 정리한 ${cut.number}컷 내용: ${cutText},
+캐릭터 이름: ${safe(state.charName,"캐릭터 이름")},
+캐릭터 능력: ${safe(state.ability,"능력")},
+캐릭터 약점: ${safe(state.weakness,"약점")},
+대표 색: ${safe(state.color,"대표 색")},
+밝고 역동적인 2D 웹툰 스타일,
+캐릭터의 대표 색이 잘 보이게,
+배경은 단순하게,
+말풍선을 넣을 빈 공간 남기기,
+텍스트 없음,
+유명 게임 캐릭터와 비슷하지 않게`;
+}
+
+function updatePreview(){
+  setText("classBadge", `${CLASS_CONFIG[CURRENT_CLASS].label} · 3차시`);
+  setText("missionResult", CLASS_CONFIG[CURRENT_CLASS].missionResult);
+  setText("basicPreview", basicPreview());
+  state.format = "four";
+  setText("formatPreview", FORMAT_TEXT);
+  setValue("finalPrompt", finalPrompt());
+  CANVA_CUTS.forEach(cut => setValue(`canvaPrompt${cut.number}`, makeCanvaCutPrompt(cut)));
+  setText("canvaTitle", CLASS_CONFIG[CURRENT_CLASS].canvaTitle);
+  setText("canvaDesc", CLASS_CONFIG[CURRENT_CLASS].canvaDesc);
+  const canvaClassLink = document.getElementById("canvaClassLink");
+  if(canvaClassLink) canvaClassLink.href = CLASS_CONFIG[CURRENT_CLASS].canvaLink;
+  const plan = document.getElementById("canvaPlan");
+  plan.innerHTML = `<div class="canva-plan-grid">${CLASS_CONFIG[CURRENT_CLASS].canvaPlan.map(item => {
+    const parts = item.split(":");
+    const label = parts.shift();
+    const text = parts.join(":").trim();
+    return `<article class="canva-plan-card"><span>${label} - ${text}</span></article>`;
+  }).join("")}</div>`;
+  updateChoiceSelections();
+  updateLearningComplete();
+}
+
+async function copyTextFrom(targetId, messageId){
+  const element = document.getElementById(targetId);
+  if(!element) return;
+  const text = "value" in element ? element.value : element.textContent;
+  let copied = false;
+  try{
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  }catch(error){
+    if("select" in element){
+      element.focus();
+      element.select();
+      try{ copied = document.execCommand("copy"); }catch(copyError){ copied = false; }
+    }
+  }
+  const message = document.getElementById(messageId);
+  if(message){
+    message.textContent = copied ? "복사 완료!" : "복사가 안 되면 직접 선택해서 Ctrl+C로 복사해.";
+    message.classList.add("show");
+    setTimeout(() => message.classList.remove("show"), 2500);
+  }
+  showToast(copied ? "복사 완료!" : "직접 복사해 줘.");
+}
+
+function showToast(message){
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1700);
+}
+
+function resetAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  state = defaultState();
+  syncInputs();
+  updatePreview();
+  showToast("입력 내용이 초기화됐어.");
+}
+
+function bindEvents(){
+  document.querySelectorAll("[data-field]").forEach(input => {
+    input.addEventListener("input", () => {
+      state[input.dataset.field] = input.value;
+      saveState();
+      updatePreview();
+    });
+  });
+  document.querySelectorAll("[data-fill]").forEach(button => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.fill;
+      state[key] = button.dataset.value;
+      setValue(key, state[key]);
+      saveState();
+      updatePreview();
+    });
+  });
+  document.querySelectorAll("[data-format]").forEach(input => {
+    input.addEventListener("change", () => {
+      state.format = input.value;
+      saveState();
+      updatePreview();
+    });
+  });
+  document.addEventListener("change", event => {
+    const input = event.target.closest("[data-check-group]");
+    if(!input) return;
+    const key = input.dataset.checkGroup;
+    const index = Number(input.dataset.checkIndex);
+    state[key][index] = input.checked;
+    saveState();
+    updatePreview();
+  });
+  document.querySelectorAll("[data-copy-target]").forEach(button => {
+    button.addEventListener("click", () => copyTextFrom(button.dataset.copyTarget, button.dataset.copyMessage));
+  });
+  document.addEventListener("click", event => {
+    const button = event.target.closest("[data-quick-select]");
+    if(!button) return;
+    const group = button.dataset.quickSelect;
+    quickState[group] = button.dataset.quickValue;
+    syncQuickBuilder();
+  });
+  document.addEventListener("input", event => {
+    const input = event.target.closest("[data-quick-custom]");
+    if(!input) return;
+    quickState[input.dataset.quickCustom] = input.value.trim();
+    syncQuickBuilder();
+  });
+  $("#openQuickBuilder").addEventListener("click", openQuickBuilder);
+  $("#closeQuickBuilder").addEventListener("click", closeQuickBuilder);
+  $("#clearQuickBuilder").addEventListener("click", resetQuickBuilder);
+  $("#applyQuickBuilder").addEventListener("click", applyQuickBuilder);
+  $("#quickBuilderModal").addEventListener("click", event => {
+    if(event.target.id === "quickBuilderModal") closeQuickBuilder();
+  });
+  $("#resetBtn").addEventListener("click", resetAll);
+}
+
+function init(){
+  renderStudentLinks();
+  renderQuickBuilder();
+  syncInputs();
+  updatePreview();
+  bindEvents();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
