@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>대한민국 vs 남아공! AI 월드컵 승부 예측기</title>
+    <meta
+      name="description"
+      content="초등학교 5~6학년 대상 엔트리 AI 데이터 분석 6차시 디지털 교과서"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">엔트리 AI 데이터 분석 6차시</p>
+        <h1>대한민국 vs 남아공!<br />AI 월드컵 승부 예측기</h1>
+        <p class="hero-subtitle">
+          팀 종합점수를 보고 AI가 대한민국 승리 가능성을 예측해요.
+        </p>
+
+        <div class="hero-actions" aria-label="수업 자료 바로가기">
+          <a
+            class="button button-primary"
+            href="lesson06_korea_southafrica_logistic_data.csv"
+            download
+            target="_blank"
+            rel="noopener"
+            data-action="download-csv"
+          >
+            데이터 파일 받기
+          </a>
+          <a
+            class="button button-secondary"
+            href="로지스틱회귀_학생용.ent"
+            download
+            target="_blank"
+            rel="noopener"
+            data-action="open-entry"
+          >
+            엔트리 작품 열기
+          </a>
+        </div>
+
+        <p class="notice">
+          이 활동은 실제 경기 결과를 맞히는 것이 아니라,<br />AI가 데이터를 보고
+          분류하는 방법을 배우는 수업입니다.
+        </p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="score-board">
+          <span>대한민국</span>
+          <strong>AI 예측</strong>
+          <span>남아공</span>
+        </div>
+        <div class="official-showcase">
+          <div class="official-frame official-emblem">
+            <img
+              src="assets/images/worldcup-emblem.png"
+              alt="월드컵 공식 엠블럼"
+              data-official-asset
+            />
+            <div class="asset-fallback">
+              <span class="cup-mark">AI CUP</span>
+              <strong>KOR vs RSA</strong>
+            </div>
+          </div>
+          <div class="official-frame official-photo">
+            <img
+              src="assets/images/worldcup-promo.jpg"
+              alt="월드컵 공식 홍보사진"
+              data-official-asset
+            />
+            <div class="asset-fallback">
+              <span>Kickoff Data Lab</span>
+              <strong>대한민국 vs 남아공</strong>
+            </div>
+          </div>
+        </div>
+        <div class="pitch">
+          <div class="pitch-circle"></div>
+          <div class="pitch-line"></div>
+          <div class="goal goal-left"></div>
+          <div class="goal goal-right"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="card wide-card connection-card">
+        <div class="card-heading">
+          <span class="step-badge">1</span>
+          <h2>우리가 배운 AI 방법 한눈에 보기</h2>
+        </div>
+        <div class="table-wrap fit-table">
+          <table class="connection-table">
+            <caption>
+              데이터 분석 수업 흐름
+            </caption>
+            <colgroup>
+              <col class="col-lesson" />
+              <col class="col-method" />
+              <col class="col-action" />
+              <col class="col-example" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">차시</th>
+                <th scope="col">AI 방법</th>
+                <th scope="col">무엇을 하나요?</th>
+                <th scope="col">활용 예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>3차시</td>
+                <td>선형회귀</td>
+                <td>숫자를 예측해요</td>
+                <td>구독자 수 예측<br />다음 달 방문자 수 예측<br />타자 연습 시간 예측</td>
+              </tr>
+              <tr>
+                <td>4차시</td>
+                <td>결정트리</td>
+                <td>조건을 따라 판단해요</td>
+                <td>점심 메뉴 추천<br />준비물 챙기기 판단<br />게임 캐릭터 추천</td>
+              </tr>
+              <tr>
+                <td>5차시</td>
+                <td>군집분류</td>
+                <td>비슷한 것끼리 묶어요</td>
+                <td>캐릭터 능력치 그룹<br />비슷한 노래 묶기<br />취향이 비슷한 카드 묶기</td>
+              </tr>
+              <tr>
+                <td>6차시</td>
+                <td>로지스틱회귀</td>
+                <td>둘 중 하나로 예측해요</td>
+                <td>승리 가능 / 접전 예상<br />우산 필요 / 필요 없음<br />스테이지 성공 / 실패</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="short-note">
+          오늘은 로지스틱 회귀를 사용해 AI가<br />“대한민국 승리 가능” 또는 “접전
+          예상” 중 하나를 판단하게 만듭니다.
+        </p>
+      </section>
+
+      <section class="card wide-card score-card">
+        <div class="card-heading">
+          <span class="step-badge">2</span>
+          <h2>팀 종합점수란?</h2>
+        </div>
+        <p>
+          실제 축구 분석에서는 경기력을 한 가지 숫자로만 판단하지 않습니다.<br />슈팅,
+          유효슈팅, 득점 기회, 실점, 최근 경기 흐름 같은 여러 데이터를 함께 봅니다.
+        </p>
+        <p class="short-note">
+          오늘은 쉽게 실험할 수 있도록 이 여러 정보를 합쳐 “팀 종합점수”라고
+          부르겠습니다.
+        </p>
+        <div class="mini-table-grid">
+          <div class="table-wrap">
+            <table>
+              <caption>
+                팀 종합점수 안내
+              </caption>
+              <tbody>
+                <tr>
+                  <th scope="row">90</th>
+                  <td>아주 좋은 흐름</td>
+                </tr>
+                <tr>
+                  <th scope="row">80</th>
+                  <td>좋은 흐름</td>
+                </tr>
+                <tr>
+                  <th scope="row">70</th>
+                  <td>비슷한 흐름</td>
+                </tr>
+                <tr>
+                  <th scope="row">60</th>
+                  <td>조금 어려운 흐름</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <caption>
+                입력 예시
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">한국팀 종합점수</th>
+                  <th scope="col">남아공팀 종합점수</th>
+                  <th scope="col">상황</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>85</td>
+                  <td>65</td>
+                  <td>한국이 유리한 상황</td>
+                </tr>
+                <tr>
+                  <td>75</td>
+                  <td>75</td>
+                  <td>비슷한 상황</td>
+                </tr>
+                <tr>
+                  <td>65</td>
+                  <td>85</td>
+                  <td>남아공이 유리한 상황</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card wide-card">
+        <div class="card-heading">
+          <span class="step-badge">3</span>
+          <h2>로지스틱 회귀는 어떻게 판단할까요?</h2>
+        </div>
+        <p class="lesson-step-title">1. AI는 정답이 붙은 예시 데이터를 먼저 봐요</p>
+        <p>
+          AI는 처음부터 답을 아는 것이 아닙니다. 먼저 정답이 붙어 있는 예시
+          데이터를 보고 배웁니다.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>
+              정답이 붙은 예시 데이터
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">한국팀 종합점수</th>
+                <th scope="col">남아공팀 종합점수</th>
+                <th scope="col">정답</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>85</td>
+                <td>65</td>
+                <td>대한민국 승리 가능, 1</td>
+              </tr>
+              <tr>
+                <td>75</td>
+                <td>75</td>
+                <td>접전 예상, 0</td>
+              </tr>
+              <tr>
+                <td>65</td>
+                <td>85</td>
+                <td>접전 예상, 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="short-note">
+          여기서 1은 대한민국 승리 가능, 0은 접전 예상이라는 뜻입니다.<br />AI가 보는
+          데이터는 그냥 숫자표가 아니라 정답이 붙어 있는 연습 문제입니다.
+        </p>
+
+        <p class="lesson-step-title">2. AI는 데이터를 점처럼 생각해요</p>
+        <p>AI는 예시 데이터를 그래프 위의 점처럼 생각합니다.</p>
+        <ul class="concept-list">
+          <li><strong>한국팀 85, 남아공팀 65</strong><span>이 점은 1</span></li>
+          <li><strong>한국팀 75, 남아공팀 75</strong><span>이 점은 0</span></li>
+          <li><strong>한국팀 65, 남아공팀 85</strong><span>이 점은 0</span></li>
+        </ul>
+        <p>
+          이렇게 점마다 정답이 붙어 있습니다. AI는 “어떤 점들은 1이구나”,
+          “어떤 점들은 0이구나”를 먼저 배웁니다.
+        </p>
+
+        <p class="lesson-step-title">3. AI는 가장 잘 나누는 기준을 찾아요</p>
+        <p class="short-note">예시 데이터를 가장 잘 나누는 기준 찾기</p>
+        <p>
+          로지스틱 회귀는 1과 0을 가장 잘 나누는 기준을 찾습니다. 이 기준은 사람이
+          직접 정하는 것이 아닙니다. AI가 여러 예시 데이터를 비교하면서 틀린 판단이
+          적어지는 방향으로 기준을 찾아갑니다.
+        </p>
+        <p class="key-sentence">기준선은 AI가 예시 데이터를 보고 찾아낸 분류 기준입니다.</p>
+
+        <p class="lesson-step-title">4. AI는 가능성을 생각해요</p>
+        <p>
+          새로운 점수가 들어오면 AI는 그 점수가 1에 가까운지, 0에 가까운지
+          생각합니다. 축구에서 흐름이 좋으면 승리 가능성이 높아질 수 있지만,
+          가능성은 100%를 넘을 수 없고 0%보다 작아질 수도 없습니다.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>
+              AI의 가능성 판단
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">AI의 생각</th>
+                <th scope="col">결과</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1에 가까움</td>
+                <td>대한민국 승리 가능</td>
+              </tr>
+              <tr>
+                <td>0에 가까움</td>
+                <td>접전 예상</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="lesson-step-title">5. 마지막에는 1 또는 0으로 판단해요</p>
+        <div class="table-wrap">
+          <table>
+            <caption>
+              상황별 AI 판단
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">상황</th>
+                <th scope="col">AI 판단</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>한국팀 종합점수가 높고 남아공팀 종합점수가 낮음</td>
+                <td>1에 가까움</td>
+              </tr>
+              <tr>
+                <td>두 팀 점수가 비슷함</td>
+                <td>0에 가까움</td>
+              </tr>
+              <tr>
+                <td>남아공팀 종합점수가 더 높음</td>
+                <td>0에 가까움</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="example-box win">
+          <strong>핵심 정리</strong>
+          <span>
+            로지스틱 회귀는 정답이 붙은 예시 데이터를 보고 1과 0을 나누는 기준을
+            찾습니다. 그리고 새로운 점수가 들어오면 어느 쪽에 가까운지 보고 결과를
+            판단합니다.
+          </span>
+        </div>
+        <p class="warning-note">
+          이 결과는 실제 경기 결과를 맞히는 예언이 아닙니다. 수업용 데이터를 보고
+          AI가 분류하는 방법을 배우는 활동입니다.
+        </p>
+      </section>
+
+      <section class="card wide-card">
+        <div class="card-heading">
+          <span class="step-badge">4</span>
+          <h2>로지스틱 회귀는 언제 사용할까요?</h2>
+        </div>
+        <p>결과가 둘 중 하나로 나뉘는 문제에 사용할 수 있습니다.</p>
+        <div class="usecase-cards" aria-label="로지스틱 회귀 활용 예시">
+          <article class="usecase-card">
+            <strong>스포츠</strong>
+            <span>승리 가능<br />접전 예상</span>
+          </article>
+          <article class="usecase-card">
+            <strong>생활</strong>
+            <span>우산 필요<br />필요 없음</span>
+          </article>
+          <article class="usecase-card">
+            <strong>건강</strong>
+            <span>운동 목표 달성<br />미달성</span>
+          </article>
+          <article class="usecase-card">
+            <strong>게임</strong>
+            <span>스테이지 성공<br />실패</span>
+          </article>
+          <article class="usecase-card">
+            <strong>학교 생활</strong>
+            <span>과제 제출 완료<br />미완료</span>
+          </article>
+        </div>
+        <p class="short-note">
+          즉, 로지스틱 회귀는 “숫자 하나를 맞히기”보다 “둘 중 어느 쪽인지
+          판단하기”에 잘 어울립니다.
+        </p>
+      </section>
+
+      <section class="card wide-card data-card">
+        <div class="card-heading">
+          <span class="step-badge">5</span>
+          <h2>오늘 사용할 데이터</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>
+              CSV 열 이름
+            </caption>
+            <colgroup>
+              <col class="col-display" />
+              <col class="col-csv" />
+              <col class="col-meaning" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">데이터 파일에 적힌 이름</th>
+                <th scope="col">우리 수업에서 부르는 이름</th>
+                <th scope="col">뜻</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>한국경기력</td>
+                <td>한국팀 종합점수</td>
+                <td>대한민국의 상황 점수</td>
+              </tr>
+              <tr>
+                <td>남아공경기력</td>
+                <td>남아공팀 종합점수</td>
+                <td>남아공의 상황 점수</td>
+              </tr>
+              <tr>
+                <td>한국승리</td>
+                <td>AI가 연습할 정답</td>
+                <td>결과값, 1 또는 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="short-note">
+          데이터 파일에 한국경기력이라고 보이면 한국팀 종합점수, 남아공경기력이라고
+          보이면 남아공팀 종합점수라고 생각하면 됩니다.
+        </p>
+      </section>
+
+      <section class="card finish-card quiz-card">
+        <div class="card-heading">
+          <span class="step-badge">6</span>
+          <h2>마무리 퀴즈</h2>
+        </div>
+        <div class="quiz-list">
+          <section class="quiz-item" data-answer="B">
+            <h3>1. 로지스틱 회귀는 어떤 문제에 어울릴까요?</h3>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="A">
+                A. 정확한 숫자를 계속 예측하는 문제
+              </button>
+              <button type="button" class="quiz-option" data-choice="B">
+                B. 둘 중 하나로 판단하는 문제
+              </button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </section>
+          <section class="quiz-item" data-answer="A">
+            <h3>2. 오늘 수업에서 1은 어떤 뜻인가요?</h3>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="A">
+                A. 대한민국 승리 가능
+              </button>
+              <button type="button" class="quiz-option" data-choice="B">
+                B. 접전 예상
+              </button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </section>
+          <section class="quiz-item" data-answer="B">
+            <h3>3. 팀 종합점수는 실제 공식 경기력 점수인가요?</h3>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="A">
+                A. 네, 공식 점수입니다.
+              </button>
+              <button type="button" class="quiz-option" data-choice="B">
+                B. 아니요, 수업용으로 여러 정보를 쉽게 합친 점수입니다.
+              </button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
