@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>5학년 1반 80분 수업 - 4회차. 내 캐릭터의 시그니처 테마 사운드 만들기</title>
+    <link rel="stylesheet" href="lesson04.css">
+  </head>
+  <body data-page-mode="80" data-lesson-mode="80">
+    <a class="skip-link" href="#main">본문으로 바로가기</a>
+
+    <header class="site-header">
+      <div class="header-inner single-header">
+        <div class="title-block">
+          <p class="series-title">레벨업! AI 게임 스튜디오</p>
+          <h1>4회차. 내 캐릭터의 시그니처 테마 사운드 만들기</h1>
+          <p>
+            오늘은 내가 만든 게임 캐릭터에게 어울리는 짧은 테마곡을 만들어 봅니다.
+            캐릭터의 성격, 스킬, 분위기를 생각하며 가사를 만들고, 수노를 활용해
+            시그니처 테마 사운드를 완성합니다.
+          </p>
+          <p>
+            완성한 가사와 음악은 나중에 다시 사용할 수 있도록 패들렛 샌드박스에
+            보관합니다.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-shell">
+      <section class="lesson-card mission-card" id="mission">
+        <div class="section-label">오늘의 미션</div>
+        <h2>내 캐릭터에게 어울리는 테마 사운드 완성하기</h2>
+        <p>
+          캐릭터의 느낌을 음악 키워드로 바꾸고, 가사와 음악 프롬프트를 만든 뒤
+          수노로 짧은 테마곡을 생성합니다.
+        </p>
+        <div class="mission-steps" aria-label="오늘의 미션 순서">
+          <span>키워드</span>
+          <span>장르</span>
+          <span>가사</span>
+          <span>수노 프롬프트</span>
+          <span>음악 만들기</span>
+          <span>패들렛 보관</span>
+        </div>
+        <p class="quick-tip forty-only">
+          40분 수업에서는 완벽한 가사보다 캐릭터 느낌이 드러나는 4줄 가사를 완성하는
+          것이 목표입니다.
+        </p>
+      </section>
+
+      <section class="lesson-card" id="student-slides" data-slide-class-page="class1">
+        <div class="section-label">준비</div>
+        <h2>내 이름 선택하기</h2>
+        <p>
+          내 이름을 먼저 선택합니다. 이름을 선택한 뒤 캐릭터 이름, 성격, 대표 스킬을
+          입력하면 학생별 캐릭터 정보로 저장됩니다.
+        </p>
+        <p class="fixed-class-label">5학년 1반</p>
+        <p class="selected-student-status" id="selectedStudentStatus">내 이름을 먼저 선택하세요.</p>
+        <div class="student-slide-grid" id="studentSlideGrid" aria-live="polite"></div>
+        <p class="empty-state" id="studentSlideEmpty">슬라이드 링크가 아직 등록되지 않았어요.</p>
+      </section>
+
+      <section class="lesson-card" id="goals">
+        <div class="section-label">목표</div>
+        <h2>오늘의 목표와 결과물</h2>
+        <p>오늘 수업에서는 다음 활동을 완성합니다.</p>
+        <ol class="number-list">
+          <li>캐릭터의 특징을 음악 키워드 3개로 정리하기</li>
+          <li>캐릭터에게 어울리는 음악 장르 정하기</li>
+          <li>제미나이를 활용해 짧은 가사 만들기</li>
+          <li>제미나이를 활용해 수노 입력 프롬프트 만들기</li>
+          <li>수노로 캐릭터 테마곡 생성하기</li>
+          <li>
+            AI 음악 사용 약속 한 문장 쓰기
+            <span class="small-badge forty-only">선택 활동</span>
+          </li>
+        </ol>
+        <p class="quick-tip forty-only">
+          시간이 부족하면 AI 음악 사용 약속은 패들렛 보관 후 짧게 작성합니다.
+        </p>
+      </section>
+
+      <section class="lesson-card eighty-only" id="previous-lesson">
+        <div class="section-label">지난 시간</div>
+        <h2>지난 시간 연결하기</h2>
+        <p>지난 시간에는 내 캐릭터의 이야기를 웹툰으로 표현했습니다.</p>
+        <p>
+          캐릭터에게는 이름, 외형, 능력뿐 아니라 성격, 목표, 약점, 갈등 같은 이야기가
+          있었습니다.
+        </p>
+        <p>
+          오늘은 그 캐릭터가 게임에 등장할 때 들릴 것 같은 시그니처 테마 사운드를
+          만들어 봅니다.
+        </p>
+        <div class="soft-panel">
+          <h3>생각 질문</h3>
+          <p>캐릭터가 게임 화면에 처음 등장한다면 어떤 음악이 들리면 좋을까요?</p>
+          <ul class="plain-list">
+            <li>빠른 음악일까요?</li>
+            <li>귀여운 음악일까요?</li>
+            <li>웅장한 음악일까요?</li>
+            <li>긴장감 있는 음악일까요?</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity1">
+        <div class="section-label">활동 1</div>
+        <h2>캐릭터를 음악 키워드로 바꾸기</h2>
+        <p>
+          음악을 만들기 전에 캐릭터를 다시 떠올려 봅시다. 좋은 음악 프롬프트는
+          “이 캐릭터가 어떤 느낌인지”를 잘 설명해야 합니다.
+        </p>
+        <p class="quick-tip forty-only">
+          빠르게 하려면 캐릭터 이름, 성격, 대표 스킬을 먼저 적어 보세요.
+        </p>
+        <div class="sheet-sync-panel">
+          <div>
+            <strong>학생별 캐릭터 정보 저장</strong>
+            <span id="sheetSyncStatus">이름을 선택하면 캐릭터 이름, 성격, 대표 스킬이 자동 저장됩니다.</span>
+          </div>
+          <button class="btn btn-primary compact-action" type="button" id="openQuickBuilder">카드로 빠르게 만들기</button>
+          <button class="btn btn-secondary compact-action" type="button" id="saveProfileNow">지금 저장하기</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="characterName">캐릭터 이름</label>
+            <input id="characterName" data-store type="text" autocomplete="off" placeholder="예: 번개 토끼 루루">
+          </div>
+          <div class="field">
+            <label for="characterPersonality">캐릭터 성격</label>
+            <input id="characterPersonality" data-store type="text" autocomplete="off" placeholder="예: 용감하고 장난기가 많음">
+          </div>
+          <div class="field">
+            <label for="mainSkill">대표 스킬</label>
+            <input id="mainSkill" data-store type="text" autocomplete="off" placeholder="예: 번개 대시">
+          </div>
+          <div class="field">
+            <label for="weakness">약점 또는 고민</label>
+            <textarea id="weakness" data-store rows="3" placeholder="예: 급하게 움직이면 길을 잃을 때가 있음"></textarea>
+          </div>
+        </div>
+
+        <div class="keyword-area">
+          <h3>음악 키워드 3개</h3>
+          <div class="form-grid compact-grid">
+            <div class="field">
+              <label for="keyword1">음악 키워드 1</label>
+              <input id="keyword1" data-store type="text" autocomplete="off" placeholder="예: 빠른">
+            </div>
+            <div class="field">
+              <label for="keyword2">음악 키워드 2</label>
+              <input id="keyword2" data-store type="text" autocomplete="off" placeholder="예: 용감한">
+            </div>
+            <div class="field">
+              <label for="keyword3">음악 키워드 3</label>
+              <input id="keyword3" data-store type="text" autocomplete="off" placeholder="예: 신비로운">
+            </div>
+          </div>
+          <div class="chip-group" aria-label="키워드 예시">
+            <button type="button" class="chip keyword-chip" data-keyword="빠른">빠른</button>
+            <button type="button" class="chip keyword-chip" data-keyword="신나는">신나는</button>
+            <button type="button" class="chip keyword-chip" data-keyword="용감한">용감한</button>
+            <button type="button" class="chip keyword-chip" data-keyword="귀여운">귀여운</button>
+            <button type="button" class="chip keyword-chip" data-keyword="신비로운">신비로운</button>
+            <button type="button" class="chip keyword-chip" data-keyword="웅장한">웅장한</button>
+            <button type="button" class="chip keyword-chip" data-keyword="긴장되는">긴장되는</button>
+            <button type="button" class="chip keyword-chip" data-keyword="차분한">차분한</button>
+            <button type="button" class="chip keyword-chip" data-keyword="밝은">밝은</button>
+            <button type="button" class="chip keyword-chip" data-keyword="강한">강한</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity2">
+        <div class="section-label">활동 2</div>
+        <h2>음악 장르 정하기</h2>
+        <p>
+          음악 장르는 노래의 느낌을 정하는 중요한 요소입니다. 캐릭터가 어떤 게임에
+          나올지 생각하며 어울리는 장르를 골라 봅시다.
+        </p>
+        <p class="quick-tip forty-only">
+          망설여지면 먼저 “게임 BGM”을 고르고, 분위기 키워드로 느낌을 더해도 좋습니다.
+        </p>
+        <div class="chip-group genre-group" aria-label="장르 선택">
+          <button type="button" class="chip genre-chip" data-genre="게임 BGM" aria-pressed="false">게임 BGM</button>
+          <button type="button" class="chip genre-chip" data-genre="K-pop" aria-pressed="false">K-pop</button>
+          <button type="button" class="chip genre-chip" data-genre="EDM" aria-pressed="false">EDM</button>
+          <button type="button" class="chip genre-chip" data-genre="록" aria-pressed="false">록</button>
+          <button type="button" class="chip genre-chip" data-genre="오케스트라" aria-pressed="false">오케스트라</button>
+          <button type="button" class="chip genre-chip" data-genre="귀여운 팝" aria-pressed="false">귀여운 팝</button>
+          <button type="button" class="chip genre-chip" data-genre="판타지 음악" aria-pressed="false">판타지 음악</button>
+          <button type="button" class="chip genre-chip" data-genre="전투 음악" aria-pressed="false">전투 음악</button>
+          <button type="button" class="chip genre-chip" data-genre="보스 등장 음악" aria-pressed="false">보스 등장 음악</button>
+        </div>
+        <div class="field single-field">
+          <label for="genre">선택 장르</label>
+          <input id="genre" data-store type="text" autocomplete="off" placeholder="버튼을 누르거나 직접 입력하세요.">
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity3">
+        <div class="section-label">활동 3</div>
+        <h2>제미나이로 짧은 가사 만들기</h2>
+        <p>
+          가사를 처음부터 혼자 다 쓰기 어려워도 괜찮습니다. 활동 1과 활동 2에서
+          정리한 내용을 바탕으로 제미나이에게 짧은 가사를 요청해 봅니다.
+        </p>
+        <p>
+          중요한 것은 AI에게 필요한 정보를 잘 알려 주고, 결과를 그대로 쓰기보다
+          내 캐릭터에 맞게 고르는 것입니다.
+        </p>
+        <p class="quick-tip forty-only">
+          40분 수업에서는 4줄 가사를 먼저 완성하고, 어색한 단어 1개만 바꾸어도 충분합니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn btn-secondary" type="button" id="copyLyricsPrompt">프롬프트 복사하기</button>
+          <a class="btn btn-external" id="openGeminiLyrics" data-open="gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">제미나이 열기</a>
+        </div>
+        <p class="login-note inline-note">
+          로그인이 꼬이면 크롬 오른쪽 위 프로필 아이콘에서 게스트 모드를 열고 다시 접속하세요.
+        </p>
+        <div class="field">
+          <label for="lyricsPrompt">제미나이에 붙여넣을 가사 요청 프롬프트</label>
+          <textarea id="lyricsPrompt" class="prompt-textarea" readonly placeholder="위 활동을 입력하면 프롬프트가 자동으로 만들어집니다."></textarea>
+        </div>
+
+        <div class="soft-panel">
+          <h3>최종 가사 입력</h3>
+          <p>
+            제미나이가 만든 가사를 바로 사용하지 말고, 내 캐릭터와 잘 어울리는지 확인한 뒤
+            단어를 1~2개 바꾸어 나만의 가사로 다듬어 봅시다.
+          </p>
+          <div class="form-grid compact-grid">
+            <div class="field">
+              <label for="lyricLine1">최종 가사 1줄</label>
+              <input id="lyricLine1" data-store type="text" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="lyricLine2">최종 가사 2줄</label>
+              <input id="lyricLine2" data-store type="text" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="lyricLine3">최종 가사 3줄</label>
+              <input id="lyricLine3" data-store type="text" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="lyricLine4">최종 가사 4줄</label>
+              <input id="lyricLine4" data-store type="text" autocomplete="off">
+            </div>
+          </div>
+          <div class="checklist" aria-label="가사 확인 질문">
+            <label><input type="checkbox"> 캐릭터의 성격이 잘 드러나나요?</label>
+            <label><input type="checkbox"> 대표 스킬이 가사에 들어갔나요?</label>
+            <label><input type="checkbox"> 너무 어렵거나 어색한 표현은 없나요?</label>
+            <label><input type="checkbox"> 기존 노래를 따라 한 느낌은 없나요?</label>
+            <label><input type="checkbox"> 내가 원하는 분위기와 맞나요?</label>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity4">
+        <div class="section-label">활동 4</div>
+        <h2>제미나이로 수노 프롬프트 만들기</h2>
+        <p>
+          이번에는 완성한 가사를 바탕으로 수노에 입력할 음악 프롬프트를 만들어 봅니다.
+          수노는 음악을 만들어 주는 AI 도구입니다.
+        </p>
+        <p>
+          하지만 어떤 분위기의 음악이 필요한지는 우리가 잘 설명해 주어야 합니다.
+        </p>
+        <p class="quick-tip forty-only">
+          장르, 빠르기, 분위기가 들어가면 짧은 프롬프트도 충분히 좋아집니다.
+        </p>
+        <div class="button-row">
+          <button class="btn btn-secondary" type="button" id="copySunoRequest">요청문 복사하기</button>
+          <a class="btn btn-external" id="openGeminiSuno" data-open="gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">제미나이 열기</a>
+        </div>
+        <p class="login-note inline-note">
+          로그인이 꼬이면 크롬 오른쪽 위 프로필 아이콘에서 게스트 모드를 열고 다시 접속하세요.
+        </p>
+        <div class="field">
+          <label for="sunoPromptRequest">제미나이에 붙여넣을 수노 프롬프트 요청문</label>
+          <textarea id="sunoPromptRequest" class="prompt-textarea" readonly placeholder="위 활동을 입력하면 요청문이 자동으로 만들어집니다."></textarea>
+        </div>
+        <div class="field">
+          <label for="finalSunoPrompt">내가 수노에 입력할 최종 프롬프트</label>
+          <textarea id="finalSunoPrompt" data-store class="medium-textarea" placeholder="제미나이가 만든 수노 프롬프트를 붙여넣고, 내 캐릭터에 맞게 다듬어 보세요."></textarea>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-secondary" type="button" id="copyFinalPrompt">최종 프롬프트 복사하기</button>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity5">
+        <div class="section-label">활동 5</div>
+        <h2>수노로 음악 만들기</h2>
+        <p>이제 수노에 접속해서 제미나이와 함께 만든 최종 프롬프트를 입력합니다.</p>
+        <p class="quick-tip forty-only">
+          음악을 여러 번 만들 시간이 부족하면 가장 캐릭터와 잘 어울리는 한 곡을 고르세요.
+        </p>
+        <div class="button-row">
+          <a class="btn btn-external" id="openSuno" data-open="suno" href="https://suno.com/" target="_blank" rel="noopener noreferrer">수노 열기</a>
+          <button class="btn btn-secondary" type="button" id="copyFinalPromptAgain">최종 프롬프트 복사하기</button>
+        </div>
+        <p class="login-note inline-note">
+          로그인이 꼬이면 크롬 오른쪽 위 프로필 아이콘에서 게스트 모드를 열고 다시 접속하세요.
+        </p>
+        <ol class="number-list">
+          <li>수노에 접속합니다.</li>
+          <li>최종 수노 프롬프트를 붙여넣습니다.</li>
+          <li>음악을 생성합니다.</li>
+          <li>캐릭터와 잘 어울리는지 들어 봅니다.</li>
+          <li>마음에 드는 음악을 선택합니다.</li>
+          <li>공유 링크를 복사하거나 파일로 저장합니다.</li>
+        </ol>
+        <div class="checklist" aria-label="음악 확인 질문">
+          <label><input type="checkbox"> 캐릭터의 성격이 음악에서 느껴지나요?</label>
+          <label><input type="checkbox"> 대표 스킬과 어울리는 속도나 분위기인가요?</label>
+          <label><input type="checkbox"> 내가 만든 가사가 잘 들어갔나요?</label>
+          <label><input type="checkbox"> 게임 장면에 넣었을 때 자연스럽게 들릴까요?</label>
+          <label><input type="checkbox"> 너무 어색하거나 캐릭터와 맞지 않는 부분은 없나요?</label>
+        </div>
+        <div class="soft-panel">
+          <h3>음악이 마음에 들지 않을 때</h3>
+          <p>이런 문장을 추가해 다시 만들어 볼 수 있습니다.</p>
+          <ul class="plain-list">
+            <li>조금 더 빠르고 신나는 느낌으로 바꿔 줘.</li>
+            <li>캐릭터 선택 화면보다 전투 시작 장면에 어울리게 만들어 줘.</li>
+            <li>가사가 더 잘 들리도록 만들어 줘.</li>
+            <li>귀여운 느낌보다 용감한 느낌이 더 강하게 만들어 줘.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="activity6">
+        <div class="section-label">활동 6</div>
+        <h2>패들렛 샌드박스에 보관하기</h2>
+        <p>
+          완성한 가사와 음악은 나중에 다시 확인하고 활용할 수 있도록 패들렛 샌드박스에
+          보관합니다.
+        </p>
+        <p class="quick-tip forty-only">
+          40분 수업에서는 음악 링크와 AI 음악 사용 약속 한 문장을 먼저 보관합니다.
+        </p>
+        <div class="button-row">
+          <a class="btn btn-external" id="openPadletMain" data-open="padlet" href="https://padlet.com/sorbaram/padlet-v5l28cbqquv9fctb?frame_id=page%3AlB-urcukzvO0L_VANlEHm" target="_blank" rel="noopener noreferrer">패들렛 샌드박스 열기</a>
+        </div>
+        <p class="login-note inline-note">
+          로그인이 꼬이면 크롬 오른쪽 위 프로필 아이콘에서 게스트 모드를 열고 다시 접속하세요.
+        </p>
+
+        <div class="soft-panel">
+          <h3>패들렛에 보관할 내용</h3>
+          <ol class="number-list">
+            <li>캐릭터 이름</li>
+            <li>음악 키워드 3개</li>
+            <li>내가 선택하고 다듬은 가사</li>
+            <li>수노에 입력한 최종 프롬프트</li>
+            <li>수노 음악 링크 또는 음악 파일</li>
+            <li>AI 음악 사용 약속 한 문장</li>
+          </ol>
+        </div>
+
+        <div class="form-grid compact-grid">
+          <div class="field">
+            <label for="sunoLink">수노 음악 링크</label>
+            <input id="sunoLink" data-store type="url" autocomplete="off" placeholder="공유 링크를 붙여넣으세요.">
+          </div>
+          <div class="field">
+            <label for="aiPromise">나의 AI 음악 사용 약속</label>
+            <input id="aiPromise" data-store type="text" autocomplete="off" placeholder="친구의 음악은 허락을 받고 사용하겠습니다.">
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" id="makePadletPost">패들렛 보관용 글 만들기</button>
+          <button class="btn btn-secondary" type="button" id="copyPadletPost">보관용 글 복사하기</button>
+          <a class="btn btn-external" id="openPadletPost" data-open="padlet" href="https://padlet.com/sorbaram/padlet-v5l28cbqquv9fctb?frame_id=page%3AlB-urcukzvO0L_VANlEHm" target="_blank" rel="noopener noreferrer">패들렛 열기</a>
+        </div>
+        <div class="field">
+          <label for="padletPost">패들렛 붙여넣기용 정리문</label>
+          <textarea id="padletPost" class="prompt-textarea" readonly placeholder="버튼을 누르면 패들렛에 붙여넣기 좋은 글이 만들어집니다."></textarea>
+        </div>
+      </section>
+
+      <section class="lesson-card eighty-only" id="ethics">
+        <div class="section-label">80분 활동</div>
+        <h2>AI 음악 사용 판단 샌드박스</h2>
+        <p>
+          AI가 음악을 만들어 주었다고 해서 아무 곳에나 마음대로 사용해도 되는 것은
+          아닙니다.
+        </p>
+        <p>아래 질문에 대한 나의 생각을 적고, 패들렛 샌드박스에 함께 보관합니다.</p>
+        <div class="question-stack">
+          <div class="field">
+            <label for="ethics1">
+              수노로 만든 내 캐릭터 테마곡을 수업 발표에서 틀어도 될까요?
+              그렇게 생각한 이유도 함께 적어 봅시다.
+            </label>
+            <textarea id="ethics1" data-store class="medium-textarea"></textarea>
+          </div>
+          <div class="field">
+            <label for="ethics2">
+              친구가 만든 AI 음악을 내 영상 배경음악으로 써도 될까요?
+              그렇게 생각한 이유도 함께 적어 봅시다.
+            </label>
+            <textarea id="ethics2" data-store class="medium-textarea"></textarea>
+          </div>
+          <div class="field">
+            <label for="ethics3">
+              무료 계정으로 만든 AI 음악을 유튜브 수익 영상에 사용해도 될까요?
+              그렇게 생각한 이유도 함께 적어 봅시다.
+            </label>
+            <textarea id="ethics3" data-store class="medium-textarea"></textarea>
+          </div>
+          <div class="field">
+            <label for="ethics4">
+              내가 직접 쓴 가사를 AI가 노래로 만들어 주었다면, 내가 만든 부분은 무엇일까요?
+            </label>
+            <textarea id="ethics4" data-store class="medium-textarea"></textarea>
+          </div>
+        </div>
+        <div class="soft-panel">
+          <h3>작성 방법</h3>
+          <ul class="plain-list">
+            <li>“된다 / 안 된다”만 쓰지 않습니다.</li>
+            <li>그렇게 생각한 이유를 함께 씁니다.</li>
+            <li>친구 작품을 사용할 때 필요한 약속을 생각합니다.</li>
+            <li>공개용과 수업용의 차이를 생각합니다.</li>
+          </ul>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" id="makeEthicsPost">AI 음악 사용 판단 글 만들기</button>
+          <button class="btn btn-secondary" type="button" id="copyEthicsPost">판단 글 복사하기</button>
+        </div>
+        <div class="field">
+          <label for="ethicsPost">AI 음악 사용 판단 붙여넣기용 글</label>
+          <textarea id="ethicsPost" class="prompt-textarea" readonly placeholder="버튼을 누르면 판단 글이 만들어집니다."></textarea>
+        </div>
+      </section>
+
+      <section class="lesson-card eighty-only" id="gallery-comments">
+        <div class="section-label">80분 활동</div>
+        <h2>친구 작품 감상하기</h2>
+        <p>패들렛에 보관된 친구들의 가사와 음악을 감상해 봅시다.</p>
+        <p>
+          친구 작품을 볼 때는 “좋다 / 별로다”로만 말하지 않습니다. 캐릭터와 음악이
+          잘 어울리는지 생각하며 구체적으로 댓글을 남깁니다.
+        </p>
+        <div class="two-panels">
+          <div class="soft-panel">
+            <h3>댓글 예시</h3>
+            <ul class="plain-list">
+              <li>이 음악은 캐릭터의 빠른 느낌이 잘 드러나요.</li>
+              <li>귀여운 캐릭터와 밝은 분위기가 잘 어울려요.</li>
+              <li>전투 장면보다는 캐릭터 선택 화면에 더 잘 어울릴 것 같아요.</li>
+              <li>스킬이 강한 캐릭터라면 조금 더 웅장해도 좋을 것 같아요.</li>
+            </ul>
+          </div>
+          <div class="soft-panel">
+            <h3>댓글 약속</h3>
+            <ol class="number-list">
+              <li>친구를 놀리는 말은 쓰지 않습니다.</li>
+              <li>작품의 좋은 점을 먼저 말합니다.</li>
+              <li>고칠 점은 부드럽게 말합니다.</li>
+              <li>친구의 음악을 허락 없이 가져다 쓰지 않습니다.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-card" id="summary">
+        <div class="section-label">정리</div>
+        <h2>오늘의 정리</h2>
+        <p>오늘 우리는 내 캐릭터에게 어울리는 시그니처 테마 사운드를 만들었습니다.</p>
+        <p>
+          AI는 음악을 빠르게 만들어 줄 수 있지만, 어떤 캐릭터인지 설명하고 어떤 분위기의
+          음악이 필요한지 정하는 것은 우리의 역할입니다.
+        </p>
+        <p>
+          AI가 만든 음악도 친구의 작품도 함부로 사용하지 않고 책임 있게 활용해야 합니다.
+        </p>
+        <p>
+          오늘 만든 가사와 음악은 나중에 다시 확인할 수 있도록 패들렛 샌드박스에 안전하게
+          보관합니다.
+        </p>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="lesson04.js"></script>
+  </body>
+</html>
