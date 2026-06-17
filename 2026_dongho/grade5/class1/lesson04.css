@@ -884,6 +884,13 @@ a:focus-visible {
   box-shadow: 0 10px 20px rgba(202, 158, 24, 0.14);
 }
 
+.btn-google-id {
+  border: 2px solid #b7dfc4;
+  background: #e8f7ee;
+  color: #11683d;
+  box-shadow: 0 10px 20px rgba(17, 104, 61, 0.12);
+}
+
 .btn-danger {
   min-height: 44px;
   padding: 10px 16px;
