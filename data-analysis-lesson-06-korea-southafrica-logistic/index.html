@@ -225,138 +225,148 @@
           <span class="step-badge">3</span>
           <h2>로지스틱 회귀는 어떻게 판단할까요?</h2>
         </div>
-        <p class="lesson-step-title">1. AI는 정답이 붙은 예시 데이터를 먼저 봐요</p>
-        <p>
-          AI는 처음부터 답을 아는 것이 아닙니다. 먼저 정답이 붙어 있는 예시
-          데이터를 보고 배웁니다.
-        </p>
-        <div class="table-wrap">
-          <table>
-            <caption>
-              정답이 붙은 예시 데이터
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">한국팀 종합점수</th>
-                <th scope="col">남아공팀 종합점수</th>
-                <th scope="col">정답</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>85</td>
-                <td>65</td>
-                <td>대한민국 승리 가능, 1</td>
-              </tr>
-              <tr>
-                <td>75</td>
-                <td>75</td>
-                <td>접전 예상, 0</td>
-              </tr>
-              <tr>
-                <td>65</td>
-                <td>85</td>
-                <td>접전 예상, 0</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="short-note">
-          여기서 1은 대한민국 승리 가능, 0은 접전 예상이라는 뜻입니다.<br />AI가 보는
-          데이터는 그냥 숫자표가 아니라 정답이 붙어 있는 연습 문제입니다.
-        </p>
+        <details class="lesson-toggle">
+          <summary class="lesson-step-title">1. AI는 정답이 붙은 예시 데이터를 먼저 봐요</summary>
+          <p>
+            AI는 처음부터 답을 아는 것이 아닙니다. 먼저 정답이 붙어 있는 예시
+            데이터를 보고 배웁니다.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <caption>
+                정답이 붙은 예시 데이터
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">한국팀 종합점수</th>
+                  <th scope="col">남아공팀 종합점수</th>
+                  <th scope="col">정답</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>85</td>
+                  <td>65</td>
+                  <td>대한민국 승리 가능, 1</td>
+                </tr>
+                <tr>
+                  <td>75</td>
+                  <td>75</td>
+                  <td>접전 예상, 0</td>
+                </tr>
+                <tr>
+                  <td>65</td>
+                  <td>85</td>
+                  <td>접전 예상, 0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="short-note">
+            여기서 1은 대한민국 승리 가능, 0은 접전 예상이라는 뜻입니다.<br />AI가 보는
+            데이터는 그냥 숫자표가 아니라 정답이 붙어 있는 연습 문제입니다.
+          </p>
+        </details>
 
-        <p class="lesson-step-title">2. AI는 데이터를 점처럼 생각해요</p>
-        <p>AI는 예시 데이터를 그래프 위의 점처럼 생각합니다.</p>
-        <ul class="concept-list">
-          <li><strong>한국팀 85, 남아공팀 65</strong><span>이 점은 1</span></li>
-          <li><strong>한국팀 75, 남아공팀 75</strong><span>이 점은 0</span></li>
-          <li><strong>한국팀 65, 남아공팀 85</strong><span>이 점은 0</span></li>
-        </ul>
-        <p>
-          이렇게 점마다 정답이 붙어 있습니다. AI는 “어떤 점들은 1이구나”,
-          “어떤 점들은 0이구나”를 먼저 배웁니다.
-        </p>
+        <details class="lesson-toggle">
+          <summary class="lesson-step-title">2. AI는 데이터를 점처럼 생각해요</summary>
+          <p>AI는 예시 데이터를 그래프 위의 점처럼 생각합니다.</p>
+          <ul class="concept-list">
+            <li><strong>한국팀 85, 남아공팀 65</strong><span>이 점은 1</span></li>
+            <li><strong>한국팀 75, 남아공팀 75</strong><span>이 점은 0</span></li>
+            <li><strong>한국팀 65, 남아공팀 85</strong><span>이 점은 0</span></li>
+          </ul>
+          <p>
+            이렇게 점마다 정답이 붙어 있습니다. AI는 “어떤 점들은 1이구나”,
+            “어떤 점들은 0이구나”를 먼저 배웁니다.
+          </p>
+        </details>
 
-        <p class="lesson-step-title">3. AI는 가장 잘 나누는 기준을 찾아요</p>
-        <p class="short-note">예시 데이터를 가장 잘 나누는 기준 찾기</p>
-        <p>
-          로지스틱 회귀는 1과 0을 가장 잘 나누는 기준을 찾습니다. 이 기준은 사람이
-          직접 정하는 것이 아닙니다. AI가 여러 예시 데이터를 비교하면서 틀린 판단이
-          적어지는 방향으로 기준을 찾아갑니다.
-        </p>
-        <p class="key-sentence">기준선은 AI가 예시 데이터를 보고 찾아낸 분류 기준입니다.</p>
+        <details class="lesson-toggle">
+          <summary class="lesson-step-title">3. AI는 가장 잘 나누는 기준을 찾아요</summary>
+          <p class="short-note">예시 데이터를 가장 잘 나누는 기준 찾기</p>
+          <p>
+            로지스틱 회귀는 1과 0을 가장 잘 나누는 기준을 찾습니다. 이 기준은 사람이
+            직접 정하는 것이 아닙니다. AI가 여러 예시 데이터를 비교하면서 틀린 판단이
+            적어지는 방향으로 기준을 찾아갑니다.
+          </p>
+          <p class="key-sentence">기준선은 AI가 예시 데이터를 보고 찾아낸 분류 기준입니다.</p>
+        </details>
 
-        <p class="lesson-step-title">4. AI는 가능성을 생각해요</p>
-        <p>
-          새로운 점수가 들어오면 AI는 그 점수가 1에 가까운지, 0에 가까운지
-          생각합니다. 축구에서 흐름이 좋으면 승리 가능성이 높아질 수 있지만,
-          가능성은 100%를 넘을 수 없고 0%보다 작아질 수도 없습니다.
-        </p>
-        <div class="table-wrap">
-          <table>
-            <caption>
-              AI의 가능성 판단
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">AI의 생각</th>
-                <th scope="col">결과</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1에 가까움</td>
-                <td>대한민국 승리 가능</td>
-              </tr>
-              <tr>
-                <td>0에 가까움</td>
-                <td>접전 예상</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <details class="lesson-toggle">
+          <summary class="lesson-step-title">4. AI는 가능성을 생각해요</summary>
+          <p>
+            새로운 점수가 들어오면 AI는 그 점수가 1에 가까운지, 0에 가까운지
+            생각합니다. 축구에서 흐름이 좋으면 승리 가능성이 높아질 수 있지만,
+            가능성은 100%를 넘을 수 없고 0%보다 작아질 수도 없습니다.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <caption>
+                AI의 가능성 판단
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">AI의 생각</th>
+                  <th scope="col">결과</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1에 가까움</td>
+                  <td>대한민국 승리 가능</td>
+                </tr>
+                <tr>
+                  <td>0에 가까움</td>
+                  <td>접전 예상</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
 
-        <p class="lesson-step-title">5. 마지막에는 1 또는 0으로 판단해요</p>
-        <div class="table-wrap">
-          <table>
-            <caption>
-              상황별 AI 판단
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">상황</th>
-                <th scope="col">AI 판단</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>한국팀 종합점수가 높고 남아공팀 종합점수가 낮음</td>
-                <td>1에 가까움</td>
-              </tr>
-              <tr>
-                <td>두 팀 점수가 비슷함</td>
-                <td>0에 가까움</td>
-              </tr>
-              <tr>
-                <td>남아공팀 종합점수가 더 높음</td>
-                <td>0에 가까움</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <details class="lesson-toggle">
+          <summary class="lesson-step-title">5. 마지막에는 1 또는 0으로 판단해요</summary>
+          <div class="table-wrap">
+            <table>
+              <caption>
+                상황별 AI 판단
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">상황</th>
+                  <th scope="col">AI 판단</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>한국팀 종합점수가 높고 남아공팀 종합점수가 낮음</td>
+                  <td>1에 가까움</td>
+                </tr>
+                <tr>
+                  <td>두 팀 점수가 비슷함</td>
+                  <td>0에 가까움</td>
+                </tr>
+                <tr>
+                  <td>남아공팀 종합점수가 더 높음</td>
+                  <td>0에 가까움</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
 
         <div class="example-box win">
           <strong>핵심 정리</strong>
           <span>
             로지스틱 회귀는 정답이 붙은 예시 데이터를 보고 1과 0을 나누는 기준을
-            찾습니다. 그리고 새로운 점수가 들어오면 어느 쪽에 가까운지 보고 결과를
-            판단합니다.
+            찾습니다.<br />그리고 새로운 점수가 들어오면 어느 쪽에 가까운지 보고
+            결과를 판단합니다.
           </span>
         </div>
         <p class="warning-note">
-          이 결과는 실제 경기 결과를 맞히는 예언이 아닙니다. 수업용 데이터를 보고
-          AI가 분류하는 방법을 배우는 활동입니다.
+          이 결과가 진짜 경기 결과를 미리 알려주는 것은 아니에요.<br />오늘은
+          연습용 데이터로 AI가 1과 0 중 어느 쪽에 가까운지 판단하는 방법을 배워요.
         </p>
       </section>
 
@@ -436,8 +446,8 @@
           </table>
         </div>
         <p class="short-note">
-          데이터 파일에 한국경기력이라고 보이면 한국팀 종합점수, 남아공경기력이라고
-          보이면 남아공팀 종합점수라고 생각하면 됩니다.
+          데이터 파일의 한국경기력은 한국팀 종합점수, 남아공경기력은 남아공팀
+          종합점수입니다.
         </p>
       </section>
 
