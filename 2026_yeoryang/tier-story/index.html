@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI로 게임 캐릭터 티어스토리 만들기</title>
+  <style>
+    :root {
+      --ink: #25324a;
+      --muted: #63708a;
+      --blue: #4d75ff;
+      --blue-dark: #3155d8;
+      --sky: #eef4ff;
+      --mint: #dff8ed;
+      --yellow: #fff2b8;
+      --pink: #ffe5ef;
+      --line: #dce4f2;
+      --white: #fff;
+      --danger: #d94462;
+      --success: #16845b;
+      --shadow: 0 12px 28px rgba(47, 68, 120, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 2%, #dff5ff 0, transparent 23rem),
+        radial-gradient(circle at 95% 8%, #fff0c9 0, transparent 24rem),
+        #f7f9fd;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+
+    .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border: 1px solid #d8e4ff;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #ffffff 0%, #eef4ff 62%, #fff8d9 100%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "★";
+      position: absolute;
+      right: 28px;
+      top: 10px;
+      color: #ffd55c;
+      font-size: 92px;
+      opacity: .55;
+      transform: rotate(12deg);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: #e7efff;
+      color: var(--blue-dark);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+    h1 { margin: 16px 0 5px; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.2; letter-spacing: -.04em; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 1.12rem; font-weight: 700; }
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0 0;
+    }
+    .mission-item { padding: 17px; border-radius: 19px; background: var(--white); border: 1px solid var(--line); }
+    .mission-item:nth-child(1) { background: var(--mint); }
+    .mission-item:nth-child(2) { background: var(--yellow); }
+    .mission-item:nth-child(3) { background: var(--pink); }
+    .mission-item b { display: block; margin-bottom: 4px; color: #405071; }
+
+    .progress-wrap {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      margin: 22px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(247,249,253,.94);
+      box-shadow: 0 8px 20px rgba(52, 70, 111, .08);
+      backdrop-filter: blur(10px);
+    }
+    .progress { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+    .progress a {
+      min-width: 0;
+      padding: 9px 4px;
+      border-radius: 12px;
+      background: #e9edf5;
+      color: #6b7690;
+      text-align: center;
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+    .progress a.active { background: var(--blue); color: white; }
+    .progress a.done { background: #ccefe1; color: #146f50; }
+
+    .step {
+      scroll-margin-top: 92px;
+      margin-top: 20px;
+      padding: 27px;
+      border: 1px solid var(--line);
+      border-radius: 25px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .student-panel {
+      scroll-margin-top: 92px;
+      margin-top: 20px;
+      padding: 22px 27px;
+      border: 2px solid #cfdcff;
+      border-radius: 22px;
+      background: #f3f7ff;
+      box-shadow: var(--shadow);
+    }
+    .student-panel h2 { margin: 0 0 14px; font-size: 1.3rem; }
+    .step-head { display: flex; gap: 15px; align-items: center; margin-bottom: 18px; }
+    .step-number {
+      display: grid;
+      flex: 0 0 54px;
+      height: 54px;
+      place-items: center;
+      border-radius: 18px;
+      color: white;
+      background: var(--blue);
+      font-size: 1.25rem;
+      font-weight: 900;
+      box-shadow: 0 7px 16px rgba(77,117,255,.25);
+    }
+    .step h2 { margin: 0; font-size: 1.48rem; letter-spacing: -.025em; }
+    .step-lead { margin: 2px 0 0; color: var(--muted); }
+    .notice { padding: 13px 16px; border-left: 5px solid #6c8cff; border-radius: 12px; background: var(--sky); }
+    .notice.warn { border-color: #f2aa31; background: #fff8df; }
+    .notice.good { border-color: #27a977; background: #e9f9f2; }
+
+    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    label, .field-label { display: block; margin-bottom: 7px; font-weight: 900; }
+    select, input[type="text"], textarea {
+      width: 100%;
+      border: 2px solid #d6deed;
+      border-radius: 14px;
+      background: white;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    select, input[type="text"] { min-height: 51px; padding: 10px 13px; }
+    textarea { min-height: 180px; padding: 14px; resize: vertical; line-height: 1.65; }
+    select:focus, input:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(77,117,255,.12); }
+    .help { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
+
+    .choice-section + .choice-section { margin-top: 24px; }
+    .choice-title { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 9px; font-weight: 900; }
+    .required { color: var(--danger); font-size: .85rem; }
+    .character-part {
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid #d8e2f2;
+      border-radius: 21px;
+      background: #fbfcff;
+    }
+    .part-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .part-head h3 { margin: 0; font-size: 1.3rem; }
+    .part-goal {
+      padding: 5px 10px;
+      border: 1px solid #f0c873;
+      border-radius: 999px;
+      background: #fff7dc;
+      color: #9a6500;
+      font-size: .78rem;
+      font-weight: 900;
+    }
+    .part-description { margin: 0 0 18px; color: var(--muted); font-size: .93rem; }
+    .name-builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .name-column, .setting-column { min-width: 0; }
+    .name-column h4, .setting-column h4 { margin: 0 0 10px; font-size: 1rem; }
+    .direct-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .direct-label { color: #08775d; font-size: .82rem; font-weight: 900; white-space: nowrap; }
+    .compact-input { min-height: 42px !important; padding: 8px 10px !important; font-size: .9rem; }
+    .mini-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .mini-cards .choice-card { min-height: 40px; padding: 7px 6px; font-size: .84rem; }
+    .character-name-result, .character-summary {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid #a9ded4;
+      border-radius: 15px;
+      background: #f2fbf8;
+    }
+    .result-line { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .result-label { color: #08775d; font-weight: 900; }
+    #characterNamePreview { color: var(--blue-dark); font-size: 1.08rem; font-weight: 900; }
+    .result-example { margin: 5px 0 0; color: var(--muted); font-size: .86rem; }
+    .settings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 14px; }
+    .setting-column .cards { gap: 7px; }
+    .setting-column .choice-card { min-height: 40px; padding: 7px 10px; font-size: .84rem; }
+    .setting-column .custom-input { max-width: none; min-height: 42px; margin-top: 8px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 14px; margin: 0; }
+    .summary-grid div { display: grid; grid-template-columns: 58px 1fr; gap: 6px; }
+    .summary-grid dt { color: #08775d; font-weight: 900; }
+    .summary-grid dd { margin: 0; color: #60708c; font-weight: 700; }
+    .cards { display: flex; flex-wrap: wrap; gap: 9px; }
+    .choice-card {
+      min-height: 46px;
+      padding: 9px 15px;
+      border: 2px solid #d9e1ef;
+      border-radius: 14px;
+      background: #fff;
+      color: #384560;
+      font-weight: 800;
+      transition: transform .15s, border-color .15s, background .15s, box-shadow .15s;
+    }
+    .choice-card:hover { transform: translateY(-2px); border-color: #9bb0ff; }
+    .choice-card.selected {
+      border-color: var(--blue);
+      background: #eaf0ff;
+      color: var(--blue-dark);
+      box-shadow: 0 5px 13px rgba(77,117,255,.16);
+    }
+    .custom-input { display: none; margin-top: 10px; max-width: 520px; }
+    .custom-input.visible { display: block; }
+
+    .tier-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .tier-card {
+      min-height: 132px;
+      padding: 16px;
+      border: 3px solid transparent;
+      border-radius: 20px;
+      text-align: left;
+      color: var(--ink);
+      background: #f3f5fa;
+    }
+    .tier-card strong { display: block; font-size: 1.18rem; line-height: 1.3; margin-bottom: 9px; }
+    .tier-card.selected { border-color: var(--blue); box-shadow: 0 8px 17px rgba(77,117,255,.15); }
+    .tier-card[data-value="S"] { background: #ffe3e9; }
+    .tier-card[data-value="A"] { background: #fff0c7; }
+    .tier-card[data-value="B"] { background: #dff5e9; }
+    .tier-card[data-value="C"] { background: #e5edff; }
+    #generatedPrompt { min-height: 430px; }
+
+    .prompt-toolbar, .action-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 13px; }
+    .primary-btn, .secondary-btn, .save-btn {
+      min-height: 50px;
+      padding: 11px 19px;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 900;
+    }
+    .primary-btn, .save-btn { background: var(--blue); color: white; box-shadow: 0 7px 15px rgba(77,117,255,.25); }
+    .primary-btn:hover, .save-btn:hover { background: var(--blue-dark); }
+    .secondary-btn { border: 2px solid #d3dceb; background: white; color: #3b4965; }
+    .save-btn { width: 100%; min-height: 62px; font-size: 1.15rem; }
+    .mini-status { min-height: 26px; margin-top: 9px; color: var(--muted); font-weight: 800; }
+    .mini-status.error { color: var(--danger); }
+    .mini-status.success { color: var(--success); }
+
+    .checklist { display: grid; gap: 10px; margin: 18px 0; }
+    .check-item {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfcff;
+      font-weight: 750;
+    }
+    .check-item input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--blue); }
+    .privacy-check { border: 2px solid #f1b04a; background: #fff8df; }
+
+    .save-result { display: none; margin-top: 15px; padding: 23px; border-radius: 18px; text-align: center; }
+    .save-result.show { display: block; }
+    .save-result.success { background: #dcf7e9; color: #126b4b; }
+    .save-result.error { background: #ffe5ea; color: #a72942; }
+    .save-result strong { display: block; font-size: 1.55rem; }
+
+    .preview-card { margin-top: 20px; padding: 22px; border-radius: 22px; background: linear-gradient(135deg, #eaf1ff, #f4edff); }
+    .preview-card h3 { margin-top: 0; }
+    .preview-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; padding: 0; list-style: none; }
+    .preview-list li { padding: 11px; border-radius: 12px; background: rgba(255,255,255,.72); font-weight: 800; }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+    @media (max-width: 780px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .step, .student-panel { padding: 21px; border-radius: 21px; }
+      .hero::after { display: none; }
+      .mission-grid, .selection-grid, .tier-grid, .preview-list, .name-builder-grid, .settings-grid, .summary-grid { grid-template-columns: 1fr; }
+      .progress a span { display: none; }
+      .progress a { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>AI로 게임 캐릭터<br>티어스토리 만들기</h1>
+      <p class="subtitle">카드를 고르고, 좋은 프롬프트로 원하는 결과물을 만들어 봐요</p>
+      <div class="mission-grid">
+        <div class="mission-item"><b>오늘의 미션</b>카드를 골라 캐릭터를 만들고, 생각친구 AI로 짧은 티어스토리를 완성해요.</div>
+        <div class="mission-item"><b>학습목표</b>필요한 정보와 조건을 골라 좋은 프롬프트를 구성할 수 있어요.</div>
+        <div class="mission-item"><b>오늘의 결과물</b>캐릭터 티어스토리 정확히 5문장!</div>
+      </div>
+    </header>
+
+    <section class="student-panel" id="studentSelection">
+      <h2>먼저 학년과 이름을 선택하세요</h2>
+      <div class="selection-grid">
+        <div class="field">
+          <label for="gradeSelect">학년</label>
+          <select id="gradeSelect"><option value="">학년을 선택하세요</option></select>
+        </div>
+        <div class="field">
+          <label for="studentSelect">이름</label>
+          <select id="studentSelect" disabled><option value="">학년을 먼저 선택하세요</option></select>
+        </div>
+      </div>
+      <div id="studentStatus" class="mini-status" aria-live="polite"></div>
+    </section>
+
+    <nav class="progress-wrap" aria-label="수업 진행 단계">
+      <div class="progress" id="progressNav"></div>
+    </nav>
+
+    <section class="step" id="step1" data-step="1">
+      <div class="step-head">
+        <div class="step-number">1</div>
+        <div><h2>캐릭터 만들기</h2><p class="step-lead">이름을 만든 뒤, 캐릭터의 특징을 카드로 설정해요.</p></div>
+      </div>
+
+      <div class="character-part">
+        <div class="part-head">
+          <h3>🎮 1단계. 캐릭터 이름 정하기</h3>
+          <span class="part-goal">목표: 이름 확정</span>
+        </div>
+        <p class="part-description">카드를 누르거나 직접 입력해 이름을 빠르게 정해요. 마음에 드는 조합을 선택해 보세요.</p>
+        <div class="name-builder-grid" id="nameBuilder"></div>
+        <div class="character-name-result">
+          <div class="result-line">
+            <span class="result-label">내 캐릭터 이름</span>
+            <span id="characterNamePreview">아직 이름이 완성되지 않았어요</span>
+          </div>
+          <p class="result-example">예: 번개 + 고양이 + 루미 → 번개고양이 루미</p>
+        </div>
+        <input id="characterName" type="hidden">
+      </div>
+
+      <div class="character-part">
+        <div class="part-head">
+          <h3>🧩 2단계. 캐릭터 설정하기</h3>
+          <span class="part-goal">목표: 설정 완성</span>
+        </div>
+        <p class="part-description">캐릭터를 잘 그리도록 종류, 속성, 능력, 약점, 성격, 사건을 선택하거나 직접 입력해요.</p>
+        <div class="settings-grid" id="characterChoices"></div>
+        <div class="character-summary">
+          <dl class="summary-grid" id="characterSummary"></dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="step2" data-step="2">
+      <div class="step-head">
+        <div class="step-number">2</div>
+        <div><h2>티어 정하기</h2><p class="step-lead">강점과 약점을 함께 생각하면 더 설득력 있는 티어가 돼요.</p></div>
+      </div>
+      <div class="tier-grid" id="tierCards">
+        <button type="button" class="tier-card" data-value="S"><strong>아주 강한 캐릭터</strong>강력한 능력이 있지만 약점도 꼭 있어요.</button>
+        <button type="button" class="tier-card" data-value="A"><strong>균형이 좋은 캐릭터</strong>강점이 뚜렷하고 약점과 균형이 잘 맞아요.</button>
+        <button type="button" class="tier-card" data-value="B"><strong>상황에 따라 강한 캐릭터</strong>특정 장소나 상황에서 능력을 잘 발휘해요.</button>
+        <button type="button" class="tier-card" data-value="C"><strong>특별한 장점이 있는 캐릭터</strong>힘은 약해도 자신만의 재미있는 장점이 있어요.</button>
+      </div>
+      <div class="choice-section">
+        <div class="choice-title">왜 이 티어인가요?</div>
+        <div class="cards" id="reasonCards"></div>
+        <input id="tierReason" class="custom-input visible" type="text" maxlength="100" placeholder="추천 문장을 고르거나 내 생각을 한 줄로 써 보세요.">
+      </div>
+    </section>
+
+    <section class="step" id="step3" data-step="3">
+      <div class="step-head">
+        <div class="step-number">3</div>
+        <div><h2>AI에게 줄 프롬프트 만들기</h2><p class="step-lead">좋은 프롬프트에는 캐릭터 정보, 조건, 결과물 형식이 들어가요.</p></div>
+      </div>
+      <label for="generatedPrompt">자동으로 만든 프롬프트</label>
+      <textarea id="generatedPrompt" spellcheck="false"></textarea>
+      <div class="prompt-toolbar">
+        <button type="button" class="primary-btn" id="copyPromptBtn">📋 프롬프트 복사하기</button>
+        <button type="button" class="secondary-btn" id="openChatbotBtn">🚀 생각친구 AI 열기</button>
+      </div>
+      <div id="copyStatus" class="mini-status" aria-live="polite"></div>
+    </section>
+
+    <section class="step" id="step4" data-step="4">
+      <div class="step-head">
+        <div class="step-number">4</div>
+        <div><h2>생각친구 AI에서 티어스토리 만들기</h2><p class="step-lead">복사 → 새 탭 열기 → 붙여넣기 → 결과 가져오기!</p></div>
+      </div>
+      <div class="notice">
+        <b>①</b> 프롬프트 복사하기를 누르세요. &nbsp;
+        <b>②</b> 생각친구 AI를 새 탭에서 여세요. &nbsp;
+        <b>③</b> 복사한 프롬프트를 붙여넣으세요. &nbsp;
+        <b>④</b> AI가 만든 티어스토리를 다시 이 페이지에 붙여넣으세요.
+      </div>
+      <div class="choice-section">
+        <label for="aiOutput">AI가 만든 티어스토리 붙여넣기</label>
+        <textarea id="aiOutput" placeholder="생각친구 AI가 만든 5문장을 여기에 붙여넣으세요."></textarea>
+      </div>
+    </section>
+
+    <section class="step" id="step5" data-step="5">
+      <div class="step-head">
+        <div class="step-number">5</div>
+        <div><h2>AI 결과 점검하고 고치기</h2><p class="step-lead">AI가 만든 글이 무조건 정답은 아니에요.</p></div>
+      </div>
+      <div class="notice warn">내가 원하는 캐릭터와 다르면 다시 요청하거나 직접 고칠 수 있어요.</div>
+      <div class="choice-section">
+        <label for="finalStory">내가 고친 최종 티어스토리</label>
+        <textarea id="finalStory" placeholder="AI 결과를 확인하고 내 마음에 들게 고쳐 보세요."></textarea>
+      </div>
+      <div class="checklist">
+        <label class="check-item"><input type="checkbox" class="recommend-check"> <span>내 캐릭터 이름이 들어갔나요?</span></label>
+        <label class="check-item"><input type="checkbox" class="recommend-check"> <span>능력이 잘 드러났나요?</span></label>
+        <label class="check-item"><input type="checkbox" class="recommend-check"> <span>약점이 빠지지 않았나요?</span></label>
+        <label class="check-item"><input type="checkbox" class="recommend-check"> <span>티어 이유가 설명되었나요?</span></label>
+        <label class="check-item"><input type="checkbox" class="recommend-check"> <span>너무 길거나 어려운 문장은 없나요?</span></label>
+        <label class="check-item privacy-check"><input type="checkbox" id="privacyCheck"> <span>개인정보를 쓰지 않았나요? <span class="required">저장하려면 꼭 체크</span></span></label>
+      </div>
+      <div class="notice good">개인정보는 입력하지 않아요. 이름, 전화번호, 주소 같은 정보는 이야기 속에도 쓰지 않아요.</div>
+    </section>
+
+    <section class="step" id="step6" data-step="6">
+      <div class="step-head">
+        <div class="step-number">6</div>
+        <div><h2>저장하기</h2><p class="step-lead">오늘 저장한 내용은 다음 시간 캐릭터 이미지 만들기에 사용해요.</p></div>
+      </div>
+      <button type="button" class="save-btn" id="saveBtn">💾 내 티어스토리 저장하기</button>
+      <div id="saveResult" class="save-result" aria-live="assertive"></div>
+
+      <div class="preview-card">
+        <h3>🎨 다음 시간에는 캐릭터 이미지를 만들어요</h3>
+        <p>오늘 저장한 캐릭터 설정과 티어스토리를 다시 불러와서, AI 이미지 생성용 프롬프트로 바꾸어 봅니다.</p>
+        <b>미리 생각해 볼 것</b>
+        <ul class="preview-list">
+          <li>🎨 캐릭터의 색깔</li><li>😊 표정</li><li>🦸 자세</li>
+          <li>👑 옷이나 장식</li><li>🏞️ 배경</li><li>🖼️ 이미지 스타일</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────
+    // 학교별 복사본에서 아래 3개 값만 바꾸세요.
+    // ─────────────────────────────────────────────────────────────
+    const SCHOOL_CODE = "yeoryang";
+    const SCHOOL_NAME = "여량초등학교";
+    const GRADE_OPTIONS = ["5학년"];
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdGFYCTl6Hi69V1Eb7rOzPdVgS8vDIVdD6B_YCIAPHOtJ7_OLQoVBgd_Quwdipykkp/exec";
+
+    const THINKING_FRIEND_URL = "https://saenggak-chingu-ai.netlify.app/";
+    const DRAFT_KEY = `tier-story-draft:${SCHOOL_CODE}`;
+
+    const nameGroups = [
+      { key: "prefix", title: "① 속성 카드", placeholder: "예: 달빛", options: ["번개", "얼음", "불꽃", "그림자", "바람", "별빛"] },
+      { key: "subject", title: "② 대상 카드", placeholder: "예: 늑대", options: ["고양이", "여우", "로봇", "용", "토끼", "펭귄"] },
+      { key: "suffix", title: "③ 이름 끝말 카드", placeholder: "예: 하루", options: ["루미", "코코", "타로", "미루", "제트", "라온"] }
+    ];
+
+    const choiceGroups = [
+      { key: "character_type", title: "🐾 종류 카드", placeholder: "예: 고양이 기사", options: ["고양이", "용", "로봇", "슬라임", "기사", "마법사", "여우", "유령"] },
+      { key: "attribute", title: "🎨 대표 속성 카드", placeholder: "예: 번개와 바람", options: ["불", "물", "번개", "얼음", "바람", "빛", "어둠", "자연"] },
+      { key: "ability", title: "⚡ 능력 카드", placeholder: "예: 순간이동", options: ["빠른 이동", "순간이동", "방어막", "회복", "불꽃 공격", "얼음 감옥", "번개 공격", "친구 보호"] },
+      { key: "weakness", title: "🛡️ 약점 카드", placeholder: "예: 물에 닿으면 약해짐", options: ["물에 약함", "느림", "겁이 많음", "오래 싸우면 지침", "어두운 곳을 무서워함", "공격 후 잠깐 멈춤", "혼자 있으면 약해짐"] },
+      { key: "personality", title: "😊 성격 카드", placeholder: "예: 차분하고 다정함", options: ["용감한", "장난꾸러기", "조용한", "똑똑한", "친절한", "고집 센", "겁이 많은", "자신감 있는"] },
+      { key: "event", title: "📖 사건 카드", placeholder: "예: 잃어버린 보물을 찾음", options: ["친구를 구함", "보물을 지킴", "대회에 나감", "실수로 사고를 침", "마을을 지킴", "새로운 힘을 발견함", "라이벌을 만남"] }
+    ];
+
+    const reasonOptions = [
+      "능력이 강하지만 약점이 분명해서 이 티어예요.",
+      "특정 상황에서는 강하지만 모든 상황에서 강하지는 않아요.",
+      "친구를 도울 수 있지만 혼자서는 약해요.",
+      "빠르지만 오래 싸우기 어려워요.",
+      "방어는 좋지만 공격이 약해요."
+    ];
+
+    const state = {
+      grade: "",
+      student_id: "",
+      tier: "",
+      nameParts: Object.fromEntries(nameGroups.map(group => [group.key, ""])),
+      choices: Object.fromEntries(choiceGroups.map(group => [group.key, ""]))
+    };
+
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => [...document.querySelectorAll(selector)];
+
+    function isConfigured() {
+      return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(GAS_WEB_APP_URL);
+    }
+
+    function buildNameUi() {
+      const holder = $("#nameBuilder");
+      nameGroups.forEach(group => {
+        const column = document.createElement("div");
+        column.className = "name-column";
+        column.dataset.nameGroup = group.key;
+        column.innerHTML = `
+          <h4>${group.title}</h4>
+          <div class="direct-row">
+            <span class="direct-label">직접 입력</span>
+            <input type="text" class="compact-input name-input" maxlength="20" placeholder="${group.placeholder}">
+          </div>
+          <div class="mini-cards">
+            ${group.options.map(option => `<button type="button" class="choice-card" data-value="${option}">${option}</button>`).join("")}
+          </div>
+        `;
+        holder.appendChild(column);
+
+        const input = column.querySelector(".name-input");
+        column.querySelectorAll(".choice-card").forEach(button => {
+          button.addEventListener("click", () => {
+            column.querySelectorAll(".choice-card").forEach(card => card.classList.remove("selected"));
+            button.classList.add("selected");
+            input.value = button.dataset.value;
+            state.nameParts[group.key] = button.dataset.value;
+            updateCharacterName();
+          });
+        });
+        input.addEventListener("input", event => {
+          state.nameParts[group.key] = event.target.value.trim();
+          column.querySelectorAll(".choice-card").forEach(card =>
+            card.classList.toggle("selected", card.dataset.value === state.nameParts[group.key])
+          );
+          updateCharacterName();
+        });
+      });
+    }
+
+    function updateCharacterName() {
+      const { prefix, subject, suffix } = state.nameParts;
+      const completedName = prefix && subject && suffix ? `${prefix}${subject} ${suffix}` : "";
+      $("#characterName").value = completedName;
+      $("#characterNamePreview").textContent = completedName || "아직 이름이 완성되지 않았어요";
+      updateAll();
+    }
+
+    function buildChoiceUi() {
+      const holder = $("#characterChoices");
+      choiceGroups.forEach(group => {
+        const section = document.createElement("div");
+        section.className = "setting-column";
+        section.dataset.group = group.key;
+        section.innerHTML = `
+          <h4>${group.title}</h4>
+          <div class="direct-row">
+            <span class="direct-label">직접 입력</span>
+            <input type="text" class="compact-input setting-input" maxlength="60" placeholder="${group.placeholder}">
+          </div>
+          <div class="cards">
+            ${group.options.map(option => `<button type="button" class="choice-card" data-value="${option}">${option}</button>`).join("")}
+          </div>
+        `;
+        holder.appendChild(section);
+
+        const customInput = section.querySelector(".setting-input");
+        section.querySelectorAll(".choice-card").forEach(button => {
+          button.addEventListener("click", () => {
+            section.querySelectorAll(".choice-card").forEach(card => card.classList.remove("selected"));
+            button.classList.add("selected");
+            customInput.value = button.dataset.value;
+            state.choices[group.key] = button.dataset.value;
+            updateAll();
+          });
+        });
+
+        customInput.addEventListener("input", event => {
+          state.choices[group.key] = event.target.value.trim();
+          section.querySelectorAll(".choice-card").forEach(card =>
+            card.classList.toggle("selected", card.dataset.value === state.choices[group.key])
+          );
+          updateAll();
+        });
+      });
+      updateCharacterSummary();
+    }
+
+    function updateCharacterSummary() {
+      const labels = {
+        character_type: "종류", attribute: "속성", ability: "능력",
+        weakness: "약점", personality: "성격", event: "사건"
+      };
+      $("#characterSummary").innerHTML = choiceGroups.map(group => `
+        <div><dt>${labels[group.key]}</dt><dd>${escapeHtml(state.choices[group.key] || "아직 선택하지 않았어요")}</dd></div>
+      `).join("");
+    }
+
+    function buildReasonCards() {
+      $("#reasonCards").innerHTML = reasonOptions.map(reason =>
+        `<button type="button" class="choice-card" data-value="${reason}">${reason}</button>`
+      ).join("");
+      $$("#reasonCards .choice-card").forEach(button => {
+        button.addEventListener("click", () => {
+          $$("#reasonCards .choice-card").forEach(card => card.classList.remove("selected"));
+          button.classList.add("selected");
+          $("#tierReason").value = button.dataset.value;
+          updateAll();
+        });
+      });
+    }
+
+    function buildProgress() {
+      const names = ["캐릭터", "티어", "프롬프트", "AI", "점검", "저장"];
+      $("#progressNav").innerHTML = names.map((name, index) =>
+        `<a href="#step${index + 1}" data-progress="${index + 1}">${index + 1}<span> ${name}</span></a>`
+      ).join("");
+    }
+
+    function populateGrades() {
+      $("#gradeSelect").innerHTML = `<option value="">학년을 선택하세요</option>` +
+        GRADE_OPTIONS.map(grade => `<option value="${grade}">${grade}</option>`).join("");
+    }
+
+    async function loadStudents() {
+      state.grade = $("#gradeSelect").value;
+      state.student_id = "";
+      const select = $("#studentSelect");
+      select.disabled = true;
+      select.innerHTML = `<option value="">이름을 불러오는 중...</option>`;
+      setStatus("#studentStatus", "", "");
+
+      if (!state.grade) {
+        select.innerHTML = `<option value="">학년을 먼저 선택하세요</option>`;
+        updateAll();
+        return;
+      }
+      if (!isConfigured()) {
+        select.innerHTML = `<option value="">Apps Script 주소 설정이 필요합니다</option>`;
+        setStatus("#studentStatus", "선생님이 Apps Script 웹 앱 주소를 설정해 주세요.", "error");
+        updateAll();
+        return;
+      }
+
+      try {
+        const url = new URL(GAS_WEB_APP_URL);
+        url.searchParams.set("action", "listStudents");
+        url.searchParams.set("school_code", SCHOOL_CODE);
+        url.searchParams.set("grade", state.grade);
+        const response = await fetch(url.toString(), { method: "GET", redirect: "follow" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        const students = Array.isArray(result) ? result : (result.data || []);
+        select.innerHTML = `<option value="">내 이름을 선택하세요</option>` +
+          students.map(student => `<option value="${escapeHtml(student.student_id)}">${escapeHtml(student.display_name)}</option>`).join("");
+        select.disabled = false;
+        setStatus("#studentStatus", students.length ? `${students.length}명의 이름을 불러왔어요.` : "이 학년에 등록된 학생이 없어요.", students.length ? "success" : "error");
+      } catch (error) {
+        select.innerHTML = `<option value="">이름을 불러오지 못했습니다</option>`;
+        setStatus("#studentStatus", "학생 명단을 불러오지 못했습니다. 선생님께 알려 주세요.", "error");
+        console.error(error);
+      }
+      updateAll();
+    }
+
+    function makePrompt() {
+      const value = key => state.choices[key] || "(아직 선택하지 않음)";
+      const tierNames = {
+        S: "아주 강한 캐릭터",
+        A: "균형이 좋은 캐릭터",
+        B: "상황에 따라 강한 캐릭터",
+        C: "특별한 장점이 있는 캐릭터"
+      };
+      return `너는 초등학생 게임 캐릭터 설정을 도와주는 작가야.
+아래 캐릭터 정보를 바탕으로 짧은 티어스토리를 만들어줘.
+
+캐릭터 이름: ${$("#characterName").value.trim() || "(아직 입력하지 않음)"}
+캐릭터 종류: ${value("character_type")}
+속성: ${value("attribute")}
+성격: ${value("personality")}
+능력: ${value("ability")}
+약점: ${value("weakness")}
+티어: ${tierNames[state.tier] || "(아직 선택하지 않음)"}
+티어 이유: ${$("#tierReason").value.trim() || "(아직 입력하지 않음)"}
+이야기 사건: ${value("event")}
+
+조건:
+1. 초등학생이 이해하기 쉽게 써줘.
+2. 정확히 5문장으로 써줘.
+3. 왜 이 티어인지 이유가 드러나게 써줘.
+4. 능력뿐 아니라 약점도 꼭 넣어줘.
+5. 너무 잔인하거나 무서운 내용은 빼줘.
+6. 게임 캐릭터 소개처럼 재미있게 써줘.`;
+    }
+
+    function buildPayload() {
+      return {
+        action: "saveCharacter",
+        school_code: SCHOOL_CODE,
+        school_name: SCHOOL_NAME,
+        grade: state.grade,
+        student_id: state.student_id,
+        character_name: $("#characterName").value.trim(),
+        character_type: state.choices.character_type,
+        attribute: state.choices.attribute,
+        personality: state.choices.personality,
+        ability: state.choices.ability,
+        weakness: state.choices.weakness,
+        tier: state.tier,
+        tier_reason: $("#tierReason").value.trim(),
+        event: state.choices.event,
+        generated_prompt: $("#generatedPrompt").value,
+        ai_output: $("#aiOutput").value.trim(),
+        final_story: $("#finalStory").value.trim(),
+        self_check_privacy: $("#privacyCheck").checked
+      };
+    }
+
+    function updateAll({ preservePrompt = false } = {}) {
+      if (!preservePrompt) $("#generatedPrompt").value = makePrompt();
+      updateCharacterSummary();
+      updateProgress();
+      saveDraft();
+    }
+
+    function updateProgress() {
+      const completed = [
+        Boolean($("#characterName").value.trim() && Object.values(state.choices).every(Boolean)),
+        Boolean(state.tier && $("#tierReason").value.trim()),
+        Boolean($("#generatedPrompt").value.trim()),
+        Boolean($("#aiOutput").value.trim()),
+        Boolean($("#finalStory").value.trim() && $("#privacyCheck").checked),
+        $("#saveResult").classList.contains("success")
+      ];
+      let firstIncomplete = completed.findIndex(done => !done) + 1;
+      if (firstIncomplete === 0) firstIncomplete = 6;
+      $$("[data-progress]").forEach(link => {
+        const index = Number(link.dataset.progress);
+        link.classList.toggle("done", completed[index - 1]);
+        link.classList.toggle("active", index === firstIncomplete);
+      });
+    }
+
+    function saveDraft() {
+      const draft = {
+        grade: state.grade,
+        student_id: state.student_id,
+        tier: state.tier,
+        name_parts: state.nameParts,
+        choices: state.choices,
+        character_name: $("#characterName").value,
+        tier_reason: $("#tierReason").value,
+        generated_prompt: $("#generatedPrompt").value,
+        ai_output: $("#aiOutput").value,
+        final_story: $("#finalStory").value,
+        privacy: $("#privacyCheck").checked
+      };
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (error) { console.warn(error); }
+    }
+
+    function restoreDraft() {
+      let draft;
+      try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch (error) { return; }
+      if (!draft) return;
+      $("#characterName").value = draft.character_name || "";
+      $("#tierReason").value = draft.tier_reason || "";
+      $("#aiOutput").value = draft.ai_output || "";
+      $("#finalStory").value = draft.final_story || "";
+      $("#privacyCheck").checked = Boolean(draft.privacy);
+      state.tier = draft.tier || "";
+      state.nameParts = { ...state.nameParts, ...(draft.name_parts || {}) };
+      state.choices = { ...state.choices, ...(draft.choices || {}) };
+
+      if (state.tier) $(`#tierCards [data-value="${CSS.escape(state.tier)}"]`)?.classList.add("selected");
+      nameGroups.forEach(group => {
+        const column = document.querySelector(`[data-name-group="${group.key}"]`);
+        const saved = state.nameParts[group.key];
+        if (!saved) return;
+        const input = column.querySelector(".name-input");
+        input.value = saved;
+        column.querySelectorAll(".choice-card").forEach(card =>
+          card.classList.toggle("selected", card.dataset.value === saved)
+        );
+      });
+      choiceGroups.forEach(group => {
+        const section = document.querySelector(`[data-group="${group.key}"]`);
+        const saved = state.choices[group.key];
+        if (!saved) return;
+        section.querySelector(".setting-input").value = saved;
+        const preset = [...section.querySelectorAll(".choice-card")].find(card => card.dataset.value === saved);
+        if (preset) {
+          preset.classList.add("selected");
+        }
+      });
+      $("#characterName").value = draft.character_name || "";
+      $("#characterNamePreview").textContent = draft.character_name || "아직 이름이 완성되지 않았어요";
+      const reasonCard = [...$$("#reasonCards .choice-card")].find(card => card.dataset.value === draft.tier_reason);
+      reasonCard?.classList.add("selected");
+      $("#generatedPrompt").value = draft.generated_prompt || makePrompt();
+    }
+
+    async function copyPrompt() {
+      const text = $("#generatedPrompt").value;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("#copyStatus", "프롬프트를 복사했어요! 이제 생각친구 AI를 열어 보세요.", "success");
+      } catch (error) {
+        $("#generatedPrompt").focus();
+        $("#generatedPrompt").select();
+        document.execCommand("copy");
+        setStatus("#copyStatus", "프롬프트를 복사했어요!", "success");
+      }
+    }
+
+    function validateBeforeSave() {
+      const checks = [
+        [state.grade, "학년을 선택해 주세요.", "#studentSelection"],
+        [state.student_id, "이름을 선택해 주세요.", "#studentSelection"],
+        [$("#characterName").value.trim(), "캐릭터 이름을 입력해 주세요.", "#step1"],
+        [state.tier, "티어를 선택해 주세요.", "#step2"],
+        [$("#finalStory").value.trim(), "최종 티어스토리를 입력해 주세요.", "#step5"],
+        [$("#privacyCheck").checked, "개인정보 확인 항목을 꼭 체크해 주세요.", "#step5"]
+      ];
+      const failed = checks.find(([condition]) => !condition);
+      if (failed) {
+        showSaveResult(false, failed[1]);
+        document.querySelector(failed[2]).scrollIntoView({ behavior: "smooth", block: "start" });
+        return false;
+      }
+      if (!isConfigured()) {
+        showSaveResult(false, "Apps Script 웹 앱 주소가 아직 설정되지 않았습니다. 선생님께 알려 주세요.");
+        return false;
+      }
+      return true;
+    }
+
+    async function saveCharacter() {
+      if (!validateBeforeSave()) return;
+      const button = $("#saveBtn");
+      button.disabled = true;
+      button.textContent = "저장 중...";
+      $("#saveResult").className = "save-result";
+
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(buildPayload())
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "저장 실패");
+        showSaveResult(true, "저장되었습니다!|다음 시간에는 같은 학교 페이지에서 학년과 이름을 선택하면 오늘 만든 캐릭터를 다시 불러올 수 있어요.");
+        try { localStorage.removeItem(DRAFT_KEY); } catch (error) {}
+      } catch (error) {
+        showSaveResult(false, "저장에 실패했습니다. 입력한 내용은 이 브라우저에 남아 있어요. 선생님께 알려 주세요.");
+        saveDraft();
+        console.error(error);
+      } finally {
+        button.disabled = false;
+        button.textContent = "💾 내 티어스토리 저장하기";
+        updateProgress();
+      }
+    }
+
+    function showSaveResult(success, message) {
+      const result = $("#saveResult");
+      const [title, detail = ""] = message.split("|");
+      result.className = `save-result show ${success ? "success" : "error"}`;
+      result.innerHTML = `<strong>${escapeHtml(title)}</strong>${detail ? `<span>${escapeHtml(detail)}</span>` : ""}`;
+    }
+
+    // 다음 차시에서 사용할 불러오기 함수입니다.
+    // school_code + grade + student_id 조합으로 최신 캐릭터를 가져옵니다.
+    async function loadCharacter(selectedGrade = state.grade, studentId = state.student_id) {
+      if (!isConfigured()) return { success: false, message: "Apps Script URL이 설정되지 않았습니다." };
+      if (!selectedGrade || !studentId) return { success: false, message: "학년과 학생을 먼저 선택해 주세요." };
+      const url = new URL(GAS_WEB_APP_URL);
+      url.searchParams.set("action", "loadCharacter");
+      url.searchParams.set("school_code", SCHOOL_CODE);
+      url.searchParams.set("grade", selectedGrade);
+      url.searchParams.set("student_id", studentId);
+      const response = await fetch(url.toString(), { method: "GET", redirect: "follow" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    }
+
+    function setStatus(selector, message, type) {
+      const element = $(selector);
+      element.textContent = message;
+      element.className = `mini-status${type ? ` ${type}` : ""}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[char]);
+    }
+
+    function bindEvents() {
+      $("#gradeSelect").addEventListener("change", loadStudents);
+      $("#studentSelect").addEventListener("change", event => {
+        state.student_id = event.target.value;
+        updateAll();
+      });
+      $("#tierReason").addEventListener("input", () => {
+        $$("#reasonCards .choice-card").forEach(card => card.classList.toggle("selected", card.dataset.value === $("#tierReason").value));
+        updateAll();
+      });
+      $$("#tierCards .tier-card").forEach(button => {
+        button.addEventListener("click", () => {
+          $$("#tierCards .tier-card").forEach(card => card.classList.remove("selected"));
+          button.classList.add("selected");
+          state.tier = button.dataset.value;
+          updateAll();
+        });
+      });
+      $("#generatedPrompt").addEventListener("input", () => updateAll({ preservePrompt: true }));
+      $("#aiOutput").addEventListener("input", event => {
+        const finalStory = $("#finalStory");
+        const previousAi = finalStory.dataset.lastAutoValue || "";
+        if (!finalStory.value.trim() || finalStory.value === previousAi) {
+          finalStory.value = event.target.value;
+          finalStory.dataset.lastAutoValue = event.target.value;
+        }
+        updateAll({ preservePrompt: true });
+      });
+      $("#finalStory").addEventListener("input", () => updateAll({ preservePrompt: true }));
+      $("#privacyCheck").addEventListener("change", () => updateAll({ preservePrompt: true }));
+      $$(".recommend-check").forEach(check => check.addEventListener("change", saveDraft));
+      $("#copyPromptBtn").addEventListener("click", copyPrompt);
+      $("#openChatbotBtn").addEventListener("click", () => window.open(THINKING_FRIEND_URL, "_blank", "noopener,noreferrer"));
+      $("#saveBtn").addEventListener("click", saveCharacter);
+    }
+
+    function init() {
+      buildProgress();
+      populateGrades();
+      buildNameUi();
+      buildChoiceUi();
+      buildReasonCards();
+      bindEvents();
+      restoreDraft();
+      updateAll({ preservePrompt: Boolean($("#generatedPrompt").value) });
+    }
+
+    init();
+  </script>
+</body>
+</html>
