@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172554">
+  <title>5학년 1반 5회차 - 해킹된 게임 서버를 복구하라!</title>
+  <link rel="stylesheet" href="../lesson05.css">
+</head>
+<body data-class-id="class1" data-mode="80">
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">레벨업! AI 게임 스튜디오 · 5회차 · 80분</p>
+      <h1>해킹된 게임 서버를 복구하라!</h1>
+      <p class="subtitle">보안 미션 4개를 해결하고 복구 코드 SAFE를 완성하세요.</p>
+      <div class="mission-track" aria-label="오늘 활동 순서">
+        <span>캐릭터 불러오기</span><span>미션 1~4</span><span>SAFE 완성</span><span>보안 가이드</span><span>저장</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell" id="main">
+    <section class="panel" id="load">
+      <p class="step">준비 · 캐릭터 접속</p>
+      <h2>내 캐릭터 불러오기</h2>
+      <p class="hint">지난 시간에 저장한 캐릭터를 불러오면 서버 복구 미션이 열립니다.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="studentName">1. 내 이름을 선택하세요.</label>
+          <select id="studentName"><option value="">학생 이름 선택</option></select>
+        </div>
+        <div class="field">
+          <span class="field-label">2. 캐릭터 정보를 불러오세요.</span>
+          <button class="btn btn-primary" id="loadCharacter" type="button">내 캐릭터 불러오기</button>
+        </div>
+      </div>
+      <p class="status" id="loadStatus" aria-live="polite">내 이름을 선택한 뒤 불러오기 버튼을 누르세요.</p>
+
+      <article class="character-card" id="characterCard" hidden>
+        <div class="character-visual" id="characterVisual">캐릭터 이미지</div>
+        <div class="character-info">
+          <h3>내 캐릭터 공식 설정</h3>
+          <p><strong>이름</strong> <span id="cardCharacterName"></span></p>
+          <p><strong>능력</strong> <span id="cardPower"></span></p>
+          <p><strong>약점</strong> <span id="cardWeakness"></span></p>
+          <p><strong>성격</strong> <span id="cardPersonality"></span></p>
+          <p><strong>대표 색</strong> <span id="cardColor"></span></p>
+        </div>
+      </article>
+
+      <aside class="briefing compact-briefing">
+        <h3>긴급 상황!</h3>
+        <p>신규 캐릭터 출시 직전, 게임 서버에 가짜 정보가 섞였습니다. 공식 설정과 보안 기준을 이용해 서버를 복구하세요.</p>
+      </aside>
+    </section>
+
+    <section class="panel mission-zone locked" id="missionZone" aria-labelledby="missionTitle">
+      <p class="step">서버 복구 미션 · 4개의 코드 글자</p>
+      <h2 id="missionTitle">보안 탐정 미션 1~4</h2>
+      <p class="hint">각 문제에서 답을 고르고 확인하세요. 정답이면 복구 코드 글자가 하나씩 열립니다.</p>
+
+      <div class="progress-card" aria-live="polite">
+        <div class="progress-copy">
+          <strong>복구 진행률</strong>
+          <span id="missionProgressText">0 / 4 미션 완료</span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="missionProgressBar"></span></div>
+        <div class="code-slots" aria-label="복구 코드">
+          <span class="code-slot" data-code-slot="mission1">?</span>
+          <span class="code-slot" data-code-slot="mission2">?</span>
+          <span class="code-slot" data-code-slot="mission3">?</span>
+          <span class="code-slot" data-code-slot="mission4">?</span>
+        </div>
+      </div>
+
+      <div class="mission-lock-message" id="missionLockMessage">
+        먼저 내 캐릭터를 불러오면 미션을 시작할 수 있습니다.
+      </div>
+
+      <div class="mission-grid">
+        <article class="mission-card" data-mission-card="mission1">
+          <div class="mission-card-head">
+            <span class="mission-number">MISSION 1</span>
+            <span class="mission-code-chip">코드 <b data-inline-code="mission1">?</b></span>
+          </div>
+          <h3>가짜 패치노트 찾기</h3>
+          <p>다음 중 가장 수상한 패치노트는 무엇인가요?</p>
+          <div class="answer-list">
+            <label class="answer-option"><input type="radio" name="mission1" value="A"><span><b>A</b>오늘 오후 3시에 서버 점검이 있습니다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission1" value="B"><span><b>B</b>지금 링크를 누르면 보석 100만 개를 드립니다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission1" value="C"><span><b>C</b>공식 공지는 선생님 안내 페이지에서 확인하세요.</span></label>
+            <label class="answer-option"><input type="radio" name="mission1" value="D"><span><b>D</b>확인된 오류 한 가지를 수정했습니다.</span></label>
+          </div>
+          <button class="btn btn-secondary mission-check" type="button" data-check-mission="mission1">미션 1 정답 확인</button>
+          <p class="mission-feedback" id="mission1Feedback" aria-live="polite">답을 고른 뒤 확인하세요.</p>
+          <div class="sentence-reward" data-sentence-reward="mission1" hidden>
+            <strong data-sentence-reward-title="mission1">코드와 보안 문장 획득!</strong>
+            <p data-security-sentence="mission1"></p>
+          </div>
+        </article>
+
+        <article class="mission-card" data-mission-card="mission2">
+          <div class="mission-card-head">
+            <span class="mission-number">MISSION 2</span>
+            <span class="mission-code-chip">코드 <b data-inline-code="mission2">?</b></span>
+          </div>
+          <h3>수상한 링크 고르기</h3>
+          <p>공식 주소가 <code>play.dongho-game.example</code>일 때, 누르지 말아야 할 주소는 무엇인가요?</p>
+          <div class="answer-list browser-choice-list">
+            <label class="answer-option browser-choice">
+              <input type="radio" name="mission2" value="A">
+              <span class="browser-address"><b class="browser-choice-letter">A</b><span class="browser-security-icon" aria-hidden="true">🔒</span><span class="browser-url"><strong class="browser-domain">play.dongho-game.example</strong><span class="browser-path">/notice</span></span></span>
+            </label>
+            <label class="answer-option browser-choice">
+              <input type="radio" name="mission2" value="B">
+              <span class="browser-address"><b class="browser-choice-letter">B</b><span class="browser-security-icon" aria-hidden="true">🔒</span><span class="browser-url"><strong class="browser-domain">play.dongho-game.example</strong><span class="browser-path">/security</span></span></span>
+            </label>
+            <label class="answer-option browser-choice">
+              <input type="radio" name="mission2" value="C">
+              <span class="browser-address"><b class="browser-choice-letter">C</b><span class="browser-security-icon" aria-hidden="true">🔒</span><span class="browser-url"><strong class="browser-domain">dongho-free-gem.example</strong><span class="browser-path">/click-now</span></span></span>
+            </label>
+            <label class="answer-option browser-choice">
+              <input type="radio" name="mission2" value="D">
+              <span class="browser-address"><b class="browser-choice-letter">D</b><span class="browser-security-icon" aria-hidden="true">🔒</span><span class="browser-url"><strong class="browser-domain">play.dongho-game.example</strong><span class="browser-path">/update</span></span></span>
+            </label>
+          </div>
+          <button class="btn btn-secondary mission-check" type="button" data-check-mission="mission2">미션 2 정답 확인</button>
+          <p class="mission-feedback" id="mission2Feedback" aria-live="polite">주소의 앞부분을 자세히 비교하세요.</p>
+          <div class="sentence-reward" data-sentence-reward="mission2" hidden>
+            <strong data-sentence-reward-title="mission2">코드와 보안 문장 획득!</strong>
+            <p data-security-sentence="mission2"></p>
+          </div>
+        </article>
+
+        <section class="criteria-panel criteria-gate locked" id="criteriaGate">
+          <div class="criteria-head">
+            <div>
+              <p class="mission-number">READING CHECK</p>
+              <h3>가짜 정보 판별 기준</h3>
+            </div>
+            <strong id="criteriaProgress">0 / 5 확인</strong>
+          </div>
+          <p>배운 내용을 정리합니다.</p>
+          <p class="criteria-lock-message" id="criteriaLockMessage">미션 1과 미션 2를 먼저 완료하세요.</p>
+          <div class="criteria-grid">
+            <button class="criteria-card" type="button" data-criteria="source" aria-expanded="false">
+              <b>출처</b><span class="criteria-action">눌러서 질문 열기</span><span class="criteria-question" hidden>공식 안내인가요?</span>
+            </button>
+            <button class="criteria-card" type="button" data-criteria="reward" aria-expanded="false">
+              <b>보상</b><span class="criteria-action">눌러서 질문 열기</span><span class="criteria-question" hidden>너무 큰 보상을 약속하나요?</span>
+            </button>
+            <button class="criteria-card" type="button" data-criteria="urgency" aria-expanded="false">
+              <b>긴급함</b><span class="criteria-action">눌러서 질문 열기</span><span class="criteria-question" hidden>빨리 누르라고 겁을 주나요?</span>
+            </button>
+            <button class="criteria-card" type="button" data-criteria="link" aria-expanded="false">
+              <b>링크</b><span class="criteria-action">눌러서 질문 열기</span><span class="criteria-question" hidden>주소가 이상하거나 낯선가요?</span>
+            </button>
+            <button class="criteria-card" type="button" data-criteria="setting" aria-expanded="false">
+              <b>설정</b><span class="criteria-action">눌러서 질문 열기</span><span class="criteria-question" hidden>내 캐릭터의 공식 설정과 맞나요?</span>
+            </button>
+          </div>
+          <div class="criteria-confirm" id="criteriaConfirm" hidden>
+            <p class="criteria-confirm-title">이제 핵심 문장을 직접 입력하세요.</p>
+            <p class="criteria-sentence">
+              가짜 정보를 판별하기 위해서는
+              <span class="criteria-word"><input id="criteriaContentWord" type="text" maxlength="2" autocomplete="off" aria-label="첫 번째 빈칸"><small>초성 ㄴㅇ</small></span>을
+              꼼꼼히 검토하고,
+              <span class="criteria-word"><input id="criteriaSourceWord" type="text" maxlength="2" autocomplete="off" aria-label="두 번째 빈칸"><small>초성 ㅊㅊ</small></span>를
+              확인하는 습관을 가져야 합니다.
+            </p>
+          </div>
+          <p class="criteria-status" id="criteriaStatus" aria-live="polite">카드를 한 장씩 눌러 질문을 확인하세요.</p>
+        </section>
+
+        <article class="mission-card" data-mission-card="mission3">
+          <div class="mission-card-head">
+            <span class="mission-number">MISSION 3</span>
+            <span class="mission-code-chip">코드 <b data-inline-code="mission3">?</b></span>
+          </div>
+          <h3>AI 이미지 윤리 문제</h3>
+          <p>AI로 만든 이미지에 대한 올바른 행동은 무엇인가요?</p>
+          <div class="answer-list">
+            <label class="answer-option"><input type="radio" name="mission3" value="A"><span><b>A</b>친구 얼굴을 허락 없이 합성한다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission3" value="B"><span><b>B</b>필요한 허락을 받고 AI로 만든 이미지임을 알린다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission3" value="C"><span><b>C</b>가짜 사건 이미지를 진짜 뉴스처럼 퍼뜨린다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission3" value="D"><span><b>D</b>다른 사람 작품을 내 작품이라고 말한다.</span></label>
+          </div>
+          <button class="btn btn-secondary mission-check" type="button" data-check-mission="mission3">미션 3 정답 확인</button>
+          <p class="mission-feedback" id="mission3Feedback" aria-live="polite">사람의 권리와 사실 확인을 함께 생각하세요.</p>
+          <div class="sentence-reward" data-sentence-reward="mission3" hidden>
+            <strong data-sentence-reward-title="mission3">코드와 보안 문장 획득!</strong>
+            <p data-security-sentence="mission3"></p>
+          </div>
+        </article>
+
+        <article class="mission-card" data-mission-card="mission4">
+          <div class="mission-card-head">
+            <span class="mission-number">MISSION 4</span>
+            <span class="mission-code-chip">코드 <b data-inline-code="mission4">?</b></span>
+          </div>
+          <h3>온라인 매너 문제</h3>
+          <p>게임 채팅에서 가장 안전하고 바른 행동은 무엇인가요?</p>
+          <div class="answer-list">
+            <label class="answer-option"><input type="radio" name="mission4" value="A"><span><b>A</b>처음 하는 친구를 놀린다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission4" value="B"><span><b>B</b>전화번호와 집 주소를 채팅에 쓴다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission4" value="C"><span><b>C</b>게임에서 지면 상대에게 욕을 한다.</span></label>
+            <label class="answer-option"><input type="radio" name="mission4" value="D"><span><b>D</b>존중하는 말로 대화하고, 나쁜 채팅은 어른에게 알린다.</span></label>
+          </div>
+          <button class="btn btn-secondary mission-check" type="button" data-check-mission="mission4">미션 4 정답 확인</button>
+          <p class="mission-feedback" id="mission4Feedback" aria-live="polite">온라인에서도 서로 존중하고 개인정보를 지켜야 합니다.</p>
+          <div class="sentence-reward" data-sentence-reward="mission4" hidden>
+            <strong data-sentence-reward-title="mission4">코드와 보안 문장 획득!</strong>
+            <p data-security-sentence="mission4"></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="recovery-success" id="recoverySuccess" hidden aria-live="polite">
+      <p class="success-icon" aria-hidden="true">✓</p>
+      <div>
+        <p class="step">서버 복구 성공</p>
+        <h2>복구 코드 <strong>SAFE</strong> 완성!</h2>
+        <p>네 가지 보안 미션을 모두 해결했습니다. 이제 내 캐릭터의 서버 보안 가이드를 작성하세요.</p>
+      </div>
+    </section>
+
+    <section class="panel collected-sentences" id="collectedSentences" hidden aria-live="polite">
+      <p class="step">글쓰기 재료 수집 완료</p>
+      <h2>내가 모은 보안 문장</h2>
+      <p class="hint">미션에서 얻은 네 문장을 읽고, 아래 서버 보안 가이드를 내 말로 완성하세요.</p>
+      <ol class="sentence-list">
+        <li><span>1</span><p data-security-sentence="mission1"></p></li>
+        <li><span>2</span><p data-security-sentence="mission2"></p></li>
+        <li><span>3</span><p data-security-sentence="mission3"></p></li>
+        <li><span>4</span><p data-security-sentence="mission4"></p></li>
+      </ol>
+    </section>
+
+    <section class="panel guide-panel locked" id="securityGuide">
+      <p class="step">최종 결과물</p>
+      <h2>내 캐릭터의 서버 보안 가이드</h2>
+      <p class="guide-title">캐릭터 이름: <b class="auto-value" data-character-name>먼저 불러오세요</b></p>
+      <aside class="guide-sentence-bank" id="guideSentenceBank" hidden>
+        <h3>작성할 때 참고할 보안 문장</h3>
+        <ul>
+          <li data-security-sentence="mission1"></li>
+          <li data-security-sentence="mission2"></li>
+          <li data-security-sentence="mission3"></li>
+          <li data-security-sentence="mission4"></li>
+        </ul>
+        <p>문장을 그대로 옮기기보다 내 캐릭터에게 어울리는 말로 바꾸어 써도 좋습니다.</p>
+      </aside>
+      <p class="guide-lock-message" id="guideLockMessage">복구 코드 SAFE를 완성하면 입력할 수 있습니다.</p>
+      <fieldset id="guideFieldset" disabled>
+        <div class="form-grid">
+          <div class="field"><label for="linkGuide">1. 수상한 링크를 보면 어떻게 해야 할까요?</label><textarea id="linkGuide"></textarea></div>
+          <div class="field"><label for="rewardGuide">2. 너무 큰 보상을 준다는 말을 보면 어떻게 해야 할까요?</label><textarea id="rewardGuide"></textarea></div>
+          <div class="field"><label for="aiMediaGuide">3. AI 이미지나 영상을 볼 때 무엇을 확인해야 할까요?</label><textarea id="aiMediaGuide"></textarea></div>
+          <div class="field"><label for="chatGuide">4. 게임 채팅에서는 어떤 태도를 가져야 할까요?</label><textarea id="chatGuide"></textarea></div>
+          <div class="field full"><label for="characterMessage">5. 내 캐릭터가 유저에게 전할 한마디를 적어 보세요.</label><textarea id="characterMessage"></textarea></div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="panel">
+      <p class="step">마무리</p>
+      <h2>오늘 결과 저장하기</h2>
+      <p class="save-note">SAFE 완성 후 보안 가이드를 모두 작성하면 저장할 수 있습니다.</p>
+      <button class="btn btn-save" id="saveLesson" type="button" disabled>오늘 결과 저장하기</button>
+      <p class="status" id="saveStatus" aria-live="polite">먼저 복구 코드 SAFE를 완성하세요.</p>
+    </section>
+  </main>
+
+  <footer class="footer">동호초 5학년 · 레벨업! AI 게임 스튜디오</footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="../lesson05.js"></script>
+</body>
+</html>
