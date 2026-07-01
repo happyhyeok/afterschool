@@ -8,41 +8,11 @@ const LESSON5_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpzu
     class2: ["01. 권하린","02. 김리아","03. 김문준","04. 김아랑","05. 김예슬","06. 김우현","07. 김효건","08. 문서진","09. 변수현","10. 신예건","11. 심현지","12. 양승윤","13. 연율","14. 이정우","15. 최푸른"]
   };
 
-  // Google Drive characters/class1, class2 폴더의 공개 PNG 파일 ID입니다.
-  // class1 09.png는 현재 Drive에 없어 추가 후 이 표에 파일 ID를 넣어야 합니다.
-  const DRIVE_CHARACTER_IMAGE_IDS = {
-    class1: {
-      "1": "1NQQ9CrxgJi2hVGYcde4BY0dTy2iHZ_Ag",
-      "2": "1E40D391El9Q0Y5OOA5FTiIIGHH-d97AF",
-      "3": "11xwOBcxCMYyG6jstaYGlRBnbSGDbUnux",
-      "4": "18PROsENVGLSF190FAUaDsOTkS61_q7WN",
-      "5": "1dyCmvfLzfc2SGOCzKMQThQTsrcl_pSX_",
-      "6": "1yq5iKRnKgk94U9Z_KRz_JlItPV9SRdPB",
-      "7": "1q4DiLRzYPnQ8s-zMryFd8NKJSV-Ya3Xq",
-      "8": "1b5hVAS9WFsZIik27cRieTr6shz-6K17S",
-      "10": "126uIgmCUvJ9qYjz5vU6Fz8Lo5Hwge5uR",
-      "11": "1174eVh7EwSduoKFQc1uw3P_q43b6mZZi",
-      "12": "1Ik1YaIUA7Ubtd_3iMw8MpYwJqyif2Qyc",
-      "13": "11onouQtAHJPZpUx0I7UNJqYxvkxPJKb2",
-      "14": "1FLx21--662pOb_JYiw9tF1SE9iZ8HDp6"
-    },
-    class2: {
-      "1": "14_mte7NXGUK1c4MyvsVSfvdeYvXbjfLf",
-      "2": "1MHnyBTa67JwHT8egSCATQ3uSkfVH_sVy",
-      "3": "1o2zm0d03JuIIL3u3UJY8NZl1Bge7bh6U",
-      "4": "1_kMcA9ex8ttAHXQqvodKjZPQWxZu1OWf",
-      "5": "1ijm0ygaYitTGqu6eGKUMvXiJt9bIVOMT",
-      "6": "1EQItSkq2pA-U3ads1NgDYYI4fOJF2Uac",
-      "7": "1IIhenJUwBpZrn3oWJVYweFg7rTCUnbgk",
-      "8": "1S8sFFITu5vy7yXblQMiqHMs3Do_SUJD5",
-      "9": "14Bxc-9VZxfjmMK-x8R5wYBUfgfDKbKEJ",
-      "10": "1lFEM8Z7S3eidDPb7cny94Itd7KGQL2u2",
-      "11": "1AxT4zrBbBWFGJ-_UCy7MKdPYwE5g_cvU",
-      "12": "1B28kZQEFX22pyNfhBT575KNU47uJzsAM",
-      "13": "1KMzqHg2pKjHsatK0qZmvb_lWOtL2pg0C",
-      "14": "1Opu8AXp6HCAynOeHMUZ9mAOV3UULhggC",
-      "15": "1TpnWgu261Ec96a2Zg-AkD8x6mXtTGoqm"
-    }
+  // Drive 직접 링크 대신 GitHub Pages에 함께 배포한 PNG를 사용합니다.
+  // class1 09.png는 원본 파일이 없어 이전 차시 저장 주소가 있을 때만 표시합니다.
+  const MISSING_LOCAL_CHARACTER_IMAGES = {
+    class1: new Set(["9"]),
+    class2: new Set()
   };
 
   const MISSION_CONFIG = {
@@ -100,9 +70,11 @@ const LESSON5_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpzu
     return match ? String(Number(match[1])) : "";
   }
 
-  function driveCharacterImageUrl() {
-    const fileId = DRIVE_CHARACTER_IMAGE_IDS[classId]?.[studentId(studentSelect.value)];
-    return fileId ? `https://lh3.googleusercontent.com/d/${encodeURIComponent(fileId)}` : "";
+  function localCharacterImageUrl() {
+    const id = studentId(studentSelect.value);
+    if (!id || MISSING_LOCAL_CHARACTER_IMAGES[classId].has(id)) return "";
+    const fileName = `${String(Number(id)).padStart(2, "0")}.png`;
+    return new URL(`../assets/characters/${classId}/${fileName}`, window.location.href).href;
   }
 
   function showToast(text) {
@@ -182,7 +154,7 @@ const LESSON5_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpzu
       characterWeakness: raw.characterWeakness || raw.weakness || "",
       characterPersonality: raw.characterPersonality || raw.personality || "",
       characterColor: raw.characterColor || raw.color || "",
-      imageUrl: raw.imageUrl || raw.characterImage || driveCharacterImageUrl()
+      imageUrl: localCharacterImageUrl() || raw.imageUrl || raw.characterImage || ""
     };
   }
 
