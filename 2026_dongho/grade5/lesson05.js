@@ -102,7 +102,7 @@ const LESSON5_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpzu
 
   function driveCharacterImageUrl() {
     const fileId = DRIVE_CHARACTER_IMAGE_IDS[classId]?.[studentId(studentSelect.value)];
-    return fileId ? `https://drive.google.com/uc?export=view&id=${encodeURIComponent(fileId)}` : "";
+    return fileId ? `https://lh3.googleusercontent.com/d/${encodeURIComponent(fileId)}` : "";
   }
 
   function showToast(text) {
