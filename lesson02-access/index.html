@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>학교별 2차시 수업자료 접속</title>
+  <style>
+    :root {
+      --ink: #1f2a3a;
+      --muted: #637083;
+      --primary: #2d8f83;
+      --primary-dark: #19756c;
+      --line: #d9e3ea;
+      --soft: #e8f6f4;
+      --shadow: 0 16px 36px rgba(31, 42, 58, .11);
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: linear-gradient(145deg, #e8f6f4, #f7f8fc 52%, #f0edff);
+      font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+    }
+    main {
+      width: min(860px, 100%);
+      padding: clamp(24px, 5vw, 46px);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: var(--shadow);
+    }
+    .badge {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--primary-dark);
+      background: var(--soft);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    h1 { margin: 14px 0 8px; font-size: clamp(30px, 6vw, 48px); line-height: 1.2; letter-spacing: -.04em; }
+    p { margin: 0; color: var(--muted); font-size: 17px; }
+    .school-grid { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .school-link {
+      min-height: 112px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 2px solid var(--line);
+      border-radius: 20px;
+      color: var(--ink);
+      background: #fff;
+      text-decoration: none;
+      transition: transform .18s, border-color .18s, box-shadow .18s;
+    }
+    .school-link:hover, .school-link:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(45, 143, 131, .14);
+      outline: none;
+    }
+    .school-link strong { display: block; color: var(--primary-dark); font-size: 22px; }
+    .school-link span { display: block; margin-top: 3px; color: var(--muted); font-size: 14px; font-weight: 700; }
+    .arrow {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #fff;
+      background: var(--primary);
+      font-size: 20px;
+      font-weight: 900;
+    }
+    @media (max-width: 620px) {
+      body { padding: 14px; }
+      main { border-radius: 23px; }
+      .school-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="badge">🎮 2차시 학생용</span>
+    <h1>우리 학교를 선택하세요</h1>
+    <p>학교 버튼을 누르면 지난 시간 캐릭터 기록과 연결됩니다.</p>
+    <div class="school-grid">
+      <a class="school-link" href="../2026_sinyoung/tier-story/lesson02.html">
+        <span><strong>신영초등학교</strong><span>3~6학년</span></span><span class="arrow">→</span>
+      </a>
+      <a class="school-link" href="../2026_sinwang/tier-story/lesson02.html">
+        <span><strong>신왕초등학교</strong><span>5~6학년</span></span><span class="arrow">→</span>
+      </a>
+      <a class="school-link" href="../2026_okgye/tier-story/lesson02.html">
+        <span><strong>옥계초등학교</strong><span>5~6학년</span></span><span class="arrow">→</span>
+      </a>
+      <a class="school-link" href="../2026_yeoryang/tier-story/lesson02.html">
+        <span><strong>여량초등학교</strong><span>5학년</span></span><span class="arrow">→</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>
