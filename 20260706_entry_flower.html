@@ -45,12 +45,19 @@
   .block-images { display:flex; flex-wrap:wrap; align-items:flex-start; gap:10px 14px; margin:10px 0 16px; }
   .block-image { display:block; width:auto; max-width:100%; height:auto; max-height:72px; object-fit:contain; }
   .practice { background:#effff7; border-left:7px solid var(--ok); }
+  .challenge { background:linear-gradient(145deg,#fffbed,#fff3fa); border-left:8px solid #ffb703; }
+  .challenge .think { margin-top:18px; padding:16px; border-radius:14px; background:#fff; border:1px solid #f4df9a; }
+  .showcase { margin-top:20px; padding:20px; border-radius:18px; background:#f4f0ff; text-align:center; }
+  .showcase-button { display:inline-block; margin-top:10px; padding:14px 24px; border-radius:14px; background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; font-size:17px; font-weight:800; text-decoration:none; box-shadow:0 7px 16px rgba(107,75,216,.24); transition:transform .2s, box-shadow .2s; }
+  .showcase-button:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(107,75,216,.3); }
+  .showcase-button:focus-visible { outline:3px solid #ffcf66; outline-offset:3px; }
   table { border-collapse:collapse; width:100%; } th,td { border:1px solid #e9e5ff; padding:10px; text-align:left; } th { background:#f4f0ff; }
   footer { max-width:1050px; margin:0 auto; color:#555; padding:28px 24px; font-size:14px; }
   footer h2 { margin-bottom:10px; font-size:20px; }
   footer ul { margin:0 0 14px; padding-left:24px; }
   footer hr { border:0; border-top:1px solid #ddd; margin:0 0 22px; }
   @media (prefers-reduced-motion: reduce) { .petal-stamp, .center-stamp { animation:none; opacity:1; transform:none; } }
+  @media (max-width:520px) { .showcase-button { display:block; width:100%; padding:14px 12px; } }
   @media print { header { padding:20px; } .card { break-inside:avoid; box-shadow:none; } .petal-stamp, .center-stamp { animation:none !important; opacity:1 !important; transform:none !important; } }
 </style>
 </head>
@@ -207,6 +214,35 @@
       <label><input type="checkbox"> 같은 동작을 여러 번 할 때 반복하기 블록을 사용합니다.</label>
       <label><input type="checkbox"> 꽃잎 6개를 만들고 싶다면 60°씩 회전하면 좋습니다.</label>
       <label><input type="checkbox"> 색깔 효과와 밝기 효과는 화면에 보이는 모양을 바꿉니다.</label>
+    </div>
+  </section>
+
+  <section class="card challenge">
+    <h2>🌟 도전! 나만의 스티커 만들기</h2>
+    <p>꽃송이를 만든 원리를 이용하면 더 재미있는 스티커도 만들 수 있습니다.</p>
+    <p>
+      이번에는 재미있는 모양으로 만들 오브젝트를 추가하세요.<br>
+      추가한 오브젝트의 중심점을 알맞게 옮긴 후,<br>
+      반복 횟수와 회전 각도를 바꾸어 나만의 스티커를 만들어 봅시다.
+    </p>
+    <table>
+      <thead>
+        <tr><th>바꾸는 것</th><th>어떤 변화가 생길까요?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>반복 횟수</td><td>무늬의 개수와 모양이 달라져요.</td></tr>
+        <tr><td>회전 각도</td><td>스티커의 모양과 느낌이 달라져요.</td></tr>
+      </tbody>
+    </table>
+    <div class="think">
+      <h3>💡 생각해 보기</h3>
+      <p>같은 오브젝트라도 반복 횟수와 회전 각도를 바꾸면 전혀 다른 스티커가 만들어집니다.</p>
+      <p>컴퓨터는 같은 명령을 반복하면서 다양한 그림과 무늬를 만들 수 있습니다. 여러 값을 자유롭게 실험해 보세요.</p>
+    </div>
+    <div class="showcase">
+      <h3>작품 자랑하기</h3>
+      <p>멋진 스티커가 완성되었다면 친구들에게도 자랑해 보세요.</p>
+      <a class="showcase-button" href="https://padlet.com/sorbaramkind/breakout-room/3n6K2WzrjLYz40A9-EDj3vrl8rKGEz9r6" target="_blank" rel="noopener noreferrer">🖼️ 내 스티커 자랑하기</a>
     </div>
   </section>
 </main>
