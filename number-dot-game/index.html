@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7dc">
+  <meta name="description" content="숫자를 순서대로 클릭하며 마우스 조작을 연습하는 점잇기 게임">
+  <title>숫자 따라 그림 찾기</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="top-card">
+      <div>
+        <p class="eyebrow">차근차근 마우스 연습</p>
+        <h1>숫자 따라 그림 찾기</h1>
+      </div>
+      <div class="header-status">
+        <div id="numberPanel" class="next-number" aria-live="polite" hidden>
+          <span>지금은</span>
+          <strong id="currentNumber">1</strong>
+          <span>번!</span>
+        </div>
+        <div id="progressPanel" class="progress-panel" aria-label="전체 진행률">
+          <div>
+            <span>나의 그림</span>
+            <strong id="progressText">0/12 완료</strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progressBar"></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="selectScreen" class="select-screen">
+      <div class="select-heading">
+        <div>
+          <p class="section-kicker">어떤 그림을 찾아볼까요?</p>
+          <h2>그림을 골라요!</h2>
+        </div>
+        <p id="unlockMessage" class="unlock-message">쉬움 그림 4개를 완성해 보세요.</p>
+      </div>
+      <div id="levelList" class="level-list"></div>
+    </section>
+
+    <section id="playScreen" class="play-screen" hidden>
+      <div class="info-row" aria-label="게임 정보">
+        <div class="picture-info">
+          <button id="backButton" class="back-button" type="button">← 그림 고르기</button>
+          <span id="difficultyBadge" class="difficulty-badge">쉬움</span>
+          <strong id="pictureName">별</strong>
+        </div>
+        <div class="score-board">
+          <span>클릭 <strong id="clickCount">0</strong>번</span>
+          <span>아차! <strong id="wrongCount">0</strong>번</span>
+        </div>
+      </div>
+
+      <section class="game-card" aria-label="점잇기 놀이판">
+        <p id="message" class="message" aria-live="polite">1번 점부터 눌러 보세요!</p>
+        <p id="habitCoach" class="habit-coach" aria-live="polite" hidden></p>
+        <div class="svg-wrap">
+          <svg id="gameBoard" viewBox="0 0 800 520" role="img" aria-labelledby="boardTitle boardDescription">
+            <title id="boardTitle">숫자 점잇기 게임판</title>
+            <desc id="boardDescription">강조된 번호부터 차례대로 점을 클릭하세요.</desc>
+            <g id="completeLayer" class="complete-layer"></g>
+            <g id="lineLayer" class="line-layer"></g>
+            <g id="pointLayer" class="point-layer"></g>
+          </svg>
+          <div id="celebration" class="celebration" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <nav class="controls" aria-label="게임 조작">
+        <button id="restartButton" class="control-button restart" type="button">
+          <span aria-hidden="true">↻</span> 처음부터
+        </button>
+        <button id="hintButton" class="control-button hint" type="button">
+          <span aria-hidden="true">💡</span> 힌트
+        </button>
+        <button id="nextButton" class="control-button next" type="button">
+          다음 그림 <span aria-hidden="true">→</span>
+        </button>
+      </nav>
+
+      <p class="mouse-tip">마우스를 움직여 반짝이는 점을 한 번 클릭해요.</p>
+    </section>
+  </main>
+
+  <div id="finishDialog" class="finish-dialog" role="dialog" aria-modal="true" aria-labelledby="finishTitle" hidden>
+    <div class="finish-card result-card">
+      <div class="finish-icon" aria-hidden="true">🎉</div>
+      <p class="finish-small">그림 완성!</p>
+      <h2 id="finishTitle">별 완성!</h2>
+      <div class="result-stats" aria-label="활동 결과">
+        <div>
+          <span>정답 클릭</span>
+          <strong id="resultCorrect">0번</strong>
+        </div>
+        <div>
+          <span>도움이 필요했던 클릭</span>
+          <strong id="resultWrong">0번</strong>
+        </div>
+        <div>
+          <span>힌트 사용</span>
+          <strong id="resultHints">0번</strong>
+        </div>
+      </div>
+      <div class="result-message-box">
+        <span>오늘의 한마디</span>
+        <p id="resultMessage"></p>
+      </div>
+      <div class="practice-box">
+        <span>다시 해 보고 싶은 점</span>
+        <strong id="resultPractice"></strong>
+      </div>
+      <p class="result-title-line">오늘의 칭호 <strong id="resultTitle"></strong></p>
+      <p id="unlockNotice" class="dialog-unlock" hidden></p>
+      <div class="finish-actions">
+        <button id="finishRestartButton" class="control-button restart" type="button">다시 하기</button>
+        <button id="finishNextButton" class="control-button next" type="button">다음 그림</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
