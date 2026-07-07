@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const questions = [
+  const defaultQuestions = [
     {
       question: "AI에게 좋은 캐릭터 세계관 스토리를 부탁하려면 어떤 정보가 꼭 필요할까요?",
       options: [
@@ -64,6 +64,18 @@
     }
   ];
 
+  const quizConfig = window.AI_QUIZ_CONFIG || {};
+  const questions = Array.isArray(quizConfig.questions) && quizConfig.questions.length
+    ? quizConfig.questions
+    : defaultQuestions;
+  const title = quizConfig.title || "AI가 글을 만드는 동안 생각 퀴즈";
+  const intro = quizConfig.intro || "AI를 잘 활용하는 방법을 퀴즈로 확인해 봅시다.";
+  const finishTitle = quizConfig.finishTitle || "퀴즈 완료!";
+  const finishMessage = quizConfig.finishMessage || "좋아요! 이제 AI가 만든 캐릭터 세계관 스토리를 확인하고, 내 캐릭터에 맞는지 점검해 봅시다.";
+  const completeLabel = quizConfig.completeLabel || "완료";
+  const completeAriaLabel = quizConfig.completeAriaLabel || "완료하고 AI 결과 점검하러 가기";
+  const scrollTarget = quizConfig.scrollTarget || "#aiResultReview";
+
   const trigger = document.querySelector(".ai-quiz-trigger");
   if (!trigger) return;
 
@@ -77,8 +89,8 @@
   overlay.innerHTML = `
     <div class="ai-quiz-modal" role="dialog" aria-modal="true" aria-labelledby="aiQuizTitle" aria-describedby="aiQuizIntro">
       <button type="button" class="ai-quiz-close" aria-label="AI 퀴즈 팝업 닫기">×</button>
-      <h2 id="aiQuizTitle">AI가 글을 만드는 동안 생각 퀴즈</h2>
-      <p class="ai-quiz-intro" id="aiQuizIntro">AI를 잘 활용하는 방법을 퀴즈로 확인해 봅시다.</p>
+      <h2 id="aiQuizTitle">${escapeHtml(title)}</h2>
+      <p class="ai-quiz-intro" id="aiQuizIntro">${escapeHtml(intro)}</p>
       <div class="ai-quiz-content"></div>
     </div>
   `;
@@ -93,11 +105,11 @@
     answered = false;
     content.innerHTML = `
       <div class="ai-quiz-progress">${current + 1} / ${questions.length}</div>
-      <h3 class="ai-quiz-question">${item.question}</h3>
+      <h3 class="ai-quiz-question">${escapeHtml(item.question)}</h3>
       <div class="ai-quiz-options">
         ${item.options.map((option, index) => `
           <button type="button" class="ai-quiz-option" data-index="${index}">
-            ${index + 1}. ${option}
+            ${index + 1}. ${escapeHtml(option)}
           </button>
         `).join("")}
       </div>
@@ -112,9 +124,9 @@
   function renderFinish() {
     content.innerHTML = `
       <div class="ai-quiz-finish">
-        <h3>퀴즈 완료!</h3>
-        <p>좋아요! 이제 AI가 만든 캐릭터 세계관 스토리를 확인하고, 내 캐릭터에 맞는지 점검해 봅시다.</p>
-        <button type="button" class="ai-quiz-complete" aria-label="완료하고 AI 결과 점검하러 가기">완료</button>
+        <h3>${escapeHtml(finishTitle)}</h3>
+        <p>${escapeHtml(finishMessage)}</p>
+        <button type="button" class="ai-quiz-complete" aria-label="${escapeHtml(completeAriaLabel)}">${escapeHtml(completeLabel)}</button>
       </div>
     `;
     content.querySelector(".ai-quiz-complete").focus();
@@ -133,7 +145,7 @@
     document.body.style.overflow = previousOverflow;
     trigger.focus();
     if (shouldScroll) {
-      document.querySelector("#aiResultReview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector(scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
@@ -192,4 +204,10 @@
       first.focus();
     }
   });
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    })[character]);
+  }
 })();
