@@ -621,24 +621,35 @@
       }
     }
 
-    function getPadletUrl() {
-      return PADLET_SANDBOX_URLS[SCHOOL_CODE]?.[state.grade] || DEFAULT_PADLET_SANDBOX_URL;
-    }
+function getPadletUrl() {
+  if (SCHOOL_CODE === "yeoryang") {
+    return "https://padlet.com/hyeokstu15/2026-5-ai-2bjf9f6rxju9bdhe";
+  }
 
-    function updatePadletLink() {
-      const padletUrl = getPadletUrl();
-      $("#padletLink").href = padletUrl;
-      if (SCHOOL_CODE === "sinwang" && !state.grade) {
-        setStatus($("#padletStatus"), "신왕초는 학년을 선택하면 패들렛 주소가 자동으로 바뀌어요.", "info");
-        return;
-      }
-      if (SCHOOL_CODE === "sinwang" && state.grade) {
-        setStatus($("#padletStatus"), `${state.grade} 패들렛 샌드박스로 연결돼요.`, "success");
-        return;
-      }
-      clearStatus($("#padletStatus"));
-    }
+  return PADLET_SANDBOX_URLS[SCHOOL_CODE]?.[state.grade] || DEFAULT_PADLET_SANDBOX_URL;
+}
 
+function updatePadletLink() {
+  const padletUrl = getPadletUrl();
+  $("#padletLink").href = padletUrl;
+
+  if (SCHOOL_CODE === "yeoryang") {
+    setStatus($("#padletStatus"), "여량초 패들렛 샌드박스로 연결돼요.", "success");
+    return;
+  }
+
+  if (SCHOOL_CODE === "sinwang" && !state.grade) {
+    setStatus($("#padletStatus"), "신왕초는 학년을 선택하면 패들렛 주소가 자동으로 바뀌어요.", "info");
+    return;
+  }
+
+  if (SCHOOL_CODE === "sinwang" && state.grade) {
+    setStatus($("#padletStatus"), `${state.grade} 패들렛 샌드박스로 연결돼요.`, "success");
+    return;
+  }
+
+  clearStatus($("#padletStatus"));
+}
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, character => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
