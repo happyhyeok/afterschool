@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7dc">
+  <meta name="description" content="밑그림 위에 번호 점 좌표를 찍는 점잇기 게임 편집 도구">
+  <title>점잇기 좌표 편집 도구</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell editor-shell">
+    <header class="top-card">
+      <div>
+        <p class="eyebrow">교사용 좌표 도구</p>
+        <h1>점잇기 좌표 편집</h1>
+      </div>
+      <a class="editor-link" href="index.html">학생 화면</a>
+    </header>
+
+    <section class="editor-layout">
+      <aside class="editor-panel" aria-label="편집 설정">
+        <label class="field-label" for="sketchSelect">밑그림 선택</label>
+        <select id="sketchSelect" class="editor-select"></select>
+
+        <label class="field-label" for="customSketch">직접 경로</label>
+        <div class="path-row">
+          <input id="customSketch" class="editor-input" type="text" value="assets/sketches/cat.svg">
+          <button id="loadSketchButton" class="small-button" type="button">불러오기</button>
+        </div>
+
+        <div class="editor-actions" aria-label="좌표 조작">
+          <button id="undoButton" class="control-button restart" type="button">마지막 점 삭제</button>
+          <button id="clearButton" class="control-button hint" type="button">초기화</button>
+          <button id="copyButton" class="control-button next" type="button">좌표 복사</button>
+        </div>
+
+        <div class="editor-summary">
+          <span>현재 점 개수</span>
+          <strong id="pointCount">0개</strong>
+        </div>
+
+        <label class="field-label" for="output">data.js에 붙여 넣을 좌표</label>
+        <textarea id="output" class="coordinate-output" spellcheck="false" readonly></textarea>
+        <p id="editorMessage" class="editor-message" aria-live="polite">밑그림 위를 클릭하면 1번부터 점이 생깁니다.</p>
+      </aside>
+
+      <section class="editor-board-card" aria-label="좌표 편집판">
+        <div class="editor-board-help">
+          <strong>1000 x 1000 좌표</strong>
+          <span>이미지를 보며 필요한 순서대로 클릭하세요.</span>
+        </div>
+        <div class="svg-wrap editor-svg-wrap">
+          <svg id="editorBoard" viewBox="0 0 1000 1000" role="img" aria-label="밑그림 좌표 편집판">
+            <image id="editorSketch" class="editor-sketch-image" href="assets/sketches/cat.svg" x="0" y="0" width="1000" height="1000" preserveAspectRatio="xMidYMid meet"></image>
+            <g id="editorLineLayer" class="line-layer"></g>
+            <g id="editorPointLayer" class="point-layer"></g>
+          </svg>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>

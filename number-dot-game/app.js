@@ -2,7 +2,11 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const STORAGE_KEY = "dotGameCompletedPictures";
 const levels = window.DOT_GAME_LEVELS;
 const allPictures = levels.flatMap((level) =>
-  level.pictures.map((picture) => ({ ...picture, levelId: level.id }))
+  level.pictures.map((picture) => ({
+    ...picture,
+    coordinateSpace: picture.coordinateSpace || level.coordinateSpace,
+    levelId: level.id
+  }))
 );
 
 const selectScreen = document.querySelector("#selectScreen");
@@ -16,6 +20,7 @@ const unlockMessage = document.querySelector("#unlockMessage");
 const pointLayer = document.querySelector("#pointLayer");
 const lineLayer = document.querySelector("#lineLayer");
 const completeLayer = document.querySelector("#completeLayer");
+const sketchLayer = document.querySelector("#sketchLayer");
 const currentNumber = document.querySelector("#currentNumber");
 const clickCountElement = document.querySelector("#clickCount");
 const wrongCountElement = document.querySelector("#wrongCount");
@@ -106,6 +111,17 @@ function makeSvgElement(tag, attributes = {}) {
   return element;
 }
 
+function getDisplayPoints(picture) {
+  if (!picture.coordinateSpace) {
+    return picture.points;
+  }
+  const [sourceWidth, sourceHeight] = picture.coordinateSpace;
+  return picture.points.map(([x, y]) => [
+    Math.round((x / sourceWidth) * 1000),
+    Math.round((y / sourceHeight) * 1000)
+  ]);
+}
+
 function getLevel(levelId) {
   return levels.find((level) => level.id === levelId);
 }
@@ -188,10 +204,11 @@ function renderSelection() {
       button.disabled = !unlocked;
       button.dataset.pictureId = picture.id;
       button.setAttribute("aria-label", unlocked ? `${picture.name}${done ? ", 완료" : ""}` : `${picture.name}, 잠김`);
+      const pointCount = getDisplayPoints(picture).length;
       button.innerHTML = `
         <span class="picture-icon" style="background:${picture.color}22">${unlocked ? picture.icon : "🔒"}</span>
         <strong>${picture.name}</strong>
-        <span class="card-state">${done ? "✓ 완료" : unlocked ? "시작하기" : "잠겨 있어요"}</span>
+        <span class="card-state">${done ? "✓ 완료" : unlocked ? `${pointCount}개 점` : "잠겨 있어요"}</span>
       `;
       if (unlocked) {
         button.addEventListener("click", () => startPicture(picture.id));
@@ -255,6 +272,7 @@ function renderGame() {
   pointLayer.replaceChildren();
   lineLayer.replaceChildren();
   completeLayer.replaceChildren();
+  sketchLayer.replaceChildren();
   celebration.replaceChildren();
   pointLayer.style.opacity = "1";
   lineLayer.style.opacity = "1";
@@ -262,7 +280,10 @@ function renderGame() {
   habitCoach.hidden = true;
   habitCoach.textContent = "";
 
-  picture.points.forEach(([x, y], index) => {
+  const points = getDisplayPoints(picture);
+  renderSketch(picture, false);
+
+  points.forEach(([x, y], index) => {
     const group = makeSvgElement("g", {
       class: `point-group${index === 0 ? " is-current" : ""}`,
       "data-index": index
@@ -271,7 +292,7 @@ function renderGame() {
       class: "dot-hit",
       cx: x,
       cy: y,
-      r: 36,
+      r: 44,
       tabindex: "0",
       role: "button",
       "aria-label": `${index + 1}번 점`
@@ -280,7 +301,7 @@ function renderGame() {
       class: "dot-circle",
       cx: x,
       cy: y,
-      r: 22
+      r: 27
     });
     const label = makeSvgElement("text", {
       class: "dot-label",
@@ -345,18 +366,19 @@ function handlePointClick(clickedIndex) {
   correctCount += 1;
   consecutiveWrong = 0;
   const picture = getPicture();
+  const points = getDisplayPoints(picture);
   const currentGroup = getPointGroup(nextPointIndex);
   currentGroup.classList.remove("is-current");
   currentGroup.classList.add("is-done");
 
   if (nextPointIndex > 0) {
-    drawLine(picture.points[nextPointIndex - 1], picture.points[nextPointIndex]);
+    drawLine(points[nextPointIndex - 1], points[nextPointIndex]);
   }
 
   nextPointIndex += 1;
   updateStatus();
 
-  if (nextPointIndex === picture.points.length) {
+  if (nextPointIndex === points.length) {
     completePicture();
     return;
   }
@@ -397,29 +419,47 @@ function showCoach(type, count) {
 
 function updateStatus() {
   const picture = getPicture();
-  currentNumber.textContent = isComplete ? "✓" : Math.min(nextPointIndex + 1, picture.points.length);
+  const pointCount = getDisplayPoints(picture).length;
+  currentNumber.textContent = isComplete ? "✓" : Math.min(nextPointIndex + 1, pointCount);
   clickCountElement.textContent = clickCount;
   wrongCountElement.textContent = wrongCount;
 }
 
 function createCompletedShape(picture) {
   const group = makeSvgElement("g", { class: "complete-shape" });
+  const points = getDisplayPoints(picture);
   const polygon = makeSvgElement("polygon", {
-    points: picture.points.map(([x, y]) => `${x},${y}`).join(" "),
+    points: points.map(([x, y]) => `${x},${y}`).join(" "),
     fill: picture.color,
     stroke: shadeColor(picture.color, -28),
     "stroke-width": 11,
     "stroke-linejoin": "round"
   });
   const label = makeSvgElement("text", {
-    x: 400,
-    y: 285,
+    x: 500,
+    y: 520,
     class: "complete-emoji",
     "text-anchor": "middle"
   });
   label.textContent = picture.icon;
   group.append(polygon, label);
   completeLayer.append(group);
+}
+
+function renderSketch(picture, visible) {
+  if (!picture.sketch) {
+    return;
+  }
+  const image = makeSvgElement("image", {
+    href: picture.sketch,
+    x: 0,
+    y: 0,
+    width: 1000,
+    height: 1000,
+    preserveAspectRatio: "xMidYMid meet",
+    class: `sketch-image${visible ? " is-visible" : ""}`
+  });
+  sketchLayer.append(image);
 }
 
 function shadeColor(hex, amount) {
@@ -467,13 +507,20 @@ function renderResult(picture) {
 function completePicture() {
   const picture = getPicture();
   const level = getLevel(picture.levelId);
+  const points = getDisplayPoints(picture);
   const levelWasComplete = isLevelComplete(level);
   const wasAlreadyComplete = completedIds.has(picture.id);
   isComplete = true;
 
-  drawLine(picture.points[picture.points.length - 1], picture.points[0]);
+  if (picture.closePath !== false) {
+    drawLine(points[points.length - 1], points[0]);
+  }
   window.setTimeout(() => {
-    createCompletedShape(picture);
+    if (picture.sketch) {
+      sketchLayer.querySelector(".sketch-image")?.classList.add("is-visible");
+    } else {
+      createCompletedShape(picture);
+    }
     pointLayer.style.opacity = "0.2";
     lineLayer.style.opacity = "0.28";
   }, 330);
@@ -530,7 +577,7 @@ function showHint() {
   document.querySelector(".hint-ring")?.remove();
   const currentGroup = getPointGroup(nextPointIndex);
   const hitArea = currentGroup.querySelector(".dot-hit");
-  const [x, y] = getPicture().points[nextPointIndex];
+  const [x, y] = getDisplayPoints(getPicture())[nextPointIndex];
   const hintRing = makeSvgElement("circle", {
     cx: x,
     cy: y,
