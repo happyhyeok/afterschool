@@ -30,17 +30,20 @@
         </div>
 
         <div class="editor-actions" aria-label="좌표 조작">
+          <button id="newStrokeButton" class="control-button stroke" type="button">새 선 시작</button>
+          <button id="closeStrokeButton" class="control-button close-stroke" type="button">현재 선 닫기</button>
           <button id="undoButton" class="control-button restart" type="button">마지막 점 삭제</button>
+          <button id="removeStrokeButton" class="control-button remove-stroke" type="button">현재 선 삭제</button>
           <button id="clearButton" class="control-button hint" type="button">초기화</button>
           <button id="copyButton" class="control-button next" type="button">좌표 복사</button>
         </div>
 
         <div class="editor-summary">
-          <span>현재 점 개수</span>
-          <strong id="pointCount">0개</strong>
+          <span>선 / 점 개수</span>
+          <strong id="pointCount">1선 · 0점</strong>
         </div>
 
-        <label class="field-label" for="output">data.js에 붙여 넣을 좌표</label>
+        <label class="field-label" for="output">data.js에 붙여 넣을 선 묶음</label>
         <textarea id="output" class="coordinate-output" spellcheck="false" readonly></textarea>
         <p id="editorMessage" class="editor-message" aria-live="polite">밑그림 위를 클릭하면 1번부터 점이 생깁니다.</p>
       </aside>

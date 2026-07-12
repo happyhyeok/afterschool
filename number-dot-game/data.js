@@ -1,6 +1,14 @@
 // 점 좌표는 기본적으로 SVG viewBox 1000 x 1000 기준입니다.
 // 기존 1~3단계는 coordinateSpace 값으로 예전 좌표계를 유지합니다.
-// editor.html에서 복사한 points 배열을 원하는 그림 항목에 붙여 넣으면 됩니다.
+// 단순 그림은 points 배열을, 내부 선이 있는 정교한 그림은 editor.html에서
+// 복사한 strokes 객체를 원하는 그림 항목에 붙여 넣으면 됩니다.
+// strokes의 선 묶음끼리는 서로 연결되지 않습니다.
+//
+// strokes 예시:
+// strokes: [
+//   { name: "외곽선", closed: true, points: [[260,665], [232,598], [222,520]] },
+//   { name: "왼쪽 눈", closed: false, points: [[352,510], [386,492], [420,510]] }
+// ]
 window.DOT_GAME_SKETCHES = [
   { id: "cat", name: "고양이", src: "assets/sketches/cat.svg" },
   { id: "rabbit", name: "토끼", src: "assets/sketches/rabbit.svg" },

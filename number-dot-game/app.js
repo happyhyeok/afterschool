@@ -112,14 +112,60 @@ function makeSvgElement(tag, attributes = {}) {
 }
 
 function getDisplayPoints(picture) {
+  return getDisplayStrokes(picture).flatMap((stroke) => stroke.points);
+}
+
+function getDisplayStrokes(picture) {
+  const sourceStrokes = getSourceStrokes(picture);
   if (!picture.coordinateSpace) {
-    return picture.points;
+    return sourceStrokes;
   }
   const [sourceWidth, sourceHeight] = picture.coordinateSpace;
-  return picture.points.map(([x, y]) => [
-    Math.round((x / sourceWidth) * 1000),
-    Math.round((y / sourceHeight) * 1000)
-  ]);
+  return sourceStrokes.map((stroke) => ({
+    ...stroke,
+    points: stroke.points.map(([x, y]) => [
+      Math.round((x / sourceWidth) * 1000),
+      Math.round((y / sourceHeight) * 1000)
+    ])
+  }));
+}
+
+function getSourceStrokes(picture) {
+  if (picture.strokes) {
+    return picture.strokes;
+  }
+  if (picture.sketch && Array.isArray(picture.points)) {
+    return splitSketchPointsIntoStrokes(picture.points, picture.closePath !== false);
+  }
+  return [{ closed: picture.closePath !== false, points: picture.points }];
+}
+
+function splitSketchPointsIntoStrokes(points, closeFirstStroke) {
+  const distanceLimit = 210;
+  const strokes = [{ name: "외곽선", closed: closeFirstStroke, points: [] }];
+
+  points.forEach((point) => {
+    const currentStroke = strokes[strokes.length - 1];
+    const previous = currentStroke.points[currentStroke.points.length - 1];
+    const distance = previous ? Math.hypot(previous[0] - point[0], previous[1] - point[1]) : 0;
+    if (previous && distance > distanceLimit) {
+      strokes.push({ name: `선 ${strokes.length + 1}`, closed: false, points: [] });
+    }
+    strokes[strokes.length - 1].points.push(point);
+  });
+
+  return strokes.filter((stroke) => stroke.points.length > 0);
+}
+
+function getNumberedPoints(picture) {
+  return getDisplayStrokes(picture).flatMap((stroke, strokeIndex) =>
+    stroke.points.map((point, pointIndex) => ({
+      point,
+      strokeIndex,
+      pointIndex,
+      stroke
+    }))
+  );
 }
 
 function getLevel(levelId) {
@@ -280,10 +326,10 @@ function renderGame() {
   habitCoach.hidden = true;
   habitCoach.textContent = "";
 
-  const points = getDisplayPoints(picture);
+  const numberedPoints = getNumberedPoints(picture);
   renderSketch(picture, false);
 
-  points.forEach(([x, y], index) => {
+  numberedPoints.forEach(({ point: [x, y] }, index) => {
     const group = makeSvgElement("g", {
       class: `point-group${index === 0 ? " is-current" : ""}`,
       "data-index": index
@@ -366,19 +412,23 @@ function handlePointClick(clickedIndex) {
   correctCount += 1;
   consecutiveWrong = 0;
   const picture = getPicture();
-  const points = getDisplayPoints(picture);
+  const numberedPoints = getNumberedPoints(picture);
   const currentGroup = getPointGroup(nextPointIndex);
   currentGroup.classList.remove("is-current");
   currentGroup.classList.add("is-done");
 
   if (nextPointIndex > 0) {
-    drawLine(points[nextPointIndex - 1], points[nextPointIndex]);
+    const previous = numberedPoints[nextPointIndex - 1];
+    const current = numberedPoints[nextPointIndex];
+    if (previous.strokeIndex === current.strokeIndex) {
+      drawLine(previous.point, current.point);
+    }
   }
 
   nextPointIndex += 1;
   updateStatus();
 
-  if (nextPointIndex === points.length) {
+  if (nextPointIndex === numberedPoints.length) {
     completePicture();
     return;
   }
@@ -507,14 +557,16 @@ function renderResult(picture) {
 function completePicture() {
   const picture = getPicture();
   const level = getLevel(picture.levelId);
-  const points = getDisplayPoints(picture);
+  const strokes = getDisplayStrokes(picture);
   const levelWasComplete = isLevelComplete(level);
   const wasAlreadyComplete = completedIds.has(picture.id);
   isComplete = true;
 
-  if (picture.closePath !== false) {
-    drawLine(points[points.length - 1], points[0]);
-  }
+  strokes.forEach((stroke) => {
+    if (stroke.closed && stroke.points.length > 2) {
+      drawLine(stroke.points[stroke.points.length - 1], stroke.points[0]);
+    }
+  });
   window.setTimeout(() => {
     if (picture.sketch) {
       sketchLayer.querySelector(".sketch-image")?.classList.add("is-visible");

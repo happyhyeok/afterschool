@@ -723,6 +723,11 @@ h1 {
   animation: none;
 }
 
+.editor-line-closed {
+  stroke: rgba(99, 213, 178, 0.64);
+  stroke-dasharray: 14 10;
+}
+
 .editor-point .dot-circle {
   fill: var(--yellow);
   stroke: var(--coral);
@@ -731,6 +736,11 @@ h1 {
 
 .editor-point .dot-label {
   fill: #5d382f;
+}
+
+.editor-point:not(.is-active-stroke) .dot-circle {
+  fill: #fff;
+  stroke: #9aa8bc;
 }
 
 .celebration {
@@ -791,6 +801,18 @@ h1 {
 
 .hint {
   background: var(--orange);
+}
+
+.stroke {
+  background: var(--blue);
+}
+
+.close-stroke {
+  background: var(--mint);
+}
+
+.remove-stroke {
+  background: var(--coral);
 }
 
 .next {
