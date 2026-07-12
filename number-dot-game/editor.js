@@ -2,6 +2,7 @@ const EDITOR_SVG_NS = "http://www.w3.org/2000/svg";
 const sketchSelect = document.querySelector("#sketchSelect");
 const customSketch = document.querySelector("#customSketch");
 const loadSketchButton = document.querySelector("#loadSketchButton");
+const targetPictureSelect = document.querySelector("#targetPictureSelect");
 const editorBoard = document.querySelector("#editorBoard");
 const editorSketch = document.querySelector("#editorSketch");
 const editorPointLayer = document.querySelector("#editorPointLayer");
@@ -12,11 +13,13 @@ const undoButton = document.querySelector("#undoButton");
 const removeStrokeButton = document.querySelector("#removeStrokeButton");
 const clearButton = document.querySelector("#clearButton");
 const copyButton = document.querySelector("#copyButton");
+const copyPictureButton = document.querySelector("#copyPictureButton");
 const output = document.querySelector("#output");
 const pointCount = document.querySelector("#pointCount");
 const editorMessage = document.querySelector("#editorMessage");
 
 let editorStrokes = [{ name: "선 1", closed: false, points: [] }];
+let targetPictures = [];
 
 function makeEditorSvgElement(tag, attributes = {}) {
   const element = document.createElementNS(EDITOR_SVG_NS, tag);
@@ -57,6 +60,20 @@ function setupSketchOptions() {
   if (sketches[0]) {
     loadSketch(sketches[0].src);
   }
+}
+
+function setupTargetPictureOptions() {
+  targetPictures = (window.DOT_GAME_LEVELS || [])
+    .flatMap((level) => level.pictures.map((picture) => ({ ...picture, levelName: level.name, levelOrder: level.order })))
+    .filter((picture) => picture.sketch);
+
+  targetPictureSelect.replaceChildren();
+  targetPictures.forEach((picture) => {
+    const option = document.createElement("option");
+    option.value = picture.id;
+    option.textContent = `${picture.levelOrder}단계 ${picture.name}`;
+    targetPictureSelect.append(option);
+  });
 }
 
 function loadSketch(src) {
@@ -137,6 +154,45 @@ function renderEditor() {
   }, null, 2);
 }
 
+function getCleanStrokes() {
+  return editorStrokes
+    .filter((stroke) => stroke.points.length > 0)
+    .map((stroke, index) => ({
+      name: stroke.name || `선 ${index + 1}`,
+      closed: Boolean(stroke.closed),
+      points: stroke.points
+    }));
+}
+
+function getSelectedPicture() {
+  return targetPictures.find((picture) => picture.id === targetPictureSelect.value) || targetPictures[0] || null;
+}
+
+function makeFallbackPicture() {
+  const filename = customSketch.value.split("/").pop()?.replace(/\.[^.]+$/, "") || "new-picture";
+  const id = filename.toLowerCase().replace(/[^a-z0-9가-힣]+/g, "-").replace(/^-|-$/g, "") || "new-picture";
+  return {
+    id,
+    name: filename,
+    icon: "✏️",
+    color: "#4d79e6",
+    sketch: customSketch.value
+  };
+}
+
+function makePictureCode() {
+  const picture = getSelectedPicture() || makeFallbackPicture();
+  const pictureData = {
+    id: picture.id,
+    name: picture.name,
+    icon: picture.icon || "✏️",
+    color: picture.color || "#4d79e6",
+    sketch: customSketch.value.trim() || picture.sketch,
+    strokes: getCleanStrokes()
+  };
+  return JSON.stringify(pictureData, null, 2);
+}
+
 function addPoint(event) {
   if (event.target.closest("button, input, select, textarea")) {
     return;
@@ -186,15 +242,34 @@ async function copyCoordinates() {
   output.select();
   try {
     await navigator.clipboard.writeText(output.value);
-    editorMessage.textContent = "선 묶음을 복사했습니다. data.js의 그림 항목에 붙여 넣으세요.";
+    editorMessage.textContent = "선 묶음을 복사했습니다.";
   } catch {
     document.execCommand("copy");
     editorMessage.textContent = "선 묶음을 복사했습니다.";
   }
 }
 
+async function copyPictureCode() {
+  const pictureCode = makePictureCode();
+  output.value = pictureCode;
+  output.select();
+  try {
+    await navigator.clipboard.writeText(pictureCode);
+    editorMessage.textContent = "그림 항목 코드를 복사했습니다.";
+  } catch {
+    document.execCommand("copy");
+    editorMessage.textContent = "그림 항목 코드를 복사했습니다.";
+  }
+}
+
 sketchSelect.addEventListener("change", () => loadSketch(sketchSelect.value));
 loadSketchButton.addEventListener("click", () => loadSketch(customSketch.value));
+targetPictureSelect.addEventListener("change", () => {
+  const picture = getSelectedPicture();
+  if (picture?.sketch) {
+    loadSketch(picture.sketch);
+  }
+});
 editorBoard.addEventListener("click", addPoint);
 newStrokeButton.addEventListener("click", startNewStroke);
 closeStrokeButton.addEventListener("click", closeCurrentStroke);
@@ -214,6 +289,8 @@ clearButton.addEventListener("click", () => {
   editorMessage.textContent = "모든 선과 점을 지웠습니다.";
 });
 copyButton.addEventListener("click", copyCoordinates);
+copyPictureButton.addEventListener("click", copyPictureCode);
 
 setupSketchOptions();
+setupTargetPictureOptions();
 renderEditor();

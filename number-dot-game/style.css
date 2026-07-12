@@ -815,6 +815,10 @@ h1 {
   background: var(--coral);
 }
 
+.data-copy {
+  background: #273451;
+}
+
 .next {
   background: var(--purple);
 }
