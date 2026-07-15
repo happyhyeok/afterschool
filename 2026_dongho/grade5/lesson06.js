@@ -247,6 +247,15 @@ const GEMINI_URL = "https://gemini.google.com/";
       if (statusId) setStatus(statusId, emptyMessage, "warning");
     }
   }
+  function setGeminiLink(id, ready) {
+    const link = $(id);
+    if (!link) return;
+    link.href = GEMINI_URL;
+    link.setAttribute("aria-disabled", ready ? "false" : "true");
+    link.classList.toggle("disabled", !ready);
+    if (ready) link.removeAttribute("tabindex");
+    else link.setAttribute("tabindex", "-1");
+  }
   function renderProfile() {
     const card = $("characterCard");
     const hasProfile = Boolean(state.profile);
@@ -374,12 +383,12 @@ const GEMINI_URL = "https://gemini.google.com/";
     $("secondPrompt").value = state.secondPrompt;
     const firstReady = Boolean(state.firstPrompt) && !state.firstOpened && state.editCount < 2;
     $("copyFirstPrompt").disabled = !firstReady;
-    setLink("openGeminiFirst", firstReady ? GEMINI_URL : "", "", "", "");
+    setGeminiLink("openGeminiFirst", firstReady);
     if (state.satisfaction === "same") $("makeFirstPrompt").disabled = true;
     else $("makeFirstPrompt").disabled = false;
     const secondReady = Boolean(state.secondPrompt) && !state.secondOpened && state.editCount < 2;
     $("copySecondPrompt").disabled = !Boolean(state.secondPrompt);
-    setLink("openGeminiSecond", secondReady ? GEMINI_URL : "", "", "", "");
+    setGeminiLink("openGeminiSecond", secondReady);
     $("editCountText").textContent = String(state.editCount);
   }
   function renderReflection() {
