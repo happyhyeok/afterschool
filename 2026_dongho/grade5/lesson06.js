@@ -557,7 +557,7 @@ const GEMINI_URL = "https://gemini.google.com/";
     if (!state.selectedImage) { setStatus("completeStatus", "대표 이미지 한 장을 선택하세요.", "warning"); $("select-section").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     if (!state.selectionReason.trim()) { setStatus("completeStatus", "대표 이미지를 선택한 이유를 적어 보세요.", "warning"); $("selectionReason").focus(); return; }
     if (!state.slideSaved) { setStatus("completeStatus", "대표 이미지를 Google 슬라이드에 넣었다고 확인해 주세요.", "warning"); $("markSlideSaved").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
-    if (state.finalChecks.length !== 4) { setStatus("completeStatus", "최종 확인 체크를 모두 해 주세요.", "warning"); $("final-section").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    if (state.finalChecks.length !== 3) { setStatus("completeStatus", "최종 확인 체크를 모두 해 주세요.", "warning"); $("final-section").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     state.completed = true;
     saveState();
     render();
