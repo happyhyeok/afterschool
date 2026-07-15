@@ -224,13 +224,46 @@ const LESSON06_AI_TOOL_URL = "";
     return ok ? Promise.resolve() : Promise.reject(new Error("copy"));
   }
 
+  async function populateNameOptions() {
+    const className = $("classSelect").value;
+    const nameSelect = $("nameSelect");
+    nameSelect.replaceChildren(new Option("이름 선택", ""));
+    nameSelect.disabled = true;
+    updateLoadButton();
+    if (!className) return;
+
+    setStatus("loadStatus", "이름 목록을 불러오는 중입니다.", "info");
+    try {
+      const result = await jsonp({
+        action: "listLesson06Names",
+        school_code: SCHOOL_CODE,
+        class_name: className
+      });
+      if (!result?.success || !Array.isArray(result.names)) throw new Error(result?.message || "names");
+      result.names.forEach((name) => {
+        nameSelect.appendChild(new Option(name, name));
+      });
+      nameSelect.disabled = result.names.length === 0;
+      setStatus("loadStatus", "자신의 학급과 이름을 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.", "info");
+    } catch (error) {
+      nameSelect.replaceChildren(new Option("이름 목록 확인 필요", ""));
+      nameSelect.disabled = true;
+      const message = error.message === "missing-api-url"
+        ? "Apps Script /exec URL이 아직 설정되지 않았습니다. 선생님께 알려 주세요."
+        : "이름 목록을 불러오지 못했습니다. 선생님께 알려 주세요.";
+      setStatus("loadStatus", message, "error");
+    } finally {
+      updateLoadButton();
+    }
+  }
+
   function updateLoadButton() {
-    $("loadStudent").disabled = !$("classSelect").value || !$("nameInput").value.trim();
+    $("loadStudent").disabled = !$("classSelect").value || !$("nameSelect").value;
   }
 
   async function loadStudent() {
     const className = $("classSelect").value;
-    const name = $("nameInput").value.trim();
+    const name = $("nameSelect").value;
     if (!className || !name) return;
 
     $("loadStudent").disabled = true;
@@ -763,13 +796,10 @@ const LESSON06_AI_TOOL_URL = "";
   function initEvents() {
     $("classSelect").value = defaultClass;
     $("classSelect").addEventListener("change", () => {
-      setStatus("loadStatus", "자신의 학급과 이름을 정확하게 입력하세요. 친구의 자료를 열거나 수정하지 않습니다.", "info");
-      updateLoadButton();
+      setStatus("loadStatus", "자신의 학급과 이름을 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.", "info");
+      populateNameOptions();
     });
-    $("nameInput").addEventListener("input", updateLoadButton);
-    $("nameInput").addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !$("loadStudent").disabled) loadStudent();
-    });
+    $("nameSelect").addEventListener("change", updateLoadButton);
     $("loadStudent").addEventListener("click", loadStudent);
     $("confirmIdentity").addEventListener("click", () => {
       state.identityConfirmed = true;
@@ -932,6 +962,7 @@ const LESSON06_AI_TOOL_URL = "";
       persistImportant("help_requested");
       render();
     });
+    populateNameOptions();
   }
 
   function init() {

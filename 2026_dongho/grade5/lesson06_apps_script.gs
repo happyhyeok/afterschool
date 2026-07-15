@@ -97,7 +97,9 @@ function doGet(e) {
   const action = String(p.action || "").trim();
   let result;
   try {
-    if (action === "getStudent") {
+    if (action === "listLesson06Names") {
+      result = handleListLesson06Names(p);
+    } else if (action === "getStudent") {
       result = handleGetStudent(p);
     } else if (action === "saveLesson06Progress") {
       // GitHub Pages + Apps Script 환경에서 기존 수업 페이지가 사용해 온 JSONP 방식을 보존합니다.
@@ -127,6 +129,39 @@ function doPost(e) {
     result = createErrorPayload_("INTERNAL_ERROR", "처리 중 문제가 생겼습니다. 선생님께 알려 주세요.");
   }
   return createJsonResponse(result);
+}
+
+function handleListLesson06Names(raw) {
+  const schoolCode = sanitizeKey_(raw.school_code || "");
+  const className = normalizeClassName_(raw.class_name || "");
+  if (schoolCode !== LESSON06_ALLOWED_SCHOOL_CODE || !className) {
+    return createErrorPayload_("INVALID_INPUT", "학급을 정확하게 선택해 주세요.");
+  }
+
+  const ss = SpreadsheetApp.openById(LESSON06_SPREADSHEET_ID);
+  const studentsSheet = getRequiredSheet_(ss, LESSON06_STUDENTS_SHEET);
+  if (!studentsSheet) {
+    return createErrorPayload_("SHEET_NOT_READY", "학생 자료를 불러올 준비가 되지 않았습니다. 선생님께 알려 주세요.");
+  }
+
+  const studentsData = getSheetObjects_(studentsSheet);
+  const names = studentsData.objects
+    .filter((row) => String(row.school_code || "") === schoolCode &&
+      String(row.class_name || "") === className &&
+      String(row.active || "").toUpperCase() === "TRUE")
+    .sort((a, b) => Number(a.number || 0) - Number(b.number || 0) ||
+      String(a.name || "").localeCompare(String(b.name || ""), "ko", { numeric: true }))
+    .map((row) => String(row.name || "").trim())
+    .filter(Boolean);
+
+  return {
+    success: true,
+    message: "이름 목록을 불러왔습니다.",
+    names: names,
+    data: {
+      count: names.length
+    }
+  };
 }
 
 function handleGetStudent(raw) {
@@ -230,7 +265,7 @@ function validateStudentRequest(raw) {
   const number = normalizePositiveInteger_(raw.number);
 
   if (schoolCode !== LESSON06_ALLOWED_SCHOOL_CODE || !className || (!name && !number)) {
-    return createErrorPayload_("INVALID_INPUT", "학급과 이름을 정확하게 입력해 주세요.");
+    return createErrorPayload_("INVALID_INPUT", "학급과 이름을 정확하게 선택해 주세요.");
   }
   return { success: true, school_code: schoolCode, class_name: className, name: name, number: number };
 }

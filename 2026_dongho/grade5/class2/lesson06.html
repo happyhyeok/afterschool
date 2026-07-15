@@ -41,14 +41,16 @@
             <option value="2반">5학년 2반</option>
           </select>
         </label>
-        <label class="field" for="nameInput">
+        <label class="field" for="nameSelect">
           <span>이름</span>
-          <input id="nameInput" type="text" autocomplete="name" placeholder="이름 입력">
+          <select id="nameSelect" disabled>
+            <option value="">이름 선택</option>
+          </select>
         </label>
       </div>
 
       <button class="btn btn-primary wide" id="loadStudent" type="button" disabled>내 자료 불러오기</button>
-      <p class="status" id="loadStatus" aria-live="polite">자신의 학급과 이름을 정확하게 입력하세요. 친구의 자료를 열거나 수정하지 않습니다.</p>
+      <p class="status" id="loadStatus" aria-live="polite">자신의 학급과 이름을 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.</p>
     </section>
 
     <section class="student-strip" id="studentStrip" hidden>
