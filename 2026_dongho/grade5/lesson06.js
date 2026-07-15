@@ -193,6 +193,18 @@ const LESSON06_AI_TOOL_URL = "";
     });
   }
 
+  async function postJson(params) {
+    if (!LESSON06_API_URL) throw new Error("missing-api-url");
+    const response = await fetch(LESSON06_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(params),
+      redirect: "follow"
+    });
+    if (!response.ok) throw new Error("network");
+    return response.json();
+  }
+
   function externalOpen(url, countAsEdit = false) {
     if (!url) return false;
     window.open(url, "_blank", "noopener,noreferrer");
@@ -680,35 +692,13 @@ const LESSON06_AI_TOOL_URL = "";
     $("saveState").textContent = "저장 중";
     $("saveState").dataset.tone = "info";
     try {
-      const result = await jsonp({
-        action: "saveLesson06Progress",
-        reason,
-        student_id: state.studentId,
-        school_code: SCHOOL_CODE,
-        class_name: state.className,
-        number: state.number,
-        name: student.name,
-        current_step: state.currentStep,
-        identity_confirmed: String(state.identityConfirmed),
-        satisfaction: state.satisfaction,
-        keep_part: selectedKeepPart(),
-        edit_part_1: state.editPart1,
-        edit_detail_1: state.editDetail1,
-        edit_part_2: state.editPart2,
-        edit_detail_2: state.editDetail2,
-        edit_count: state.editCount,
-        first_result_evaluation: state.firstResultEvaluation,
-        first_keep_evaluation: state.firstKeepEvaluation,
-        second_edit_part: state.secondEditPart,
-        second_edit_detail: state.secondEditDetail,
-        selected_image: IMAGE_LABELS[state.selectedImage] || state.selectedImage,
-        selection_reason: state.selectionReason,
-        slide_saved: String(state.slideSaved),
-        final_checks: state.finalChecks.join(", "),
-        reflection: state.reflection,
-        help_type: state.helpType,
-        completed: String(state.completed)
-      });
+      const payload = buildProgressPayload(reason);
+      let result;
+      try {
+        result = await postJson(payload);
+      } catch (_) {
+        result = await jsonp(payload);
+      }
       if (!result?.success) throw new Error(result?.message || "save");
       $("saveState").textContent = "저장됨";
       $("saveState").dataset.tone = "success";
@@ -717,6 +707,50 @@ const LESSON06_AI_TOOL_URL = "";
       $("saveState").dataset.tone = "error";
       setStatus("completeStatus", "인터넷 연결 때문에 저장하지 못했습니다. 작업 내용은 이 컴퓨터에 남아 있습니다. 잠시 후 다시 저장해 주세요.", "error");
     }
+  }
+
+  function buildProgressPayload(reason) {
+    const payload = {
+      action: "saveLesson06Progress",
+      reason,
+      student_id: state.studentId,
+      school_code: SCHOOL_CODE,
+      class_name: state.className,
+      number: state.number,
+      current_step: state.currentStep
+    };
+    const put = (key, value, includeEmpty = false) => {
+      if (includeEmpty || value !== undefined && value !== null && String(value).trim() !== "") {
+        payload[key] = value;
+      }
+    };
+
+    if (state.identityConfirmed || reason === "identity_confirmed" || state.completed) {
+      payload.identity_confirmed = String(state.identityConfirmed);
+    }
+    put("satisfaction", state.satisfaction);
+    put("keep_part", state.keepPart);
+    put("keep_custom", state.keepCustom);
+    put("edit_part_1", state.editPart1);
+    put("edit_detail_1", state.editDetail1);
+    put("edit_part_2", state.editPart2);
+    put("edit_detail_2", state.editDetail2);
+    put("generated_prompt", state.generatedPrompt);
+    put("edited_prompt", state.editedPrompt);
+    payload.edit_count = state.editCount;
+    put("first_result_evaluation", state.firstResultEvaluation);
+    put("first_keep_evaluation", state.firstKeepEvaluation);
+    put("second_edit_part", state.secondEditPart);
+    put("second_edit_detail", state.secondEditDetail);
+    put("second_prompt", state.secondPrompt);
+    put("selected_image", IMAGE_LABELS[state.selectedImage] || state.selectedImage);
+    put("selection_reason", state.selectionReason);
+    if (state.slideSaved || state.completed) payload.slide_saved = String(state.slideSaved);
+    if (state.finalChecks.length) payload.final_checks = state.finalChecks.join(", ");
+    put("reflection", state.reflection);
+    put("help_type", state.helpType);
+    if (state.completed || reason === "completed") payload.completed = String(state.completed);
+    return payload;
   }
 
   function selectRadioState(key, value) {
