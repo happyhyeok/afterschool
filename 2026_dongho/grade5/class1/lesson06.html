@@ -7,287 +7,295 @@
   <title>5학년 1반 6차시 - 내 AI 캐릭터 다시 완성하기</title>
   <link rel="stylesheet" href="../lesson06.css">
 </head>
-<body data-default-class="1반">
+<body data-class-id="class1">
   <a class="skip-link" href="#main">본문으로 바로가기</a>
 
-  <header class="topbar" aria-label="수업 진행 상태">
-    <div class="topbar-inner">
-      <div>
-        <p class="eyebrow">레벨업! AI 게임 스튜디오 · 6차시</p>
-        <h1>6차시: 내 AI 캐릭터 다시 완성하기</h1>
-        <p class="current-step" id="currentStepText">학급과 이름을 입력하세요.</p>
-      </div>
-      <div class="top-actions">
-        <button class="btn btn-light" id="goHome" type="button">처음으로</button>
-        <button class="btn btn-warning" id="openHelp" type="button">도움 요청</button>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">레벨업! AI 게임 스튜디오 · 6차시</p>
+      <h1>6차시: 내 AI 캐릭터 다시 완성하기</h1>
+      <p class="subtitle">기존 AI 캐릭터 이미지를 살펴보고, 내가 원하는 모습에 가깝게 다시 완성해 봅니다.</p>
+      <div class="mission-track" aria-label="오늘 활동 순서">
+        <span>자료 확인</span><span>수정 계획</span><span>제미나이 수정</span><span>대표 이미지 선택</span><span>슬라이드 저장</span>
       </div>
     </div>
-    <div class="top-progress" aria-hidden="true"><span id="topProgressBar"></span></div>
-    <nav class="step-track" id="stepTrack" aria-label="6차시 활동 단계"></nav>
   </header>
 
   <main class="shell" id="main">
-    <section class="hero-card" id="startPanel">
-      <p class="step">시작 · 내 자료 접속</p>
-      <h2>6차시: 내 AI 캐릭터 다시 완성하기</h2>
-      <p class="lead">기존 캐릭터에서 유지할 점과 바꿀 점을 찾고, 캐릭터 카드에 사용할 대표 이미지 한 장을 결정합니다.</p>
-
-      <div class="form-grid">
-        <label class="field" for="classSelect">
-          <span>학급</span>
-          <select id="classSelect">
-            <option value="">학급 선택</option>
-            <option value="1반">5학년 1반</option>
-            <option value="2반">5학년 2반</option>
-          </select>
-        </label>
-        <label class="field" for="nameSelect">
-          <span>이름</span>
-          <select id="nameSelect" disabled>
-            <option value="">이름 선택</option>
-          </select>
-        </label>
+    <section class="panel intro-panel">
+      <p class="step">오늘의 목표</p>
+      <h2>내 캐릭터를 내가 원하는 모습으로 다시 완성하기</h2>
+      <p class="goal">기존 AI 캐릭터 이미지를 살펴보고, 유지할 점과 바꿀 점을 정하여 내가 원하는 캐릭터에 가깝게 수정할 수 있다.</p>
+      <aside class="message-box">
+        <h3>기억할 문장</h3>
+        <p>AI가 처음 만든 결과는 완성품이 아닙니다.<br>결과를 살펴보고 내가 원하는 모습으로 고치는 것이 중요합니다.</p>
+      </aside>
+      <div class="today-list">
+        <h3>오늘 할 일</h3>
+        <ul>
+          <li>내 캐릭터 자료 확인하기</li>
+          <li>유지할 점과 바꿀 점 정하기</li>
+          <li>제미나이로 최대 두 번 수정하기</li>
+          <li>대표 이미지 한 장 저장하기</li>
+        </ul>
       </div>
-
-      <button class="btn btn-primary wide" id="loadStudent" type="button" disabled>내 자료 불러오기</button>
-      <p class="status" id="loadStatus" aria-live="polite">자신의 학급과 이름을 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.</p>
     </section>
 
-    <section class="student-strip" id="studentStrip" hidden>
-      <span id="studentLabel">학생 자료를 불러오면 여기에 표시됩니다.</span>
-      <span class="save-state" id="saveState">저장 대기</span>
-    </section>
+    <section class="panel" id="student-section">
+      <p class="step">준비 · 내 자료 접속</p>
+      <h2>먼저 내 자료를 확인해 봅시다</h2>
+      <p class="hint">제미나이와 Google 슬라이드에 사용할 내 Google 아이디를 먼저 확인하세요.</p>
+      <a class="btn btn-account" href="https://docs.google.com/spreadsheets/d/10gbPCPKfh60EDXtjqMtOiCzqidgTEheq/edit?rtpof=true" target="_blank" rel="noopener noreferrer">내 Google 아이디 확인하기</a>
 
-    <section class="panel lesson-step" data-step-panel="1" hidden>
-      <p class="step">① 내 자료 확인</p>
-      <h2>이 자료가 내 캐릭터가 맞나요?</h2>
-      <div class="identity-box">
-        <p id="identityText">자료를 불러오면 본인 확인 문장이 표시됩니다.</p>
-        <div class="button-row">
-          <button class="btn btn-primary" id="confirmIdentity" type="button">네, 맞아요</button>
-          <button class="btn btn-secondary" id="rejectIdentity" type="button">아니요, 선생님께 도움을 요청할게요</button>
-        </div>
-        <p class="notice" id="identityNotice" hidden>화면을 그대로 두고 선생님께 알려 주세요. 다른 학생 이름을 임의로 입력하지 마세요.</p>
+      <div class="name-picker">
+        <label for="studentName">내 이름을 선택하세요.</label>
+        <select id="studentName">
+          <option value="">학생 이름 선택</option>
+        </select>
+        <button class="btn btn-primary" id="loadCharacter" type="button" disabled>내 캐릭터 자료 확인하기</button>
       </div>
+      <p class="status" id="loadStatus" aria-live="polite">이름을 선택한 뒤 내 캐릭터 자료 확인하기를 눌러 주세요.</p>
 
-      <article class="character-card">
-        <div class="character-visual" id="characterVisual">기존 이미지 확인 필요</div>
+      <article class="character-card" id="characterCard" hidden>
+        <div class="character-visual" id="characterVisual">캐릭터 이미지</div>
         <div class="character-info">
-          <h3>내 캐릭터 자료</h3>
-          <dl class="info-list" id="profileList"></dl>
+          <p class="card-kicker">내 캐릭터 자료</p>
+          <h3><span id="studentNameText"></span> 학생</h3>
+          <dl class="info-list">
+            <div><dt>캐릭터 이름</dt><dd id="cardCharacterName"></dd></div>
+            <div><dt>성격</dt><dd id="cardPersonality"></dd></div>
+            <div><dt>대표 스킬</dt><dd id="cardMainSkill"></dd></div>
+          </dl>
+          <p class="hint">슬라이드와 음악 자료를 열어 지금까지 만든 자료를 확인하세요.</p>
+          <div class="button-row">
+            <a class="btn btn-linklike" id="slidesLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 캐릭터 슬라이드 열기</a>
+            <a class="btn btn-linklike" id="musicLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">음악 확인하기</a>
+          </div>
+          <p class="mini-status" id="slidesLinkStatus" aria-live="polite"></p>
         </div>
       </article>
 
-      <div class="link-grid" aria-label="개인별 바로가기">
-        <a class="btn btn-linklike" id="imageLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">기존 이미지 보기</a>
-        <a class="btn btn-linklike" id="musicLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">음악 듣기</a>
-        <a class="btn btn-linklike" id="slidesLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Google 슬라이드 열기</a>
-      </div>
-      <div class="message-grid">
-        <p class="mini-status" id="imageLinkStatus"></p>
-        <p class="mini-status" id="musicLinkStatus"></p>
-        <p class="mini-status" id="slidesLinkStatus"></p>
-      </div>
+      <fieldset class="check-panel" id="profileChecks" disabled>
+        <legend>내 캐릭터 자료를 확인했나요?</legend>
+        <label><input type="checkbox" value="name"> 내 캐릭터 이름이 맞습니다.</label>
+        <label><input type="checkbox" value="personality"> 내 캐릭터 성격이 맞습니다.</label>
+        <label><input type="checkbox" value="skill"> 내 대표 스킬이 맞습니다.</label>
+        <label><input type="checkbox" value="image"> 내 캐릭터 이미지가 보입니다.</label>
+      </fieldset>
     </section>
 
-    <section class="panel lesson-step" data-step-panel="2" hidden>
-      <p class="step">② 이미지 점검</p>
-      <h2>유지할 점과 바꿀 점을 고르세요</h2>
+    <section class="panel" id="image-check-section">
+      <p class="step">활동 1</p>
+      <h2>내 캐릭터 이미지 살펴보기</h2>
+      <p class="question">지금 캐릭터 이미지가 마음에 드나요?</p>
+      <div class="choice-grid three-col" role="radiogroup" aria-label="캐릭터 이미지 만족도">
+        <label class="choice-card"><input type="radio" name="satisfaction" value="same"><span class="choice-icon">✓</span><strong>그대로 사용하고 싶어요</strong><small>AI로 다시 수정하지 않아도 됩니다.</small></label>
+        <label class="choice-card"><input type="radio" name="satisfaction" value="little"><span class="choice-icon">✦</span><strong>조금만 수정하고 싶어요</strong><small>가장 중요한 부분부터 고쳐 봅니다.</small></label>
+        <label class="choice-card"><input type="radio" name="satisfaction" value="much"><span class="choice-icon">↻</span><strong>많이 수정하고 싶어요</strong><small>바꾸고 싶은 점을 두 가지까지 정합니다.</small></label>
+      </div>
 
-      <fieldset class="choice-group">
-        <legend>지금 캐릭터 이미지가 마음에 드나요?</legend>
-        <div class="choice-grid" data-radio-group="satisfaction">
-          <button class="choice-card" type="button" data-value="그대로 사용하고 싶어요">😊 그대로 사용하고 싶어요</button>
-          <button class="choice-card" type="button" data-value="조금만 수정하고 싶어요">🙂 조금만 수정하고 싶어요</button>
-          <button class="choice-card" type="button" data-value="많이 수정하고 싶어요">🤔 많이 수정하고 싶어요</button>
+      <div class="subsection">
+        <label for="keepPart">꼭 그대로 남기고 싶은 부분을 하나 선택하세요.</label>
+        <select id="keepPart">
+          <option value="">유지할 부분 선택</option>
+          <option>얼굴·표정</option><option>색상</option><option>옷</option><option>자세</option>
+          <option>소품</option><option>배경</option><option>그림 스타일</option><option>직접 입력</option>
+        </select>
+        <input id="keepCustom" type="text" placeholder="그대로 남기고 싶은 부분을 직접 써 보세요." hidden>
+      </div>
+
+      <div class="subsection">
+        <label>가장 먼저 바꾸고 싶은 부분을 최대 두 개 선택하세요.</label>
+        <p class="small-hint">한 번에 너무 많은 부분을 바꾸면 원래 캐릭터의 특징이 사라질 수 있어요. 가장 중요한 것부터 고쳐 봅시다.</p>
+        <div class="choice-grid edit-grid" id="editPartChoices">
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="표정"><strong>표정</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="색상"><strong>색상</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="옷"><strong>옷</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="자세"><strong>자세</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="소품"><strong>소품</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="배경"><strong>배경</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="그림 스타일"><strong>그림 스타일</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="특별한 효과"><strong>특별한 효과</strong></label>
+          <label class="choice-card compact"><input type="checkbox" name="editPart" value="수정하지 않음"><strong>수정하지 않음</strong></label>
         </div>
-      </fieldset>
-
-      <fieldset class="choice-group">
-        <legend>꼭 그대로 남기고 싶은 부분을 하나 선택하세요.</legend>
-        <div class="choice-grid compact" id="keepPartChoices"></div>
-        <label class="field inline-field" id="keepCustomWrap" for="keepCustom" hidden>
-          <span>직접 입력</span>
-          <input id="keepCustom" type="text" maxlength="30" placeholder="예: 파란색 갑옷">
-        </label>
-        <p class="auto-sentence" id="keepSentence">내가 유지하고 싶은 것은 아직 선택하지 않았습니다.</p>
-      </fieldset>
-
-      <fieldset class="choice-group">
-        <legend>가장 먼저 바꾸고 싶은 부분을 하나 선택하세요.</legend>
-        <div class="choice-grid compact" id="editPartChoices"></div>
-        <button class="btn btn-secondary" id="addSecondEdit" type="button" hidden>수정할 부분 하나 더 고르기</button>
-        <div id="secondEditArea" hidden>
-          <p class="hint">두 번째 수정 항목은 선택입니다. 첫 번째와 같은 항목은 고를 수 없습니다.</p>
-          <div class="choice-grid compact" id="editPart2Choices"></div>
-        </div>
-      </fieldset>
-
-      <aside class="notice">
-        한 번에 너무 많은 부분을 바꾸면 원래 캐릭터의 특징이 사라질 수 있습니다. 가장 중요한 부분 1개, 많아도 2개만 선택하세요.
-      </aside>
+        <div class="status" id="editPartStatus" aria-live="polite">바꾸고 싶은 부분을 선택해 주세요.</div>
+      </div>
     </section>
 
-    <section class="panel lesson-step" data-step-panel="3" hidden>
-      <p class="step">③ 수정 요청 만들기</p>
-      <h2>AI에게 붙여넣을 문장을 만드세요</h2>
-      <div id="detailQuestions" class="question-stack"></div>
-      <p class="notice" id="vagueWarning" hidden>‘멋지게’, ‘예쁘게’만 쓰면 AI가 내가 원하는 모습을 알기 어렵습니다. 색, 모양, 표정, 크기 또는 위치를 더 자세히 써 보세요.</p>
-
-      <label class="field" for="editedPrompt">
-        <span>자동 생성된 프롬프트</span>
-        <textarea id="editedPrompt" rows="8" placeholder="선택을 마치면 프롬프트가 자동으로 만들어집니다."></textarea>
-      </label>
-      <div class="button-row">
-        <button class="btn btn-primary" id="copyPrompt" type="button">프롬프트 복사하기</button>
-        <button class="btn btn-secondary" data-example-toggle="face" type="button">표정 수정 예시</button>
-        <button class="btn btn-secondary" data-example-toggle="color" type="button">색상 수정 예시</button>
-        <button class="btn btn-secondary" data-example-toggle="skill" type="button">대표 스킬 효과 예시</button>
-        <button class="btn btn-secondary" data-example-toggle="background" type="button">배경 수정 예시</button>
+    <section class="panel" id="plan-section">
+      <p class="step">활동 2</p>
+      <h2>수정 계획을 세워 봅시다</h2>
+      <p class="hint">선택한 부분을 어떻게 바꿀지 구체적으로 적어 보세요.</p>
+      <div id="editPlanFields" class="plan-fields">
+        <p class="empty-state">먼저 바꾸고 싶은 부분을 선택하면 질문이 나타납니다.</p>
       </div>
-      <div class="example-box" id="exampleBox" hidden></div>
-      <p class="status" id="copyStatus" aria-live="polite">프롬프트를 복사하면 AI 화면에 붙여넣을 수 있습니다.</p>
+      <div class="button-row">
+        <button class="btn btn-primary" id="makeFirstPrompt" type="button">수정 프롬프트 만들기</button>
+        <button class="btn btn-secondary" id="openPromptExamples" type="button">수정 요청 예시 보기</button>
+      </div>
+      <p class="status" id="planStatus" aria-live="polite">색, 표정, 크기, 모양처럼 바꾸고 싶은 모습을 자세히 써 보세요.</p>
     </section>
 
-    <section class="panel lesson-step" data-step-panel="4" hidden>
-      <p class="step">④ AI 수정</p>
-      <h2>AI로 최대 두 번만 수정하세요</h2>
-      <div class="progress-card">
-        <strong id="editCountText">AI 수정 횟수: 0 / 2</strong>
-        <div class="progress-track"><span id="editCountBar"></span></div>
-      </div>
-      <button class="btn btn-primary wide" id="openAiTool" type="button">AI 이미지 수정하러 가기</button>
-      <p class="status" id="aiToolStatus" aria-live="polite">AI 도구 주소를 확인하고 있습니다. 선생님께 알려 주세요.</p>
-
-      <div class="result-grid">
-        <fieldset class="choice-group">
-          <legend>내가 요청한 부분이 바뀌었나요?</legend>
-          <div class="choice-grid compact" data-radio-group="firstResultEvaluation">
-            <button class="choice-card" type="button" data-value="잘 바뀌었어요">잘 바뀌었어요</button>
-            <button class="choice-card" type="button" data-value="조금 바뀌었어요">조금 바뀌었어요</button>
-            <button class="choice-card" type="button" data-value="거의 바뀌지 않았어요">거의 바뀌지 않았어요</button>
-            <button class="choice-card" type="button" data-value="원하지 않은 부분도 바뀌었어요">원하지 않은 부분도 바뀌었어요</button>
-          </div>
-        </fieldset>
-        <fieldset class="choice-group">
-          <legend>유지하고 싶었던 부분이 남아 있나요?</legend>
-          <div class="choice-grid compact" data-radio-group="firstKeepEvaluation">
-            <button class="choice-card" type="button" data-value="그대로 남아 있어요">그대로 남아 있어요</button>
-            <button class="choice-card" type="button" data-value="조금 달라졌어요">조금 달라졌어요</button>
-            <button class="choice-card" type="button" data-value="많이 달라졌어요">많이 달라졌어요</button>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="button-row">
-        <button class="btn btn-secondary" id="useFirstCandidate" type="button">이 결과를 대표 이미지 후보로 사용</button>
-        <button class="btn btn-secondary" id="requestSecondEdit" type="button">한 번 더 수정</button>
-        <button class="btn btn-secondary" id="useOriginalImage" type="button">기존 이미지 사용</button>
-      </div>
-
-      <div class="second-edit-panel" id="secondEditPanel" hidden>
-        <h3>두 번째 수정</h3>
-        <p class="notice">첫 번째 결과에서 가장 아쉬운 부분 하나만 고쳐 보세요. AI 수정은 이번이 마지막입니다.</p>
-        <div class="choice-grid compact" id="secondEditPartChoices"></div>
-        <label class="field" for="secondEditDetail">
-          <span>마지막으로 바꾸고 싶은 모습</span>
-          <input id="secondEditDetail" type="text" placeholder="예: 배경만 더 단순한 하늘색으로 바꿔 줘.">
-        </label>
-        <label class="field" for="secondPrompt">
-          <span>두 번째 프롬프트</span>
-          <textarea id="secondPrompt" rows="5"></textarea>
-        </label>
+    <section class="panel" id="prompt-section">
+      <p class="step">활동 3</p>
+      <h2>제미나이에서 이미지 수정하기</h2>
+      <p class="hint">내 선택과 캐릭터 정보를 바탕으로 제미나이에 붙여 넣을 요청문을 만들어 봅니다.</p>
+      <div class="prompt-box">
+        <label for="firstPrompt">첫 번째 수정 프롬프트</label>
+        <textarea id="firstPrompt" rows="8" readonly placeholder="활동 2에서 수정 프롬프트를 만들면 여기에 나타납니다."></textarea>
         <div class="button-row">
-          <button class="btn btn-primary" id="copySecondPrompt" type="button">두 번째 프롬프트 복사하기</button>
-          <button class="btn btn-primary" id="openAiToolSecond" type="button">AI 이미지 수정하러 가기</button>
+          <button class="btn btn-secondary" id="copyFirstPrompt" type="button" disabled>프롬프트 복사하기</button>
+          <a class="btn btn-gemini disabled" id="openGeminiFirst" target="_blank" rel="noopener noreferrer" aria-disabled="true">제미나이 열기</a>
+        </div>
+        <p class="mini-status" id="firstPromptStatus" aria-live="polite">제미나이에서 이미지를 수정한 뒤 이 페이지로 돌아오세요.</p>
+      </div>
+      <div class="notice-box">
+        <strong>수정 횟수: <span id="editCountText">0</span> / 2</strong>
+        <span>한 번에 한두 가지를 고치고, 원래 캐릭터의 특징이 남았는지 확인하세요.</span>
+      </div>
+    </section>
+
+    <section class="panel" id="result-section">
+      <p class="step">활동 4</p>
+      <h2>수정 결과를 비교해 봅시다</h2>
+      <p class="question">내가 요청한 부분이 바뀌었나요?</p>
+      <div class="choice-grid result-grid">
+        <label class="choice-card compact"><input type="radio" name="firstResult" value="잘 바뀌었어요"><strong>잘 바뀌었어요</strong></label>
+        <label class="choice-card compact"><input type="radio" name="firstResult" value="조금 바뀌었어요"><strong>조금 바뀌었어요</strong></label>
+        <label class="choice-card compact"><input type="radio" name="firstResult" value="거의 바뀌지 않았어요"><strong>거의 바뀌지 않았어요</strong></label>
+        <label class="choice-card compact"><input type="radio" name="firstResult" value="원하지 않은 부분도 바뀌었어요"><strong>원하지 않은 부분도 바뀌었어요</strong></label>
+      </div>
+      <p class="question">유지하고 싶었던 부분이 남아 있나요?</p>
+      <div class="choice-grid result-grid">
+        <label class="choice-card compact"><input type="radio" name="firstKeep" value="그대로 남아 있어요"><strong>그대로 남아 있어요</strong></label>
+        <label class="choice-card compact"><input type="radio" name="firstKeep" value="조금 달라졌어요"><strong>조금 달라졌어요</strong></label>
+        <label class="choice-card compact"><input type="radio" name="firstKeep" value="많이 달라졌어요"><strong>많이 달라졌어요</strong></label>
+      </div>
+
+      <p class="question">다음에는 어떻게 할까요?</p>
+      <div class="choice-grid three-col">
+        <label class="choice-card"><input type="radio" name="nextAction" value="first"><strong>이 결과를 대표 이미지로 사용할래요</strong></label>
+        <label class="choice-card"><input type="radio" name="nextAction" value="second"><strong>한 번 더 수정할래요</strong><small>이번이 마지막 수정입니다.</small></label>
+        <label class="choice-card"><input type="radio" name="nextAction" value="original"><strong>기존 이미지를 사용할래요</strong></label>
+      </div>
+      <p class="status" id="resultStatus" aria-live="polite">결과를 살펴본 뒤 다음 행동을 선택하세요.</p>
+
+      <div class="second-edit" id="secondEditArea" hidden>
+        <h3>두 번째 수정 계획</h3>
+        <p class="notice-box">이번이 마지막 수정입니다. 가장 중요한 한 부분만 고쳐 봅시다.</p>
+        <label for="secondEditPart">다시 수정할 부분을 하나 선택하세요.</label>
+        <select id="secondEditPart"><option value="">수정할 부분 선택</option></select>
+        <label for="secondEditDetail">어떤 모습으로 바꾸고 싶나요?</label>
+        <textarea id="secondEditDetail" rows="4" placeholder="예: 눈을 조금 크게 하고 밝게 웃는 표정으로 바꿔 줘."></textarea>
+        <div class="button-row second-prompt-create-row">
+          <button class="btn btn-primary" id="makeSecondPrompt" type="button">두 번째 프롬프트 만들기</button>
+        </div>
+        <div class="prompt-box">
+          <label for="secondPrompt">두 번째 수정 프롬프트</label>
+          <textarea id="secondPrompt" rows="6" readonly placeholder="두 번째 계획을 정한 뒤 프롬프트를 만들어 주세요."></textarea>
+          <div class="button-row">
+            <button class="btn btn-secondary" id="copySecondPrompt" type="button" disabled>프롬프트 복사하기</button>
+            <a class="btn btn-gemini disabled" id="openGeminiSecond" target="_blank" rel="noopener noreferrer" aria-disabled="true">제미나이 열기</a>
+          </div>
+          <p class="mini-status" id="secondPromptStatus" aria-live="polite">두 번째 수정은 한 번만 할 수 있습니다.</p>
         </div>
       </div>
     </section>
 
-    <section class="panel lesson-step" data-step-panel="5" hidden>
-      <p class="step">⑤ 대표 이미지 저장</p>
-      <h2>캐릭터 카드에 쓸 대표 이미지를 고르세요</h2>
-      <div class="choice-grid" id="imageChoiceGrid">
-        <button class="choice-card" type="button" data-image-choice="original">기존 이미지</button>
-        <button class="choice-card" type="button" data-image-choice="first">첫 번째 수정 이미지</button>
-        <button class="choice-card" type="button" data-image-choice="second">두 번째 수정 이미지</button>
+    <section class="panel" id="select-section">
+      <p class="step">활동 5</p>
+      <h2>대표 이미지 한 장을 선택해 봅시다</h2>
+      <div class="choice-grid three-col image-choice-grid">
+        <label class="choice-card"><input type="radio" name="selectedImage" value="original"><strong>기존 이미지</strong><small>처음 만든 이미지를 사용합니다.</small></label>
+        <label class="choice-card"><input type="radio" name="selectedImage" value="first"><strong>첫 번째 수정 이미지</strong><small>첫 번째 결과를 사용합니다.</small></label>
+        <label class="choice-card"><input type="radio" name="selectedImage" value="second" disabled><strong>두 번째 수정 이미지</strong><small>두 번째 수정을 했을 때 선택할 수 있습니다.</small></label>
       </div>
+      <div class="criteria-box">
+        <h3>선택 기준</h3>
+        <ul>
+          <li>캐릭터의 성격과 잘 어울립니다.</li>
+          <li>대표 스킬이 잘 드러납니다.</li>
+          <li>유지하고 싶었던 특징이 남아 있습니다.</li>
+          <li>캐릭터가 크고 분명하게 보입니다.</li>
+          <li>내가 사용하고 싶은 이미지입니다.</li>
+        </ul>
+      </div>
+      <label for="selectionReason">나는 <span id="selectedImageText">선택한 이미지</span>를 선택했습니다. 그 이유는 __________이기 때문입니다.</label>
+      <textarea id="selectionReason" rows="3" placeholder="선택한 이유를 구체적으로 적어 보세요."></textarea>
+    </section>
 
+    <section class="panel" id="save-section">
+      <p class="step">활동 6</p>
+      <h2>대표 이미지를 내 슬라이드에 넣어 봅시다</h2>
+      <ol class="instruction-list">
+        <li>제미나이에서 선택한 이미지를 저장하거나 복사합니다.</li>
+        <li>‘내 캐릭터 슬라이드 열기’를 누릅니다.</li>
+        <li>캐릭터 이미지가 있는 슬라이드에 최종 이미지를 넣습니다.</li>
+        <li>이미지가 잘 들어갔는지 확인합니다.</li>
+      </ol>
+      <div class="button-row">
+        <a class="btn btn-linklike" id="slidesLinkSave" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 캐릭터 슬라이드 열기</a>
+        <button class="btn btn-secondary" id="openImageHelp" type="button">이미지 넣는 방법 보기</button>
+        <button class="btn btn-save" id="markSlideSaved" type="button" disabled>슬라이드에 저장했어요</button>
+      </div>
+      <p class="status" id="slideSavedStatus" aria-live="polite">대표 이미지를 슬라이드에 넣은 뒤 확인해 주세요.</p>
+    </section>
+
+    <section class="panel" id="final-section">
+      <p class="step">마무리 · 최종 확인</p>
+      <h2>내 캐릭터 수정 과정을 정리해 봅시다</h2>
       <fieldset class="check-panel">
-        <legend>선택 기준을 3개 이상 체크하세요.</legend>
-        <label><input type="checkbox" value="personality"> 내 캐릭터의 성격과 잘 어울립니다.</label>
-        <label><input type="checkbox" value="skill"> 대표 스킬이 잘 드러납니다.</label>
-        <label><input type="checkbox" value="keep"> 유지하고 싶었던 특징이 남아 있습니다.</label>
-        <label><input type="checkbox" value="clear"> 캐릭터의 모습이 크고 분명하게 보입니다.</label>
-      </fieldset>
-
-      <label class="field" for="selectionReason">
-        <span>선택 이유</span>
-        <input id="selectionReason" type="text" placeholder="예: 대표 스킬이 잘 보이고 표정이 마음에 들기 때문입니다.">
-      </label>
-      <p class="auto-sentence" id="selectionSentence">나는 아직 대표 이미지를 선택하지 않았습니다.</p>
-
-      <aside class="slide-guide">
-        <h3>Google 슬라이드 저장 안내</h3>
-        <p>캐릭터 이미지가 있는 슬라이드의 기존 이미지를 최종 이미지로 바꾸세요.</p>
-        <ol>
-          <li>선택한 이미지를 저장하거나 복사합니다.</li>
-          <li>내 Google 슬라이드 열기 버튼을 누릅니다.</li>
-          <li>캐릭터 이미지가 있는 슬라이드의 기존 이미지를 바꿉니다.</li>
-          <li>최종 이미지가 들어갔는지 확인합니다.</li>
-        </ol>
-        <div class="button-row">
-          <a class="btn btn-primary" id="slidesLinkStep5" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Google 슬라이드 열기</a>
-          <button class="btn btn-secondary" id="toggleSlideHelp" type="button">이미지 바꾸는 방법 보기</button>
-          <button class="btn btn-save" id="markSlideSaved" type="button">슬라이드에 저장했어요</button>
-        </div>
-        <p class="mini-status" id="slideSavedStatus">아직 슬라이드 저장 확인을 하지 않았습니다.</p>
-        <div class="example-box" id="slideHelpBox" hidden>기존 이미지를 선택하고 ‘이미지 바꾸기’를 이용하세요. 새 이미지를 넣은 뒤 캐릭터가 잘 보이는지만 확인합니다.</div>
-      </aside>
-    </section>
-
-    <section class="panel lesson-step" data-step-panel="6" hidden>
-      <p class="step">⑥ 최종 확인</p>
-      <h2>마지막으로 직접 확인하세요</h2>
-      <fieldset class="check-panel" id="finalCheckPanel">
         <legend>완료 전에 확인할 것</legend>
-        <label><input type="checkbox" value="image_saved"> 대표 이미지를 저장했습니다.</label>
-        <label><input type="checkbox" value="name_checked"> 캐릭터 이름을 확인했습니다.</label>
-        <label><input type="checkbox" value="personality_checked"> 성격을 확인했습니다.</label>
-        <label><input type="checkbox" value="skill_checked"> 대표 스킬을 확인했습니다.</label>
-        <label><input type="checkbox" value="music_checked" data-music-check> 음악 링크가 열리는지 확인했습니다.</label>
-        <label><input type="checkbox" value="music_missing" data-music-missing hidden> 음악 링크가 없어 선생님께 알렸습니다.</label>
-        <label><input type="checkbox" value="reason_written"> 수정한 이유를 작성했습니다.</label>
+        <label><input type="checkbox" name="finalCheck" value="image"> 대표 이미지를 Google 슬라이드에 넣었습니다.</label>
+        <label><input type="checkbox" name="finalCheck" value="personality"> 성격을 확인했습니다.</label>
+        <label><input type="checkbox" name="finalCheck" value="skill"> 대표 스킬을 확인했습니다.</label>
+        <label><input type="checkbox" name="finalCheck" value="explain"> 내가 유지한 점과 수정한 점을 설명할 수 있습니다.</label>
       </fieldset>
-      <label class="field" for="reflection">
-        <span>성찰 문장</span>
-        <textarea id="reflection" rows="5"></textarea>
-      </label>
-      <button class="btn btn-primary wide" id="completeLesson" type="button" disabled>6차시 활동 완료</button>
-      <p class="status" id="completeStatus" aria-live="polite">필수 체크와 입력이 끝나면 완료할 수 있습니다.</p>
+      <div class="reflection-box">
+        <h3>나의 수정 과정</h3>
+        <p id="reflectionText">내 자료를 불러오고 선택 내용을 입력하면 문장이 완성됩니다.</p>
+      </div>
+      <button class="btn btn-save wide" id="completeLesson" type="button">6차시 활동 완료</button>
+      <p class="status" id="completeStatus" aria-live="polite">모든 확인을 마친 뒤 완료 버튼을 눌러 주세요.</p>
+      <div class="complete-box" id="completeBox" hidden>
+        <strong>잘했습니다!</strong>
+        <p>7차시에는 오늘 정리한 이미지, 이름, 성격, 대표 스킬을 이용해 나의 캐릭터 카드를 만듭니다.</p>
+      </div>
     </section>
 
-    <nav class="bottom-nav" id="bottomNav" hidden aria-label="이전 다음 단계 이동">
-      <button class="btn btn-secondary" id="prevStep" type="button">← 이전</button>
-      <button class="btn btn-primary" id="nextStep" type="button">다음 →</button>
-    </nav>
+    <section class="panel next-panel">
+      <p class="step">다음 시간</p>
+      <h2>7차시 미리 보기</h2>
+      <p>오늘 정리한 이미지와 캐릭터 설정으로 나만의 캐릭터 카드를 만들어 봅니다.</p>
+    </section>
   </main>
 
-  <div class="modal-backdrop" id="helpModal" hidden>
-    <section class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <h2 id="helpTitle">도움 요청</h2>
-      <p>어떤 도움이 필요한지 고르세요.</p>
-      <div class="choice-grid compact" id="helpChoices"></div>
-      <div class="button-row">
-        <button class="btn btn-primary" id="submitHelp" type="button">도움 요청 기록</button>
-        <button class="btn btn-secondary" id="closeHelp" type="button">닫기</button>
-      </div>
-      <p class="notice" id="helpMessage" hidden>손을 들고 기다리세요. 화면을 닫지 마세요. 할 수 있는 다른 단계가 있다면 먼저 진행해도 됩니다.</p>
-    </section>
-  </div>
-
   <footer class="footer">동호초 5학년 · 레벨업! AI 게임 스튜디오</footer>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="../lesson06.js?v=20260715-name-select"></script>
+
+  <dialog class="modal" id="promptExamplesModal" aria-labelledby="promptExamplesTitle">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="promptExamplesTitle">수정 요청 예시</h2><button class="icon-button" data-close-modal="promptExamplesModal" type="button" aria-label="닫기">×</button></div>
+      <div class="example-list">
+        <div class="example bad"><strong>좋지 않은 요청</strong><p>“더 멋지게 해 줘.”<br>“더 예쁘게 해 줘.”<br>“배경을 좋게 해 줘.”</p></div>
+        <div class="example good"><strong>구체적인 요청</strong><p>“갑옷에 파란색 빛 효과를 추가해 줘.”<br>“눈을 조금 크게 하고 밝게 웃는 표정으로 바꿔 줘.”<br>“캐릭터가 잘 보이도록 단순한 밤하늘 배경으로 바꿔 줘.”</p></div>
+      </div>
+      <button class="btn btn-primary" data-close-modal="promptExamplesModal" type="button">확인</button>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="imageHelpModal" aria-labelledby="imageHelpTitle">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="imageHelpTitle">이미지 넣는 방법</h2><button class="icon-button" data-close-modal="imageHelpModal" type="button" aria-label="닫기">×</button></div>
+      <ol class="instruction-list">
+        <li>제미나이의 이미지에서 저장 또는 복사를 선택합니다.</li>
+        <li>내 Google 슬라이드에서 캐릭터 이미지가 있는 슬라이드를 엽니다.</li>
+        <li>이미지를 붙여 넣거나 업로드하고, 캐릭터가 잘 보이는지 확인합니다.</li>
+      </ol>
+      <p class="hint">새 슬라이드를 만들거나 기존 슬라이드를 삭제할 필요는 없습니다.</p>
+      <button class="btn btn-primary" data-close-modal="imageHelpModal" type="button">확인</button>
+    </div>
+  </dialog>
+
+  <script src="../lesson06.js"></script>
 </body>
 </html>
