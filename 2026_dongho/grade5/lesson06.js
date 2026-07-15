@@ -1,6 +1,5 @@
-// TODO(배포): lesson06_apps_script.gs를 대상 스프레드시트 Apps Script에 추가하고
-// 웹 앱으로 배포한 뒤 아래 URL을 /exec 주소로 교체하세요.
-const LESSON06_API_URL = "";
+// 동호초 6차시 자료 조회·저장용 Apps Script 웹 앱 URL입니다.
+const LESSON06_API_URL = "https://script.google.com/macros/s/AKfycbwdGFYCTl6Hi69V1Eb7rOzPdVgS8vDIVdD6B_YCIAPHOtJ7_OLQoVBgd_Quwdipykkp/exec";
 
 // TODO(확인): Settings 시트 또는 Apps Script 응답에서 AI 도구 URL을 제공하면 자동으로 사용합니다.
 const LESSON06_AI_TOOL_URL = "";
