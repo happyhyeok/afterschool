@@ -143,7 +143,7 @@ function handleGetStudent(raw) {
   const studentsData = getSheetObjects_(studentsSheet);
   const matches = studentsData.objects.filter((row) => isMatchingActiveStudent_(row, request));
   if (matches.length === 0) {
-    return createErrorPayload_("STUDENT_NOT_FOUND", "학생 자료를 찾지 못했습니다. 학급과 번호를 확인해 주세요.");
+    return createErrorPayload_("STUDENT_NOT_FOUND", "학생 자료를 찾지 못했습니다. 학급과 이름을 확인해 주세요.");
   }
   if (matches.length > 1) {
     return createErrorPayload_("DUPLICATE_STUDENT", "학생 자료가 중복되어 있습니다. 선생님께 알려 주세요.");
@@ -226,26 +226,27 @@ function handleSaveLesson06Progress(raw) {
 function validateStudentRequest(raw) {
   const schoolCode = sanitizeKey_(raw.school_code || "");
   const className = normalizeClassName_(raw.class_name || "");
+  const name = normalizeLookupName_(raw.name || raw.student_name || "");
   const number = normalizePositiveInteger_(raw.number);
 
-  if (schoolCode !== LESSON06_ALLOWED_SCHOOL_CODE || !className || !number) {
-    return createErrorPayload_("INVALID_INPUT", "학급과 번호를 정확하게 선택해 주세요.");
+  if (schoolCode !== LESSON06_ALLOWED_SCHOOL_CODE || !className || (!name && !number)) {
+    return createErrorPayload_("INVALID_INPUT", "학급과 이름을 정확하게 입력해 주세요.");
   }
-  return { success: true, school_code: schoolCode, class_name: className, number: number };
+  return { success: true, school_code: schoolCode, class_name: className, name: name, number: number };
 }
 
 function validateProgressRequest(raw, student) {
   if (!student) {
-    return createErrorPayload_("STUDENT_NOT_FOUND", "학생 자료를 찾지 못했습니다. 학급과 번호를 확인해 주세요.");
+    return createErrorPayload_("STUDENT_NOT_FOUND", "학생 자료를 찾지 못했습니다. 처음부터 다시 불러와 주세요.");
   }
   if (sanitizeKey_(raw.school_code || "") !== LESSON06_ALLOWED_SCHOOL_CODE) {
-    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 학급과 번호를 다시 확인해 주세요.");
+    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 처음부터 다시 불러와 주세요.");
   }
   if (normalizeClassName_(raw.class_name || "") !== String(student.class_name || "")) {
-    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 학급과 번호를 다시 확인해 주세요.");
+    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 처음부터 다시 불러와 주세요.");
   }
   if (normalizePositiveInteger_(raw.number) !== Number(student.number)) {
-    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 학급과 번호를 다시 확인해 주세요.");
+    return createErrorPayload_("INVALID_INPUT", "학생 자료가 맞지 않습니다. 처음부터 다시 불러와 주세요.");
   }
   const currentStep = normalizeIntegerInRange_(raw.current_step, 1, 6, 1);
   const editCount = normalizeIntegerInRange_(raw.edit_count, 0, 2, 0);
@@ -349,10 +350,12 @@ function findProgressRows_(rows, studentId) {
 }
 
 function isMatchingActiveStudent_(row, request) {
-  return String(row.school_code || "") === request.school_code &&
+  const baseMatch = String(row.school_code || "") === request.school_code &&
     String(row.class_name || "") === request.class_name &&
-    Number(row.number) === request.number &&
     String(row.active || "").toUpperCase() === "TRUE";
+  if (!baseMatch) return false;
+  if (request.name) return normalizeLookupName_(row.name || "") === request.name;
+  return Number(row.number) === request.number;
 }
 
 function selectStudentResponse_(student, character) {
@@ -475,6 +478,10 @@ function normalizeClassName_(value) {
   const text = String(value || "").trim();
   const match = text.match(/([12])\s*반/);
   return match ? match[1] + "반" : "";
+}
+
+function normalizeLookupName_(value) {
+  return String(value || "").trim().replace(/\s+/g, "").toLowerCase();
 }
 
 function normalizePositiveInteger_(value) {

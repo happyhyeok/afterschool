@@ -15,7 +15,7 @@
       <div>
         <p class="eyebrow">레벨업! AI 게임 스튜디오 · 6차시</p>
         <h1>6차시: 내 AI 캐릭터 다시 완성하기</h1>
-        <p class="current-step" id="currentStepText">학급과 번호를 선택하세요.</p>
+        <p class="current-step" id="currentStepText">학급과 이름을 입력하세요.</p>
       </div>
       <div class="top-actions">
         <button class="btn btn-light" id="goHome" type="button">처음으로</button>
@@ -41,16 +41,14 @@
             <option value="2반">5학년 2반</option>
           </select>
         </label>
-        <label class="field" for="numberSelect">
-          <span>번호</span>
-          <select id="numberSelect" disabled>
-            <option value="">번호 선택</option>
-          </select>
+        <label class="field" for="nameInput">
+          <span>이름</span>
+          <input id="nameInput" type="text" autocomplete="name" placeholder="이름 입력">
         </label>
       </div>
 
       <button class="btn btn-primary wide" id="loadStudent" type="button" disabled>내 자료 불러오기</button>
-      <p class="status" id="loadStatus" aria-live="polite">자신의 학급과 번호를 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.</p>
+      <p class="status" id="loadStatus" aria-live="polite">자신의 학급과 이름을 정확하게 입력하세요. 친구의 자료를 열거나 수정하지 않습니다.</p>
     </section>
 
     <section class="student-strip" id="studentStrip" hidden>
@@ -67,7 +65,7 @@
           <button class="btn btn-primary" id="confirmIdentity" type="button">네, 맞아요</button>
           <button class="btn btn-secondary" id="rejectIdentity" type="button">아니요, 선생님께 도움을 요청할게요</button>
         </div>
-        <p class="notice" id="identityNotice" hidden>화면을 그대로 두고 선생님께 알려 주세요. 다른 학생 번호를 임의로 선택하지 마세요.</p>
+        <p class="notice" id="identityNotice" hidden>화면을 그대로 두고 선생님께 알려 주세요. 다른 학생 이름을 임의로 입력하지 마세요.</p>
       </div>
 
       <article class="character-card">

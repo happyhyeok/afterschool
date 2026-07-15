@@ -7,7 +7,6 @@ const LESSON06_AI_TOOL_URL = "";
 
 (() => {
   const SCHOOL_CODE = "dongho";
-  const CLASS_COUNTS = { "1반": 14, "2반": 15 };
   const STEP_LABELS = [
     "① 내 자료 확인",
     "② 이미지 점검",
@@ -124,11 +123,6 @@ const LESSON06_AI_TOOL_URL = "";
     return text || fallback;
   }
 
-  function numberOptions(className) {
-    const count = CLASS_COUNTS[className] || 0;
-    return Array.from({ length: count }, (_, index) => index + 1);
-  }
-
   function storageKey(studentId = state.studentId) {
     return studentId ? `dongho_lesson06_${studentId}` : "";
   }
@@ -231,25 +225,14 @@ const LESSON06_AI_TOOL_URL = "";
     return ok ? Promise.resolve() : Promise.reject(new Error("copy"));
   }
 
-  function populateNumbers() {
-    const className = $("classSelect").value;
-    const numberSelect = $("numberSelect");
-    numberSelect.replaceChildren(new Option("번호 선택", ""));
-    numberOptions(className).forEach((number) => {
-      numberSelect.appendChild(new Option(`${number}번`, String(number)));
-    });
-    numberSelect.disabled = !className;
-    $("loadStudent").disabled = !className || !numberSelect.value;
-  }
-
   function updateLoadButton() {
-    $("loadStudent").disabled = !$("classSelect").value || !$("numberSelect").value;
+    $("loadStudent").disabled = !$("classSelect").value || !$("nameInput").value.trim();
   }
 
   async function loadStudent() {
     const className = $("classSelect").value;
-    const number = $("numberSelect").value;
-    if (!className || !number) return;
+    const name = $("nameInput").value.trim();
+    if (!className || !name) return;
 
     $("loadStudent").disabled = true;
     setStatus("loadStatus", "스프레드시트에서 내 자료를 찾는 중입니다.", "info");
@@ -258,7 +241,7 @@ const LESSON06_AI_TOOL_URL = "";
         action: "getStudent",
         school_code: SCHOOL_CODE,
         class_name: className,
-        number
+        name
       });
       if (!result?.success || !result.student) throw new Error(result?.message || "not-found");
       student = normalizeStudent(result.student);
@@ -278,10 +261,10 @@ const LESSON06_AI_TOOL_URL = "";
     } catch (error) {
       const message = error.message === "missing-api-url"
         ? "Apps Script /exec URL이 아직 설정되지 않았습니다. 선생님께 알려 주세요."
-        : "학생 자료를 찾지 못했습니다. 학급과 번호를 확인한 뒤 선생님께 알려 주세요.";
+        : "학생 자료를 찾지 못했습니다. 학급과 이름을 확인한 뒤 선생님께 알려 주세요.";
       setStatus("loadStatus", message, "error");
     } finally {
-      $("loadStudent").disabled = !$("classSelect").value || !$("numberSelect").value;
+      updateLoadButton();
     }
   }
 
@@ -601,7 +584,7 @@ const LESSON06_AI_TOOL_URL = "";
   function renderTop() {
     $("currentStepText").textContent = student
       ? STEP_LABELS[state.currentStep - 1]
-      : "학급과 번호를 선택하세요.";
+      : "학급과 이름을 입력하세요.";
     $("topProgressBar").style.width = student ? `${Math.round((state.currentStep / 6) * 100)}%` : "0";
     const track = $("stepTrack");
     if (!track.childElementCount) {
@@ -780,12 +763,14 @@ const LESSON06_AI_TOOL_URL = "";
 
   function initEvents() {
     $("classSelect").value = defaultClass;
-    populateNumbers();
     $("classSelect").addEventListener("change", () => {
-      populateNumbers();
-      setStatus("loadStatus", "자신의 학급과 번호를 정확하게 선택하세요. 친구의 자료를 열거나 수정하지 않습니다.", "info");
+      setStatus("loadStatus", "자신의 학급과 이름을 정확하게 입력하세요. 친구의 자료를 열거나 수정하지 않습니다.", "info");
+      updateLoadButton();
     });
-    $("numberSelect").addEventListener("change", updateLoadButton);
+    $("nameInput").addEventListener("input", updateLoadButton);
+    $("nameInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !$("loadStudent").disabled) loadStudent();
+    });
     $("loadStudent").addEventListener("click", loadStudent);
     $("confirmIdentity").addEventListener("click", () => {
       state.identityConfirmed = true;
