@@ -6,6 +6,10 @@
 
 - `grade5/class1/lesson01.html`: 5학년 1반 1회차
 - `grade5/class2/lesson01.html`: 5학년 2반 1회차
+- `grade5/class1/lesson06.html`: 5학년 1반 6회차
+- `grade5/class2/lesson06.html`: 5학년 2반 6회차
+- `grade5/lesson06.css`, `grade5/lesson06.js`: 6회차 공통 스타일과 동작
+- `grade5/lesson06_apps_script.gs`: 6회차 학생 조회 및 진행 저장용 Apps Script 예시
 - `grade5/class1/index.html`: 5학년 1반 학생용 차시 목록
 - `grade5/class2/index.html`: 5학년 2반 학생용 차시 목록
 - `grade5/index.html`: 반별 바로가기
