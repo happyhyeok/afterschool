@@ -381,12 +381,12 @@ const GEMINI_URL = "https://gemini.google.com/";
   function renderPromptButtons() {
     $("firstPrompt").value = state.firstPrompt;
     $("secondPrompt").value = state.secondPrompt;
-    const firstReady = Boolean(state.firstPrompt) && !state.firstOpened && state.editCount < 2;
+    const firstReady = Boolean(state.firstPrompt) && state.editCount < 2;
     $("copyFirstPrompt").disabled = !firstReady;
     setGeminiLink("openGeminiFirst", firstReady);
     if (state.satisfaction === "same") $("makeFirstPrompt").disabled = true;
     else $("makeFirstPrompt").disabled = false;
-    const secondReady = Boolean(state.secondPrompt) && !state.secondOpened && state.editCount < 2;
+    const secondReady = Boolean(state.secondPrompt) && state.editCount < 2;
     $("copySecondPrompt").disabled = !Boolean(state.secondPrompt);
     setGeminiLink("openGeminiSecond", secondReady);
     $("editCountText").textContent = String(state.editCount);
