@@ -317,8 +317,8 @@ const LESSON06_AI_TOOL_URL = "";
   function renderStudentData() {
     if (!student) return;
     $("studentStrip").hidden = false;
-    $("studentLabel").textContent = `5학년 ${student.class_name} ${student.number}번 ${student.name} 학생의 자료입니다.`;
-    $("identityText").textContent = `5학년 ${student.class_name} ${student.number}번 ${student.name} 학생의 자료입니다. 이 자료가 내 캐릭터가 맞나요?`;
+    $("studentLabel").textContent = `5학년 ${student.class_name} ${student.name} 학생의 자료입니다.`;
+    $("identityText").textContent = `5학년 ${student.class_name} ${student.name} 학생의 자료입니다. 이 자료가 내 캐릭터가 맞나요?`;
     $("identityNotice").hidden = state.identityConfirmed || state.helpType !== "내 자료가 아닙니다.";
 
     const profileList = $("profileList");
