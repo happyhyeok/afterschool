@@ -74,7 +74,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visi
 .sticky-progress { display: grid; gap: 6px; }
 .sticky-progress span { justify-self: end; color: var(--muted); font-size: .94rem; font-weight: 900; }
 .progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: #dbeafe; }
-.progress-track span { display: block; width: 14%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .22s ease; }
+.progress-track span { display: block; width: 17%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .22s ease; }
 
 .shell { width: min(1040px, calc(100% - 28px)); margin: 34px auto 78px; }
 .lesson-section {
@@ -98,7 +98,6 @@ button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visi
 }
 .lesson-section:last-child::after { display: none; }
 .lesson-section.is-active { border-color: rgba(37, 99, 235, .38); box-shadow: 0 20px 54px rgba(30, 64, 175, .18); }
-.lesson-section.is-complete { border-color: rgba(16, 185, 129, .45); }
 .tone-1 { background: linear-gradient(135deg, #ffffff, #eff6ff); }
 .tone-2 { background: linear-gradient(135deg, #ffffff, #f0fdfa); }
 .tone-3 { background: linear-gradient(135deg, #ffffff, #fffbeb); }
@@ -144,24 +143,7 @@ p { margin: .5rem 0 1rem; }
   font-weight: 750;
 }
 .section-content { margin-top: 22px; }
-.section-state {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  margin: 4px 0 0;
-  padding: 5px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  color: var(--muted);
-  background: #f8fafc;
-  font-size: .92rem;
-  font-weight: 900;
-}
-.section-state[data-state="complete"] { color: #047857; border-color: #86efac; background: #ecfdf5; }
-.section-state[data-state="active"] { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
-.section-state[data-state="locked"] { color: #92400e; border-color: #fde68a; background: #fffbeb; }
-
-.message-box, .avoid-box, .preview-box, .card-layout-guide, .complete-box, .criteria-box {
+.message-box, .avoid-box, .preview-box, .complete-box, .criteria-box {
   border-radius: 18px;
   padding: 18px 20px;
 }
@@ -260,8 +242,6 @@ fieldset:disabled { opacity: .64; }
 .preview-box { margin-top: 20px; border: 1px solid #bfdbfe; background: #eff6ff; }
 .preview-box p { margin-bottom: 0; white-space: pre-wrap; font-weight: 750; }
 
-.card-layout-guide { margin: 18px 0 22px; border: 1px dashed #93c5fd; background: #f8fbff; }
-.card-layout-guide pre { margin: 0; overflow-x: auto; white-space: pre-wrap; font: 800 1rem/1.55 "Pretendard", "Noto Sans KR", system-ui, sans-serif; color: var(--navy); }
 .final-card { margin: 18px 0; padding: 22px; border: 2px solid #a7f3d0; border-radius: 20px; background: #f0fdf4; }
 .final-card-grid { display: grid; grid-template-columns: 220px 1fr; gap: 22px; align-items: start; margin-bottom: 18px; }
 .final-image { display: grid; place-items: center; aspect-ratio: 1; overflow: hidden; padding: 10px; border-radius: 18px; background: #fff; color: var(--muted); font-weight: 900; text-align: center; }

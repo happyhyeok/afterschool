@@ -53,7 +53,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   const SECTION_IDS = [
     "mission-section",
     "data-section",
-    "card-layout-section",
     "story-section",
     "preview-section",
     "padlet-section",
@@ -126,14 +125,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     if (!element) return;
     element.textContent = text;
     element.dataset.tone = tone;
-  }
-
-  function setSectionState(id, text, stateName) {
-    const element = $(id);
-    if (!element) return;
-    const prefix = stateName === "complete" ? "✓ " : "";
-    element.textContent = `${prefix}${text}`;
-    element.dataset.state = stateName;
   }
 
   function normalizeUrl(value) {
@@ -364,7 +355,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     setLink(
       "padletLink",
       padletUrl,
-      "개인 Padlet 아웃브레이크 링크가 준비되어 있습니다.",
+      "캐릭터 카드 편집 링크가 준비되어 있습니다.",
       hasSelected ? "음악 자료를 확인하고 있습니다." : "먼저 위에서 자신의 이름을 선택해 주세요.",
       "musicStatus"
     );
@@ -453,31 +444,11 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   }
 
   function renderSectionStatuses() {
-    const hasSelected = selectedReady();
-    const hasProfile = Boolean(state.profile);
-    const hasStory = storyReady();
-    const completedMap = {
-      "mission-section": true,
-      "data-section": hasSelected,
-      "card-layout-section": hasSelected,
-      "story-section": hasStory,
-      "preview-section": hasProfile && hasStory,
-      "padlet-section": state.padletOpened,
-      "check-section": state.completed
-    };
     SECTION_IDS.forEach((id, index) => {
       const section = $(id);
       if (!section) return;
       section.classList.toggle("is-active", index === activeSectionIndex);
-      section.classList.toggle("is-complete", Boolean(completedMap[id]));
     });
-    setSectionState("missionSectionState", "진행 중", "active");
-    setSectionState("dataSectionState", hasSelected ? "완료" : "먼저 이름을 선택해 주세요", hasSelected ? "complete" : "locked");
-    setSectionState("layoutSectionState", hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasSelected ? "active" : "locked");
-    setSectionState("storySectionState", hasStory ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasStory ? "complete" : hasSelected ? "active" : "locked");
-    setSectionState("previewSectionState", hasProfile && hasStory ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasProfile && hasStory ? "complete" : hasSelected ? "active" : "locked");
-    setSectionState("padletSectionState", state.padletOpened ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", state.padletOpened ? "complete" : hasSelected ? "active" : "locked");
-    setSectionState("checkSectionState", state.completed ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", state.completed ? "complete" : hasSelected ? "active" : "locked");
   }
 
   function renderTopProgress() {
@@ -557,7 +528,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       state.completed = true;
       saveState();
       render();
-      setStatus("completeStatus", "7차시 활동을 완료했습니다.", "success");
+      setStatus("completeStatus", "7차시 활동을 마쳤습니다.", "success");
     });
     $$("[data-scroll-target]").forEach((button) => {
       button.addEventListener("click", () => {
