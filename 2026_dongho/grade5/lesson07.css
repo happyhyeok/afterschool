@@ -271,6 +271,40 @@ fieldset:disabled { opacity: .64; }
 .ai-note { color: var(--muted); font-weight: 800; }
 .complete-box { margin-top: 20px; border: 2px solid #86efac; color: #065f46; background: #ecfdf5; }
 .complete-box strong { font-size: 1.35rem; }
+.survey-section {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: center;
+  margin: 44px 0 0;
+  padding: clamp(22px, 4vw, 34px);
+  border: 2px solid #99f6e4;
+  border-radius: 26px;
+  color: #0f172a;
+  background:
+    linear-gradient(135deg, #ccfbf1 0%, #ecfeff 52%, #f0fdf4 100%);
+  box-shadow: 0 18px 42px rgba(13, 148, 136, .16);
+}
+.survey-badge {
+  display: grid;
+  place-items: center;
+  min-width: 92px;
+  min-height: 92px;
+  padding: 14px;
+  border-radius: 22px;
+  color: #fff;
+  background: #0f766e;
+  font-weight: 950;
+  text-align: center;
+}
+.survey-copy h2 { margin-bottom: 8px; color: #134e4a; }
+.survey-copy p { margin: 0; color: #334155; font-weight: 750; }
+.btn-survey {
+  min-width: 190px;
+  color: #fff;
+  background: #0f766e;
+  box-shadow: 0 10px 22px rgba(15, 118, 110, .18);
+}
 .footer { padding: 24px; color: #dbeafe; background: var(--navy); text-align: center; }
 
 @media (max-width: 860px) {
@@ -284,8 +318,9 @@ fieldset:disabled { opacity: .64; }
   body { font-size: 17px; }
   .shell { width: min(100% - 18px, 680px); margin-top: 22px; }
   .lesson-section { padding: 22px 18px; border-radius: 20px; }
-  .split-list, .name-picker, .character-card, .writing-grid, .final-card-grid { grid-template-columns: 1fr; }
+  .split-list, .name-picker, .character-card, .writing-grid, .final-card-grid, .survey-section { grid-template-columns: 1fr; }
   .character-visual, .final-image { width: min(100%, 260px); margin: 0 auto; }
+  .survey-badge { min-width: 0; min-height: 54px; justify-self: start; }
   .button-row .btn { flex: 1 1 180px; }
 }
 
