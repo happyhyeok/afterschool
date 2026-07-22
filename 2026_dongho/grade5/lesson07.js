@@ -1,5 +1,5 @@
 // 동호초 5학년 7차시 학생용 페이지
-// 학생별 개인 링크 목록은 이 파일에 넣지 않습니다. API가 선택 학생 1명 자료만 반환하면 그 링크만 사용합니다.
+// Padlet 아웃브레이크 링크는 교사가 제공한 CSV 내용을 반별로 반영합니다.
 const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpzuv3U2n0RBTbvM4NUVgUJMQENJdep656lzO8YWR4AK4OlKsUddXNOZIw/exec";
 
 (() => {
@@ -15,6 +15,41 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   const missingLocalImages = {
     class1: new Set(["9"]),
     class2: new Set()
+  };
+  const PADLET_LINKS = {
+      "class1":  {
+                     "1":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:jPpUpJDT9Alf4hOzct0Zl",
+                     "2":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:j9gYiFu7X9OmVSwVZMr9O",
+                     "3":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:1TD83vKUFbdKsskdWrVhk",
+                     "4":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lB-urcukzvO0L_VANlEHm",
+                     "5":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:ZsPYKWjziT5rbydv13CW_",
+                     "6":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:MH1cHh0PAs1FxcNmj4zWA",
+                     "7":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:b47pB7pJXB0Jz4vuAE0ej",
+                     "8":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:fxnQr2eE3vAh2MJYXPGrx",
+                     "9":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:x-dJstN_ZnGUrGEK3pBpM",
+                     "10":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:rjw_2M62CDpiX1x-5CB_R",
+                     "11":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lozA49wZWTiTBnYkxZgax",
+                     "12":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:8mC0jH14UrWk9FnbywbC9",
+                     "13":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:NLtsAUWOY47tOZ4uJnms7",
+                     "14":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:7zXEJ4q29IcHA7K2DfzRb"
+                 },
+      "class2":  {
+                     "1":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mNSAcQotYUTMeKw3VwLox",
+                     "2":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:vbN6GBniI-euCYxbKyI-i",
+                     "3":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:BYM4Jkyz_s5mVmdIOkRj2",
+                     "4":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:IMHPvdMiTcKfMw_rPxnF3",
+                     "5":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:tjDrDBjoo-s5RQbn3VyfY",
+                     "6":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:SSc0a5c6kInjzXFI2M3Z-",
+                     "7":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:507Prenp3FvQzuidl1BDd",
+                     "8":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:Tn-lNxC4FqXa-xrGHHCVY",
+                     "9":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:sxYoMvF7E4fCfWWTPrsaO",
+                     "10":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:G6a2peq4wfNkFAPs5nLnc",
+                     "11":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:K-mD0cZDGLaAIuMGbHvZx",
+                     "12":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:VhWTLd-LX9e6fGAc8aiFA",
+                     "13":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:U7wG6E_1kHGUBFwhOpsOz",
+                     "14":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:f0YIi83ICqapsyz0HAQ_u",
+                     "15":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mLus5Hovqz0RIxMk5vK4D"
+                 }
   };
   const stepLabels = ["오늘의 미션", "내 자료 확인", "캐릭터 이야기 작성", "최종 카드 만들기", "Padlet 저장과 전시 감상"];
   const $ = (id) => document.getElementById(id);
@@ -117,6 +152,11 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     if (!Number.isInteger(numericId) || numericId < 1 || missingLocalImages[classId].has(String(numericId))) return "";
     const fileName = `${String(numericId).padStart(2, "0")}.png`;
     return new URL(`../assets/characters/${classId}/${fileName}`, window.location.href).href;
+  }
+
+  function csvPadletUrl(studentId = state.studentId) {
+    const id = String(Number(studentId));
+    return normalizeUrl(PADLET_LINKS[classId]?.[id] || "");
   }
 
   function imageSource() {
@@ -235,7 +275,13 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       if (!payload.ok || !payload.profile) throw new Error(payload.message || "not-found");
       state.profile = payload.profile;
       state.studentName = state.profile.studentName || selectedName;
-      currentLinks = payload.links || blankLinks();
+      const payloadLinks = payload.links || blankLinks();
+      const padletUrl = normalizeUrl(payloadLinks.padletUrl) || csvPadletUrl(studentId);
+      currentLinks = {
+        ...payloadLinks,
+        padletUrl,
+        musicUrl: normalizeUrl(payloadLinks.musicUrl) || padletUrl
+      };
       saveState();
       render();
       setStatus("loadStatus", "내 캐릭터 자료를 불러왔습니다. 내용이 맞는지 확인하세요.", "success");
@@ -294,16 +340,17 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       imageSource() ? "대표 이미지는 화면에서 확인할 수 있습니다. Google 슬라이드 링크는 확인하고 있습니다." : "이미지 자료를 확인하고 있습니다.",
       "imageStatus"
     );
+    const padletUrl = currentLinks.padletUrl || currentLinks.musicUrl || csvPadletUrl();
     setLink(
       "padletLink",
-      currentLinks.padletUrl || currentLinks.musicUrl,
+      padletUrl,
       "개인 Padlet 아웃브레이크 링크가 준비되어 있습니다.",
       "음악 자료를 확인하고 있습니다.",
       "musicStatus"
     );
     setLink(
       "padletLinkFinal",
-      currentLinks.padletUrl || currentLinks.musicUrl,
+      padletUrl,
       "",
       "",
       ""
