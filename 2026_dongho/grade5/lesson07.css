@@ -178,6 +178,12 @@ p { margin: .5rem 0 1rem; }
 .btn-secondary { color: var(--navy); border-color: #b9c8dc; background: #fff; }
 .btn-linklike { color: #075985; border-color: #7dd3fc; background: #ecfeff; }
 .btn-save { color: #fff; background: var(--green); }
+.btn-blooket {
+  margin-top: 12px;
+  color: #fff;
+  border-color: #6d28d9;
+  background: #7c3aed;
+}
 .wide { width: 100%; }
 .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
 
