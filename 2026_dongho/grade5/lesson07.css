@@ -73,9 +73,18 @@ button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visi
   white-space: nowrap;
 }
 .sticky-progress { display: grid; gap: 6px; }
-.sticky-progress span { justify-self: end; color: var(--muted); font-size: .94rem; font-weight: 900; }
-.progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: #dbeafe; }
-.progress-track span { display: block; width: 17%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width .22s ease; }
+.sticky-progress > span { justify-self: end; color: var(--muted); font-size: .94rem; font-weight: 900; }
+.progress-track { position: relative; height: 10px; overflow: hidden; border-radius: 999px; background: #dbeafe; }
+.progress-track span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  width: 17%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  transition: width .22s ease;
+}
 
 .shell { width: min(1040px, calc(100% - 28px)); margin: 34px auto 78px; }
 .lesson-section {
@@ -411,7 +420,7 @@ fieldset:disabled { opacity: .64; }
   :root { --sticky-height: 136px; }
   .sticky-inner { grid-template-columns: 1fr; gap: 8px; align-items: start; }
   .sticky-class { justify-self: start; }
-  .sticky-progress span { justify-self: start; }
+  .sticky-progress > span { justify-self: start; }
 }
 
 @media (max-width: 760px) {
