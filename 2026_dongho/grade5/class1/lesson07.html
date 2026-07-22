@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172554">
   <title>5학년 1반 7차시 - 내 AI 캐릭터 카드 완성하고 이야기 들려주기</title>
-  <link rel="stylesheet" href="../lesson07.css?v=20260723-checkgap">
+  <link rel="stylesheet" href="../lesson07.css?v=20260723-storycards">
 </head>
 <body data-class-id="class1" data-class-name="5학년 1반">
   <a class="skip-link" href="#main">본문으로 바로가기</a>
@@ -104,23 +104,68 @@
       <p class="section-description">캐릭터의 성격과 대표 스킬이 이야기 속에서 자연스럽게 보이도록 씁니다.</p>
       <div class="section-content">
         <p class="status locked-message" id="storyLockMessage">먼저 위에서 자신의 이름을 선택해 주세요.</p>
-        <div class="writing-grid">
-          <label>한 줄 소개
-            <input id="oneLineIntro" type="text" maxlength="90" placeholder="예: 장난꾸러기지만 친구를 지키는 벚꽃 고양이 검사" disabled>
-          </label>
-          <label>캐릭터가 사는 곳
-            <input id="storyPlace" type="text" maxlength="90" placeholder="예: 벚꽃이 흩날리는 하늘 성" disabled>
-          </label>
-          <label>이야기에서 생긴 일
-            <input id="storyProblem" type="text" maxlength="120" placeholder="예: 친구들이 어둠의 미로에 갇혔다" disabled>
-          </label>
-          <label>대표 스킬을 쓰는 장면
-            <input id="storySkillScene" type="text" maxlength="140" placeholder="예: 3연 발도술로 미로의 문을 차례로 열었다" disabled>
-          </label>
+        <div class="writing-help">
+          <p>먼저 내 생각을 직접 입력해 보세요.</p>
+          <p>글자를 입력하기 어려울 때는 각 질문 옆의 '선택' 버튼을 눌러 도움 카드를 사용할 수 있습니다.</p>
+          <p>카드 내용을 고른 뒤에도 문장을 자유롭게 고쳐 쓸 수 있습니다.</p>
         </div>
-        <label class="story-label" for="storyText">캐릭터 이야기</label>
-        <textarea id="storyText" rows="8" maxlength="900" placeholder="내 캐릭터가 어떤 마음으로 문제를 해결하는지 이야기로 써 보세요." disabled></textarea>
+        <div class="writing-list">
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="storyPlace">캐릭터가 사는 곳</label>
+              <button class="btn-card-help" type="button" data-card-field="home" disabled>선택</button>
+            </div>
+            <input id="storyPlace" type="text" maxlength="120" placeholder="예: 벚꽃이 흩날리는 하늘 성" disabled>
+          </div>
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="storyProblem">만난 문제 또는 사건</label>
+              <button class="btn-card-help" type="button" data-card-field="problem" disabled>선택</button>
+            </div>
+            <input id="storyProblem" type="text" maxlength="140" placeholder="예: 친구들이 어둠의 미로에 갇혔다" disabled>
+          </div>
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="storySkillScene">대표 스킬을 사용한 방법</label>
+              <button class="btn-card-help" type="button" data-card-field="skillUse" disabled>선택</button>
+            </div>
+            <input id="storySkillScene" type="text" maxlength="160" placeholder="예: 3연 발도술로 미로의 문을 차례로 열었다" disabled>
+          </div>
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="storyPrecious">가장 소중하게 생각하는 것</label>
+              <button class="btn-card-help" type="button" data-card-field="precious" disabled>선택</button>
+            </div>
+            <input id="storyPrecious" type="text" maxlength="140" placeholder="예: 친구와의 약속" disabled>
+          </div>
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="storyAdventure">앞으로의 모험</label>
+              <button class="btn-card-help" type="button" data-card-field="adventure" disabled>선택</button>
+            </div>
+            <input id="storyAdventure" type="text" maxlength="160" placeholder="예: 새로운 친구를 만나러 더 먼 숲으로 떠난다" disabled>
+          </div>
+          <div class="writing-field">
+            <div class="field-head">
+              <label for="oneLineIntro">한 줄 소개</label>
+              <button class="btn-card-help" type="button" data-card-field="intro" disabled>선택</button>
+            </div>
+            <input id="oneLineIntro" type="text" maxlength="100" placeholder="예: 장난꾸러기지만 친구를 지키는 벚꽃 고양이 검사" disabled>
+          </div>
+        </div>
+        <div class="draft-tools">
+          <button class="btn btn-secondary" id="makeStoryDraft" type="button" disabled>이야기 초안 만들기</button>
+          <p class="draft-note">위에 쓴 내용을 모아 이야기 문장으로 정리합니다. 이미 쓴 이야기는 지우지 않습니다.</p>
+        </div>
+        <div class="writing-field story-field">
+          <div class="field-head">
+            <label for="storyText">최종 캐릭터 이야기</label>
+            <button class="btn-card-help" type="button" data-card-field="storyText" disabled>선택</button>
+          </div>
+          <textarea id="storyText" rows="10" maxlength="1200" placeholder="내 캐릭터가 어디에서 살고, 어떤 문제를 만나고, 어떤 마음으로 해결하는지 자유롭게 써 보세요." disabled></textarea>
+        </div>
         <p class="status" id="storyStatus" aria-live="polite">한 줄 소개와 캐릭터 이야기를 입력해 주세요.</p>
+        <p class="sentence-status" id="sentenceStatus" aria-live="polite">최종 이야기를 쓰면 문장 수를 확인합니다.</p>
         <div class="preview-box">
           <h3>이야기 미리보기</h3>
           <p id="storyPreview">내 자료를 불러오고 이야기를 입력하면 미리보기가 나타납니다.</p>
@@ -202,11 +247,21 @@
         <h2 id="survey-title">만족도 조사 작성하기</h2>
         <p>오늘 수업을 마친 뒤, 느낀 점을 짧게 남겨 주세요. 여러분의 답변은 다음 수업을 더 좋게 만드는 데 사용합니다.</p>
       </div>
-      <a class="btn btn-survey" href="https://docs.google.com/forms/d/e/1FAIpQLSchyjekrO8af9SwP_JdsisMBuswEAghAUPVpaNxBDheRQL3Cg/viewform" target="_blank" rel="noopener noreferrer">만족도 조사 열기</a>
+      <a class="btn btn-survey" href="https://docs.google.com/forms/d/e/1FAIpQLSchyjekrO8af9SwP_JdsisMBuswEAghAUPVpaNxBDheRQL3Cg/viewform" target="_blank" rel="noopener noreferrer">수업 만족도 조사에 참여하기</a>
     </section>
   </main>
 
   <footer class="footer">동호초 5학년 1반 · 레벨업! AI 게임 스튜디오</footer>
-  <script src="../lesson07.js?v=20260723-padletlabel"></script>
+  <div class="story-card-modal" id="storyCardModal" hidden>
+    <div class="modal-backdrop" data-modal-close></div>
+    <section class="story-card-dialog" role="dialog" aria-modal="true" aria-labelledby="storyCardModalTitle" aria-describedby="storyCardModalDesc">
+      <button class="modal-close" id="storyCardModalClose" type="button" aria-label="도움 카드 닫기">닫기</button>
+      <p class="modal-kicker">도움 카드</p>
+      <h2 id="storyCardModalTitle">도움 카드 선택</h2>
+      <p id="storyCardModalDesc">어울리는 내용을 하나 골라 보세요. 고른 뒤에도 문장을 자유롭게 고칠 수 있습니다.</p>
+      <div class="story-card-options" id="storyCardOptions"></div>
+    </section>
+  </div>
+  <script src="../lesson07.js?v=20260723-storycards"></script>
 </body>
 </html>

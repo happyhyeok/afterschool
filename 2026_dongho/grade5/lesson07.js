@@ -58,12 +58,51 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     "padlet-section",
     "check-section"
   ];
+  const STORY_INPUT_IDS = ["storyPlace", "storyProblem", "storySkillScene", "storyPrecious", "storyAdventure", "oneLineIntro", "storyText"];
+  const storyCardOptions = {
+    home: {
+      title: "캐릭터가 사는 곳",
+      targetId: "storyPlace",
+      options: ["구름 위 마을", "깊은 바닷속", "숲속 비밀 기지", "미래 도시", "달빛 마을"]
+    },
+    problem: {
+      title: "만난 문제 또는 사건",
+      targetId: "storyProblem",
+      options: ["친구들이 길을 잃는 사건", "마을의 빛이 사라지는 사건", "중요한 약속을 지켜야 하는 일", "낯선 그림자가 나타나는 사건"]
+    },
+    skillUse: {
+      title: "대표 스킬을 사용한 방법",
+      targetId: "storySkillScene",
+      options: ["대표 스킬로 길을 여는 방법", "친구들을 안전하게 지키는 방법", "문제의 원인을 찾아내는 방법", "모두가 힘을 합치도록 돕는 방법"]
+    },
+    precious: {
+      title: "가장 소중하게 생각하는 것",
+      targetId: "storyPrecious",
+      options: ["친구와의 약속", "가족의 응원", "마을의 평화", "포기하지 않는 마음"]
+    },
+    adventure: {
+      title: "앞으로의 모험",
+      targetId: "storyAdventure",
+      options: ["새로운 친구를 만나러 떠나는 모험", "더 큰 세상을 탐험하는 모험", "잃어버린 보물을 찾는 모험", "다음 문제를 해결하러 가는 모험"]
+    },
+    intro: {
+      title: "한 줄 소개",
+      targetId: "oneLineIntro",
+      options: ["작지만 용감한 캐릭터입니다", "친구를 먼저 생각하는 캐릭터입니다", "장난꾸러기지만 마음은 따뜻합니다", "어려운 순간에 빛나는 캐릭터입니다"]
+    },
+    storyText: {
+      title: "최종 캐릭터 이야기",
+      targetId: "storyText",
+      options: ["어느 날 예상하지 못한 일이 일어났습니다.", "처음에는 두려웠지만 용기를 냈습니다.", "대표 스킬을 사용해 친구들을 도왔습니다.", "그 일을 통해 한 뼘 더 성장했습니다."]
+    }
+  };
 
   const $ = (id) => document.getElementById(id);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   let activeSectionIndex = 0;
   let state = blankState();
   let currentLinks = blankLinks();
+  let lastCardTrigger = null;
 
   function blankState(studentId = "") {
     return {
@@ -75,6 +114,8 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       storyPlace: "",
       storyProblem: "",
       storySkillScene: "",
+      storyPrecious: "",
+      storyAdventure: "",
       storyText: "",
       finalChecks: [],
       padletOpened: false,
@@ -86,8 +127,29 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     return { slideUrl: "", padletUrl: "", musicUrl: "", imageUrl: "" };
   }
 
-  function storageKey(studentId = state.studentId) {
-    return studentId ? `dongho_${classId}_${studentId}_lesson07` : "";
+  function studentIdFromName(name) {
+    const match = String(name || "").match(/^\s*(\d+)/);
+    return match ? String(Number(match[1])) : "";
+  }
+
+  function studentNameFromId(studentId) {
+    return students[classId].find((name) => studentIdFromName(name) === String(Number(studentId))) || "";
+  }
+
+  function storageKeyPart(value) {
+    return String(value || "").trim().replace(/[^0-9A-Za-z가-힣]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+
+  function storageKey(studentId = state.studentId, studentName = state.studentName) {
+    const id = String(Number(studentId));
+    if (!studentId || id === "NaN") return "";
+    const keyName = storageKeyPart(studentName || studentNameFromId(id) || id);
+    return `dongho_${classId}_${keyName || id}_lesson07`;
+  }
+
+  function legacyStorageKey(studentId = state.studentId) {
+    const id = String(Number(studentId));
+    return studentId && id !== "NaN" ? `dongho_${classId}_${id}_lesson07` : "";
   }
 
   function lastStudentKey() {
@@ -103,16 +165,12 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
 
   function loadState(studentId) {
     try {
-      const value = JSON.parse(localStorage.getItem(storageKey(studentId)) || "null");
+      const stored = localStorage.getItem(storageKey(studentId, studentNameFromId(studentId))) || localStorage.getItem(legacyStorageKey(studentId));
+      const value = JSON.parse(stored || "null");
       return value && String(value.studentId) === String(studentId) ? { ...blankState(studentId), ...value } : blankState(studentId);
     } catch (_) {
       return blankState(studentId);
     }
-  }
-
-  function studentIdFromName(name) {
-    const match = String(name || "").match(/^\s*(\d+)/);
-    return match ? String(Number(match[1])) : "";
   }
 
   function safeText(value, fallback = "자료 확인 필요") {
@@ -170,8 +228,44 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     return Boolean(state.studentId);
   }
 
+  function hasStoryBuildingBlocks() {
+    return ["storyPlace", "storyProblem", "storySkillScene", "storyPrecious", "storyAdventure"].some((id) => String(state[id] || "").trim());
+  }
+
+  function buildStoryDraft() {
+    const profile = state.profile || {};
+    const characterName = safeText(profile.characterName, "내 캐릭터");
+    const personality = safeText(profile.personality, "특별");
+    const mainSkill = safeText(profile.mainSkill, "대표 스킬");
+    const place = safeText(state.storyPlace, "자신의 세계");
+    const problem = safeText(state.storyProblem, "어려운 문제");
+    const skillUse = safeText(state.storySkillScene, `${mainSkill}을/를 사용했습니다`);
+    const precious = safeText(state.storyPrecious, "친구와의 약속");
+    const adventure = safeText(state.storyAdventure, "새로운 모험");
+    return [
+      `${place}에는 ${characterName}이/가 살고 있습니다.`,
+      `${characterName}은/는 ${personality}한 캐릭터입니다.`,
+      `어느 날 ${problem}이/가 발생했습니다.`,
+      `${characterName}은/는 ${skillUse}으로 문제를 해결했습니다.`,
+      `${characterName}이/가 가장 소중하게 생각하는 것은 ${precious}입니다.`,
+      `앞으로 ${adventure}을/를 하게 될 것입니다.`
+    ].join("\n");
+  }
+
+  function finalStoryText() {
+    const written = String(state.storyText || "").trim();
+    if (written) return written;
+    return hasStoryBuildingBlocks() ? buildStoryDraft() : "";
+  }
+
   function storyReady() {
-    return Boolean(state.oneLineIntro.trim() && state.storyText.trim());
+    return Boolean(state.oneLineIntro.trim() && finalStoryText());
+  }
+
+  function sentenceCount(text) {
+    const value = String(text || "").trim();
+    if (!value) return 0;
+    return value.split(/[.!?。！？\n]+/).map((part) => part.trim()).filter(Boolean).length;
   }
 
   function jsonp(params) {
@@ -366,17 +460,10 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   }
 
   function storyPreviewText() {
-    const profile = state.profile || {};
     const lines = [];
-    const characterName = safeText(profile.characterName, "내 캐릭터");
     if (state.oneLineIntro) lines.push(state.oneLineIntro);
-    if (state.storyPlace || state.storyProblem || state.storySkillScene) {
-      const place = state.storyPlace || "자신의 세계";
-      const problem = state.storyProblem || "어려운 문제";
-      const skill = state.storySkillScene || `${safeText(profile.mainSkill, "대표 스킬")}을 사용했다`;
-      lines.push(`${characterName}은 ${place}에서 ${problem}를 마주했습니다. ${skill}.`);
-    }
-    if (state.storyText) lines.push(state.storyText);
+    const story = finalStoryText();
+    if (story) lines.push(story);
     return lines.join("\n\n") || "내 자료를 불러오고 이야기를 입력하면 미리보기가 나타납니다.";
   }
 
@@ -386,17 +473,19 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   }
 
   function renderStory() {
-    syncValue("oneLineIntro", state.oneLineIntro);
-    syncValue("storyPlace", state.storyPlace);
-    syncValue("storyProblem", state.storyProblem);
-    syncValue("storySkillScene", state.storySkillScene);
-    syncValue("storyText", state.storyText);
+    STORY_INPUT_IDS.forEach((id) => syncValue(id, state[id] || ""));
     $("storyPreview").textContent = storyPreviewText();
     const ready = storyReady();
     const hasSelected = selectedReady();
+    const count = sentenceCount(finalStoryText());
     $("storyLockMessage").textContent = hasSelected ? "이야기를 작성할 수 있습니다. 입력한 내용은 아래 최종 카드에 바로 반영됩니다." : "먼저 위에서 자신의 이름을 선택해 주세요.";
     $("storyLockMessage").classList.toggle("is-ready", hasSelected);
-    setStatus("storyStatus", ready ? "이야기 초안이 준비되었습니다. 아래 최종 카드에서 다시 확인하세요." : "한 줄 소개와 캐릭터 이야기를 입력해 주세요.", ready ? "success" : "info");
+    setStatus("storyStatus", ready ? "이야기 내용이 준비되었습니다. 아래 최종 카드에서 다시 확인하세요." : "한 줄 소개와 캐릭터 이야기를 입력해 주세요.", ready ? "success" : "info");
+    const sentenceStatus = $("sentenceStatus");
+    if (sentenceStatus) {
+      sentenceStatus.textContent = count === 0 ? "최종 이야기를 쓰면 문장 수를 확인합니다." : count < 5 ? "조금 더 자세한 이야기를 덧붙여 보세요. 다섯 문장 이상이면 좋아요!" : `좋아요! 지금 ${count}문장으로 이야기가 풍성합니다.`;
+      sentenceStatus.dataset.tone = count >= 5 ? "success" : "warning";
+    }
   }
 
   function cardText() {
@@ -411,7 +500,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       `한 줄 소개: ${state.oneLineIntro || "작성 필요"}`,
       "",
       "캐릭터 이야기:",
-      state.storyText || "작성 필요",
+      finalStoryText() || "작성 필요",
       "",
       "테마 음악: 내 Padlet에서 확인",
       "",
@@ -425,7 +514,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     $("finalPersonality").textContent = safeText(profile.personality);
     $("finalSkill").textContent = safeText(profile.mainSkill);
     $("finalIntro").textContent = state.oneLineIntro || "한 줄 소개를 입력해 주세요.";
-    $("finalStory").textContent = state.storyText || "캐릭터 이야기를 입력해 주세요.";
+    $("finalStory").textContent = finalStoryText() || "캐릭터 이야기를 입력해 주세요.";
     $$("#check-section input[name='finalCheck']").forEach((input) => {
       input.checked = state.finalChecks.includes(input.value);
     });
@@ -434,9 +523,13 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   function setControlsEnabled() {
     const hasSelected = selectedReady();
     const hasProfile = Boolean(state.profile);
-    ["oneLineIntro", "storyPlace", "storyProblem", "storySkillScene", "storyText"].forEach((id) => {
+    STORY_INPUT_IDS.forEach((id) => {
       $(id).disabled = !hasSelected;
     });
+    $$("#story-section [data-card-field]").forEach((button) => {
+      button.disabled = !hasSelected;
+    });
+    $("makeStoryDraft").disabled = !hasSelected;
     $("copyCardText").disabled = !(hasProfile && storyReady());
     $("finalChecksPanel").disabled = !hasSelected;
     $("completeLesson").disabled = !hasSelected;
@@ -469,6 +562,74 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     renderTopProgress();
   }
 
+  function appendCardText(currentValue, cardText, targetId) {
+    const current = String(currentValue || "").trimEnd();
+    const text = String(cardText || "").trim();
+    if (!current) return text;
+    if (targetId === "storyText") return `${current}\n${text}`;
+    return `${current} ${text}`;
+  }
+
+  function closeStoryCard(focusBack = true) {
+    const modal = $("storyCardModal");
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+    if (focusBack && lastCardTrigger) lastCardTrigger.focus();
+  }
+
+  function chooseStoryCard(fieldKey, text) {
+    const config = storyCardOptions[fieldKey];
+    const target = config ? $(config.targetId) : null;
+    if (!target) return;
+    let nextValue = appendCardText(target.value, text, config.targetId);
+    if (target.maxLength > 0 && nextValue.length > target.maxLength) nextValue = nextValue.slice(0, target.maxLength);
+    target.value = nextValue;
+    state[config.targetId] = target.value;
+    saveState();
+    render();
+    closeStoryCard(false);
+    target.focus();
+    target.setSelectionRange(target.value.length, target.value.length);
+  }
+
+  function openStoryCard(fieldKey, trigger) {
+    const config = storyCardOptions[fieldKey];
+    const modal = $("storyCardModal");
+    if (!config || !modal || !selectedReady()) return;
+    lastCardTrigger = trigger || null;
+    $("storyCardModalTitle").textContent = config.title;
+    $("storyCardModalDesc").textContent = `${config.title}에 어울리는 내용을 하나 골라 보세요. 고른 뒤에도 문장을 자유롭게 고칠 수 있습니다.`;
+    const options = $("storyCardOptions");
+    options.replaceChildren();
+    config.options.forEach((option) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "story-card-option";
+      button.textContent = option;
+      button.addEventListener("click", () => chooseStoryCard(fieldKey, option));
+      options.appendChild(button);
+    });
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    const firstOption = options.querySelector("button");
+    (firstOption || $("storyCardModalClose")).focus();
+  }
+
+  function makeStoryDraft() {
+    if (!selectedReady()) {
+      setStatus("storyStatus", "먼저 위에서 자신의 이름을 선택해 주세요.", "warning");
+      return;
+    }
+    const draft = buildStoryDraft();
+    const current = String(state.storyText || "").trim();
+    state.storyText = current ? appendCardText(state.storyText, draft, "storyText") : draft;
+    saveState();
+    render();
+    setStatus("storyStatus", current ? "이미 쓴 이야기를 남기고, 아래에 이야기 초안을 덧붙였습니다." : "이야기 초안을 만들었습니다. 마음에 들게 고쳐 써 보세요.", "success");
+    $("storyText").focus();
+  }
+
   async function copyText(text, statusId, successMessage) {
     try {
       await navigator.clipboard.writeText(text);
@@ -497,12 +658,23 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
         render();
       });
     });
-    ["oneLineIntro", "storyPlace", "storyProblem", "storySkillScene", "storyText"].forEach((id) => {
+    STORY_INPUT_IDS.forEach((id) => {
       $(id).addEventListener("input", (event) => {
         state[id] = event.target.value;
         saveState();
         render();
       });
+    });
+    $$("#story-section [data-card-field]").forEach((button) => {
+      button.addEventListener("click", () => openStoryCard(button.dataset.cardField, button));
+    });
+    $("makeStoryDraft").addEventListener("click", makeStoryDraft);
+    $("storyCardModalClose").addEventListener("click", () => closeStoryCard());
+    $("storyCardModal").addEventListener("click", (event) => {
+      if (event.target && event.target.hasAttribute("data-modal-close")) closeStoryCard();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeStoryCard();
     });
     $$("#check-section input[name='finalCheck']").forEach((input) => {
       input.addEventListener("change", () => {
