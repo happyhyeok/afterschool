@@ -343,7 +343,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     $("cardCharacterName").textContent = hasProfile ? safeText(state.profile.characterName) : "자료 확인 필요";
     $("cardPersonality").textContent = hasProfile ? safeText(state.profile.personality) : "자료 확인 필요";
     $("cardMainSkill").textContent = hasProfile ? safeText(state.profile.mainSkill) : "자료 확인 필요";
-    $("materialHint").textContent = hasSelected ? "내 슬라이드와 Padlet 자료를 열어 대표 이미지와 테마 음악을 확인하세요." : "이름을 선택하면 내 슬라이드와 Padlet 자료를 확인할 수 있습니다.";
+    $("materialHint").textContent = hasSelected ? "내 Padlet 자료를 열어 테마 음악을 확인하세요." : "이름을 선택하면 내 Padlet 자료를 확인할 수 있습니다.";
 
     if (hasProfile) renderImage("characterVisual", "이미지 자료를 확인하고 있습니다.");
     else {
@@ -435,7 +435,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     $("finalSkill").textContent = safeText(profile.mainSkill);
     $("finalIntro").textContent = state.oneLineIntro || "한 줄 소개를 입력해 주세요.";
     $("finalStory").textContent = state.storyText || "캐릭터 이야기를 입력해 주세요.";
-    renderImage("finalImage", selectedReady() ? "대표 이미지는 내 Google 슬라이드에서 확인합니다." : "먼저 위에서 자신의 이름을 선택해 주세요.");
     $$("#check-section input[name='finalCheck']").forEach((input) => {
       input.checked = state.finalChecks.includes(input.value);
     });
