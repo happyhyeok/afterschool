@@ -6,7 +6,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
   const SCHOOL_CODE = "dongho";
   const root = document.body;
   const classId = root.dataset.classId === "class2" ? "class2" : "class1";
-  const className = root.dataset.className || (classId === "class2" ? "5학년 2반" : "5학년 1반");
   const apiClassName = classId === "class2" ? "2반" : "1반";
   const students = {
     class1: ["01. 곽예준", "02. 김민주", "03. 김우람", "04. 김태양", "05. 김태현", "06. 김효민", "07. 박민준", "08. 박하율", "09. 서자건", "10. 이정우", "11. 조예빈", "12. 지현서", "13. 차소민", "14. 채종후"],
@@ -17,45 +16,53 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     class2: new Set()
   };
   const PADLET_LINKS = {
-      "class1":  {
-                     "1":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:jPpUpJDT9Alf4hOzct0Zl",
-                     "2":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:j9gYiFu7X9OmVSwVZMr9O",
-                     "3":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:1TD83vKUFbdKsskdWrVhk",
-                     "4":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lB-urcukzvO0L_VANlEHm",
-                     "5":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:ZsPYKWjziT5rbydv13CW_",
-                     "6":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:MH1cHh0PAs1FxcNmj4zWA",
-                     "7":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:b47pB7pJXB0Jz4vuAE0ej",
-                     "8":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:fxnQr2eE3vAh2MJYXPGrx",
-                     "9":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:x-dJstN_ZnGUrGEK3pBpM",
-                     "10":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:rjw_2M62CDpiX1x-5CB_R",
-                     "11":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lozA49wZWTiTBnYkxZgax",
-                     "12":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:8mC0jH14UrWk9FnbywbC9",
-                     "13":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:NLtsAUWOY47tOZ4uJnms7",
-                     "14":  "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:7zXEJ4q29IcHA7K2DfzRb"
-                 },
-      "class2":  {
-                     "1":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mNSAcQotYUTMeKw3VwLox",
-                     "2":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:vbN6GBniI-euCYxbKyI-i",
-                     "3":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:BYM4Jkyz_s5mVmdIOkRj2",
-                     "4":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:IMHPvdMiTcKfMw_rPxnF3",
-                     "5":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:tjDrDBjoo-s5RQbn3VyfY",
-                     "6":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:SSc0a5c6kInjzXFI2M3Z-",
-                     "7":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:507Prenp3FvQzuidl1BDd",
-                     "8":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:Tn-lNxC4FqXa-xrGHHCVY",
-                     "9":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:sxYoMvF7E4fCfWWTPrsaO",
-                     "10":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:G6a2peq4wfNkFAPs5nLnc",
-                     "11":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:K-mD0cZDGLaAIuMGbHvZx",
-                     "12":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:VhWTLd-LX9e6fGAc8aiFA",
-                     "13":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:U7wG6E_1kHGUBFwhOpsOz",
-                     "14":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:f0YIi83ICqapsyz0HAQ_u",
-                     "15":  "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mLus5Hovqz0RIxMk5vK4D"
-                 }
+    class1: {
+      "1": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:jPpUpJDT9Alf4hOzct0Zl",
+      "2": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:j9gYiFu7X9OmVSwVZMr9O",
+      "3": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:1TD83vKUFbdKsskdWrVhk",
+      "4": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lB-urcukzvO0L_VANlEHm",
+      "5": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:ZsPYKWjziT5rbydv13CW_",
+      "6": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:MH1cHh0PAs1FxcNmj4zWA",
+      "7": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:b47pB7pJXB0Jz4vuAE0ej",
+      "8": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:fxnQr2eE3vAh2MJYXPGrx",
+      "9": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:x-dJstN_ZnGUrGEK3pBpM",
+      "10": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:rjw_2M62CDpiX1x-5CB_R",
+      "11": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:lozA49wZWTiTBnYkxZgax",
+      "12": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:8mC0jH14UrWk9FnbywbC9",
+      "13": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:NLtsAUWOY47tOZ4uJnms7",
+      "14": "https://padlet.com/sorbaram/card-breakout-room/owZLy1wp2xP0ngVG-page:7zXEJ4q29IcHA7K2DfzRb"
+    },
+    class2: {
+      "1": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mNSAcQotYUTMeKw3VwLox",
+      "2": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:vbN6GBniI-euCYxbKyI-i",
+      "3": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:BYM4Jkyz_s5mVmdIOkRj2",
+      "4": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:IMHPvdMiTcKfMw_rPxnF3",
+      "5": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:tjDrDBjoo-s5RQbn3VyfY",
+      "6": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:SSc0a5c6kInjzXFI2M3Z-",
+      "7": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:507Prenp3FvQzuidl1BDd",
+      "8": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:Tn-lNxC4FqXa-xrGHHCVY",
+      "9": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:sxYoMvF7E4fCfWWTPrsaO",
+      "10": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:G6a2peq4wfNkFAPs5nLnc",
+      "11": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:K-mD0cZDGLaAIuMGbHvZx",
+      "12": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:VhWTLd-LX9e6fGAc8aiFA",
+      "13": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:U7wG6E_1kHGUBFwhOpsOz",
+      "14": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:f0YIi83ICqapsyz0HAQ_u",
+      "15": "https://padlet.com/sorbaram/card-breakout-room/7BZ9vokL6Xwavkwz-page:mLus5Hovqz0RIxMk5vK4D"
+    }
   };
-  const stepLabels = ["오늘의 미션", "내 자료 확인", "캐릭터 이야기 작성", "최종 카드 만들기", "Padlet 저장과 전시 감상"];
+  const SECTION_IDS = [
+    "mission-section",
+    "data-section",
+    "card-layout-section",
+    "story-section",
+    "preview-section",
+    "padlet-section",
+    "check-section"
+  ];
+
   const $ = (id) => document.getElementById(id);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
-
-  let currentStep = 0;
+  let activeSectionIndex = 0;
   let state = blankState();
   let currentLinks = blankLinks();
 
@@ -71,6 +78,7 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       storySkillScene: "",
       storyText: "",
       finalChecks: [],
+      padletOpened: false,
       completed: false
     };
   }
@@ -108,10 +116,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     return match ? String(Number(match[1])) : "";
   }
 
-  function nameOnly(name) {
-    return String(name || "").replace(/^\s*\d+\s*[.]?\s*/, "").trim();
-  }
-
   function safeText(value, fallback = "자료 확인 필요") {
     const text = String(value ?? "").trim();
     return text || fallback;
@@ -122,6 +126,14 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     if (!element) return;
     element.textContent = text;
     element.dataset.tone = tone;
+  }
+
+  function setSectionState(id, text, stateName) {
+    const element = $(id);
+    if (!element) return;
+    const prefix = stateName === "complete" ? "✓ " : "";
+    element.textContent = `${prefix}${text}`;
+    element.dataset.state = stateName;
   }
 
   function normalizeUrl(value) {
@@ -161,6 +173,14 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
 
   function imageSource() {
     return normalizeUrl(currentLinks.imageUrl) || localCharacterImageUrl();
+  }
+
+  function selectedReady() {
+    return Boolean(state.studentId);
+  }
+
+  function storyReady() {
+    return Boolean(state.oneLineIntro.trim() && state.storyText.trim());
   }
 
   function jsonp(params) {
@@ -233,14 +253,13 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     return { ok: false, message: result.message || "자료를 찾지 못했습니다." };
   }
 
-  async function fetchStudentData(studentId, selectedName) {
-    const number = Number(studentId);
+  async function fetchStudentData(studentId) {
     try {
       const selected = await jsonp({
         action: "getStudent",
         school_code: SCHOOL_CODE,
         class_name: apiClassName,
-        number: String(number)
+        number: String(Number(studentId))
       });
       const selectedPayload = normalizeStudentPayload(selected);
       if (selectedPayload.ok) return selectedPayload;
@@ -266,12 +285,12 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     }
 
     state = { ...loadState(studentId), studentId, studentName: selectedName };
-    currentLinks = blankLinks();
+    currentLinks = { ...blankLinks(), padletUrl: csvPadletUrl(studentId), musicUrl: csvPadletUrl(studentId) };
     $("loadStudent").disabled = true;
     setStatus("loadStatus", "기존 수업 자료에서 내 캐릭터 정보를 찾는 중입니다.", "info");
 
     try {
-      const payload = await fetchStudentData(studentId, selectedName);
+      const payload = await fetchStudentData(studentId);
       if (!payload.ok || !payload.profile) throw new Error(payload.message || "not-found");
       state.profile = payload.profile;
       state.studentName = state.profile.studentName || selectedName;
@@ -285,7 +304,6 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       saveState();
       render();
       setStatus("loadStatus", "내 캐릭터 자료를 불러왔습니다. 내용이 맞는지 확인하세요.", "success");
-      $("characterCard").scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
       render();
       setStatus("loadStatus", error.message === "missing-api" ? "Apps Script 주소가 아직 설정되지 않았습니다. 선생님께 알려 주세요." : "캐릭터 정보를 불러오지 못했습니다. 이름과 반을 확인한 뒤 선생님께 알려 주세요.", "error");
@@ -318,43 +336,39 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
 
   function renderProfile() {
     const hasProfile = Boolean(state.profile);
-    $("characterCard").hidden = !hasProfile;
+    const hasSelected = selectedReady();
     $("profileChecks").disabled = !hasProfile;
-    if (!hasProfile) {
-      setLink("slideLink", "", "", "이미지 자료를 확인하고 있습니다.", "imageStatus");
-      setLink("padletLink", "", "", "음악 자료를 확인하고 있습니다.", "musicStatus");
-      setLink("padletLinkFinal", "", "", "음악 자료를 확인하고 있습니다.", "");
-      return;
-    }
 
-    $("studentNameText").textContent = safeText(state.studentName, safeText(state.profile.studentName));
-    $("cardCharacterName").textContent = safeText(state.profile.characterName);
-    $("cardPersonality").textContent = safeText(state.profile.personality);
-    $("cardMainSkill").textContent = safeText(state.profile.mainSkill);
-    renderImage("characterVisual", "이미지 자료를 확인하고 있습니다.");
+    $("studentNameText").textContent = hasSelected ? safeText(state.studentName, "이름 선택됨") : "이름 선택 전";
+    $("cardCharacterName").textContent = hasProfile ? safeText(state.profile.characterName) : "자료 확인 필요";
+    $("cardPersonality").textContent = hasProfile ? safeText(state.profile.personality) : "자료 확인 필요";
+    $("cardMainSkill").textContent = hasProfile ? safeText(state.profile.mainSkill) : "자료 확인 필요";
+    $("materialHint").textContent = hasSelected ? "내 슬라이드와 Padlet 자료를 열어 대표 이미지와 테마 음악을 확인하세요." : "이름을 선택하면 내 슬라이드와 Padlet 자료를 확인할 수 있습니다.";
+
+    if (hasProfile) renderImage("characterVisual", "이미지 자료를 확인하고 있습니다.");
+    else {
+      const visual = $("characterVisual");
+      visual.replaceChildren();
+      visual.classList.add("missing");
+      visual.textContent = hasSelected ? "내 자료 불러오기를 누르면 캐릭터 이미지와 설정을 확인합니다." : "먼저 위에서 자신의 이름을 선택해 주세요.";
+    }
 
     setLink(
       "slideLink",
-      currentLinks.slideUrl,
+      hasProfile ? currentLinks.slideUrl : "",
       "개인 Google 슬라이드 링크가 준비되어 있습니다.",
-      imageSource() ? "대표 이미지는 화면에서 확인할 수 있습니다. Google 슬라이드 링크는 확인하고 있습니다." : "이미지 자료를 확인하고 있습니다.",
+      hasProfile && imageSource() ? "대표 이미지는 화면에서 확인할 수 있습니다. Google 슬라이드 링크는 확인하고 있습니다." : "이미지 자료를 확인하고 있습니다.",
       "imageStatus"
     );
-    const padletUrl = currentLinks.padletUrl || currentLinks.musicUrl || csvPadletUrl();
+    const padletUrl = hasSelected ? (currentLinks.padletUrl || currentLinks.musicUrl || csvPadletUrl()) : "";
     setLink(
       "padletLink",
       padletUrl,
       "개인 Padlet 아웃브레이크 링크가 준비되어 있습니다.",
-      "음악 자료를 확인하고 있습니다.",
+      hasSelected ? "음악 자료를 확인하고 있습니다." : "먼저 위에서 자신의 이름을 선택해 주세요.",
       "musicStatus"
     );
-    setLink(
-      "padletLinkFinal",
-      padletUrl,
-      "",
-      "",
-      ""
-    );
+    setLink("padletLinkFinal", padletUrl, "", "", "");
     $$("#profileChecks input").forEach((input) => {
       input.checked = state.checks.includes(input.value);
     });
@@ -375,15 +389,23 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     return lines.join("\n\n") || "내 자료를 불러오고 이야기를 입력하면 미리보기가 나타납니다.";
   }
 
+  function syncValue(id, value) {
+    const element = $(id);
+    if (element && element.value !== value) element.value = value;
+  }
+
   function renderStory() {
-    $("oneLineIntro").value = state.oneLineIntro;
-    $("storyPlace").value = state.storyPlace;
-    $("storyProblem").value = state.storyProblem;
-    $("storySkillScene").value = state.storySkillScene;
-    $("storyText").value = state.storyText;
+    syncValue("oneLineIntro", state.oneLineIntro);
+    syncValue("storyPlace", state.storyPlace);
+    syncValue("storyProblem", state.storyProblem);
+    syncValue("storySkillScene", state.storySkillScene);
+    syncValue("storyText", state.storyText);
     $("storyPreview").textContent = storyPreviewText();
-    const ready = Boolean(state.oneLineIntro.trim() && state.storyText.trim());
-    setStatus("storyStatus", ready ? "이야기 초안이 준비되었습니다. 최종 카드에서 다시 확인하세요." : "한 줄 소개와 캐릭터 이야기를 입력해 주세요.", ready ? "success" : "info");
+    const ready = storyReady();
+    const hasSelected = selectedReady();
+    $("storyLockMessage").textContent = hasSelected ? "이야기를 작성할 수 있습니다. 입력한 내용은 아래 최종 카드에 바로 반영됩니다." : "먼저 위에서 자신의 이름을 선택해 주세요.";
+    $("storyLockMessage").classList.toggle("is-ready", hasSelected);
+    setStatus("storyStatus", ready ? "이야기 초안이 준비되었습니다. 아래 최종 카드에서 다시 확인하세요." : "한 줄 소개와 캐릭터 이야기를 입력해 주세요.", ready ? "success" : "info");
   }
 
   function cardText() {
@@ -413,59 +435,68 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     $("finalSkill").textContent = safeText(profile.mainSkill);
     $("finalIntro").textContent = state.oneLineIntro || "한 줄 소개를 입력해 주세요.";
     $("finalStory").textContent = state.storyText || "캐릭터 이야기를 입력해 주세요.";
-    renderImage("finalImage", "대표 이미지는 내 Google 슬라이드에서 확인합니다.");
-    $$("#final-section input[name='finalCheck']").forEach((input) => {
+    renderImage("finalImage", selectedReady() ? "대표 이미지는 내 Google 슬라이드에서 확인합니다." : "먼저 위에서 자신의 이름을 선택해 주세요.");
+    $$("#check-section input[name='finalCheck']").forEach((input) => {
       input.checked = state.finalChecks.includes(input.value);
     });
   }
 
-  function renderSteps() {
-    const percent = Math.round(((currentStep + 1) / stepLabels.length) * 100);
-    $("currentStepText").textContent = stepLabels[currentStep];
-    $("progressText").textContent = `${currentStep + 1} / ${stepLabels.length}`;
+  function setControlsEnabled() {
+    const hasSelected = selectedReady();
+    const hasProfile = Boolean(state.profile);
+    ["oneLineIntro", "storyPlace", "storyProblem", "storySkillScene", "storyText"].forEach((id) => {
+      $(id).disabled = !hasSelected;
+    });
+    $("copyCardText").disabled = !(hasProfile && storyReady());
+    $("finalChecksPanel").disabled = !hasSelected;
+    $("completeLesson").disabled = !hasSelected;
+    $("completeBox").hidden = !state.completed;
+  }
+
+  function renderSectionStatuses() {
+    const hasSelected = selectedReady();
+    const hasProfile = Boolean(state.profile);
+    const hasStory = storyReady();
+    const completedMap = {
+      "mission-section": true,
+      "data-section": hasSelected,
+      "card-layout-section": hasSelected,
+      "story-section": hasStory,
+      "preview-section": hasProfile && hasStory,
+      "padlet-section": state.padletOpened,
+      "check-section": state.completed
+    };
+    SECTION_IDS.forEach((id, index) => {
+      const section = $(id);
+      if (!section) return;
+      section.classList.toggle("is-active", index === activeSectionIndex);
+      section.classList.toggle("is-complete", Boolean(completedMap[id]));
+    });
+    setSectionState("missionSectionState", "진행 중", "active");
+    setSectionState("dataSectionState", hasSelected ? "완료" : "먼저 이름을 선택해 주세요", hasSelected ? "complete" : "locked");
+    setSectionState("layoutSectionState", hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasSelected ? "active" : "locked");
+    setSectionState("storySectionState", hasStory ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasStory ? "complete" : hasSelected ? "active" : "locked");
+    setSectionState("previewSectionState", hasProfile && hasStory ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", hasProfile && hasStory ? "complete" : hasSelected ? "active" : "locked");
+    setSectionState("padletSectionState", state.padletOpened ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", state.padletOpened ? "complete" : hasSelected ? "active" : "locked");
+    setSectionState("checkSectionState", state.completed ? "완료" : hasSelected ? "진행 중" : "먼저 이름을 선택해 주세요", state.completed ? "complete" : hasSelected ? "active" : "locked");
+  }
+
+  function renderTopProgress() {
+    const section = $(SECTION_IDS[activeSectionIndex]);
+    const activityName = section?.dataset.activityName || "오늘의 미션";
+    const percent = state.completed ? 100 : Math.round(((activeSectionIndex + 1) / SECTION_IDS.length) * 100);
+    $("currentActivityText").textContent = `현재 활동: ${activityName}`;
+    $("progressText").textContent = `진행률 ${percent}%`;
     $("progressBar").style.width = `${percent}%`;
-    $("prevStep").disabled = currentStep === 0;
-    $("nextStep").textContent = currentStep === stepLabels.length - 1 ? "마지막 단계" : "다음 단계";
-    $("nextStep").disabled = currentStep === stepLabels.length - 1;
-    $$(".step-panel").forEach((panel, index) => {
-      panel.hidden = index !== currentStep;
-    });
-    $$("#stepTabs button").forEach((button, index) => {
-      if (index === currentStep) button.setAttribute("aria-current", "step");
-      else button.removeAttribute("aria-current");
-    });
   }
 
   function render() {
-    renderSteps();
+    setControlsEnabled();
     renderProfile();
     renderStory();
     renderFinalCard();
-  }
-
-  function validateStep(index) {
-    if (index === 1) {
-      if (!state.profile) {
-        setStatus("loadStatus", "먼저 내 자료를 불러와 주세요.", "warning");
-        return false;
-      }
-      if (state.checks.length !== 5) {
-        setStatus("loadStatus", "자료 확인 체크리스트를 모두 확인해 주세요.", "warning");
-        return false;
-      }
-    }
-    if (index === 2 && (!state.oneLineIntro.trim() || !state.storyText.trim())) {
-      setStatus("storyStatus", "한 줄 소개와 캐릭터 이야기를 입력해야 다음 단계로 갈 수 있습니다.", "warning");
-      return false;
-    }
-    return true;
-  }
-
-  function goStep(nextStep) {
-    if (nextStep > currentStep && !validateStep(currentStep)) return;
-    currentStep = Math.max(0, Math.min(stepLabels.length - 1, nextStep));
-    render();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    renderSectionStatuses();
+    renderTopProgress();
   }
 
   async function copyText(text, statusId, successMessage) {
@@ -482,9 +513,10 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       const selected = $("studentName").value;
       const id = studentIdFromName(selected);
       state = id ? { ...loadState(id), studentId: id, studentName: selected } : blankState();
-      currentLinks = blankLinks();
+      currentLinks = id ? { ...blankLinks(), padletUrl: csvPadletUrl(id), musicUrl: csvPadletUrl(id) } : blankLinks();
       $("loadStudent").disabled = !selected;
       setStatus("loadStatus", selected ? "이름을 선택했습니다. 내 자료 불러오기를 눌러 주세요." : "이름을 선택한 뒤 내 자료 불러오기를 눌러 주세요.", "info");
+      saveState();
       render();
     });
     $("loadStudent").addEventListener("click", loadStudent);
@@ -497,19 +529,27 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     });
     ["oneLineIntro", "storyPlace", "storyProblem", "storySkillScene", "storyText"].forEach((id) => {
       $(id).addEventListener("input", (event) => {
-        state[id] = event.target.value.trim();
+        state[id] = event.target.value;
         saveState();
-        renderStory();
-        renderFinalCard();
+        render();
       });
     });
-    $$("#final-section input[name='finalCheck']").forEach((input) => {
+    $$("#check-section input[name='finalCheck']").forEach((input) => {
       input.addEventListener("change", () => {
-        state.finalChecks = $$("#final-section input[name='finalCheck']:checked").map((item) => item.value);
+        state.finalChecks = $$("#check-section input[name='finalCheck']:checked").map((item) => item.value);
         saveState();
+        render();
       });
     });
     $("copyCardText").addEventListener("click", () => copyText(cardText(), "copyStatus", "카드 내용을 복사했습니다. 내 Padlet에 붙여 넣으세요."));
+    ["padletLink", "padletLinkFinal"].forEach((id) => {
+      $(id).addEventListener("click", () => {
+        if ($(id).getAttribute("aria-disabled") === "true") return;
+        state.padletOpened = true;
+        saveState();
+        render();
+      });
+    });
     $("completeLesson").addEventListener("click", () => {
       if (state.finalChecks.length !== 3) {
         setStatus("completeStatus", "마지막 확인을 모두 체크해 주세요.", "warning");
@@ -517,23 +557,14 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
       }
       state.completed = true;
       saveState();
-      $("completeBox").hidden = false;
+      render();
       setStatus("completeStatus", "7차시 활동을 완료했습니다.", "success");
     });
-    $("prevStep").addEventListener("click", () => goStep(currentStep - 1));
-    $("nextStep").addEventListener("click", () => goStep(currentStep + 1));
-  }
-
-  function initSteps() {
-    const tabs = $("stepTabs");
-    stepLabels.forEach((label, index) => {
-      const item = document.createElement("li");
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = `${index + 1}. ${label}`;
-      button.addEventListener("click", () => goStep(index));
-      item.appendChild(button);
-      tabs.appendChild(item);
+    $$("[data-scroll-target]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = $(button.dataset.scrollTarget);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     });
   }
 
@@ -543,17 +574,48 @@ const LESSON07_API_URL = "https://script.google.com/macros/s/AKfycbyICrDSlTbpBpz
     const lastId = localStorage.getItem(lastStudentKey());
     const lastName = students[classId].find((name) => studentIdFromName(name) === String(lastId || ""));
     if (lastName) {
+      const id = studentIdFromName(lastName);
       select.value = lastName;
-      state = { ...loadState(studentIdFromName(lastName)), studentName: lastName };
+      state = { ...loadState(id), studentId: id, studentName: lastName };
+      currentLinks = { ...blankLinks(), padletUrl: csvPadletUrl(id), musicUrl: csvPadletUrl(id) };
       $("loadStudent").disabled = false;
       if (state.profile) setStatus("loadStatus", "저장된 글을 다시 표시했습니다. 링크 확인은 내 자료 불러오기를 눌러 다시 확인하세요.", "success");
     }
   }
 
+  function updateActiveSection(index) {
+    activeSectionIndex = Math.max(0, Math.min(SECTION_IDS.length - 1, index));
+    renderSectionStatuses();
+    renderTopProgress();
+  }
+
+  function initObserver() {
+    const sections = SECTION_IDS.map((id) => $(id)).filter(Boolean);
+    if (!("IntersectionObserver" in window)) {
+      window.addEventListener("scroll", () => {
+        const index = sections.reduce((best, section, currentIndex) => {
+          const top = Math.abs(section.getBoundingClientRect().top - 130);
+          const bestTop = Math.abs(sections[best].getBoundingClientRect().top - 130);
+          return top < bestTop ? currentIndex : best;
+        }, 0);
+        updateActiveSection(index);
+      }, { passive: true });
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      updateActiveSection(sections.indexOf(visible.target));
+    }, { rootMargin: "-22% 0px -52% 0px", threshold: [0.2, 0.45, 0.7] });
+    sections.forEach((section) => observer.observe(section));
+  }
+
   function init() {
-    initSteps();
     initStudents();
     bindInputs();
+    initObserver();
     render();
   }
 

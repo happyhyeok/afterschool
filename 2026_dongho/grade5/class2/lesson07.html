@@ -10,142 +10,117 @@
 <body data-class-id="class2" data-class-name="5학년 2반">
   <a class="skip-link" href="#main">본문으로 바로가기</a>
 
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div>
-        <p class="eyebrow">레벨업! AI 게임 스튜디오 · 7차시</p>
-        <h1>7차시: 내 AI 캐릭터 카드 완성하고 이야기 들려주기</h1>
-        <p class="subtitle">지난 시간에 만든 캐릭터 이미지와 설정을 보기 좋게 정리하고, 내 캐릭터만의 이야기를 완성해 봅니다.</p>
+  <header class="sticky-status" aria-label="수업 진행 안내">
+    <div class="sticky-inner">
+      <div class="sticky-title">
+        <strong>7차시: 내 AI 캐릭터 카드 완성하기</strong>
+        <span id="currentActivityText">현재 활동: 오늘의 미션</span>
       </div>
-      <div class="class-badge" aria-label="현재 학급">5학년 2반</div>
+      <div class="sticky-class">5학년 2반</div>
+      <div class="sticky-progress">
+        <span id="progressText">진행률 14%</span>
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+      </div>
     </div>
   </header>
 
-  <nav class="lesson-nav" aria-label="수업 단계 이동">
-    <div class="nav-inner">
-      <button class="btn btn-secondary" id="prevStep" type="button">이전 단계</button>
-      <div class="progress-panel">
-        <div class="progress-meta">
-          <strong id="currentStepText">오늘의 미션</strong>
-          <span id="progressText">1 / 5</span>
-        </div>
-        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
-      </div>
-      <button class="btn btn-primary" id="nextStep" type="button">다음 단계</button>
-    </div>
-    <ol class="step-tabs" id="stepTabs" aria-label="전체 진행 단계"></ol>
-  </nav>
-
   <main class="shell" id="main">
-    <section class="panel intro-panel step-panel" data-step-panel="0">
-      <p class="step">1단계 · 오늘의 미션</p>
-      <h2>내 AI 캐릭터 카드 완성하고 이야기 들려주기</h2>
-      <p class="goal">지난 시간에 만든 캐릭터 이미지와 설정을 보기 좋게 정리하고, 내 캐릭터만의 이야기를 완성해 봅니다.</p>
-      <aside class="message-box">
-        <h3>오늘의 목표</h3>
-        <p>친구가 내 카드를 보았을 때 캐릭터의 이름, 성격, 대표 스킬과 이야기를 이해할 수 있도록 정리합니다.</p>
-      </aside>
-      <div class="split-list">
-        <div>
-          <h3>오늘 할 일</h3>
-          <ul>
-            <li>지난 시간에 만든 내 캐릭터 자료 확인하기</li>
-            <li>한 줄 소개와 캐릭터 이야기 작성하기</li>
-            <li>최종 캐릭터 카드 내용을 정리하기</li>
-            <li>내 Padlet 공간에 저장하고 친구 작품 감상하기</li>
-          </ul>
-        </div>
-        <div class="avoid-box">
-          <h3>오늘 하지 않는 일</h3>
-          <ul>
-            <li>새로운 캐릭터 이미지 만들기</li>
-            <li>새로운 음악 만들기</li>
-            <li>다른 학생의 Padlet 자료 수정하기</li>
-            <li>다른 학생의 이미지나 음악 사용하기</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel step-panel" data-step-panel="1">
-      <p class="step">2단계 · 내 자료 확인</p>
-      <h2>내 이름을 선택하고 캐릭터 자료를 확인해 봅시다</h2>
-      <p class="hint">이름을 선택하면 기존 수업에서 저장한 내 캐릭터 설정을 불러옵니다.</p>
-
-      <div class="name-picker">
-        <label for="studentName">내 이름</label>
-        <select id="studentName">
-          <option value="">학생 이름 선택</option>
-        </select>
-        <button class="btn btn-primary" id="loadStudent" type="button" disabled>내 자료 불러오기</button>
-      </div>
-      <p class="status" id="loadStatus" aria-live="polite">이름을 선택한 뒤 내 자료 불러오기를 눌러 주세요.</p>
-
-      <article class="character-card" id="characterCard" hidden>
-        <div class="character-visual" id="characterVisual">캐릭터 이미지</div>
-        <div class="character-info">
-          <p class="card-kicker">내 캐릭터 자료</p>
-          <h3><span id="studentNameText"></span> 학생</h3>
-          <dl class="info-list">
-            <div><dt>캐릭터 이름</dt><dd id="cardCharacterName"></dd></div>
-            <div><dt>성격</dt><dd id="cardPersonality"></dd></div>
-            <div><dt>대표 스킬</dt><dd id="cardMainSkill"></dd></div>
-          </dl>
-          <p class="hint" id="materialHint">내 슬라이드와 Padlet 자료를 열어 대표 이미지와 테마 음악을 확인하세요.</p>
-          <div class="button-row">
-            <a class="btn btn-linklike disabled" id="slideLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 캐릭터 슬라이드 열기</a>
-            <a class="btn btn-linklike disabled" id="padletLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Padlet 아웃브레이크 열기</a>
+    <section id="mission-section" class="lesson-section tone-1" data-activity-name="오늘의 미션">
+      <div class="section-number">1</div>
+      <p class="section-label">활동 1</p>
+      <h1>내 AI 캐릭터 카드 완성하고 이야기 들려주기</h1>
+      <p class="section-description">지난 시간에 만든 캐릭터 이미지와 설정을 보기 좋게 정리하고, 내 캐릭터만의 이야기를 완성해 봅니다.</p>
+      <p class="section-state" id="missionSectionState">진행 중</p>
+      <div class="section-content">
+        <aside class="message-box">
+          <h2>오늘의 목표</h2>
+          <p>친구가 내 카드를 보았을 때 캐릭터의 이름, 성격, 대표 스킬과 이야기를 이해할 수 있도록 정리합니다.</p>
+        </aside>
+        <div class="split-list">
+          <div>
+            <h2>오늘 할 일</h2>
+            <ul>
+              <li>내 캐릭터 자료 확인하기</li>
+              <li>최종 카드 배치 살펴보기</li>
+              <li>한 줄 소개와 캐릭터 이야기 작성하기</li>
+              <li>내 Padlet 공간에 최종 카드 저장하기</li>
+            </ul>
           </div>
-          <p class="mini-status" id="imageStatus" aria-live="polite">이미지 자료를 확인하고 있습니다.</p>
-          <p class="mini-status" id="musicStatus" aria-live="polite">음악 자료를 확인하고 있습니다.</p>
+          <div class="avoid-box">
+            <h2>오늘 하지 않는 일</h2>
+            <ul>
+              <li>새로운 캐릭터 이미지 만들기</li>
+              <li>새로운 음악 만들기</li>
+              <li>다른 학생의 Padlet 자료 수정하기</li>
+              <li>다른 학생의 이미지나 음악 사용하기</li>
+            </ul>
+          </div>
         </div>
-      </article>
-
-      <fieldset class="check-panel" id="profileChecks" disabled>
-        <legend>자료 확인 체크리스트</legend>
-        <label><input type="checkbox" value="student"> 내 이름이 맞습니다.</label>
-        <label><input type="checkbox" value="character"> 캐릭터 이름이 맞습니다.</label>
-        <label><input type="checkbox" value="setting"> 성격과 대표 스킬이 맞습니다.</label>
-        <label><input type="checkbox" value="image"> Google 슬라이드에 내 이미지가 있습니다.</label>
-        <label><input type="checkbox" value="music"> Padlet에서 테마 음악을 확인할 수 있습니다.</label>
-      </fieldset>
-    </section>
-
-    <section class="panel step-panel" data-step-panel="2">
-      <p class="step">3단계 · 캐릭터 이야기 작성</p>
-      <h2>친구가 이해하기 쉬운 캐릭터 이야기를 써 봅시다</h2>
-      <p class="hint">캐릭터의 성격과 대표 스킬이 이야기 속에서 자연스럽게 보이도록 씁니다.</p>
-
-      <div class="writing-grid">
-        <label>한 줄 소개
-          <input id="oneLineIntro" type="text" maxlength="90" placeholder="예: 장난꾸러기지만 친구를 지키는 벚꽃 고양이 검사">
-        </label>
-        <label>캐릭터가 사는 곳
-          <input id="storyPlace" type="text" maxlength="90" placeholder="예: 벚꽃이 흩날리는 하늘 성">
-        </label>
-        <label>이야기에서 생긴 일
-          <input id="storyProblem" type="text" maxlength="120" placeholder="예: 친구들이 어둠의 미로에 갇혔다">
-        </label>
-        <label>대표 스킬을 쓰는 장면
-          <input id="storySkillScene" type="text" maxlength="140" placeholder="예: 3연 발도술로 미로의 문을 차례로 열었다">
-        </label>
-      </div>
-
-      <label class="story-label" for="storyText">캐릭터 이야기</label>
-      <textarea id="storyText" rows="8" maxlength="900" placeholder="내 캐릭터가 어떤 마음으로 문제를 해결하는지 이야기로 써 보세요."></textarea>
-      <p class="status" id="storyStatus" aria-live="polite">한 줄 소개와 캐릭터 이야기를 입력해 주세요.</p>
-
-      <div class="preview-box">
-        <h3>이야기 미리보기</h3>
-        <p id="storyPreview">내 자료를 불러오고 이야기를 입력하면 미리보기가 나타납니다.</p>
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" data-scroll-target="data-section">내 자료 확인으로 이동</button>
+        </div>
       </div>
     </section>
 
-    <section class="panel step-panel" data-step-panel="3">
-      <p class="step">4단계 · 최종 카드 만들기</p>
-      <h2>최종 캐릭터 카드 배치를 확인하고 내용을 정리합니다</h2>
-      <div class="card-layout-guide" aria-label="최종 카드 배치 예시">
-        <pre>🌟 나의 AI 캐릭터 카드
+    <section id="data-section" class="lesson-section tone-2" data-activity-name="내 자료 확인">
+      <div class="section-number">2</div>
+      <p class="section-label">활동 2</p>
+      <h2>내 자료 확인</h2>
+      <p class="section-description">내 이름을 선택하고 지난 시간에 만든 캐릭터 정보를 확인합니다.</p>
+      <p class="section-state" id="dataSectionState">먼저 이름을 선택해 주세요</p>
+      <div class="section-content">
+        <div class="name-picker">
+          <label for="studentName">내 이름</label>
+          <select id="studentName">
+            <option value="">학생 이름 선택</option>
+          </select>
+          <button class="btn btn-primary" id="loadStudent" type="button" disabled>내 자료 불러오기</button>
+        </div>
+        <p class="status" id="loadStatus" aria-live="polite">이름을 선택한 뒤 내 자료 불러오기를 눌러 주세요.</p>
+
+        <article class="character-card" id="characterCard">
+          <div class="character-visual missing" id="characterVisual">먼저 위에서 자신의 이름을 선택해 주세요.</div>
+          <div class="character-info">
+            <p class="card-kicker">내 캐릭터 자료</p>
+            <h3><span id="studentNameText">이름 선택 전</span> 학생</h3>
+            <dl class="info-list">
+              <div><dt>캐릭터 이름</dt><dd id="cardCharacterName">자료 확인 필요</dd></div>
+              <div><dt>성격</dt><dd id="cardPersonality">자료 확인 필요</dd></div>
+              <div><dt>대표 스킬</dt><dd id="cardMainSkill">자료 확인 필요</dd></div>
+            </dl>
+            <p class="hint" id="materialHint">이름을 선택하면 내 슬라이드와 Padlet 자료를 확인할 수 있습니다.</p>
+            <div class="button-row">
+              <a class="btn btn-linklike disabled" id="slideLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 캐릭터 슬라이드 열기</a>
+              <a class="btn btn-linklike disabled" id="padletLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Padlet 아웃브레이크 열기</a>
+            </div>
+            <p class="mini-status" id="imageStatus" aria-live="polite">이미지 자료를 확인하고 있습니다.</p>
+            <p class="mini-status" id="musicStatus" aria-live="polite">음악 자료를 확인하고 있습니다.</p>
+          </div>
+        </article>
+
+        <fieldset class="check-panel" id="profileChecks" disabled>
+          <legend>자료 확인 체크리스트</legend>
+          <label><input type="checkbox" value="student"> 내 이름이 맞습니다.</label>
+          <label><input type="checkbox" value="character"> 캐릭터 이름이 맞습니다.</label>
+          <label><input type="checkbox" value="setting"> 성격과 대표 스킬이 맞습니다.</label>
+          <label><input type="checkbox" value="image"> Google 슬라이드에 내 이미지가 있습니다.</label>
+          <label><input type="checkbox" value="music"> Padlet에서 테마 음악을 확인할 수 있습니다.</label>
+        </fieldset>
+        <div class="button-row">
+          <button class="btn btn-secondary" type="button" data-scroll-target="story-section">이야기 작성으로 이동</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="card-layout-section" class="lesson-section tone-3" data-activity-name="캐릭터 카드 구성 알아보기">
+      <div class="section-number">3</div>
+      <p class="section-label">활동 3</p>
+      <h2>캐릭터 카드 구성 알아보기</h2>
+      <p class="section-description">Padlet에 완성할 최종 카드의 배치를 먼저 살펴봅니다.</p>
+      <p class="section-state" id="layoutSectionState">진행 중</p>
+      <div class="section-content">
+        <div class="card-layout-guide" aria-label="최종 카드 배치 예시">
+          <pre>🌟 나의 AI 캐릭터 카드
 
 [대표 이미지]
 
@@ -160,63 +135,135 @@
 🎵 테마 음악
 
 AI를 활용해 만든 캐릭터입니다.</pre>
-      </div>
-
-      <article class="final-card" id="finalCard">
-        <p class="final-kicker">나의 AI 캐릭터 카드</p>
-        <div class="final-card-grid">
-          <div class="final-image" id="finalImage">대표 이미지</div>
-          <div>
-            <dl class="info-list">
-              <div><dt>캐릭터 이름</dt><dd id="finalCharacterName">자료 확인 필요</dd></div>
-              <div><dt>성격</dt><dd id="finalPersonality">자료 확인 필요</dd></div>
-              <div><dt>대표 스킬</dt><dd id="finalSkill">자료 확인 필요</dd></div>
-            </dl>
-            <h3>한 줄 소개</h3>
-            <p id="finalIntro">한 줄 소개를 입력해 주세요.</p>
-          </div>
         </div>
-        <h3>캐릭터 이야기</h3>
-        <p id="finalStory">캐릭터 이야기를 입력해 주세요.</p>
-        <p class="music-note">테마 음악은 내 Padlet에서 확인합니다.</p>
-        <p class="ai-note">AI를 활용해 만든 캐릭터입니다.</p>
-      </article>
-
-      <div class="button-row">
-        <button class="btn btn-secondary" id="copyCardText" type="button">카드 내용 복사하기</button>
+        <div class="criteria-box">
+          <h3>좋은 캐릭터 카드 기준</h3>
+          <ul>
+            <li>캐릭터 이름, 성격, 대표 스킬이 잘 보입니다.</li>
+            <li>대표 이미지가 너무 작거나 흐리지 않습니다.</li>
+            <li>한 줄 소개만 읽어도 캐릭터의 느낌이 떠오릅니다.</li>
+            <li>이야기 속에 성격과 대표 스킬이 자연스럽게 들어갑니다.</li>
+          </ul>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" data-scroll-target="story-section">이야기 작성으로 이동</button>
+        </div>
       </div>
-      <p class="status" id="copyStatus" aria-live="polite">Padlet에 붙여 넣을 카드 내용을 준비합니다.</p>
     </section>
 
-    <section class="panel step-panel" data-step-panel="4">
-      <p class="step">5단계 · Padlet에 저장하고 전시 감상</p>
-      <h2>내 Padlet 공간에 최종 캐릭터 카드를 완성합니다</h2>
-      <ol class="instruction-list">
-        <li>카드 내용 복사하기를 눌러 최종 카드 글을 준비합니다.</li>
-        <li>내 Padlet 아웃브레이크를 새 창으로 엽니다.</li>
-        <li>대표 이미지, 캐릭터 정보, 이야기, 테마 음악을 한 카드로 정리합니다.</li>
-        <li>저장한 뒤 우리 반 전시 페이지에서 친구 작품을 감상합니다.</li>
-      </ol>
-      <div class="button-row">
-        <a class="btn btn-linklike disabled" id="padletLinkFinal" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Padlet 아웃브레이크 열기</a>
-        <a class="btn btn-secondary" id="classGalleryLink" href="https://padlet.com/sorbaram/5-2-3ze33zi1rrld1mwq" target="_blank" rel="noopener noreferrer">우리 반 전시 보기</a>
+    <section id="story-section" class="lesson-section tone-4" data-activity-name="캐릭터 이야기 작성">
+      <div class="section-number">4</div>
+      <p class="section-label">활동 4</p>
+      <h2>캐릭터 이야기 작성</h2>
+      <p class="section-description">캐릭터의 성격과 대표 스킬이 이야기 속에서 자연스럽게 보이도록 씁니다.</p>
+      <p class="section-state" id="storySectionState">먼저 이름을 선택해 주세요</p>
+      <div class="section-content">
+        <p class="status locked-message" id="storyLockMessage">먼저 위에서 자신의 이름을 선택해 주세요.</p>
+        <div class="writing-grid">
+          <label>한 줄 소개
+            <input id="oneLineIntro" type="text" maxlength="90" placeholder="예: 장난꾸러기지만 친구를 지키는 벚꽃 고양이 검사" disabled>
+          </label>
+          <label>캐릭터가 사는 곳
+            <input id="storyPlace" type="text" maxlength="90" placeholder="예: 벚꽃이 흩날리는 하늘 성" disabled>
+          </label>
+          <label>이야기에서 생긴 일
+            <input id="storyProblem" type="text" maxlength="120" placeholder="예: 친구들이 어둠의 미로에 갇혔다" disabled>
+          </label>
+          <label>대표 스킬을 쓰는 장면
+            <input id="storySkillScene" type="text" maxlength="140" placeholder="예: 3연 발도술로 미로의 문을 차례로 열었다" disabled>
+          </label>
+        </div>
+        <label class="story-label" for="storyText">캐릭터 이야기</label>
+        <textarea id="storyText" rows="8" maxlength="900" placeholder="내 캐릭터가 어떤 마음으로 문제를 해결하는지 이야기로 써 보세요." disabled></textarea>
+        <p class="status" id="storyStatus" aria-live="polite">한 줄 소개와 캐릭터 이야기를 입력해 주세요.</p>
+        <div class="preview-box">
+          <h3>이야기 미리보기</h3>
+          <p id="storyPreview">내 자료를 불러오고 이야기를 입력하면 미리보기가 나타납니다.</p>
+        </div>
+        <div class="button-row">
+          <button class="btn btn-secondary" type="button" data-scroll-target="preview-section">최종 카드 확인하기</button>
+        </div>
       </div>
-      <fieldset class="check-panel">
-        <legend>마지막 확인</legend>
-        <label><input type="checkbox" name="finalCheck" value="card"> 최종 캐릭터 카드 내용을 Padlet에 정리했습니다.</label>
-        <label><input type="checkbox" name="finalCheck" value="music"> 테마 음악을 함께 확인할 수 있게 했습니다.</label>
-        <label><input type="checkbox" name="finalCheck" value="gallery"> 친구 작품을 존중하며 감상했습니다.</label>
-      </fieldset>
-      <button class="btn btn-save wide" id="completeLesson" type="button">7차시 활동 완료</button>
-      <p class="status" id="completeStatus" aria-live="polite">Padlet 저장과 전시 감상을 마친 뒤 완료 버튼을 눌러 주세요.</p>
-      <div class="complete-box" id="completeBox" hidden>
-        <strong>잘했습니다!</strong>
-        <p>내 AI 캐릭터의 이미지, 설정, 이야기를 하나의 최종 카드로 완성했습니다.</p>
+    </section>
+
+    <section id="preview-section" class="lesson-section tone-5" data-activity-name="최종 카드 미리보기">
+      <div class="section-number">5</div>
+      <p class="section-label">활동 5</p>
+      <h2>최종 카드 미리보기</h2>
+      <p class="section-description">내가 입력한 내용이 최종 카드에 어떻게 보이는지 확인합니다.</p>
+      <p class="section-state" id="previewSectionState">먼저 이름을 선택해 주세요</p>
+      <div class="section-content">
+        <article class="final-card" id="finalCard">
+          <p class="final-kicker">나의 AI 캐릭터 카드</p>
+          <div class="final-card-grid">
+            <div class="final-image missing" id="finalImage">대표 이미지</div>
+            <div>
+              <dl class="info-list">
+                <div><dt>캐릭터 이름</dt><dd id="finalCharacterName">자료 확인 필요</dd></div>
+                <div><dt>성격</dt><dd id="finalPersonality">자료 확인 필요</dd></div>
+                <div><dt>대표 스킬</dt><dd id="finalSkill">자료 확인 필요</dd></div>
+              </dl>
+              <h3>한 줄 소개</h3>
+              <p id="finalIntro">한 줄 소개를 입력해 주세요.</p>
+            </div>
+          </div>
+          <h3>캐릭터 이야기</h3>
+          <p id="finalStory">캐릭터 이야기를 입력해 주세요.</p>
+          <p class="music-note">테마 음악은 내 Padlet에서 확인합니다.</p>
+          <p class="ai-note">AI를 활용해 만든 캐릭터입니다.</p>
+        </article>
+        <div class="button-row">
+          <button class="btn btn-secondary" id="copyCardText" type="button" disabled>카드 내용 복사하기</button>
+          <button class="btn btn-primary" type="button" data-scroll-target="padlet-section">Padlet 저장으로 이동</button>
+        </div>
+        <p class="status" id="copyStatus" aria-live="polite">Padlet에 붙여 넣을 카드 내용을 준비합니다.</p>
+      </div>
+    </section>
+
+    <section id="padlet-section" class="lesson-section tone-6" data-activity-name="Padlet에 저장하기">
+      <div class="section-number">6</div>
+      <p class="section-label">활동 6</p>
+      <h2>Padlet에 저장하기</h2>
+      <p class="section-description">내 Padlet 공간에 대표 이미지, 캐릭터 정보, 이야기, 테마 음악을 한 카드로 정리합니다.</p>
+      <p class="section-state" id="padletSectionState">먼저 이름을 선택해 주세요</p>
+      <div class="section-content">
+        <ol class="instruction-list">
+          <li>카드 내용 복사하기를 눌러 최종 카드 글을 준비합니다.</li>
+          <li>내 Padlet 아웃브레이크를 새 창으로 엽니다.</li>
+          <li>대표 이미지, 캐릭터 정보, 이야기, 테마 음악을 한 카드로 정리합니다.</li>
+        </ol>
+        <div class="button-row">
+          <a class="btn btn-linklike disabled" id="padletLinkFinal" target="_blank" rel="noopener noreferrer" aria-disabled="true">내 Padlet 아웃브레이크 열기</a>
+          <a class="btn btn-secondary" id="classGalleryLink" href="https://padlet.com/sorbaram/5-2-3ze33zi1rrld1mwq" target="_blank" rel="noopener noreferrer">우리 반 전시 보기</a>
+          <button class="btn btn-primary" type="button" data-scroll-target="check-section">최종 점검으로 이동</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="check-section" class="lesson-section tone-7" data-activity-name="최종 점검 및 전시 감상">
+      <div class="section-number">7</div>
+      <p class="section-label">활동 7</p>
+      <h2>최종 점검 및 전시 감상</h2>
+      <p class="section-description">내 카드가 잘 저장되었는지 확인하고, 친구 작품을 존중하며 감상합니다.</p>
+      <p class="section-state" id="checkSectionState">먼저 이름을 선택해 주세요</p>
+      <div class="section-content">
+        <fieldset class="check-panel" id="finalChecksPanel" disabled>
+          <legend>마지막 확인</legend>
+          <label><input type="checkbox" name="finalCheck" value="card"> 최종 캐릭터 카드 내용을 Padlet에 정리했습니다.</label>
+          <label><input type="checkbox" name="finalCheck" value="music"> 테마 음악을 함께 확인할 수 있게 했습니다.</label>
+          <label><input type="checkbox" name="finalCheck" value="gallery"> 친구 작품을 존중하며 감상했습니다.</label>
+        </fieldset>
+        <button class="btn btn-save wide" id="completeLesson" type="button" disabled>7차시 활동 완료</button>
+        <p class="status" id="completeStatus" aria-live="polite">Padlet 저장과 전시 감상을 마친 뒤 완료 버튼을 눌러 주세요.</p>
+        <div class="complete-box" id="completeBox" hidden>
+          <strong>잘했습니다!</strong>
+          <p>내 AI 캐릭터의 이미지, 설정, 이야기를 하나의 최종 카드로 완성했습니다.</p>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">동호초 5학년 2반 · 레벨업! AI 게임 스튜디오</footer>
-  <script src="../lesson07.js?v=20260722-padlet"></script>
+  <script src="../lesson07.js?v=20260722-scroll"></script>
 </body>
 </html>
