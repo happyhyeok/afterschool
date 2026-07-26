@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌕 달 탐사대 브리핑 - 아르테미스 미션과 달의 비밀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6366F1; --secondary:#F97316; --success:#22C55E;
+    --warning:#FBBF24; --danger:#F43F5E; --bg:#FFF8F0; --card:#FFFFFF;
+    --text:#1E1B4B; --muted:#7C3AED; --space:#1B1240; --moon:#D9D3C9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Noto Sans KR',sans-serif; color:var(--text); line-height:1.8; padding-bottom:60px;
+    background:
+      linear-gradient(rgba(255,248,240,.94),rgba(255,248,240,.94)),
+      url('https://assets.science.nasa.gov/dynamicimage/assets/science/psd/lunar-science/2023/08/134_lro_farside.jpg?w=1894&h=1883&fit=clip&crop=faces%2Cfocalpoint');
+    background-size: 900px; background-repeat: repeat; background-attachment: fixed;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 16px;}
+  header{
+    background:
+      linear-gradient(135deg, rgba(27,18,64,.82) 0%, rgba(55,48,163,.82) 100%),
+      url('https://www.nasa.gov/wp-content/uploads/2018/12/far-side-of-moon-as-seen-from-apollo8.jpg');
+    background-size: cover; background-position: center;
+    color:#fff; padding:28px 16px 22px; text-align:center;
+    border-bottom:6px solid var(--warning);
+  }
+  header h1{margin:0 0 6px; font-size:26px; font-weight:900;}
+  header p{margin:2px 0; font-size:15px; opacity:.9;}
+  .progress-bar{
+    max-width:860px; margin:14px auto 0; display:flex; justify-content:center; gap:8px;
+  }
+  .star{font-size:24px; opacity:.35; transition:.3s;}
+  .star.on{opacity:1; transform:scale(1.15);}
+
+  section{margin:26px 0;}
+  .card{
+    background:var(--card); border-radius:20px; padding:22px 20px;
+    box-shadow:0 4px 14px rgba(30,27,75,.08); border-top:8px solid var(--primary);
+  }
+  .card.orange{border-top-color:var(--secondary);}
+  .card.green{border-top-color:var(--success);}
+  .card.yellow{border-top-color:var(--warning);}
+  .card h2{margin-top:0; font-size:20px; display:flex; align-items:center; gap:8px;}
+  .badge{
+    display:inline-block; background:var(--warning); color:var(--space);
+    font-weight:700; font-size:13px; padding:4px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .timebox{font-size:13px; color:var(--muted); font-weight:700; margin-bottom:4px;}
+
+  .btn{
+    background:var(--primary); color:#fff; border:none; border-radius:14px;
+    padding:12px 20px; font-size:18px; font-weight:700; cursor:pointer;
+    transition:.15s; font-family:inherit;
+  }
+  .btn:hover{transform:scale(1.05); filter:brightness(1.08);}
+  .btn.orange{background:var(--secondary);}
+  .btn.outline{background:#fff; color:var(--primary); border:2px solid var(--primary);}
+
+  /* 생각열기 질문 */
+  textarea{
+    width:100%; font-family:inherit; font-size:16px; border:2px solid #E5E7EB;
+    border-radius:12px; padding:10px; resize:vertical; min-height:70px;
+  }
+  .reveal{
+    display:none; margin-top:14px; background:#F5F3FF; border-radius:14px;
+    padding:16px; border:2px dashed var(--muted);
+  }
+  .reveal.show{display:block;}
+
+  /* SVG 애니메이션 */
+  .anim-box{
+    background:radial-gradient(ellipse at center,#241a52 0%, var(--space) 70%);
+    border-radius:16px; padding:10px; text-align:center; margin-top:14px;
+  }
+  .anim-controls{
+    display:flex; gap:10px; justify-content:center; align-items:center;
+    margin-top:10px; flex-wrap:wrap;
+  }
+  .anim-controls label{color:var(--text); font-size:14px; font-weight:700;}
+  .legend{
+    display:flex; gap:18px; justify-content:center; margin-top:8px; font-size:13px; color:#fff;
+    flex-wrap:wrap;
+  }
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:12px; height:12px; border-radius:50%; display:inline-block;}
+
+  /* 아코디언 */
+  .accordion-item{
+    border:2px solid #EDE9FE; border-radius:14px; margin-bottom:10px; overflow:hidden;
+  }
+  .accordion-head{
+    background:#F5F3FF; padding:14px 16px; font-weight:700; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; font-size:16px;
+  }
+  .accordion-body{
+    max-height:0; overflow:hidden; transition:max-height .3s ease; padding:0 16px;
+  }
+  .accordion-body.open{max-height:500px; padding:14px 16px;}
+  .accordion-body img{max-width:100%; border-radius:10px; margin-top:8px;}
+  .check-row{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:14px; color:var(--muted);}
+  .check-row input{width:18px; height:18px;}
+
+  /* 퀴즈 */
+  .quiz-item{margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed #E5E7EB;}
+  .quiz-item:last-child{border-bottom:none;}
+  .quiz-q{font-weight:700; font-size:17px; margin-bottom:10px;}
+  .ox-btns{display:flex; gap:12px;}
+  .ox-btn{
+    flex:1; padding:14px; font-size:20px; font-weight:900; border-radius:14px;
+    border:3px solid #E5E7EB; background:#fff; cursor:pointer; transition:.15s;
+  }
+  .ox-btn.o{color:var(--success);} .ox-btn.x{color:var(--danger);}
+  .ox-btn:hover{transform:scale(1.03);}
+  .feedback{
+    margin-top:10px; padding:12px; border-radius:12px; font-size:15px; display:none;
+  }
+  .feedback.correct{background:#DCFCE7; color:#15803D; display:block;}
+  .feedback.wrong{background:#FFE4E6; color:#BE123C; display:block;}
+
+  /* 체크리스트 */
+  .checklist-item{
+    display:flex; align-items:center; gap:10px; padding:10px 0; font-size:16px;
+  }
+  .checklist-item input{width:22px; height:22px;}
+  .checklist-item.done label{text-decoration:line-through; color:#9CA3AF;}
+
+  .celebrate{
+    display:none; text-align:center; margin-top:16px; padding:18px; border-radius:16px;
+    background:linear-gradient(135deg,#FBBF24,#F97316); color:#fff; font-weight:900; font-size:18px;
+  }
+  .celebrate.show{display:block; animation:bounce .6s;}
+  @keyframes bounce{0%{transform:scale(.8);} 50%{transform:scale(1.08);} 100%{transform:scale(1);}}
+
+  footer{text-align:center; font-size:13px; color:#9CA3AF; margin-top:40px;}
+
+  @media print{
+    header{background:#fff !important; color:#000 !important;}
+    .btn, .anim-controls, textarea{display:none !important;}
+  }
+  @media (max-width:480px){
+    header h1{font-size:21px;} .card{padding:16px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌕 달 탐사대 브리핑</h1>
+  <p>아르테미스 미션과 달의 비밀을 파헤쳐보자!</p>
+</header>
+
+<div class="progress-bar" id="progressBar">
+  <span class="star" data-id="s1">⭐</span>
+  <span class="star" data-id="s2">⭐</span>
+  <span class="star" data-id="s3">⭐</span>
+  <span class="star" data-id="s4">⭐</span>
+</div>
+
+<div class="wrap">
+
+  <!-- 1. 탐사대 입단 0~7분 -->
+  <section class="card" id="sec1">
+    <div class="timebox">⏱ 0~7분 · 탐사대 입단</div>
+    <h2>🧑‍🚀 오늘의 미션 카드</h2>
+    <p>오늘 우리는 <b>달 탐사대원</b>이 되어 특별한 임무를 받았습니다. 지구에서 약 38만 km 떨어진 달에는 아직도 밝혀지지 않은 비밀이 많아요. 오늘의 브리핑을 마치면, 여러분은 나만의 <b>AI Buddy</b>와 함께 달 탐사를 떠날 준비를 하게 됩니다.</p>
+    <div class="card yellow" style="margin-top:14px;">
+      <b>🎯 오늘의 미션</b>
+      <ol style="margin:8px 0 0; padding-left:20px;">
+        <li>왜 달의 뒷면은 지구에서 절대 보이지 않는지 알아내기</li>
+        <li>아르테미스 미션이 무엇인지 파악하기</li>
+        <li>달 남극이 왜 중요한 곳인지 이해하기</li>
+        <li>진짜 과학 사실과 AI가 상상해서 만든 이야기를 구별하기</li>
+      </ol>
+    </div>
+    <button class="btn" onclick="completeSection('s1')" style="margin-top:16px;">✅ 미션 확인 완료!</button>
+  </section>
+
+  <!-- 2. 생각 열기 7~18분 -->
+  <section class="card orange" id="sec2">
+    <div class="timebox">⏱ 7~18분 · 생각 열기</div>
+    <h2>🤔 왜 달의 뒷면은 지구에서 보이지 않을까?</h2>
+    <p>우리는 매일 밤 같은 달을 보지만, 사실 <b>달의 한쪽 면은 인류 역사상 지구에서 맨눈으로 본 적이 없었어요</b>(2026년 전까지는요!). 여러분의 생각을 먼저 적어봅시다.</p>
+    <textarea id="thinkInput" placeholder="내 생각: 왜 달은 항상 같은 면만 보여줄까요?"></textarea>
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn orange" onclick="saveThink()">💾 내 생각 저장하기</button>
+      <button class="btn outline" onclick="toggleReveal()">🔍 애니메이션으로 힌트 보기</button>
+    </div>
+
+    <div class="reveal" id="revealBox">
+      <p><b>💡 힌트: 달의 '동주기 자전'</b><br>
+      달은 지구를 한 바퀴 도는 데(공전) 걸리는 시간과, 스스로 한 바퀴 도는 데(자전) 걸리는 시간이 <b>똑같이 약 27일</b>이에요. 그래서 달은 항상 같은 얼굴(면)만 지구를 향하게 됩니다. 아래 애니메이션의 <span style="color:#60A5FA">파란 점</span>이 항상 지구를 향하는 '앞면'이고, <span style="color:#F87171">빨간 점</span>은 지구에서 절대 안 보이는 '뒷면'이에요.</p>
+
+      <div class="anim-box">
+        <svg id="tidalSvg" viewBox="0 0 320 320" width="100%" style="max-width:320px;">
+          <circle cx="160" cy="160" r="30" fill="#3B82F6"/>
+          <text x="160" y="165" text-anchor="middle" font-size="18">🌍</text>
+          <g id="moonGroup">
+            <circle cx="0" cy="0" r="18" fill="#D9D3C9"/>
+            <circle id="nearDot" cx="0" cy="0" r="4" fill="#60A5FA"/>
+            <circle id="farDot" cx="0" cy="0" r="4" fill="#F87171"/>
+          </g>
+        </svg>
+        <div class="legend">
+          <span><span class="dot" style="background:#60A5FA"></span>앞면(항상 지구를 향함)</span>
+          <span><span class="dot" style="background:#F87171"></span>뒷면(지구에서 안 보임)</span>
+        </div>
+        <div class="anim-controls">
+          <button class="btn outline" onclick="toggleAnim()" id="animPlayBtn">⏸ 일시정지</button>
+          <label>속도</label>
+          <input type="range" id="speedSlider" min="1" max="5" value="2">
+        </div>
+      </div>
+      <p style="font-size:14px; color:var(--muted);">※ 뒷면은 '어두운 면'이 아니에요! 뒷면에도 낮과 밤이 있습니다. 다만 지구에서 <b>보이지 않는 면</b>일 뿐이에요.</p>
+    </div>
+    <button class="btn" onclick="completeSection('s2')" style="margin-top:16px;">✅ 생각 나누기 완료!</button>
+  </section>
+
+  <!-- 3. 미션 브리핑 18~30분 -->
+  <section class="card green" id="sec3">
+    <div class="timebox">⏱ 18~30분 · 미션 브리핑</div>
+    <h2>📡 핵심 과학 사실 브리핑</h2>
+    <p>아래 카드를 눌러서 펼쳐보고, 중요한 사실은 체크박스로 기록해두세요.</p>
+
+    <div class="accordion-item">
+      <div class="accordion-head" onclick="toggleAcc(this)">🚀 아르테미스 미션이란? <span>▼</span></div>
+      <div class="accordion-body">
+        <p>아르테미스는 NASA가 이끄는 <b>유인 달 탐사 계획</b>이에요. 2026년 4월, 아르테미스 2호가 우주비행사 4명을 태우고 달 근처를 도는 비행에 성공했어요. 이때 승무원들은 인류 역사상 처음으로 <b>달의 뒷면을 자신의 눈으로 직접 보았습니다.</b> 다음 임무들에서는 사람이 달 표면에 다시 착륙하는 것을 목표로 하고 있어요.</p>
+        <div class="check-row"><input type="checkbox" id="fact1"><label for="fact1">기록 완료: 아르테미스 2호가 달 뒷면을 눈으로 관측했다</label></div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-head" onclick="toggleAcc(this)">🌑 달 뒷면의 특징 <span>▼</span></div>
+      <div class="accordion-body">
+        <p>달 뒷면은 앞면보다 <b>충돌구(크레이터)가 훨씬 많고 울퉁불퉁</b>해요. 앞면은 오래전 용암이 흘러나와 넓고 평평한 어두운 지역(현무암 평원)이 많지만, 뒷면은 지각이 두꺼워서 그런 지형이 적기 때문이에요.</p>
+        <div class="check-row"><input type="checkbox" id="fact2"><label for="fact2">기록 완료: 달 뒷면은 크레이터가 많고 울퉁불퉁하다</label></div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-head" onclick="toggleAcc(this)">🧊 달 남극이 중요한 이유 <span>▼</span></div>
+      <div class="accordion-body">
+        <p>달 남극에는 햇빛이 전혀 들지 않는 <b>영구 그림자 지역</b>이 있어요. 이런 깊은 크레이터 안쪽은 온도가 매우 낮아서 <b>물 얼음이 숨어 있을 가능성</b>이 있다고 과학자들은 예측하고 있어요. 물이 있다면 마실 물뿐 아니라 산소와 로켓 연료로도 활용할 수 있어서, 앞으로 사람이 착륙할 후보지로 주목받고 있습니다.</p>
+        <div class="check-row"><input type="checkbox" id="fact3"><label for="fact3">기록 완료: 달 남극 영구 그림자 지역에 물 얼음이 있을 수 있다</label></div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="completeSection('s3')" style="margin-top:16px;">✅ 브리핑 기록 완료!</button>
+  </section>
+
+  <!-- 4. 사실과 상상 구분 30~38분 -->
+  <section class="card yellow" id="sec4">
+    <div class="timebox">⏱ 30~38분 · 사실과 상상 구분</div>
+    <h2>🔍 O/X 판별: 진짜 과학 사실일까?</h2>
+    <p>아래 문장 중에는 <b>실제 관측된 과학적 사실</b>도 있고, 근거 없이 <b>상상이나 소문으로 지어낸 이야기</b>도 있어요. O/X를 눌러 골라보세요.</p>
+    <div id="quizArea"></div>
+  </section>
+
+  <!-- 정리 & 체크리스트 -->
+  <section class="card">
+    <h2>📝 정리 &amp; 나의 학습 체크리스트</h2>
+    <div id="checklist">
+      <div class="checklist-item"><input type="checkbox" data-id="c1" id="c1"><label for="c1">달의 뒷면이 왜 안 보이는지 설명할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" data-id="c2" id="c2"><label for="c2">아르테미스 미션이 무엇인지 말할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" data-id="c3" id="c3"><label for="c3">달 남극이 왜 중요한지 설명할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" data-id="c4" id="c4"><label for="c4">과학 사실과 상상(소문)을 구별할 수 있어요</label></div>
+    </div>
+    <div class="celebrate" id="celebrate">🏆 브리핑 완료! 이제 AI Buddy와 함께 진짜 달 탐사를 떠나볼까요? 🚀</div>
+  </section>
+
+</div>
+
+<footer>🌕 달 탐사대 브리핑 자료 · 초등 5~6학년용</footer>
+
+<script>
+// ---------- 진도 별 ----------
+function completeSection(id){
+  const star = document.querySelector('.star[data-id="'+id+'"]');
+  if(star) star.classList.add('on');
+  saveProgress();
+}
+function saveProgress(){
+  const state = {};
+  document.querySelectorAll('.star').forEach(s=>{state[s.dataset.id]=s.classList.contains('on');});
+  try{ localStorage.setItem('moon-briefing-progress', JSON.stringify(state)); }catch(e){}
+}
+function loadProgress(){
+  try{
+    const state = JSON.parse(localStorage.getItem('moon-briefing-progress')||'{}');
+    Object.keys(state).forEach(k=>{
+      if(state[k]){ const s=document.querySelector('.star[data-id="'+k+'"]'); if(s) s.classList.add('on'); }
+    });
+  }catch(e){}
+}
+loadProgress();
+
+// ---------- 생각 열기 ----------
+function saveThink(){
+  try{ localStorage.setItem('moon-briefing-think', document.getElementById('thinkInput').value); }catch(e){}
+  alert('내 생각이 저장되었어요! 선생님과 함께 이야기 나눠봐요 🙋');
+}
+(function(){ try{
+  const v = localStorage.getItem('moon-briefing-think');
+  if(v) document.getElementById('thinkInput').value = v;
+}catch(e){} })();
+
+function toggleReveal(){
+  document.getElementById('revealBox').classList.toggle('show');
+}
+
+// ---------- 조석고정 애니메이션 ----------
+let angle = 0, playing = true, speed = 2;
+const R = 110, cx = 160, cy = 160;
+function drawMoon(){
+  const rad = angle * Math.PI/180;
+  const mx = cx + R*Math.cos(rad);
+  const my = cy + R*Math.sin(rad);
+  const g = document.getElementById('moonGroup');
+  g.setAttribute('transform', 'translate('+mx+','+my+') rotate('+angle+')');
+  // near dot points toward earth (angle+180), far dot opposite
+  const near = document.getElementById('nearDot');
+  const far = document.getElementById('farDot');
+  near.setAttribute('cx', 10*Math.cos((180)*Math.PI/180));
+  near.setAttribute('cy', 10*Math.sin((180)*Math.PI/180));
+  far.setAttribute('cx', 10*Math.cos((0)*Math.PI/180));
+  far.setAttribute('cy', 10*Math.sin((0)*Math.PI/180));
+}
+function tick(){
+  if(playing){ angle = (angle + speed) % 360; drawMoon(); }
+  requestAnimationFrame(tick);
+}
+document.getElementById('speedSlider').addEventListener('input', e=>{ speed = parseFloat(e.target.value); });
+function toggleAnim(){
+  playing = !playing;
+  document.getElementById('animPlayBtn').textContent = playing ? '⏸ 일시정지' : '▶ 재생';
+}
+drawMoon();
+requestAnimationFrame(tick);
+
+// ---------- 아코디언 ----------
+function toggleAcc(head){
+  const body = head.nextElementSibling;
+  body.classList.toggle('open');
+  head.querySelector('span').textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// ---------- 퀴즈 ----------
+const quiz = [
+  {q:"달의 뒷면은 앞면보다 충돌구(크레이터)가 훨씬 많다.", answer:"O", explain:"사실이에요! 뒷면은 지각이 두꺼워 용암 평원이 적고, 크레이터가 많이 남아있어요."},
+  {q:"달 뒷면은 태양빛이 전혀 닿지 않아 항상 캄캄한 어둠 속에 있다.", answer:"X", explain:"상상/오해예요. 뒷면에도 낮과 밤이 있어요. '뒷면'은 '어두운 면'이 아니라 '지구에서 안 보이는 면'이라는 뜻이에요."},
+  {q:"달 남극의 깊은 크레이터 그림자 속에는 물 얼음이 있을 가능성이 있다.", answer:"O", explain:"사실이에요! 영구 그림자 지역은 매우 추워서 물 얼음이 존재할 가능성이 있다고 과학자들이 예측해요."},
+  {q:"2026년 4월, 아르테미스 2호 우주비행사들은 달 뒷면을 자신의 눈으로 직접 관측한 최초의 사람들이 되었다.", answer:"O", explain:"실제로 있었던 일이에요! 아르테미스 2호가 달을 돌며 뒷면을 비행하듯 지나갔어요."},
+  {q:"달 뒷면에는 외계인의 비밀 기지가 있다는 것이 최근 사진으로 확인되었다.", answer:"X", explain:"이건 근거 없는 소문/상상이에요. 실제 탐사 자료로 확인된 적이 없는 이야기예요."},
+  {q:"AI가 그린 상상 속 우주 그림은 실제 사진처럼 보일 수 있지만, 진짜 관측 자료는 아니다.", answer:"O", explain:"맞아요! AI 그림은 멋지고 진짜 같아 보여도 실제 관측 데이터가 아니라는 걸 꼭 구별해야 해요."}
+];
+const quizArea = document.getElementById('quizArea');
+quiz.forEach((item, i)=>{
+  const div = document.createElement('div');
+  div.className = 'quiz-item';
+  div.innerHTML = `
+    <div class="quiz-q">${i+1}. ${item.q}</div>
+    <div class="ox-btns">
+      <button class="ox-btn o" onclick="checkAnswer(${i},'O',this)">O</button>
+      <button class="ox-btn x" onclick="checkAnswer(${i},'X',this)">X</button>
+    </div>
+    <div class="feedback" id="fb${i}"></div>
+  `;
+  quizArea.appendChild(div);
+});
+function checkAnswer(i, picked, btn){
+  const item = quiz[i];
+  const fb = document.getElementById('fb'+i);
+  const correct = picked === item.answer;
+  fb.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = (correct ? '🎉 정답이에요! ' : '🤔 다시 생각해봐요! 정답은 '+item.answer+'예요. ') + item.explain;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.ox-btn').forEach(b=>b.disabled=true);
+}
+
+// ---------- 체크리스트 ----------
+document.querySelectorAll('#checklist input').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    cb.closest('.checklist-item').classList.toggle('done', cb.checked);
+    checkAllDone();
+    saveChecklist();
+  });
+});
+function checkAllDone(){
+  const all = document.querySelectorAll('#checklist input');
+  const done = document.querySelectorAll('#checklist input:checked');
+  document.getElementById('celebrate').classList.toggle('show', all.length===done.length);
+}
+function saveChecklist(){
+  const state = {};
+  document.querySelectorAll('#checklist input').forEach(cb=>{state[cb.id]=cb.checked;});
+  try{ localStorage.setItem('moon-briefing-checklist', JSON.stringify(state)); }catch(e){}
+}
+(function(){ try{
+  const state = JSON.parse(localStorage.getItem('moon-briefing-checklist')||'{}');
+  Object.keys(state).forEach(k=>{
+    const cb = document.getElementById(k);
+    if(cb && state[k]){ cb.checked = true; cb.closest('.checklist-item').classList.add('done'); }
+  });
+  checkAllDone();
+}catch(e){} })();
+</script>
+</body>
+</html>

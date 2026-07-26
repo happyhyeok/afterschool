@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1180">
+  <title>Delightex Edu 달 탐사 AI Buddy 활동 안내</title>
+  <link rel="stylesheet" href="student.css">
+</head>
+<body>
+  <div id="storageWarning" class="storage-warning" hidden>
+    <strong>자동 저장을 사용할 수 없어요.</strong>
+    <span>작성한 내용을 지우지 말고 활동을 이어가요.</span>
+  </div>
+
+  <header class="topbar" aria-label="활동 진행 상태">
+    <div class="topbar-inner">
+      <div class="brand-block">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">Delightex Edu</p>
+          <h1>달 뒷면 탐사 AI Buddy</h1>
+        </div>
+      </div>
+      <div class="status-grid">
+        <div class="status-item">
+          <span class="status-label">현재 단계</span>
+          <strong id="currentStepLabel">1. 내 이름 선택</strong>
+        </div>
+        <div class="status-item progress-status">
+          <span class="status-label">전체 진행률</span>
+          <div class="progress-line">
+            <progress id="overallProgress" value="0" max="100"></progress>
+            <strong id="overallProgressText">0%</strong>
+          </div>
+        </div>
+        <div class="status-item">
+          <span class="status-label">자동 저장</span>
+          <strong id="saveStatus">준비 중</strong>
+        </div>
+      </div>
+      <button id="resetLessonButton" class="ghost-button" type="button">처음부터 다시 하기</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="side-nav" aria-label="활동 단계 바로가기">
+      <a href="#student-info">1 이름</a>
+      <a href="#mission">2 미션</a>
+      <a href="#about-delightex">3 도구</a>
+      <a href="#open-project">4 열기</a>
+      <a href="#controls">6 조작</a>
+      <a href="#moon-background">7 배경</a>
+      <a href="#explorer-objects">8 배치</a>
+      <a href="#about-buddy">9 Buddy 설계</a>
+      <a href="#buddy-prompt">10 설정</a>
+      <a href="#buddy-chat">11 대화</a>
+      <a href="#reflection">12 기록</a>
+      <a href="#submit-record">13 제출</a>
+    </aside>
+
+    <div class="content">
+      <section class="briefing-banner" aria-labelledby="briefing-link-title">
+        <span class="briefing-icon" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">수업 시작 전 브리핑</p>
+          <h2 id="briefing-link-title">달 탐사대 브리핑을 먼저 확인해요.</h2>
+          <p>아르테미스 미션과 달의 뒷면 기초지식을 살펴본 뒤 활동을 시작해요.</p>
+        </div>
+        <a class="briefing-link-button" href="moon-artemis-briefing.html" target="_blank" rel="noopener">브리핑 열기</a>
+      </section>
+
+      <section class="book-source-card" aria-labelledby="book-source-title">
+        <img src="assets/science-is-easy-rocket-cover.png" alt="과학은 쉽다! 우주 탐사와 로켓 표지">
+        <div>
+          <p class="eyebrow">함께 보는 참고 도서</p>
+          <h2 id="book-source-title">과학은 쉽다! 우주 탐사와 로켓</h2>
+          <p class="book-meta">
+            <a href="https://www.aladin.co.kr/search/wsearchresult.aspx?AuthorSearch=%ec%9d%b4%ec%a0%95%ec%95%84@1733287&amp;BranchType=1" target="_blank" rel="noopener">이정아</a> 지음
+            <span aria-hidden="true">·</span>
+            <a href="https://www.aladin.co.kr/search/wsearchresult.aspx?AuthorSearch=%eb%82%a8%eb%8f%99%ec%99%84@8283798&amp;BranchType=1" target="_blank" rel="noopener">남동완</a> 그림
+            <span aria-hidden="true">·</span>
+            <a href="https://www.aladin.co.kr/search/wsearchresult.aspx?PublisherSearch=%eb%b9%84%eb%a3%a1%ec%86%8c@2254&amp;BranchType=1" target="_blank" rel="noopener">비룡소</a>
+            <span aria-hidden="true">·</span>
+            2024-04-26
+          </p>
+        </div>
+      </section>
+
+      <section class="hero-panel" aria-labelledby="hero-title">
+        <div class="moon-orbit" aria-hidden="true">
+          <span class="moon"></span>
+          <span class="satellite"></span>
+          <span class="orbit-line"></span>
+        </div>
+        <div>
+          <p class="eyebrow">1차시 학생 활동 안내</p>
+          <h2 id="hero-title">나만의 달 탐사 짝꿍을 만들어 봐요.</h2>
+          <p class="hero-copy">달 뒷면 3D 공간을 열어요. 탐사 대원과 장비를 놓아요. AI Buddy에게 질문하고 기록해요.</p>
+        </div>
+      </section>
+
+      <section id="student-info" class="step-card" data-step="1" data-title="내 이름 선택">
+        <div class="step-heading">
+          <span class="step-number">1</span>
+          <div>
+            <p class="eyebrow">먼저 선택해요</p>
+            <h2>내 이름 선택</h2>
+          </div>
+        </div>
+        <p class="lead">내 이름을 검색해요. 내 이름을 클릭해요.</p>
+        <div class="student-selector name-only">
+          <div class="student-search-panel">
+            <label class="field">
+              <span>학생 이름 검색</span>
+              <input id="studentSearch" type="search" autocomplete="off" placeholder="내 이름을 입력해요.">
+            </label>
+            <p id="studentListStatus" class="student-status" aria-live="polite">학생 목록을 불러오고 있어요.</p>
+            <div id="studentNameList" class="student-name-list" role="listbox" aria-label="학생 이름 목록"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mission" class="step-card" data-step="2" data-title="오늘의 미션">
+        <div class="step-heading">
+          <span class="step-number">2</span>
+          <div>
+            <p class="eyebrow">오늘 할 일</p>
+            <h2>오늘의 미션</h2>
+          </div>
+        </div>
+        <div class="mission-callout">
+          <strong>나만의 달 탐사 짝꿍을 만들어 봐요.</strong>
+        </div>
+        <div class="mission-grid">
+          <div class="mini-tile"><span class="tile-icon icon-moon"></span><p>달 뒷면 3D 프로젝트를 열어요.</p></div>
+          <div class="mini-tile"><span class="tile-icon icon-person"></span><p>탐사 캐릭터를 배치해요.</p></div>
+          <div class="mini-tile"><span class="tile-icon icon-rover"></span><p>탐사 장비를 배치해요.</p></div>
+          <div class="mini-tile"><span class="tile-icon icon-chat"></span><p>AI Buddy를 만들어요.</p></div>
+          <div class="mini-tile"><span class="tile-icon icon-question"></span><p>AI Buddy에게 질문해요.</p></div>
+          <div class="mini-tile"><span class="tile-icon icon-note"></span><p>탐사 기록을 남겨요.</p></div>
+        </div>
+      </section>
+
+      <section id="about-delightex" class="step-card" data-step="3" data-title="딜라잇텍스에듀 알아보기">
+        <div class="step-heading">
+          <span class="step-number">3</span>
+          <div>
+            <p class="eyebrow">도구 알아보기</p>
+            <h2>딜라잇텍스에듀 알아보기</h2>
+          </div>
+        </div>
+        <p class="lead">딜라잇텍스에듀는 3D 공간을 만드는 창작 도구예요.</p>
+        <div class="explain-row">
+          <div class="explain-item">
+            <svg viewBox="0 0 120 90" role="img" aria-label="3D 공간 만들기 그림">
+              <rect x="16" y="18" width="72" height="42" rx="6"></rect>
+              <path d="M28 70 L88 60 L104 70 L44 80 Z"></path>
+              <circle cx="86" cy="30" r="10"></circle>
+            </svg>
+            <h3>3D 공간 만들기</h3>
+            <p>달 탐사 장소를 만들어요.</p>
+          </div>
+          <div class="explain-item">
+            <svg viewBox="0 0 120 90" role="img" aria-label="캐릭터와 물체 배치 그림">
+              <circle cx="38" cy="25" r="10"></circle>
+              <path d="M28 67 L38 38 L48 67"></path>
+              <rect x="68" y="42" width="28" height="18" rx="4"></rect>
+              <circle cx="74" cy="64" r="5"></circle>
+              <circle cx="92" cy="64" r="5"></circle>
+            </svg>
+            <h3>캐릭터와 물체 배치하기</h3>
+            <p>탐사 대원과 장비를 놓아요.</p>
+          </div>
+          <div class="explain-item">
+            <svg viewBox="0 0 120 90" role="img" aria-label="AI Buddy 대화 그림">
+              <circle cx="40" cy="42" r="18"></circle>
+              <path d="M68 26 H100 V56 H82 L74 66 V56 H68 Z"></path>
+              <circle cx="89" cy="41" r="3"></circle>
+              <circle cx="78" cy="41" r="3"></circle>
+            </svg>
+            <h3>AI Buddy와 대화하기</h3>
+            <p>탐사 짝꿍에게 질문해요.</p>
+          </div>
+        </div>
+        <dl class="meaning-list">
+          <div><dt>3D 공간</dt><dd>달 탐사 장소예요.</dd></div>
+          <div><dt>캐릭터</dt><dd>탐사 대원이에요.</dd></div>
+          <div><dt>AI Buddy</dt><dd>질문에 답하는 탐사 짝꿍이에요.</dd></div>
+        </dl>
+      </section>
+
+      <section id="open-project" class="step-card" data-step="4" data-title="프로젝트 열기">
+        <div class="step-heading">
+          <span class="step-number">4</span>
+          <div>
+            <p class="eyebrow">시작하기</p>
+            <h2>프로젝트 열기</h2>
+          </div>
+        </div>
+        <p class="lead">내 계정을 복사한 뒤, Delightex Edu에서 달 탐사 프로젝트를 열어요.</p>
+
+        <div class="project-start-layout">
+          <div class="selected-student-panel project-account-panel">
+            <span class="selected-label">선택한 학생 이름</span>
+            <strong id="selectedStudentName">내 이름을 선택해 주세요.</strong>
+            <div class="button-row compact-buttons">
+              <button id="copyLoginIdButton" type="button" class="secondary-button">아이디 복사</button>
+              <button id="copyPasswordButton" type="button" class="secondary-button">비밀번호 복사</button>
+            </div>
+            <p id="accountCopyStatus" class="inline-status" aria-live="polite"></p>
+            <p class="safe-note">비밀번호는 화면에 보이지 않아요.</p>
+          </div>
+          <div class="project-open-note">
+            <h3>복사해서 로그인해요</h3>
+            <p>아이디 복사 버튼을 누른 뒤 로그인 화면에 붙여넣어요.</p>
+            <p>비밀번호 복사 버튼도 누른 뒤 비밀번호 칸에 붙여넣어요.</p>
+          </div>
+        </div>
+
+        <article class="project-step-card project-login-card">
+          <span class="mini-step-number">1</span>
+          <div>
+            <h3>Delightex Edu 로그인</h3>
+            <p>복사한 아이디와 비밀번호를 붙여넣고 로그인 버튼을 눌러요.</p>
+          </div>
+          <img src="assets/project-open-1-login.png" alt="Delightex Edu 로그인 화면">
+        </article>
+
+        <div class="project-open-flow">
+          <article class="project-step-card">
+            <span class="mini-step-number">2</span>
+            <div>
+              <h3>현재 학급 선택</h3>
+              <p>현재 학급에서 2026명주도서관을 눌러요.</p>
+            </div>
+            <img src="assets/project-open-2-class.png" alt="현재 학급에서 2026명주도서관 학급을 선택하는 화면">
+          </article>
+          <article class="project-step-card">
+            <span class="mini-step-number">3</span>
+            <div>
+              <h3>과제 카드 열기</h3>
+              <p>과제에서 아르테미스 프로젝트 달 탐사 카드를 눌러요.</p>
+            </div>
+            <img src="assets/project-open-3-task.png" alt="과제 목록에서 아르테미스 프로젝트 달 탐사 카드를 여는 화면">
+          </article>
+          <article class="project-step-card wide">
+            <span class="mini-step-number">4</span>
+            <div>
+              <h3>프로젝트 내용 확인</h3>
+              <p>안내 창에서 배경 넣기, 아이템 추가하기, AI 버디즈 만들기를 확인해요.</p>
+            </div>
+            <img src="assets/project-open-4-info.png" alt="아르테미스 프로젝트 달 탐사 안내 창">
+          </article>
+        </div>
+      </section>
+
+      <section id="controls" class="step-card" data-step="6" data-title="단축키와 마우스 조작법">
+        <div class="step-heading">
+          <span class="step-number">6</span>
+          <div>
+            <p class="eyebrow">PC 조작</p>
+            <h2>단축키와 마우스 조작법</h2>
+          </div>
+        </div>
+        <p class="lead">실제 화면 캡처가 없어요. 아래 그림은 연습용 조작 그림이에요.</p>
+        <div class="controls-grid">
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="한 번 클릭 그림">
+              <rect x="48" y="12" width="54" height="66" rx="24"></rect>
+              <line x1="75" y1="13" x2="75" y2="38"></line>
+              <circle cx="65" cy="28" r="8"></circle>
+            </svg>
+            <h3>한 번 클릭</h3>
+            <p>오브젝트를 선택해요.</p>
+          </div>
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="드래그 그림">
+              <rect x="18" y="36" width="28" height="24" rx="5"></rect>
+              <path d="M50 48 H112"></path>
+              <path d="M102 38 L116 48 L102 58"></path>
+            </svg>
+            <h3>드래그</h3>
+            <p>오브젝트를 이동해요.</p>
+          </div>
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="마우스 휠 그림">
+              <rect x="50" y="12" width="50" height="66" rx="23"></rect>
+              <rect x="70" y="22" width="10" height="20" rx="5"></rect>
+              <path d="M112 26 V64"></path>
+              <path d="M104 34 L112 24 L120 34"></path>
+              <path d="M104 56 L112 66 L120 56"></path>
+            </svg>
+            <h3>휠 위·아래</h3>
+            <p>화면을 확대하거나 줄여요.</p>
+          </div>
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="화면 드래그 그림">
+              <rect x="24" y="18" width="102" height="54" rx="7"></rect>
+              <path d="M58 45 C68 26 92 26 100 45"></path>
+              <path d="M92 45 H108 V29"></path>
+            </svg>
+            <h3>화면 드래그</h3>
+            <p>주변을 둘러봐요.</p>
+          </div>
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="조절점 드래그 그림">
+              <rect x="48" y="24" width="48" height="36" rx="4"></rect>
+              <rect x="41" y="17" width="12" height="12"></rect>
+              <rect x="91" y="55" width="12" height="12"></rect>
+              <path d="M96 60 L120 76"></path>
+            </svg>
+            <h3>조절점 드래그</h3>
+            <p>크기를 조절해요.</p>
+          </div>
+          <div class="control-tile">
+            <svg viewBox="0 0 150 90" role="img" aria-label="빈 공간 클릭 그림">
+              <rect x="30" y="24" width="88" height="44" rx="6"></rect>
+              <circle cx="48" cy="42" r="8"></circle>
+              <circle cx="112" cy="28" r="6"></circle>
+            </svg>
+            <h3>빈 공간 클릭</h3>
+            <p>선택을 해제해요.</p>
+          </div>
+        </div>
+
+        <h3 class="subsection-title">마우스로 화면 움직이기</h3>
+        <div class="navigation-mouse-grid" aria-label="첨부 이미지의 마우스 조작 설명">
+          <article class="nav-mouse-card">
+            <svg viewBox="0 0 170 96" role="img" aria-label="마우스로 시점 돌리기">
+              <rect x="48" y="18" width="42" height="62" rx="21"></rect>
+              <line x1="69" y1="19" x2="69" y2="42"></line>
+              <path d="M108 24 C126 22 134 34 126 48"></path>
+              <path d="M122 26 L110 24 L116 14"></path>
+            </svg>
+            <h4>마우스 드래그</h4>
+            <p>카메라 시점을 돌려요.</p>
+          </article>
+          <article class="nav-mouse-card">
+            <svg viewBox="0 0 170 96" role="img" aria-label="마우스 휠 확대 축소">
+              <rect x="55" y="15" width="46" height="66" rx="23"></rect>
+              <rect x="73" y="25" width="10" height="21" rx="5"></rect>
+              <path d="M124 25 V70"></path>
+              <path d="M116 35 L124 25 L132 35"></path>
+              <path d="M116 60 L124 70 L132 60"></path>
+            </svg>
+            <h4>휠 위·아래</h4>
+            <p>확대·축소해요.</p>
+          </article>
+          <article class="nav-mouse-card">
+            <svg viewBox="0 0 170 96" role="img" aria-label="스페이스와 마우스 드래그">
+              <rect x="12" y="38" width="60" height="26" rx="5"></rect>
+              <text x="42" y="56">SPACE</text>
+              <text x="82" y="56">+</text>
+              <rect x="106" y="17" width="42" height="62" rx="21"></rect>
+              <line x1="127" y1="18" x2="127" y2="41"></line>
+              <path d="M118 12 L118 2 M118 2 L111 9 M118 2 L125 9"></path>
+              <path d="M118 84 L118 94 M118 94 L111 87 M118 94 L125 87"></path>
+              <path d="M101 48 H91 M91 48 L98 41 M91 48 L98 55"></path>
+              <path d="M153 48 H163 M163 48 L156 41 M163 48 L156 55"></path>
+            </svg>
+            <h4>스페이스 + 드래그</h4>
+            <p>카메라 화면을 이동해요.</p>
+          </article>
+          <article class="nav-mouse-card">
+            <svg viewBox="0 0 170 96" role="img" aria-label="스페이스와 마우스 휠">
+              <rect x="12" y="38" width="60" height="26" rx="5"></rect>
+              <text x="42" y="56">SPACE</text>
+              <text x="82" y="56">+</text>
+              <rect x="108" y="15" width="42" height="66" rx="21"></rect>
+              <rect x="124" y="24" width="10" height="22" rx="5"></rect>
+              <circle cx="146" cy="75" r="5"></circle>
+              <path d="M146 75 L158 86"></path>
+            </svg>
+            <h4>스페이스 + 휠</h4>
+            <p>마우스 위치로 확대해요.</p>
+          </article>
+        </div>
+
+        <div class="notice info">
+          <strong>단축키는 확인이 필요해요.</strong>
+          <span>화면에 따라 다를 수 있어요. 선생님 안내를 먼저 확인해요.</span>
+        </div>
+        <div class="shortcut-grid">
+          <article class="shortcut-card">
+            <svg class="keyboard-svg" viewBox="0 0 220 86" role="img" aria-label="Ctrl 또는 Command와 Z 키">
+              <rect x="8" y="14" width="204" height="54" rx="8"></rect>
+              <rect x="28" y="28" width="72" height="28" rx="4"></rect>
+              <rect x="118" y="28" width="46" height="28" rx="4"></rect>
+              <text x="64" y="47">Ctrl</text>
+              <text x="141" y="47">Z</text>
+            </svg>
+            <h3>Ctrl/Cmd + Z</h3>
+            <p>실행 취소에 쓸 수 있어요.</p>
+            <small>안 되면 이전 상태로 다시 고쳐요.</small>
+          </article>
+          <article class="shortcut-card">
+            <svg class="keyboard-svg" viewBox="0 0 220 86" role="img" aria-label="Ctrl 또는 Command와 Y 키">
+              <rect x="8" y="14" width="204" height="54" rx="8"></rect>
+              <rect x="28" y="28" width="72" height="28" rx="4"></rect>
+              <rect x="118" y="28" width="46" height="28" rx="4"></rect>
+              <text x="64" y="47">Ctrl</text>
+              <text x="141" y="47">Y</text>
+            </svg>
+            <h3>Ctrl/Cmd + Y</h3>
+            <p>다시 실행에 쓸 수 있어요.</p>
+            <small>안 되면 다시 움직여요.</small>
+          </article>
+          <article class="shortcut-card">
+            <svg class="keyboard-svg" viewBox="0 0 220 86" role="img" aria-label="Delete 또는 Backspace 키">
+              <rect x="8" y="14" width="204" height="54" rx="8"></rect>
+              <rect x="54" y="28" width="112" height="28" rx="4"></rect>
+              <text x="110" y="47">Delete</text>
+            </svg>
+            <h3>Delete / Backspace</h3>
+            <p>선택한 오브젝트 삭제에 쓸 수 있어요.</p>
+            <small>안 되면 삭제 메뉴를 눌러요.</small>
+          </article>
+          <article class="shortcut-card">
+            <svg class="keyboard-svg" viewBox="0 0 220 86" role="img" aria-label="Ctrl 또는 Command와 S 키">
+              <rect x="8" y="14" width="204" height="54" rx="8"></rect>
+              <rect x="28" y="28" width="72" height="28" rx="4"></rect>
+              <rect x="118" y="28" width="46" height="28" rx="4"></rect>
+              <text x="64" y="47">Ctrl</text>
+              <text x="141" y="47">S</text>
+            </svg>
+            <h3>Ctrl/Cmd + S</h3>
+            <p>저장에 쓸 수 있어요.</p>
+            <small>안 되면 저장 버튼을 눌러요.</small>
+          </article>
+        </div>
+      </section>
+
+      <section id="moon-background" class="step-card" data-step="7" data-title="달 뒷면 배경 적용">
+        <div class="step-heading">
+          <span class="step-number">7</span>
+          <div>
+            <p class="eyebrow">360° 배경</p>
+            <h2>준비된 달 뒷면 배경 적용</h2>
+          </div>
+        </div>
+        <p class="lead">아래 그림을 보며 배경을 바꿔요. 순서대로 눌러요.</p>
+        <div class="background-flow" aria-label="달 뒷면 배경 적용 순서">
+          <article class="background-step-card">
+            <span class="mini-step-number">1</span>
+            <div>
+              <h3>배경</h3>
+              <p>아래 메뉴에서 배경을 눌러요.</p>
+            </div>
+            <img src="assets/background-step-1-menu.png" alt="라이브러리, 업로드, 배경 메뉴 중 배경 버튼 위치">
+          </article>
+          <article class="background-step-card">
+            <span class="mini-step-number">2</span>
+            <div>
+              <h3>수정</h3>
+              <p>배경 화면에서 수정을 눌러요.</p>
+            </div>
+            <img src="assets/background-step-2-edit.png" alt="배경 탭에서 수정 버튼이 보이는 화면">
+          </article>
+          <article class="background-step-card wide">
+            <span class="mini-step-number">3</span>
+            <div>
+              <h3>선택</h3>
+              <p>배경 선택 창에서 달 이미지를 골라요.</p>
+            </div>
+            <img src="assets/background-step-3-select.png" alt="배경 선택 창에서 달 이미지가 보이는 화면">
+          </article>
+          <article class="background-step-card">
+            <span class="mini-step-number">4</span>
+            <div>
+              <h3>업로드</h3>
+              <p>업로드에서 달 이미지를 올려요.</p>
+            </div>
+            <img src="assets/background-step-4-upload-skybox.png" alt="업로드 탭에서 이미지 파일이 보이는 화면">
+          </article>
+          <article class="background-step-card">
+            <span class="mini-step-number">5</span>
+            <div>
+              <h3>Skybox로 설정</h3>
+              <p>점 세 개를 눌러 Skybox로 설정해요.</p>
+            </div>
+            <img src="assets/background-step-4-upload-skybox.png" alt="업로드한 이미지 메뉴에서 Skybox로 설정 항목이 보이는 화면">
+          </article>
+        </div>
+        <div class="notice warn">
+          <strong>오늘은 준비된 이미지를 사용해요.</strong>
+          <span>PRO AI Skybox 만들기는 누르지 않아요.</span>
+        </div>
+      </section>
+
+      <section id="explorer-objects" class="step-card" data-step="8" data-title="탐사 캐릭터와 장비 배치">
+        <div class="step-heading">
+          <span class="step-number">8</span>
+          <div>
+            <p class="eyebrow">장면 만들기</p>
+            <h2>탐사 캐릭터와 장비 배치</h2>
+          </div>
+        </div>
+        <p class="lead">이미지를 보며 탐사 대원과 달 탐사 장비를 간단히 배치해요.</p>
+        <div class="object-flow">
+          <article class="object-step-card">
+            <span class="mini-step-number">1</span>
+            <div>
+              <h3>탐사 대원 넣기</h3>
+              <p>라이브러리에서 astronaut를 검색하고, 우주비행사를 눌러 달 표면에 놓아요.</p>
+            </div>
+            <img src="assets/objects-step-1-astronaut.png" alt="라이브러리에서 astronaut를 검색하고 우주비행사를 선택하는 화면">
+          </article>
+          <article class="object-step-card">
+            <span class="mini-step-number">2</span>
+            <div>
+              <h3>탐사 장비 배치하기</h3>
+              <p>필요한 장비를 골라 놓고, 위치와 크기를 조절해 장면을 완성해요.</p>
+            </div>
+            <img src="assets/objects-step-2-equipment.png" alt="달 표면에 탐사 대원과 여러 장비를 배치한 화면">
+          </article>
+        </div>
+        <div class="check-question-grid">
+          <label>
+            <input type="checkbox" data-save="characterChecks.visible">
+            <span>캐릭터가 잘 보여요.</span>
+          </label>
+          <label>
+            <input type="checkbox" data-save="characterChecks.surface">
+            <span>장비가 달 표면 위에 있어요.</span>
+          </label>
+          <label>
+            <input type="checkbox" data-save="characterChecks.overlap">
+            <span>캐릭터와 장비가 겹치지 않아요.</span>
+          </label>
+        </div>
+      </section>
+
+      <section id="about-buddy" class="step-card buddy-lab-card" data-step="9" data-title="AI Buddy(버디) 소개와 설계">
+        <div class="step-heading">
+          <span class="step-number">9</span>
+          <div>
+            <p class="eyebrow">탐사 짝꿍 만들기</p>
+            <h2>AI Buddy(버디)란?</h2>
+          </div>
+        </div>
+        <div class="buddy-intro-panel">
+          <span class="buddy-orbit-icon" aria-hidden="true"></span>
+          <div class="buddy-intro-text">
+            <p><strong>Buddy(버디)</strong>는 친구라는 뜻이에요.</p>
+            <p>AI Buddy는 우리가 직접 만들 수 있어요.</p>
+            <p>탐사를 도와줄 우리의 짝꿍 친구를 직접 만들어 봅시다.</p>
+          </div>
+        </div>
+
+        <div class="buddy-setup-flow" aria-label="AI Buddy 설정 화면 안내">
+          <article class="buddy-setup-card">
+            <span class="mini-step-number">1</span>
+            <div>
+              <h3>캐릭터 속성 메뉴 열기</h3>
+              <p>캐릭터를 더블클릭하면 속성 메뉴가 나타나요. 메뉴에서 AI Buddy를 눌러요.</p>
+            </div>
+            <img src="assets/buddy-step-1-menu.png" alt="캐릭터 속성 메뉴에서 AI Buddy 버튼이 강조된 화면">
+          </article>
+          <article class="buddy-setup-card">
+            <span class="mini-step-number">2</span>
+            <div>
+              <h3>AI Buddy 켜기</h3>
+              <p>AI Buddy 창 오른쪽 위의 스위치를 눌러 켜요.</p>
+            </div>
+            <img src="assets/buddy-step-2-switch-off.png" alt="AI Buddy 창에서 꺼진 스위치가 강조된 화면">
+          </article>
+          <article class="buddy-setup-card">
+            <span class="mini-step-number">3</span>
+            <div>
+              <h3>설명 넣을 준비하기</h3>
+              <p>스위치가 파란색이면 켜진 상태예요. 아래에서 만든 설명을 넣을 준비를 해요.</p>
+            </div>
+            <img src="assets/buddy-step-3-switch-on.png" alt="AI Buddy 스위치가 켜지고 설명 입력칸이 보이는 화면">
+          </article>
+        </div>
+
+        <div id="buddy-design" class="buddy-design-head">
+          <div>
+            <p class="eyebrow">카드 선택 또는 직접 입력</p>
+            <h3>나만의 AI 친구 설계</h3>
+          </div>
+        </div>
+        <div id="buddyMissingNotice" class="notice warn" hidden>
+          <strong>아직 정하지 않은 항목이 있어요.</strong>
+          <span>카드를 고르거나 직접 입력해요.</span>
+        </div>
+        <div class="buddy-builder">
+          <section class="choice-section" data-buddy-field="name">
+            <h3>AI친구의 이름을 정해요</h3>
+            <div class="choice-grid">
+              <button type="button" class="choice-button" data-value="루나">루나</button>
+              <button type="button" class="choice-button" data-value="별이">별이</button>
+              <button type="button" class="choice-button" data-value="문이">문이</button>
+              <button type="button" class="choice-button" data-value="크레이터">크레이터</button>
+              <button type="button" class="choice-button" data-value="탐탐">탐탐</button>
+              <button type="button" class="choice-button" data-value="아폴로">아폴로</button>
+            </div>
+            <label class="field inline-field">
+              <span>직접 입력</span>
+              <input id="buddyName" data-buddy-input="name" type="text" placeholder="AI Buddy 이름을 입력해요.">
+            </label>
+          </section>
+
+          <section class="choice-section" data-buddy-field="role">
+            <h3>AI친구의 역할을 정해요.</h3>
+            <div class="choice-grid">
+              <button type="button" class="choice-button" data-value="달 뒷면 탐사 대원">달 뒷면 탐사 대원</button>
+              <button type="button" class="choice-button" data-value="달 지질 연구원">달 지질 연구원</button>
+              <button type="button" class="choice-button" data-value="우주 탐사 안내원">우주 탐사 안내원</button>
+              <button type="button" class="choice-button" data-value="달 탐사 로봇">달 탐사 로봇</button>
+              <button type="button" class="choice-button" data-value="우주 안전 대원">우주 안전 대원</button>
+            </div>
+            <label class="field inline-field">
+              <span>직접 입력</span>
+              <input id="buddyRole" data-buddy-input="role" type="text" placeholder="역할을 입력해요.">
+            </label>
+          </section>
+
+          <section class="choice-section" data-buddy-field="specialty">
+            <h3>AI친구가 가장 잘하는 것을 뭘로 할지 정해요.</h3>
+            <div class="choice-grid">
+              <button type="button" class="choice-button" data-value="충돌구와 암석">충돌구와 암석</button>
+              <button type="button" class="choice-button" data-value="달 표면 지형">달 표면 지형</button>
+              <button type="button" class="choice-button" data-value="달의 남극과 얼음">달의 남극과 얼음</button>
+              <button type="button" class="choice-button" data-value="우주 통신과 안전">우주 통신과 안전</button>
+              <button type="button" class="choice-button" data-value="달 기지 건설">달 기지 건설</button>
+              <button type="button" class="choice-button" data-value="지구와 달의 움직임">지구와 달의 움직임</button>
+            </div>
+            <label class="field inline-field">
+              <span>직접 입력</span>
+              <input id="buddySpecialty" data-buddy-input="specialty" type="text" placeholder="전문 분야를 입력해요.">
+            </label>
+          </section>
+
+          <section class="choice-section" data-buddy-field="personality">
+            <h3>AI친구의 성격을 정해요.</h3>
+            <div class="choice-grid">
+              <button type="button" class="choice-button" data-value="차분하고 꼼꼼함">차분하고 꼼꼼함</button>
+              <button type="button" class="choice-button" data-value="호기심이 많음">호기심이 많음</button>
+              <button type="button" class="choice-button" data-value="용감하고 적극적임">용감하고 적극적임</button>
+              <button type="button" class="choice-button" data-value="친절하고 설명을 잘함">친절하고 설명을 잘함</button>
+              <button type="button" class="choice-button" data-value="안전을 중요하게 생각함">안전을 중요하게 생각함</button>
+            </div>
+            <label class="field inline-field">
+              <span>직접 입력</span>
+              <input id="buddyPersonality" data-buddy-input="personality" type="text" placeholder="성격을 입력해요.">
+            </label>
+          </section>
+
+          <section class="choice-section" data-buddy-field="tone">
+            <h3>AI친구의 말투를 정해요.</h3>
+            <div class="choice-grid">
+              <button type="button" class="choice-button" data-value="쉽고 친절한 말투">쉽고 친절한 말투</button>
+              <button type="button" class="choice-button" data-value="짧고 분명한 말투">짧고 분명한 말투</button>
+              <button type="button" class="choice-button" data-value="질문을 많이 하는 말투">질문을 많이 하는 말투</button>
+              <button type="button" class="choice-button" data-value="차분한 과학 설명 말투">차분한 과학 설명 말투</button>
+              <button type="button" class="choice-button" data-value="재미있는 비유를 사용하는 말투">재미있는 비유를 사용하는 말투</button>
+            </div>
+            <label class="field inline-field">
+              <span>직접 입력</span>
+              <input id="buddyTone" data-buddy-input="tone" type="text" placeholder="말투를 입력해요.">
+            </label>
+          </section>
+        </div>
+      </section>
+
+      <section id="buddy-prompt" class="step-card" data-step="10" data-title="AI Buddy 설정 문장 만들기">
+        <div class="step-heading">
+          <span class="step-number">10</span>
+          <div>
+            <p class="eyebrow">복사해서 넣어요</p>
+            <h2>AI Buddy 설정 문장 만들기</h2>
+          </div>
+        </div>
+        <label class="field">
+          <span>설정 문장</span>
+          <textarea id="buddyPrompt" class="prompt-output" readonly></textarea>
+        </label>
+        <div class="button-row">
+          <button id="copyPromptButton" type="button" class="primary-button">설정 문장 전체 복사</button>
+          <button id="resetBuddyButton" type="button" class="secondary-button">설정 초기화</button>
+          <span id="promptCopyStatus" class="inline-status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section id="buddy-chat" class="step-card" data-step="11" data-title="AI Buddy 대화 테스트">
+        <div class="step-heading">
+          <span class="step-number">11</span>
+          <div>
+            <p class="eyebrow">질문하고 적어요</p>
+            <h2>AI Buddy 대화 테스트</h2>
+          </div>
+        </div>
+        <div class="instruction-strip">
+          <span>질문을 복사해요.</span>
+          <span>AI Buddy 대화창에 붙여넣어요.</span>
+          <span>AI Buddy에게 질문해요.</span>
+        </div>
+        <div class="question-grid" id="questionCards" aria-label="질문 카드">
+          <button type="button" data-question="이 장소에서 무엇을 조사하면 좋을까?">이 장소에서 무엇을 조사하면 좋을까?</button>
+          <button type="button" data-question="달 뒷면에는 왜 충돌구가 많을까?">달 뒷면에는 왜 충돌구가 많을까?</button>
+          <button type="button" data-question="달 탐사에서 가장 조심할 점은 무엇일까?">달 탐사에서 가장 조심할 점은 무엇일까?</button>
+          <button type="button" data-question="달 뒷면에서도 지구와 통신할 수 있을까?">달 뒷면에서도 지구와 통신할 수 있을까?</button>
+          <button type="button" data-question="지금 보이는 것은 사실일까, 상상일까?">지금 보이는 것은 사실일까, 상상일까?</button>
+          <button type="button" data-question="달 남극과 달 뒷면은 어떻게 다를까?">달 남극과 달 뒷면은 어떻게 다를까?</button>
+          <button type="button" data-question="가장 먼저 관찰할 곳은 어디일까?">가장 먼저 관찰할 곳은 어디일까?</button>
+        </div>
+        <div class="button-row">
+          <button id="copySelectedQuestionButton" type="button" class="secondary-button">선택한 질문 복사</button>
+          <span id="questionCopyStatus" class="inline-status" aria-live="polite"></span>
+        </div>
+        <label class="field">
+          <span>직접 질문</span>
+          <input id="directQuestion" type="text" placeholder="내 질문을 입력해요.">
+        </label>
+        <div class="button-row">
+          <button id="copyDirectQuestionButton" type="button" class="secondary-button">직접 입력 질문 복사</button>
+          <span id="directQuestionStatus" class="inline-status" aria-live="polite"></span>
+        </div>
+        <div class="notice info">
+          <strong>질문은 2개 이상 해요.</strong>
+          <span>답변은 복사가 안 돼요. 답변의 가장 핵심 되는 단어를 찾아서 입력해요.</span>
+        </div>
+        <div class="question-records" id="questionRecords"></div>
+      </section>
+
+      <section id="reflection" class="step-card" data-step="12" data-title="탐사 기록 작성">
+        <div class="step-heading">
+          <span class="step-number">12</span>
+          <div>
+            <p class="eyebrow">나의 기록</p>
+            <h2>탐사 기록 작성</h2>
+          </div>
+        </div>
+        <div class="form-grid one">
+          <label class="field">
+            <span>오늘 알게 된 과학적 사실</span>
+            <textarea data-reflection="scienceFact" placeholder="오늘 새롭게 알게 된 사실을 적어요."></textarea>
+          </label>
+          <label class="field">
+            <span>내가 만든 AI Buddy가 잘하는 일</span>
+            <textarea data-reflection="buddyStrength" placeholder="AI Buddy가 잘 설명한 일을 적어요."></textarea>
+          </label>
+          <label class="field">
+            <span>AI Buddy에게 가장 유용했던 질문</span>
+            <textarea data-reflection="usefulQuestion" placeholder="도움이 된 질문을 적어요."></textarea>
+          </label>
+          <label class="field">
+            <span>다음 시간에 물어보고 싶은 질문</span>
+            <textarea data-reflection="nextQuestion" placeholder="다음 질문을 적어요."></textarea>
+          </label>
+          <label class="field">
+            <span>오늘 활동에서 어려웠던 점</span>
+            <textarea data-reflection="difficulty" placeholder="어려웠던 점을 적어요."></textarea>
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="resetReflectionButton" type="button" class="secondary-button">작성 내용 초기화</button>
+        </div>
+      </section>
+
+      <section id="submit-record" class="step-card" data-step="13" data-title="이번 차시 기록 제출">
+        <div class="step-heading">
+          <span class="step-number">13</span>
+          <div>
+            <p class="eyebrow">기록 보내기</p>
+            <h2>이번 차시 기록 제출</h2>
+          </div>
+        </div>
+        <div class="form-grid two">
+          <label class="field">
+            <span>현재 차시</span>
+            <select id="lessonNumber">
+              <option value="1">1차시 - 달 뒷면 탐사 공간과 AI Buddy</option>
+              <option value="2">2차시 - 자전·공전과 AI 질문</option>
+              <option value="3">3차시 - 루나 게이트웨이 설계</option>
+              <option value="4">4차시 - 정거장 투어와 전시</option>
+            </select>
+          </label>
+          <div class="submit-state" aria-live="polite">
+            <span>제출 상태</span>
+            <strong id="submitStatus">아직 제출하지 않았어요.</strong>
+          </div>
+        </div>
+        <div id="validationMessages" class="validation-box" hidden></div>
+        <div class="button-row">
+          <button id="submitButton" type="button" class="primary-button">이번 차시 기록 제출하기</button>
+        </div>
+        <details class="help-detail">
+          <summary>제출에 실패했나요?</summary>
+          <p>인터넷 연결을 확인해요.</p>
+          <p>기록은 이 컴퓨터에 남아 있어요.</p>
+          <p>다시 제출할 수 있어요.</p>
+        </details>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="manual-copy" id="manualCopyBox" hidden>
+    <label class="field">
+      <span>복사 도움</span>
+      <textarea id="manualCopyText"></textarea>
+    </label>
+    <p>글상자를 선택했어요. Ctrl+C를 눌러요.</p>
+  </div>
+
+  <script src="student.js"></script>
+</body>
+</html>
