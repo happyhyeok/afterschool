@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌗 2차시 - 달의 앞면 비밀: 동주기 자전</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6366F1; --secondary:#F97316; --success:#22C55E;
+    --warning:#FBBF24; --danger:#F43F5E; --bg:#FFF8F0; --card:#FFFFFF;
+    --text:#1E1B4B; --muted:#7C3AED; --space:#1B1240; --moon:#D9D3C9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Noto Sans KR',sans-serif; color:var(--text); line-height:1.8; padding-bottom:60px;
+    background:
+      linear-gradient(rgba(255,248,240,.94),rgba(255,248,240,.94)),
+      url('https://assets.science.nasa.gov/dynamicimage/assets/science/psd/lunar-science/2023/08/134_lro_farside.jpg?w=1894&h=1883&fit=clip&crop=faces%2Cfocalpoint');
+    background-size: 900px; background-repeat: repeat; background-attachment: fixed;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 16px;}
+  header{
+    background:
+      linear-gradient(135deg, rgba(27,18,64,.85) 0%, rgba(55,48,163,.85) 100%),
+      url('https://www.nasa.gov/wp-content/uploads/2018/12/far-side-of-moon-as-seen-from-apollo8.jpg');
+    background-size: cover; background-position: center;
+    color:#fff; padding:28px 16px 22px; text-align:center;
+    border-bottom:6px solid var(--warning);
+  }
+  header h1{margin:0 0 6px; font-size:26px; font-weight:900;}
+  header p{margin:2px 0; font-size:15px; opacity:.9;}
+  .progress-bar{
+    max-width:860px; margin:14px auto 0; display:flex; justify-content:center; gap:8px;
+  }
+  .star{font-size:24px; opacity:.35; transition:.3s;}
+  .star.on{opacity:1; transform:scale(1.15);}
+
+  section{margin:26px 0;}
+  .card{
+    background:var(--card); border-radius:20px; padding:22px 20px;
+    box-shadow:0 4px 14px rgba(30,27,75,.08); border-top:8px solid var(--primary);
+  }
+  .card.orange{border-top-color:var(--secondary);}
+  .card.green{border-top-color:var(--success);}
+  .card.yellow{border-top-color:var(--warning);}
+  .card h2{margin-top:0; font-size:20px; display:flex; align-items:center; gap:8px;}
+  .timebox{font-size:13px; color:var(--muted); font-weight:700; margin-bottom:4px;}
+
+  .btn{
+    background:var(--primary); color:#fff; border:none; border-radius:14px;
+    padding:12px 20px; font-size:18px; font-weight:700; cursor:pointer;
+    transition:.15s; font-family:inherit;
+  }
+  .btn:hover{transform:scale(1.05); filter:brightness(1.08);}
+  .btn.orange{background:var(--secondary);}
+  .btn.outline{background:#fff; color:var(--primary); border:2px solid var(--primary);}
+  .btn:disabled{opacity:.5; cursor:default; transform:none;}
+
+  /* 비교 시뮬레이션 */
+  .anim-box{
+    background:radial-gradient(ellipse at center,#241a52 0%, var(--space) 70%);
+    border-radius:16px; padding:14px; text-align:center; margin-top:14px;
+  }
+  .mode-tabs{display:flex; gap:8px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;}
+  .mode-tab{
+    padding:10px 16px; border-radius:999px; border:2px solid #EDE9FE; background:#fff;
+    font-weight:700; font-size:14px; cursor:pointer; color:var(--muted);
+  }
+  .mode-tab.active{background:var(--primary); color:#fff; border-color:var(--primary);}
+  .anim-controls{
+    display:flex; gap:10px; justify-content:center; align-items:center;
+    margin-top:10px; flex-wrap:wrap;
+  }
+  .anim-controls label{color:var(--text); font-size:14px; font-weight:700;}
+  .legend{
+    display:flex; gap:18px; justify-content:center; margin-top:8px; font-size:13px; color:#fff;
+    flex-wrap:wrap;
+  }
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:12px; height:12px; border-radius:50%; display:inline-block;}
+  .observer-note{
+    background:#F5F3FF; border-radius:12px; padding:10px 14px; margin-top:10px;
+    font-size:14px; color:var(--muted); border:2px dashed var(--muted);
+  }
+
+  /* 확인학습 */
+  .quiz-item{margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed #E5E7EB;}
+  .quiz-item:last-child{border-bottom:none;}
+  .quiz-q{font-weight:700; font-size:17px; margin-bottom:10px;}
+  .choice-btns{display:flex; gap:10px; flex-wrap:wrap;}
+  .choice-btn{
+    flex:1 1 auto; min-width:120px; padding:12px; font-size:15px; font-weight:700; border-radius:14px;
+    border:3px solid #E5E7EB; background:#fff; cursor:pointer; transition:.15s;
+  }
+  .choice-btn:hover{transform:scale(1.03);}
+  .feedback{
+    margin-top:10px; padding:12px; border-radius:12px; font-size:15px; display:none;
+  }
+  .feedback.correct{background:#DCFCE7; color:#15803D; display:block;}
+  .feedback.wrong{background:#FFE4E6; color:#BE123C; display:block;}
+
+  .checklist-item{display:flex; align-items:center; gap:10px; padding:10px 0; font-size:16px;}
+  .checklist-item input{width:22px; height:22px;}
+  .checklist-item.done label{text-decoration:line-through; color:#9CA3AF;}
+  .celebrate{
+    display:none; text-align:center; margin-top:16px; padding:18px; border-radius:16px;
+    background:linear-gradient(135deg,#FBBF24,#F97316); color:#fff; font-weight:900; font-size:18px;
+  }
+  .celebrate.show{display:block; animation:bounce .6s;}
+  @keyframes bounce{0%{transform:scale(.8);} 50%{transform:scale(1.08);} 100%{transform:scale(1);}}
+
+  .mission-box{
+    background:#EEF2FF; border:2px solid var(--primary); border-radius:16px; padding:18px; margin-top:14px;
+  }
+
+  footer{text-align:center; font-size:13px; color:#9CA3AF; margin-top:40px;}
+  @media print{
+    header{background:#fff !important; color:#000 !important;}
+    body{background:#fff !important;}
+    .btn, .anim-controls, .mode-tabs{display:none !important;}
+  }
+  @media (max-width:480px){ header h1{font-size:21px;} .card{padding:16px 14px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌗 2차시 · 달의 앞면 비밀</h1>
+  <p>왜 우리는 항상 달의 같은 얼굴만 볼까요?</p>
+</header>
+
+<div class="progress-bar" id="progressBar">
+  <span class="star" data-id="s1">⭐</span>
+  <span class="star" data-id="s2">⭐</span>
+  <span class="star" data-id="s3">⭐</span>
+</div>
+
+<div class="wrap">
+
+  <!-- 원리 설명 -->
+  <section class="card" id="sec2">
+    <h2>🌎🌕 왜 달은 앞면만 보여줄까?</h2>
+
+    <p><b>① 자전이 뭘까요?</b><br>
+    팽이가 제자리에서 뱅글뱅글 도는 것처럼, 지구도 하루에 한 바퀴씩 제자리에서 스스로 빙글빙글 돌아요. 이렇게 <b>제자리에서 도는 것</b>을 <b>자전</b>이라고 해요. 달도 자전을 해요!</p>
+
+    <p><b>② 공전이 뭘까요?</b><br>
+    지구가 태양 둘레를 커다랗게 한 바퀴 도는 것처럼, 달도 <b>지구 둘레를 빙 돌아요</b>. 이렇게 <b>다른 것의 둘레를 도는 것</b>을 <b>공전</b>이라고 해요.</p>
+
+    <p><b>③ 달은 자전과 공전 시간이 똑같아요!</b><br>
+    달이 제자리에서 한 바퀴 도는 시간(자전)과, 지구 둘레를 한 바퀴 도는 시간(공전)이 <b>둘 다 똑같이 약 27일</b>이에요. 그래서 달이 아무리 돌아도, 우리 눈에는 <b>항상 같은 쪽 얼굴</b>만 보이는 거예요.</p>
+
+    <div class="observer-note">
+      🌞🌙 <b>달에도 낮과 밤이 있어요!</b><br>
+      우리가 못 보는 달의 <b>뒷면</b>도 햇빛을 받을 때가 있어요. 해가 비치는 쪽은 <b>낮</b>이고, 반대쪽은 <b>밤</b>이에요. 뒷면은 <b>지구에서 안 보이는 것</b>뿐이지, <b>계속 캄캄한 것은 아니에요.</b>
+    </div>
+
+    <button class="btn" onclick="completeSection('s1')" style="margin-top:16px;">✅ 원리 이해 완료!</button>
+  </section>
+
+  <!-- 비교 시뮬레이션 -->
+  <section class="card green" id="sec3">
+    <h2>🔬 실험실: 진짜 달 vs 만약에 달</h2>
+    <p>버튼을 눌러서 두 가지 모습을 비교해보세요. 지구(파란 동그라미)에서 볼 때 달의 어느 쪽이 보이는지 잘 살펴봐요.</p>
+    <div class="anim-box">
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tabLocked" onclick="setMode('locked')">🌗 진짜 달 (자전=공전)</button>
+        <button class="mode-tab" id="tabFree" onclick="setMode('free')">🌀 만약에 다르게 돈다면?</button>
+      </div>
+      <svg id="tidalSvg" viewBox="0 0 320 320" width="100%" style="max-width:320px;">
+        <circle cx="160" cy="160" r="30" fill="#3B82F6"/>
+        <text x="160" y="165" text-anchor="middle" font-size="18">🌍</text>
+        <g id="moonGroup">
+          <circle cx="0" cy="0" r="18" fill="#D9D3C9"/>
+          <circle id="nearDot" cx="0" cy="0" r="4" fill="#60A5FA"/>
+          <circle id="farDot" cx="0" cy="0" r="4" fill="#F87171"/>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#60A5FA"></span>앞면(관측되는 면)</span>
+        <span><span class="dot" style="background:#F87171"></span>뒷면</span>
+      </div>
+      <div class="anim-controls">
+        <button class="btn outline" onclick="toggleAnim()" id="animPlayBtn">⏸ 일시정지</button>
+        <label>속도</label>
+        <input type="range" id="speedSlider" min="1" max="5" value="2">
+      </div>
+    </div>
+    <div class="observer-note" id="modeExplain">
+      🌗 <b>진짜 달</b>: 파란 점(앞면)이 항상 지구를 향해요. 그래서 지구에서는 <b>늘 이 얼굴만</b> 보여요.
+    </div>
+    <button class="btn" onclick="completeSection('s2')" style="margin-top:16px;">✅ 실험 관찰 완료!</button>
+  </section>
+
+  <!-- 확인학습 -->
+  <section class="card yellow" id="sec4">
+    <h2>✏️ 확인학습</h2>
+    <div id="quizArea"></div>
+  </section>
+
+  <!-- 미션 부여 -->
+  <section class="card">
+    <h2>🎯 오늘의 미션</h2>
+    <div class="mission-box">
+      <p style="margin:0; font-size:17px;">"이 어려운 과학 원리를, 이번엔 <b>코딩으로 증명</b>하고, 우리 <b>AI 짝꿍</b>이 직접 설명하게 만들어 봅시다!"</p>
+      <p style="margin:10px 0 0; font-size:15px; color:var(--muted);">오늘 배운 내용을 코드로 만들어서 직접 확인해보고, 나만의 AI 짝꿍에게 이 원리를 설명하는 역할을 맡겨볼 거예요.</p>
+    </div>
+    <button class="btn orange" onclick="completeSection('s3')" style="margin-top:16px;">✅ 미션 확인 완료!</button>
+  </section>
+
+  <!-- 체크리스트 -->
+  <section class="card">
+    <h2>📝 나의 학습 체크리스트</h2>
+    <div id="checklist">
+      <div class="checklist-item"><input type="checkbox" id="c1"><label for="c1">자전이 무엇인지 말할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c2"><label for="c2">공전이 무엇인지 말할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c3"><label for="c3">달의 앞면만 보이는 까닭을 설명할 수 있어요</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c4"><label for="c4">달에도 낮과 밤이 있다는 것을 알아요</label></div>
+    </div>
+    <div class="celebrate" id="celebrate">🏆 확인학습 완료! 이제 코딩으로 이 원리를 증명하러 가볼까요? 💻🚀</div>
+  </section>
+
+</div>
+
+<footer>🌗 2차시 · 달의 앞면 비밀(동주기 자전) · 초등 5~6학년용</footer>
+
+<script>
+// ---------- 진도 별 ----------
+function completeSection(id){
+  const star = document.querySelector('.star[data-id="'+id+'"]');
+  if(star) star.classList.add('on');
+  saveProgress();
+}
+function saveProgress(){
+  const state = {};
+  document.querySelectorAll('.star').forEach(s=>{state[s.dataset.id]=s.classList.contains('on');});
+  try{ localStorage.setItem('moon-day2-progress', JSON.stringify(state)); }catch(e){}
+}
+(function loadProgress(){
+  try{
+    const state = JSON.parse(localStorage.getItem('moon-day2-progress')||'{}');
+    Object.keys(state).forEach(k=>{
+      if(state[k]){ const s=document.querySelector('.star[data-id="'+k+'"]'); if(s) s.classList.add('on'); }
+    });
+  }catch(e){}
+})();
+
+// ---------- 비교 시뮬레이션 ----------
+let angle = 0, playing = true, speed = 2, mode = 'locked'; // locked | free
+let moonSpin = 0; // 자체 자전각(자유 모드에서 궤도와 별개로 증가)
+const R = 110, cx = 160, cy = 160;
+
+function setMode(m){
+  mode = m;
+  document.getElementById('tabLocked').classList.toggle('active', m==='locked');
+  document.getElementById('tabFree').classList.toggle('active', m==='free');
+  const explain = document.getElementById('modeExplain');
+  if(m==='locked'){
+    explain.innerHTML = '🌗 <b>진짜 달</b>: 파란 점(앞면)이 항상 지구를 향해요. 그래서 지구에서는 <b>늘 이 얼굴만</b> 보여요.';
+  }else{
+    explain.innerHTML = '🌀 <b>만약에 다르게 돈다면?</b>: 달이 지금보다 빠르게 자전한다면, 파란 점과 빨간 점이 번갈아 지구를 향하게 돼요. 그럼 시간이 지나면서 <b>달의 여러 면</b>을 다 볼 수 있게 될 거예요!';
+  }
+}
+
+function drawMoon(){
+  const rad = angle * Math.PI/180;
+  const mx = cx + R*Math.cos(rad);
+  const my = cy + R*Math.sin(rad);
+  const spinAngle = (mode==='locked') ? angle : moonSpin;
+  const g = document.getElementById('moonGroup');
+  g.setAttribute('transform', 'translate('+mx+','+my+') rotate('+spinAngle+')');
+  const near = document.getElementById('nearDot');
+  const far = document.getElementById('farDot');
+  near.setAttribute('cx', 10*Math.cos(180*Math.PI/180));
+  near.setAttribute('cy', 10*Math.sin(180*Math.PI/180));
+  far.setAttribute('cx', 10*Math.cos(0*Math.PI/180));
+  far.setAttribute('cy', 10*Math.sin(0*Math.PI/180));
+}
+function tick(){
+  if(playing){
+    angle = (angle + speed) % 360;
+    moonSpin = (moonSpin + speed*2.6) % 360; // 자유 모드에서는 더 빠르게 자체 자전
+    drawMoon();
+  }
+  requestAnimationFrame(tick);
+}
+document.getElementById('speedSlider').addEventListener('input', e=>{ speed = parseFloat(e.target.value); });
+function toggleAnim(){
+  playing = !playing;
+  document.getElementById('animPlayBtn').textContent = playing ? '⏸ 일시정지' : '▶ 재생';
+}
+drawMoon();
+requestAnimationFrame(tick);
+
+// ---------- 확인학습 퀴즈 ----------
+const quiz = [
+  {q:"제자리에서 팽이처럼 뱅글뱅글 도는 것을 무엇이라고 하나요?", choices:["자전","공전","일식"], answer:0,
+   explain:"정답은 '자전'이에요! 지구도 하루에 한 바퀴씩 자전을 해요."},
+  {q:"달이 지구의 둘레를 빙 도는 것을 무엇이라고 하나요?", choices:["자전","공전","반사"], answer:1,
+   explain:"정답은 '공전'이에요! 달은 지구 둘레를 약 27일에 한 바퀴 돌아요."},
+  {q:"달은 왜 항상 같은 얼굴만 보여줄까요?", choices:["자전을 안 해서","자전 시간과 공전 시간이 똑같아서","지구가 안 움직여서"], answer:1,
+   explain:"달은 제자리에서 도는 시간(자전)과 지구를 도는 시간(공전)이 똑같이 약 27일이라서, 늘 같은 쪽만 보여줘요."},
+  {q:"달의 뒷면은 항상 캄캄한 어둠 속에 있다. 맞을까요, 틀릴까요?", choices:["맞다","틀리다"], answer:1,
+   explain:"뒷면에도 낮과 밤이 있어요! '뒷면'은 '지구에서 안 보이는 면'이라는 뜻이지, '늘 어두운 면'이라는 뜻이 아니에요."}
+];
+const quizArea = document.getElementById('quizArea');
+quiz.forEach((item, i)=>{
+  const div = document.createElement('div');
+  div.className = 'quiz-item';
+  const btns = item.choices.map((c,ci)=>`<button class="choice-btn" onclick="checkAnswer(${i},${ci},this)">${c}</button>`).join('');
+  div.innerHTML = `
+    <div class="quiz-q">${i+1}. ${item.q}</div>
+    <div class="choice-btns">${btns}</div>
+    <div class="feedback" id="fb${i}"></div>
+  `;
+  quizArea.appendChild(div);
+});
+function checkAnswer(i, picked, btn){
+  const item = quiz[i];
+  const fb = document.getElementById('fb'+i);
+  const correct = picked === item.answer;
+  fb.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = (correct ? '🎉 정답이에요! ' : '🤔 다시 생각해봐요! 정답은 "'+item.choices[item.answer]+'"예요. ') + item.explain;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+}
+
+// ---------- 체크리스트 ----------
+document.querySelectorAll('#checklist input').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    cb.closest('.checklist-item').classList.toggle('done', cb.checked);
+    checkAllDone(); saveChecklist();
+  });
+});
+function checkAllDone(){
+  const all = document.querySelectorAll('#checklist input');
+  const done = document.querySelectorAll('#checklist input:checked');
+  document.getElementById('celebrate').classList.toggle('show', all.length===done.length);
+}
+function saveChecklist(){
+  const state = {};
+  document.querySelectorAll('#checklist input').forEach(cb=>{state[cb.id]=cb.checked;});
+  try{ localStorage.setItem('moon-day2-checklist', JSON.stringify(state)); }catch(e){}
+}
+(function(){ try{
+  const state = JSON.parse(localStorage.getItem('moon-day2-checklist')||'{}');
+  Object.keys(state).forEach(k=>{
+    const cb = document.getElementById(k);
+    if(cb && state[k]){ cb.checked = true; cb.closest('.checklist-item').classList.add('done'); }
+  });
+  checkAllDone();
+}catch(e){} })();
+</script>
+</body>
+</html>
