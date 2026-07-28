@@ -16,6 +16,7 @@
       --line: #d9e8f5;
       --soft: #f4f9ff;
       --panel: #ffffff;
+      --sticky-top: 102px;
     }
 
     * { box-sizing: border-box; }
@@ -24,7 +25,7 @@
       margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(135deg, rgba(5, 17, 40, .97), rgba(17, 75, 137, .92) 330px, #f8fbff 331px);
+        linear-gradient(135deg, rgba(5, 17, 40, .97), rgba(17, 75, 137, .9) 238px, #f8fbff 239px);
       font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
       letter-spacing: 0;
     }
@@ -43,7 +44,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, .16);
     }
     .top-inner {
-      width: min(1000px, calc(100% - 40px));
+      width: min(1480px, calc(100% - 48px));
       min-height: 78px;
       margin: 0 auto;
       display: grid;
@@ -117,36 +118,46 @@
     progress::-moz-progress-bar { background: linear-gradient(90deg, var(--cyan), var(--amber)); }
 
     .layout {
-      width: min(1000px, calc(100% - 40px));
-      margin: 26px auto 72px;
+      width: min(1480px, calc(100% - 48px));
+      margin: 24px auto 72px;
       display: grid;
-      grid-template-columns: 156px minmax(0, 1fr);
-      gap: 22px;
+      grid-template-columns: 184px minmax(0, 1fr);
+      gap: 24px;
     }
     nav {
       position: sticky;
-      top: 100px;
+      top: var(--sticky-top);
       align-self: start;
       display: grid;
-      gap: 7px;
-      padding: 10px;
-      border: 1px solid rgba(255, 255, 255, .2);
+      gap: 6px;
+      max-height: calc(100vh - var(--sticky-top) - 22px);
+      overflow-y: auto;
+      padding: 8px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, .94);
     }
     nav a {
-      min-height: 38px;
-      padding: 9px 10px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
       border-radius: 7px;
-      color: #edf8ff;
+      color: #263a55;
       font-size: 13px;
       font-weight: 900;
+      line-height: 1.2;
       text-decoration: none;
+      white-space: nowrap;
     }
     nav a:hover, nav a:focus-visible {
       color: #061226;
-      background: var(--cyan);
+      background: #dff7ff;
       outline: 0;
+    }
+    nav a.active, nav a[aria-current="true"] {
+      color: white;
+      background: var(--blue);
     }
     main {
       min-width: 0;
@@ -156,7 +167,7 @@
       border-radius: 8px;
     }
     section, .hero {
-      scroll-margin-top: 104px;
+      scroll-margin-top: calc(var(--sticky-top) + 16px);
       padding: clamp(26px, 4vw, 38px);
       border-bottom: 1px solid var(--line);
     }
@@ -273,31 +284,17 @@
       font-size: clamp(25px, 3.8vw, 35px);
       line-height: 1.18;
     }
-    .text-block {
-      display: grid;
-      gap: 10px;
-      margin: 0 0 22px;
-      padding: 0;
-      list-style: none;
-    }
     .knowledge-action {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      margin: -2px 0 22px;
+      margin: -2px 0 0;
     }
     .knowledge-action p {
       flex: 1 1 320px;
       margin: 0;
       font-weight: 900;
-      line-height: 1.55;
-    }
-    .text-block li {
-      padding-left: 18px;
-      border-left: 4px solid var(--cyan);
-      font-size: 18px;
-      font-weight: 800;
       line-height: 1.55;
     }
     .grid2 {
@@ -324,60 +321,6 @@
     .card p, section p {
       line-height: 1.58;
     }
-    .ox-list {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .ox-list li {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(116px, auto);
-      gap: 12px;
-      align-items: center;
-      padding: 13px 0;
-      border-bottom: 1px solid #e6f0f8;
-      font-weight: 900;
-      line-height: 1.45;
-    }
-    .ox-list li:last-child { border-bottom: 0; }
-    .answer {
-      display: grid;
-      place-items: center;
-      min-height: 42px;
-      border-radius: 8px;
-      color: #061226;
-      background: #e8fbff;
-      font-weight: 900;
-    }
-    .ox-options {
-      display: grid;
-      grid-template-columns: repeat(2, 52px);
-      gap: 8px;
-      justify-content: end;
-    }
-    .ox-options label {
-      display: grid;
-      grid-template-columns: 20px 1fr;
-      gap: 5px;
-      align-items: center;
-      min-height: 42px;
-      padding: 0 8px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-      font-weight: 900;
-    }
-    .ox-feedback {
-      grid-column: 1 / -1;
-      min-height: 22px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 900;
-    }
-    .ox-feedback.correct { color: #176046; }
-    .ox-feedback.wrong { color: #9c2f2f; }
     .book-row {
       display: grid;
       grid-template-columns: 132px minmax(0, 1fr);
@@ -405,7 +348,45 @@
       text-decoration-thickness: 2px;
       text-underline-offset: 3px;
     }
-    .mission-list, .build-list, .check-list {
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: -6px 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .mission-list li {
+      position: relative;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      padding: 15px 16px 15px 54px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fbff;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+    .mission-list li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      color: white;
+      background: var(--blue);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .build-list, .check-list {
       display: grid;
       gap: 10px;
       margin: 0;
@@ -413,7 +394,7 @@
       list-style: none;
       counter-reset: step;
     }
-    .mission-list li, .build-list li {
+    .build-list li {
       position: relative;
       min-height: 54px;
       padding: 14px 15px 14px 56px;
@@ -421,7 +402,7 @@
       font-weight: 900;
       line-height: 1.5;
     }
-    .mission-list li::before, .build-list li::before {
+    .build-list li::before {
       counter-increment: step;
       content: counter(step);
       position: absolute;
@@ -554,44 +535,94 @@
     .status-message.error {
       color: #9c2f2f;
     }
-    .history-area {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid #e6f0f8;
-    }
-    .history-area h3 {
-      margin: 0 0 10px;
-      color: var(--navy);
-      font-size: 17px;
-    }
-    .history-list {
+    .skill-steps {
       display: grid;
-      gap: 8px;
-      margin: 10px 0 0;
-      padding: 0;
-      list-style: none;
+      gap: 56px;
     }
-    .history-list li {
-      display: grid;
-      grid-template-columns: 70px minmax(0, 1fr);
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #e6f0f8;
-      font-weight: 900;
-      line-height: 1.45;
-    }
-    .history-list li:last-child {
-      border-bottom: 0;
-    }
-    .skill-box {
+    .ai-step {
       display: grid;
       gap: 16px;
-      padding: 20px;
-      border-left: 6px solid var(--cyan);
-      border-radius: 8px;
-      background: #eefaff;
+      padding-bottom: 56px;
+      border-bottom: 1px solid #e6f0f8;
     }
-    .skill-box h3 { margin: 0; color: var(--navy); }
+    .ai-step:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+    .step-title-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .step-badge {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      color: white;
+      background: var(--blue);
+      font-weight: 900;
+    }
+    .ai-step h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 22px;
+    }
+    .ai-step p {
+      margin: 0;
+    }
+    .skill-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .prompt-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .prompt-tools .status-message {
+      margin: 0;
+    }
+    .prompt-preview {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+    .prompt-preview summary {
+      cursor: pointer;
+      color: #0d5f9f;
+      font-weight: 900;
+    }
+    .prompt-preview p {
+      margin: 8px 0 0;
+    }
+    .code-guide {
+      padding: 14px 16px;
+      border-left: 4px solid var(--cyan);
+      background: #f4fbff;
+      color: var(--navy);
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .step-points {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 24px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .check-note {
+      color: #0d4379;
+      font-weight: 900;
+    }
     .request {
       margin: 0;
       padding: 18px;
@@ -603,50 +634,74 @@
       font-weight: 900;
       line-height: 1.55;
     }
-    .practice-grid {
+    .module-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
+      margin-top: 22px;
     }
-    .step-item {
+    .module-card {
+      min-width: 0;
       display: grid;
       gap: 12px;
-      padding: 0 0 18px;
-      border-bottom: 1px solid #e6f0f8;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
     }
-    .step-item h3 {
+    .module-image-wrap {
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 4px;
+      background: #f8fbff;
+    }
+    .module-image {
+      position: static;
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+    .module-card h3 {
       margin: 0;
       color: var(--navy);
       font-size: 18px;
     }
-    .image-slot {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: 1px dashed #badcf5;
-      border-radius: 8px;
-      background-color: #f8fbff;
-      background-image: var(--shot-image);
-      background-size: cover;
-      background-position: center;
+    .module-card p {
+      margin: 0;
+      line-height: 1.5;
     }
-    .required-grid {
+    .build-steps {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 28px 0 0;
+      padding-left: 24px;
+      font-weight: 900;
+      line-height: 1.58;
+    }
+    .build-steps li {
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e6f0f8;
+    }
+    .build-steps li:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+    .hint-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 18px;
-    }
-    .pill {
-      min-height: 68px;
-      display: grid;
-      place-items: center;
-      padding: 12px;
-      border: 1px solid var(--line);
+      margin: 16px 0 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--amber);
       border-radius: 8px;
-      background: #f8fbff;
+      background: #fff9e8;
       color: var(--navy);
       font-weight: 900;
-      text-align: center;
-      line-height: 1.35;
+      line-height: 1.5;
+      list-style: none;
     }
     .free-rules {
       display: grid;
@@ -743,6 +798,13 @@
       line-height: 1.5;
     }
 
+    @media (max-width: 1180px) {
+      .top-inner, .layout { width: min(100% - 36px, 1180px); }
+      .layout {
+        grid-template-columns: 176px minmax(0, 1fr);
+        gap: 20px;
+      }
+    }
     @media (max-width: 980px) {
       .top-inner, .layout, .hero, .login-panel { grid-template-columns: 1fr; }
       .status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -750,24 +812,27 @@
         position: static;
         display: flex;
         overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+        padding: 8px;
+        background: white;
       }
       nav a { flex: 0 0 auto; }
-      .practice-grid, .required-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .mission-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .module-grid, .hint-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
       .top { position: static; }
-      .top-inner, .layout { width: min(100% - 28px, 1000px); }
+      .top-inner, .layout { width: min(100% - 28px, 100%); }
       .status-grid { grid-template-columns: 1fr; }
       main { border-radius: 0; }
       .hero { border-radius: 0; }
-      .grid2, .grid3, .book-row, .practice-grid, .required-grid, .check-list, .record-grid, .choice-row, .submit-summary {
+      .grid2, .grid3, .book-row, .mission-list, .module-grid, .hint-list, .check-list, .record-grid, .choice-row, .submit-summary {
         grid-template-columns: 1fr;
       }
       .row { display: grid; }
       .primary, .secondary { width: 100%; }
       .account-row { grid-template-columns: 1fr; }
-      .ox-list li, .history-list li { grid-template-columns: 1fr; }
-      .ox-options { justify-content: start; }
       .hero h2 { font-size: 34px; }
     }
   </style>
@@ -785,24 +850,24 @@
           <div class="status-chip"><span>자동 저장</span><strong id="saveStatus">준비 중</strong></div>
           <div class="status-chip"><span>제출 상태</span><strong id="submitTopStatus">제출 전</strong></div>
         </div>
-        <div class="progress-label"><span>전체 진행률</span><strong id="progressText">0 / 17</strong></div>
-        <progress id="overallProgress" value="0" max="17">0 / 17</progress>
+        <div class="progress-label"><span>전체 진행률</span><strong id="progressText">0 / 15</strong></div>
+        <progress id="overallProgress" value="0" max="15">0 / 15</progress>
       </div>
     </div>
   </header>
 
   <div class="layout">
     <nav aria-label="3차시 목차">
-      <a href="#knowledge">기본 지식</a>
-      <a href="#book">관련 책</a>
-      <a href="#mission">오늘 미션</a>
-      <a href="#login">로그인</a>
-      <a href="#skill">AI Skill</a>
-      <a href="#build">필수 건설</a>
-      <a href="#custom">특징 추가</a>
-      <a href="#safety">안전 점검</a>
-      <a href="#record">기록</a>
-      <a href="#submit">제출</a>
+      <a href="#knowledge">1. 기본 지식</a>
+      <a href="#book">2. 관련 책</a>
+      <a href="#mission">3. 오늘의 미션</a>
+      <a href="#login">4. 로그인</a>
+      <a href="#skill">5. AI Skill</a>
+      <a href="#build">6. 필수 건설</a>
+      <a href="#custom">7. 특징 추가</a>
+      <a href="#safety">8. 안전 점검</a>
+      <a href="#record">9. 기록</a>
+      <a href="#submit">10. 제출</a>
     </nav>
 
     <main>
@@ -811,7 +876,7 @@
           <p class="eyebrow">명주도서관 3차시</p>
           <h2>AI Skill로 출발하는 루나 게이트웨이 건설</h2>
           <p class="lead">AI Buddy에게 다음 임무를 요청하고, 장면 3에서 달 주위를 도는 우주정거장을 만듭니다.</p>
-          <div class="mission-strip">오늘은 이동 Skill을 만들고, 중심·연구·생활 모듈을 통로와 에너지 시설로 연결합니다.</div>
+          <div class="mission-strip">오늘은 이동 Skill을 만들고, 중심·연구·생활 모듈과 도킹 구역을 연결합니다.</div>
         </div>
         <div class="gateway-diagram" aria-label="달 궤도 위 루나 게이트웨이 모듈 구성 그림">
           <span class="moon-arc" aria-hidden="true"></span>
@@ -836,37 +901,6 @@
           <p>달 남극 기본 지식을 먼저 살펴본 뒤,<br>루나 게이트웨이 건설 임무를 시작해 보세요.</p>
           <a class="primary" href="./moon-south-pole-knowledge.html" target="_blank" rel="noopener noreferrer" aria-label="달 남극 기본 지식 페이지를 새 탭에서 열기">달 남극 기본 지식 알아보기 ↗</a>
         </div>
-        <ul class="text-block">
-          <li>루나 게이트웨이는 달 표면의 건물이 아니라 달 주위를 도는 우주정거장입니다.</li>
-          <li>생활·연구·에너지·도킹 기능을 가진 여러 모듈을 연결하여 만듭니다.</li>
-          <li>우주인이 달을 탐사하고 우주선이 머무는 중간 기지 역할을 합니다.</li>
-        </ul>
-        <ol class="ox-list" aria-label="루나 게이트웨이 OX 확인">
-          <li>
-            <span>루나 게이트웨이는 달 표면에 세우는 건물이다.</span>
-            <div class="ox-options" role="radiogroup" aria-label="1번 OX 답변" data-correct="X" data-feedback="knowledgeFeedback1">
-              <label><input type="radio" name="knowledge-q1" value="O"> O</label>
-              <label><input type="radio" name="knowledge-q1" value="X"> X</label>
-            </div>
-            <span id="knowledgeFeedback1" class="ox-feedback" aria-live="polite"></span>
-          </li>
-          <li>
-            <span>루나 게이트웨이는 여러 모듈을 연결해 만든다.</span>
-            <div class="ox-options" role="radiogroup" aria-label="2번 OX 답변" data-correct="O" data-feedback="knowledgeFeedback2">
-              <label><input type="radio" name="knowledge-q2" value="O"> O</label>
-              <label><input type="radio" name="knowledge-q2" value="X"> X</label>
-            </div>
-            <span id="knowledgeFeedback2" class="ox-feedback" aria-live="polite"></span>
-          </li>
-          <li>
-            <span>생활·연구·도킹·에너지 시설이 필요하다.</span>
-            <div class="ox-options" role="radiogroup" aria-label="3번 OX 답변" data-correct="O" data-feedback="knowledgeFeedback3">
-              <label><input type="radio" name="knowledge-q3" value="O"> O</label>
-              <label><input type="radio" name="knowledge-q3" value="X"> X</label>
-            </div>
-            <span id="knowledgeFeedback3" class="ox-feedback" aria-live="polite"></span>
-          </li>
-        </ol>
       </section>
 
       <section id="book" aria-labelledby="book-title">
@@ -898,7 +932,7 @@
           <li>AI Buddy에게 이동 요청</li>
           <li>AI Skill로 장면 3 이동</li>
           <li>중심·연구·생활 모듈 연결</li>
-          <li>통로와 에너지 시설 설치</li>
+          <li>도킹 구역과 내부 시설 구성</li>
           <li>마지막 10분에 나만의 특징 추가</li>
           <li>점검 후 기록 제출</li>
         </ol>
@@ -932,11 +966,6 @@
             </div>
             <p id="copyStatus" class="status-message" aria-live="polite"></p>
             <p class="muted">비밀번호는 화면에 표시하지 않습니다.</p>
-            <div class="history-area" aria-labelledby="history-title">
-              <h3 id="history-title">이 기기의 이전 차시 기록</h3>
-              <p id="historyStatus" class="muted">내 이름을 선택하면 이 기기에 남은 기록만 확인합니다.</p>
-              <ul id="historyList" class="history-list"></ul>
-            </div>
           </div>
         </div>
       </section>
@@ -949,31 +978,79 @@
             <h2 id="skill-title">AI Buddy가 루나 게이트웨이 이동 요청을 알아듣게 합니다.</h2>
           </div>
         </div>
-        <div class="skill-box">
-          <h3>Skill 이름: 루나 게이트웨이로 이동</h3>
-          <p>학생이 다음 임무를 시작하거나 루나 게이트웨이 또는 우주정거장으로 이동해 달라고 요청하면 이 스킬을 실행한다. 자전, 공전, 동주기 자전에 관한 과학 질문에는 실행하지 않는다.</p>
-          <p class="request">대표 요청: 버디야, 루나 게이트웨이로 이동해 줘.</p>
-        </div>
-        <div class="practice-grid" style="margin-top: 22px;">
-          <article class="step-item">
-            <h3>1. 장면 2의 AI Buddy 선택</h3>
-            <div class="image-slot" role="img" aria-label="장면 2에서 AI Buddy를 선택하는 이미지 자리" data-image-path="assets/lesson03/step01-select-buddy.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step01-select-buddy.png -->
+        <div class="skill-steps">
+          <article class="ai-step">
+            <div class="step-title-row">
+              <span class="step-badge" aria-hidden="true">1</span>
+              <h3>장면 3을 추가해요</h3>
+            </div>
+            <p>장면 목록 아래의 ‘새 장면’을 누르세요. 3D 환경에서 ‘프로젝트’를 선택하여 새로운 장면을 만드세요. 새 장면의 이름은 ‘장면 3’으로 설정하세요.</p>
+            <img class="skill-image" src="assets/lesson03/step-ai-01-add-scene3.png" alt="Delightex Edu에서 새 장면을 누르고 3D 환경 프로젝트로 장면 3을 추가하는 화면" loading="lazy">
+            <p class="check-note">장면 목록에 장면 3이 생겼나요?</p>
           </article>
-          <article class="step-item">
-            <h3>2. 이동 Skill 만들기</h3>
-            <div class="image-slot" role="img" aria-label="루나 게이트웨이 이동 Skill을 만드는 이미지 자리" data-image-path="assets/lesson03/step02-create-skill.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step02-create-skill.png -->
+
+          <article class="ai-step">
+            <div class="step-title-row">
+              <span class="step-badge" aria-hidden="true">2</span>
+              <h3>AI Skill용 코드창을 만들어요</h3>
+            </div>
+            <p>다시 장면 2로 이동하고 코블록스 화면을 여세요. 코드창 옆의 + 버튼을 눌러 새로운 코블록스 코드창을 추가하세요. 새 코드창 이름은 <code>AI_skill</code>로 변경하세요.</p>
+            <p class="code-guide">표시할 이름: <code>AI_skill</code></p>
+            <img class="skill-image" src="assets/lesson03/step-ai-02-add-code-tab.png" alt="코블록스 코드창을 추가하고 이름을 AI_skill로 변경하는 화면" loading="lazy">
+            <p class="check-note">코드창 목록에 AI_skill이 표시되나요?</p>
           </article>
-          <article class="step-item">
-            <h3>3. 장면 이동 CoBlocks 연결</h3>
-            <div class="image-slot" role="img" aria-label="Skill과 장면 이동 CoBlocks를 연결하는 이미지 자리" data-image-path="assets/lesson03/step03-skill-coblocks.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step03-skill-coblocks.png -->
+
+          <article class="ai-step">
+            <div class="step-title-row">
+              <span class="step-badge" aria-hidden="true">3</span>
+              <h3>이동 명령을 알아듣는 AI Skill을 만들어요</h3>
+            </div>
+            <p>AI 카테고리에서 ‘AI Skill 만들기’를 선택하세요. AI Skill 이름과 설명을 입력한 뒤 Skill을 생성하세요.</p>
+            <p class="code-guide">AI Skill 이름: <code>move_scene3</code></p>
+            <div class="prompt-tools">
+              <button id="copySkillPrompt" class="secondary" type="button">설명 프롬프트 복사하기</button>
+              <span id="promptCopyStatus" class="status-message" aria-live="polite"></span>
+            </div>
+            <details class="prompt-preview">
+              <summary>설명 프롬프트 미리보기</summary>
+              <p>자전과 공전 실험을 마친 뒤 다음 임무를 시작하려고 하거나, 루나 게이트웨이·게이트웨이·우주정거장으로 이동하거나 건설하러 출발해 달라고 요청하면 이 스킬을 실행한다.</p>
+              <p>자전, 공전, 동주기 자전, 달에 관한 과학 질문이나 설명 요청에는 실행하지 않는다.</p>
+              <p>이 스킬은 장소 이동 명령에만 사용한다.</p>
+            </details>
+            <img class="skill-image" src="assets/lesson03/step-ai-03-create-skill.png" alt="AI 카테고리에서 AI Skill 만들기를 선택하고 move_scene3 Skill을 생성하는 화면" loading="lazy">
+            <p class="check-note">Skill 이름이 <code>move_scene3</code>으로 표시되나요?</p>
           </article>
-          <article class="step-item">
-            <h3>4. 자연어로 장면 이동 시험</h3>
-            <div class="image-slot" role="img" aria-label="자연어 요청으로 장면 이동을 시험하는 이미지 자리" data-image-path="assets/lesson03/step04-test-move.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step04-test-move.png -->
+
+          <article class="ai-step">
+            <div class="step-title-row">
+              <span class="step-badge" aria-hidden="true">4</span>
+              <h3>Skill이 실행할 행동을 코딩해요</h3>
+            </div>
+            <p>생성한 <code>move_scene3</code> Skill 안에 다음 동작을 순서대로 넣으세요.</p>
+            <ol class="step-points">
+              <li>Astronaut man이 “루나 우주정거장을 건설하러 출발합니다.”라고 말하기</li>
+              <li>1초 기다리기</li>
+              <li>장면 3으로 가기</li>
+            </ol>
+            <p class="code-guide">AI Skill: <code>move_scene3</code><br>→ Astronaut man 말하기<br>→ 1초 기다리기<br>→ 장면 3으로 가기</p>
+            <img class="skill-image" src="assets/lesson03/step-ai-04-build-skill.png" alt="move_scene3 Skill 안에 말하기, 기다리기, 장면 3으로 가기 블록을 순서대로 넣은 화면" loading="lazy">
+            <p class="check-note">Skill 블록 안에 세 동작이 순서대로 들어갔나요?</p>
+          </article>
+
+          <article class="ai-step">
+            <div class="step-title-row">
+              <span class="step-badge" aria-hidden="true">5</span>
+              <h3>AI Buddy에게 Skill을 연결해요</h3>
+            </div>
+            <p>플레이를 클릭했을 때 실행되는 코드 아래에 Astronaut man에게 <code>move_scene3</code> Skill을 추가하는 블록을 연결하세요. 실행한 뒤 AI Buddy에게 이동을 요청해 보세요.</p>
+            <p class="request">학생 요청 문장: 버디야, 루나 게이트웨이로 이동해 줘.</p>
+            <ul class="step-points">
+              <li>다음 임무를 시작하자.</li>
+              <li>우주정거장으로 출발하자.</li>
+              <li>게이트웨이를 건설하러 가자.</li>
+            </ul>
+            <img class="skill-image" src="assets/lesson03/step-ai-05-use-skill.png" alt="플레이 시작 코드 아래에 Astronaut man의 move_scene3 Skill 추가 블록을 연결한 화면" loading="lazy">
+            <p class="check-note">AI Buddy가 안내 문장을 말한 뒤 장면 3으로 이동했나요?</p>
           </article>
         </div>
       </section>
@@ -983,38 +1060,57 @@
           <span class="num">6</span>
           <div>
             <p class="eyebrow">루나 게이트웨이 필수 건설</p>
-            <h2 id="build-title">역할이 다른 모듈을 연결해 우주정거장을 만듭니다.</h2>
+            <h2 id="build-title">루나 게이트웨이 필수 건설</h2>
           </div>
         </div>
-        <div class="required-grid" aria-label="필수 건설 요소">
-          <div class="pill">중심 모듈</div>
-          <div class="pill">연구 모듈</div>
-          <div class="pill">생활 모듈</div>
-          <div class="pill">연결 통로 2개 이상</div>
-          <div class="pill">태양광 패널 또는 에너지 시설</div>
+        <p>우주정거장에는 여러 공간을 이어 주는 중심, 우주인이 생활하는 곳, 연구하는 곳, 우주선이 연결되는 곳이 필요합니다. 네 모듈의 역할을 확인하고 서로 연결한 뒤, 각 장소에 필요한 물건을 자유롭게 배치하세요.</p>
+        <div class="module-grid" aria-label="루나 게이트웨이 모듈 안내">
+          <article class="module-card">
+            <div class="module-image-wrap">
+              <img class="module-image" src="assets/lesson03/module-docking-port.png" alt="에어록 모듈 이미지" loading="lazy">
+            </div>
+            <h3>에어록</h3>
+            <p><strong>역할:</strong> 우주정거장 안과 밖을 안전하게 오가는 출입 공간입니다.</p>
+            <p><strong>생각하기:</strong> 우주인이 안전하게 출입하려면 무엇이 필요할까요?</p>
+          </article>
+          <article class="module-card">
+            <div class="module-image-wrap">
+              <img class="module-image" src="assets/lesson03/module-habitation.png" alt="복도 모듈 이미지" loading="lazy">
+            </div>
+            <h3>복도</h3>
+            <p><strong>역할:</strong> 우주인이 이동하고 서로 다른 공간을 이어 주는 길입니다.</p>
+            <p><strong>생각하기:</strong> 이동하기 편하고 안전한 복도에는 무엇이 필요할까요?</p>
+          </article>
+          <article class="module-card">
+            <div class="module-image-wrap">
+              <img class="module-image" src="assets/lesson03/module-research.png" alt="온실 모듈 이미지" loading="lazy">
+            </div>
+            <h3>온실</h3>
+            <p><strong>역할:</strong> 우주에서 식물을 기르고 음식과 산소를 연구하는 공간입니다.</p>
+            <p><strong>생각하기:</strong> 식물이 잘 자라려면 어떤 환경과 도구가 필요할까요?</p>
+          </article>
+          <article class="module-card">
+            <div class="module-image-wrap">
+              <img class="module-image" src="assets/lesson03/module-central-hub.png" alt="연결통로 모듈 이미지" loading="lazy">
+            </div>
+            <h3>연결통로</h3>
+            <p><strong>역할:</strong> 여러 모듈을 서로 다른 방향으로 연결하는 중심 공간입니다.</p>
+            <p><strong>생각하기:</strong> 각 모듈을 어느 방향에 연결하면 이동하기 편할까요?</p>
+          </article>
         </div>
-        <div class="practice-grid" style="margin-top: 22px;">
-          <article class="step-item">
-            <h3>5. 중심 모듈 배치</h3>
-            <div class="image-slot" role="img" aria-label="중심 모듈을 배치하는 이미지 자리" data-image-path="assets/lesson03/step05-center-module.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step05-center-module.png -->
-          </article>
-          <article class="step-item">
-            <h3>6. 연구·생활 모듈 연결</h3>
-            <div class="image-slot" role="img" aria-label="연구 모듈과 생활 모듈을 연결하는 이미지 자리" data-image-path="assets/lesson03/step06-connect-modules.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step06-connect-modules.png -->
-          </article>
-          <article class="step-item">
-            <h3>7. 연결 통로 설치</h3>
-            <div class="image-slot" role="img" aria-label="연결 통로를 설치하는 이미지 자리" data-image-path="assets/lesson03/step07-connect-corridors.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step07-connect-corridors.png -->
-          </article>
-          <article class="step-item">
-            <h3>8. 에너지·외부 시설 설치</h3>
-            <div class="image-slot" role="img" aria-label="에너지 시설과 외부 시설을 설치하는 이미지 자리" data-image-path="assets/lesson03/step08-external-facilities.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step08-external-facilities.png -->
-          </article>
-        </div>
+        <ol class="build-steps">
+          <li><strong>연결통로 놓기</strong><br>장면 3의 가운데에 연결통로를 놓으세요. 다른 모듈은 이곳을 기준으로 연결합니다.</li>
+          <li><strong>복도·온실 연결하기</strong><br>복도와 온실의 입구가 연결통로를 향하도록 위치와 방향을 조절하세요.</li>
+          <li><strong>에어록 설치하기</strong><br>남은 연결 방향에 에어록을 놓으세요. 우주인이 드나들 수 있는 공간도 남겨 두세요.</li>
+          <li><strong>공간의 역할에 맞게 꾸미기</strong><br>각 공간에 필요한 물건을 최소 1개 이상 직접 선택하여 배치하세요.</li>
+        </ol>
+        <ul class="hint-list" aria-label="꾸미기 힌트">
+          <li>복도: 안내선, 손잡이, 보관함</li>
+          <li>온실: 식물, 조명, 물 공급 장치</li>
+          <li>연결통로: 안내판, 통제 장치, AI Buddy</li>
+          <li>에어록: 출입 안내, 대기 공간, 안전 장치</li>
+        </ul>
+        <p class="muted">위 물건은 예시이며 정답 목록이 아닙니다. 공간의 역할을 생각해 다른 물건을 선택해도 좋고, 통로와 출입구는 막지 않도록 배치하세요.</p>
       </section>
 
       <section id="custom" aria-labelledby="custom-title">
@@ -1031,13 +1127,6 @@
           <li>장면 1·2와 필수 모듈은 수정·삭제하지 않습니다.</li>
           <li>문과 통로를 막지 않습니다.</li>
         </ul>
-        <div class="practice-grid" style="margin-top: 22px;">
-          <article class="step-item">
-            <h3>9. 나만의 특징 추가</h3>
-            <div class="image-slot" role="img" aria-label="루나 게이트웨이에 나만의 특징을 추가하는 이미지 자리" data-image-path="assets/lesson03/step09-customize.png"></div>
-            <!-- 예정 이미지: assets/lesson03/step09-customize.png -->
-          </article>
-        </div>
       </section>
 
       <section id="safety" aria-labelledby="safety-title">
@@ -1049,13 +1138,13 @@
           </div>
         </div>
         <div class="check-list" aria-label="3차시 점검표">
-          <label><input type="checkbox" name="check-center" data-check="centerModule"> 중심 모듈</label>
-          <label><input type="checkbox" name="check-lab" data-check="researchModule"> 연구 모듈</label>
-          <label><input type="checkbox" name="check-life" data-check="livingModule"> 생활 모듈</label>
-          <label><input type="checkbox" name="check-corridor" data-check="corridors"> 연결 통로 2개 이상</label>
-          <label><input type="checkbox" name="check-energy" data-check="energyFacility"> 에너지·외부 시설</label>
-          <label><input type="checkbox" name="check-custom" data-check="customFeatureAdded"> 나만의 특징</label>
-          <label><input type="checkbox" name="check-safe" data-check="passageSafe"> 통로 안전</label>
+          <label><input type="checkbox" name="check-center" data-check="centerModule"> 중심 연결 모듈을 배치했다.</label>
+          <label><input type="checkbox" name="check-life" data-check="livingModule"> 생활 모듈을 연결했다.</label>
+          <label><input type="checkbox" name="check-lab" data-check="researchModule"> 연구 모듈을 연결했다.</label>
+          <label><input type="checkbox" name="check-energy" data-check="energyFacility"> 도킹 연결구를 설치했다.</label>
+          <label><input type="checkbox" name="check-corridor" data-check="corridors"> 모듈의 입구 방향을 맞췄다.</label>
+          <label><input type="checkbox" name="check-custom" data-check="customFeatureAdded"> 각 공간에 역할에 맞는 물건을 1개 이상 놓았다.</label>
+          <label><input type="checkbox" name="check-safe" data-check="passageSafe"> 출입구와 이동 경로가 막히지 않았다.</label>
           <label><input type="checkbox" name="check-save" data-check="projectSaved"> 프로젝트 저장</label>
         </div>
       </section>
@@ -1088,7 +1177,7 @@
               <label><input type="checkbox" name="facility" value="lab"> 연구 모듈</label>
               <label><input type="checkbox" name="facility" value="life"> 생활 모듈</label>
               <label><input type="checkbox" name="facility" value="corridor"> 연결 통로</label>
-              <label><input type="checkbox" name="facility" value="energy"> 에너지 시설</label>
+              <label><input type="checkbox" name="facility" value="energy"> 도킹 연결구</label>
               <label><input type="checkbox" name="facility" value="custom"> 나만의 특징</label>
             </div>
           </fieldset>
@@ -1138,13 +1227,20 @@
     const LESSON_NUMBER = 3;
     const LESSON_TITLE = "AI Skill로 출발하는 루나 게이트웨이 건설";
     const STORAGE_PREFIX = "myeongjuArtemisLesson3.v1:";
-    const LESSON1_STORAGE_KEY = "delightexEduArtemisStudent.v1";
-    const LESSON2_STORAGE_KEY = "myeongjuArtemisLesson2.v3";
+    const AI_SKILL_PROMPT = `자전과 공전 실험을 마친 뒤 다음 임무를 시작하려고 하거나,
+루나 게이트웨이·게이트웨이·우주정거장으로 이동하거나
+건설하러 출발해 달라고 요청하면 이 스킬을 실행한다.
+
+자전, 공전, 동주기 자전, 달에 관한 과학 질문이나
+설명 요청에는 실행하지 않는다.
+
+이 스킬은 장소 이동 명령에만 사용한다.`;
     const CHECK_KEYS = [
       "centerModule",
       "researchModule",
       "livingModule",
       "corridors",
+      // Legacy payload key: now used for docking port completion.
       "energyFacility",
       "customFeatureAdded",
       "passageSafe",
@@ -1156,6 +1252,7 @@
     let names = [];
     let account = null;
     let submitting = false;
+    let promptCopyTimer = null;
     let state = createEmptyState();
 
     document.addEventListener("DOMContentLoaded", initLesson3);
@@ -1163,9 +1260,9 @@
     function initLesson3() {
       storageEnabled = checkStorage();
       bindLesson3Events();
+      initStepNav();
       fillFormFromState();
       updateAccountUi();
-      updatePreviousHistory();
       updateProgress();
       updateSubmitUi();
       loadNames();
@@ -1184,7 +1281,6 @@
         lessonNumber: LESSON_NUMBER,
         lessonTitle: LESSON_TITLE,
         studentInfo: sanitizeStudentInfo(studentInfo),
-        knowledgeAnswers: { q1: "", q2: "", q3: "" },
         aiSkillResult: "",
         moveRequestText: "",
         completedFacilities: [],
@@ -1215,13 +1311,64 @@
       document.getElementById("studentSearch").addEventListener("input", renderNames);
       document.getElementById("copyId").addEventListener("click", copyLoginId);
       document.getElementById("copyPw").addEventListener("click", copyPassword);
+      document.getElementById("copySkillPrompt").addEventListener("click", copySkillPrompt);
       document.getElementById("saveNow").addEventListener("click", () => saveState(true));
       document.getElementById("resetLesson").addEventListener("click", resetCurrentLesson);
       document.getElementById("submitRecord").addEventListener("click", submitLessonRecord);
-      document.querySelectorAll("#knowledge input, #safety input, #record input, #record textarea").forEach((element) => {
+      document.querySelectorAll("#safety input, #record input, #record textarea").forEach((element) => {
         element.addEventListener("input", scheduleSave);
         element.addEventListener("change", scheduleSave);
       });
+    }
+
+    function initStepNav() {
+      const links = Array.from(document.querySelectorAll("nav a[href^='#']"));
+      const sections = links
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+      if (!links.length || !sections.length) {
+        return;
+      }
+      const setActive = (id) => {
+        links.forEach((link) => {
+          const active = link.getAttribute("href") === `#${id}`;
+          link.classList.toggle("active", active);
+          if (active) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
+      };
+      syncStickyOffset();
+      window.addEventListener("resize", syncStickyOffset);
+      if (!("IntersectionObserver" in window)) {
+        setActive(sections[0].id);
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (current) {
+          setActive(current.target.id);
+        }
+      }, {
+        rootMargin: `-${getHeaderOffset() + 18}px 0px -62% 0px`,
+        threshold: [0.08, 0.25, 0.5]
+      });
+      sections.forEach((section) => observer.observe(section));
+      setActive(sections[0].id);
+    }
+
+    function getHeaderOffset() {
+      const header = document.querySelector(".top");
+      return header ? Math.ceil(header.getBoundingClientRect().height) : 82;
+    }
+
+    function syncStickyOffset() {
+      const top = window.matchMedia("(max-width: 680px)").matches ? 18 : getHeaderOffset() + 20;
+      document.documentElement.style.setProperty("--sticky-top", `${top}px`);
     }
 
     function checkStorage() {
@@ -1316,7 +1463,6 @@
         fillFormFromState();
         updateAccountUi();
         renderNames();
-        updatePreviousHistory();
         updateProgress();
         updateSubmitUi();
         saveState(false);
@@ -1327,7 +1473,6 @@
         state = createEmptyState();
         fillFormFromState();
         updateAccountUi();
-        updatePreviousHistory();
         updateProgress();
         updateSubmitUi();
         setListStatus(error.message || "학생 정보를 찾을 수 없어요.", true);
@@ -1340,7 +1485,6 @@
       state = createEmptyState({ studentName: pendingName });
       fillFormFromState();
       updateAccountUi();
-      updatePreviousHistory();
       updateProgress();
       updateSubmitUi();
       document.getElementById("copyStatus").textContent = "";
@@ -1385,11 +1529,6 @@
           ...createEmptyState(cleanInfo),
           ...saved,
           studentInfo: cleanInfo,
-          knowledgeAnswers: {
-            q1: saved.knowledgeAnswers && saved.knowledgeAnswers.q1 || "",
-            q2: saved.knowledgeAnswers && saved.knowledgeAnswers.q2 || "",
-            q3: saved.knowledgeAnswers && saved.knowledgeAnswers.q3 || ""
-          },
           completedFacilities: Array.isArray(saved.completedFacilities) ? saved.completedFacilities : [],
           checklistData: {
             ...createEmptyChecklist(),
@@ -1407,10 +1546,6 @@
     }
 
     function fillFormFromState() {
-      setRadio("knowledge-q1", state.knowledgeAnswers.q1);
-      setRadio("knowledge-q2", state.knowledgeAnswers.q2);
-      setRadio("knowledge-q3", state.knowledgeAnswers.q3);
-      updateKnowledgeFeedback();
       setRadio("skill-result", state.aiSkillResult);
       setValue("move-request", state.moveRequestText);
       document.querySelectorAll("input[name='facility']").forEach((input) => {
@@ -1427,11 +1562,6 @@
 
     function collectFormData() {
       return {
-        knowledgeAnswers: {
-          q1: getRadio("knowledge-q1"),
-          q2: getRadio("knowledge-q2"),
-          q3: getRadio("knowledge-q3")
-        },
         aiSkillResult: getRadio("skill-result"),
         moveRequestText: getValue("move-request"),
         completedFacilities: Array.from(document.querySelectorAll("input[name='facility']:checked")).map((input) => input.value),
@@ -1463,7 +1593,6 @@
 
     function scheduleSave() {
       syncStateFromForm();
-      updateKnowledgeFeedback();
       updateProgress();
       updateSubmitUi();
       if (!studentIdForStorage()) {
@@ -1509,7 +1638,7 @@
       }
       if (value && typeof value === "object") {
         return Object.keys(value).reduce((clean, key) => {
-          if (/password|비밀번호|pass|pw/i.test(key)) {
+          if (/password|비밀번호/i.test(key) || /^(pass|pw)$/i.test(key)) {
             return clean;
           }
           clean[key] = stripSensitive(value[key]);
@@ -1569,97 +1698,22 @@
       }
     }
 
-    function updatePreviousHistory() {
-      const list = document.getElementById("historyList");
-      const status = document.getElementById("historyStatus");
-      list.innerHTML = "";
-      if (!storageEnabled || !account) {
-        status.textContent = account ? "이 기기에서는 이전 차시 기록을 확인할 수 없습니다." : "내 이름을 선택하면 이 기기에 남은 기록만 확인합니다.";
-        return;
-      }
-      const summaries = collectPreviousSummaries(account);
-      if (!summaries.length) {
-        status.textContent = "이 기기에서는 이전 차시 기록을 확인할 수 없습니다.";
-        return;
-      }
-      status.textContent = "선택한 학생과 식별값이 일치하는 이 기기 기록만 표시합니다.";
-      summaries.forEach((summary) => {
-        const item = document.createElement("li");
-        const lesson = document.createElement("strong");
-        const text = document.createElement("span");
-        lesson.textContent = `${summary.lessonNumber}차시`;
-        text.textContent = summary.status;
-        item.append(lesson, text);
-        list.appendChild(item);
-      });
-    }
-
-    function collectPreviousSummaries(info) {
-      const byLesson = new Map();
+    async function copySkillPrompt() {
+      const button = document.getElementById("copySkillPrompt");
+      const status = document.getElementById("promptCopyStatus");
+      const label = "설명 프롬프트 복사하기";
       try {
-        const lesson1Raw = localStorage.getItem(LESSON1_STORAGE_KEY);
-        if (lesson1Raw) {
-          const saved = JSON.parse(lesson1Raw);
-          if (isSameStudent(saved.studentInfo || {}, info)) {
-            ["1", "2"].forEach((lessonNumber) => {
-              const lesson = saved.lessons && saved.lessons[lessonNumber];
-              const summary = summarizeLessonRecord(Number(lessonNumber), lesson);
-              if (summary) {
-                byLesson.set(summary.lessonNumber, summary);
-              }
-            });
-          }
-        }
-      } catch (error) {}
-
-      try {
-        const lesson2Raw = localStorage.getItem(LESSON2_STORAGE_KEY);
-        if (lesson2Raw) {
-          const saved = JSON.parse(lesson2Raw);
-          if (isSameStudent(saved.studentInfo || {}, info)) {
-            const summary = summarizeLessonRecord(2, saved);
-            if (summary) {
-              byLesson.set(2, summary);
-            }
-          }
-        }
-      } catch (error) {}
-
-      return Array.from(byLesson.values()).sort((a, b) => a.lessonNumber - b.lessonNumber);
-    }
-
-    function summarizeLessonRecord(lessonNumber, lesson) {
-      if (!lesson || typeof lesson !== "object") {
-        return null;
+        await navigator.clipboard.writeText(AI_SKILL_PROMPT);
+        button.textContent = "복사했어요 ✓";
+        status.textContent = "";
+        clearTimeout(promptCopyTimer);
+        promptCopyTimer = setTimeout(() => {
+          button.textContent = label;
+        }, 1500);
+      } catch (error) {
+        button.textContent = label;
+        status.textContent = "복사하지 못했어요";
       }
-      const written = hasMeaningfulLessonData(lesson);
-      const submitted = Boolean(lesson.submittedAt);
-      const completed = Boolean(lesson.completedAt || lesson.lessonComplete);
-      if (!written && !submitted && !completed) {
-        return { lessonNumber, status: "작성 흔적 없음 · 제출 전" };
-      }
-      const writtenText = written ? "작성 있음" : "작성 흔적 없음";
-      const submitText = submitted ? "제출 완료" : completed ? "완료 상태" : "제출 전";
-      return { lessonNumber, status: `${writtenText} · ${submitText}` };
-    }
-
-    function hasMeaningfulLessonData(value, key = "") {
-      if (["startedAt", "submittedAt", "completedAt", "lessonNumber", "lessonTitle", "submissionStatus", "submissionId", "version"].includes(key)) {
-        return false;
-      }
-      if (typeof value === "string") {
-        return value.trim() !== "";
-      }
-      if (typeof value === "boolean") {
-        return value;
-      }
-      if (Array.isArray(value)) {
-        return value.some((item) => hasMeaningfulLessonData(item));
-      }
-      if (value && typeof value === "object") {
-        return Object.keys(value).some((childKey) => hasMeaningfulLessonData(value[childKey], childKey));
-      }
-      return false;
     }
 
     function isSameStudent(savedInfo, currentInfo) {
@@ -1710,7 +1764,6 @@
         lessonNumber: LESSON_NUMBER,
         lessonTitle: LESSON_TITLE,
         activityData: {
-          knowledgeAnswers: formData.knowledgeAnswers,
           aiSkillResult: formData.aiSkillResult,
           moveRequestText: formData.moveRequestText,
           completedFacilities: formData.completedFacilities,
@@ -1730,9 +1783,6 @@
       const messages = [];
       if (!account || !(account.studentId || account.loginId)) {
         messages.push({ href: "#login", text: "학생 이름과 아이디를 확인해 주세요." });
-      }
-      if (!formData.knowledgeAnswers.q1 || !formData.knowledgeAnswers.q2 || !formData.knowledgeAnswers.q3) {
-        messages.push({ href: "#knowledge", text: "기본 지식 O/X 답변을 모두 선택해 주세요." });
       }
       if (!formData.aiSkillResult) {
         messages.push({ href: "#record", text: "AI Skill 이동 결과를 선택해 주세요." });
@@ -1825,9 +1875,6 @@
     function updateProgress() {
       const formData = collectFormData();
       const units = [
-        Boolean(formData.knowledgeAnswers.q1),
-        Boolean(formData.knowledgeAnswers.q2),
-        Boolean(formData.knowledgeAnswers.q3),
         Boolean(formData.aiSkillResult),
         Boolean(formData.moveRequestText.trim()),
         formData.completedFacilities.length > 0,
@@ -1844,24 +1891,6 @@
       progress.value = completed;
       progress.textContent = `${completed} / ${total}`;
       document.getElementById("progressText").textContent = `${completed} / ${total}`;
-    }
-
-    function updateKnowledgeFeedback() {
-      document.querySelectorAll(".ox-options").forEach((group) => {
-        const feedback = document.getElementById(group.dataset.feedback);
-        const checked = group.querySelector("input:checked");
-        if (!feedback) {
-          return;
-        }
-        feedback.classList.remove("correct", "wrong");
-        if (!checked) {
-          feedback.textContent = "";
-          return;
-        }
-        const correct = checked.value === group.dataset.correct;
-        feedback.textContent = correct ? "정답입니다." : `다시 생각해 보세요. 정답은 ${group.dataset.correct}입니다.`;
-        feedback.classList.add(correct ? "correct" : "wrong");
-      });
     }
 
     function updateSubmitUi() {
