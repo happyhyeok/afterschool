@@ -1157,7 +1157,6 @@
       updatePreviousHistory();
       updateProgress();
       updateSubmitUi();
-      loadAvailableImages();
       loadNames();
       window.__lesson03Debug = {
         buildPayload,
@@ -1211,24 +1210,6 @@
       document.querySelectorAll("#knowledge input, #safety input, #record input, #record textarea").forEach((element) => {
         element.addEventListener("input", scheduleSave);
         element.addEventListener("change", scheduleSave);
-      });
-    }
-
-    function loadAvailableImages() {
-      if (location.protocol === "file:") {
-        return;
-      }
-      document.querySelectorAll(".image-slot[data-image-path]").forEach(async (slot) => {
-        const imagePath = slot.dataset.imagePath;
-        if (!imagePath) {
-          return;
-        }
-        try {
-          const response = await fetch(imagePath, { method: "HEAD" });
-          if (response.ok) {
-            slot.style.setProperty("--shot-image", `url("${imagePath}")`);
-          }
-        } catch (error) {}
       });
     }
 
