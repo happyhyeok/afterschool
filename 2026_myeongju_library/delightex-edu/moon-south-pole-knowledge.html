@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>달 남극에 기지를 짓는다면?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6366F1;
+    --secondary:#F97316;
+    --success:#22C55E;
+    --warning:#FBBF24;
+    --danger:#F43F5E;
+    --bg:#FFF8F0;
+    --card:#FFFFFF;
+    --text:#1E1B4B;
+    --muted:#7C3AED;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.8;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:16px;}
+
+  header.top{
+    background:linear-gradient(135deg,var(--primary),var(--muted));
+    color:#fff;
+    padding:28px 20px;
+    border-radius:0 0 28px 28px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"🌙";
+    position:absolute;
+    font-size:120px;
+    opacity:0.15;
+    right:-10px;
+    top:-20px;
+  }
+  header.top h1{
+    font-size:26px;
+    margin:6px 0;
+    font-weight:900;
+  }
+  header.top p{
+    font-size:15px;
+    opacity:0.95;
+    margin:4px 0 0;
+  }
+
+  .progressbar{
+    max-width:860px;
+    margin:16px auto 0;
+    padding:0 16px;
+    display:flex;
+    gap:6px;
+  }
+  .progressbar .seg{
+    flex:1;
+    height:10px;
+    background:#e7e3ff;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progressbar .seg.done{background:var(--success);}
+
+  section{
+    background:var(--card);
+    border-radius:20px;
+    padding:22px 20px;
+    margin:18px 0;
+    box-shadow:0 4px 14px rgba(99,102,241,0.08);
+    border-top:6px solid var(--primary);
+  }
+  section.goal{border-top-color:var(--secondary);}
+  section.quiz{border-top-color:var(--warning);}
+  section.summary{border-top-color:var(--success);}
+  section.check{border-top-color:var(--danger);}
+
+  h2{
+    font-size:20px;
+    margin-top:0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  h3{font-size:17px;color:var(--muted);}
+  p{font-size:16px;}
+
+  .card{
+    background:#F5F3FF;
+    border-radius:16px;
+    padding:14px 16px;
+    margin:12px 0;
+  }
+  .badge{
+    display:inline-block;
+    background:var(--secondary);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:999px;
+    margin-bottom:8px;
+  }
+
+  .term{
+    font-weight:700;
+    color:var(--primary);
+  }
+
+  /* 크레이터 애니메이션 */
+  .crater-box{
+    background:#0b0b23;
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
+    color:#fff;
+  }
+  .crater-box svg{width:100%;max-width:520px;height:auto;}
+  .crater-controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .btn:hover{transform:scale(1.05);}
+  .btn.secondary{background:var(--secondary);}
+  .caption{font-size:14px;opacity:0.85;margin-top:8px;}
+
+  /* 퀴즈 */
+  .q-block{margin-bottom:22px;}
+  .q-title{font-weight:700;font-size:17px;margin-bottom:10px;}
+  .options{display:grid;gap:10px;}
+  .opt{
+    background:#F5F3FF;
+    border:2px solid transparent;
+    border-radius:14px;
+    padding:12px 14px;
+    font-size:16px;
+    cursor:pointer;
+    text-align:left;
+    transition:all .15s;
+  }
+  .opt:hover{border-color:var(--primary);}
+  .opt.correct{background:#DCFCE7;border-color:var(--success);}
+  .opt.wrong{background:#FEE2E2;border-color:var(--danger);}
+  .feedback{
+    margin-top:8px;
+    font-size:15px;
+    font-weight:700;
+    min-height:22px;
+  }
+  .feedback.ok{color:var(--success);}
+  .feedback.no{color:var(--danger);}
+
+  /* 체크리스트 */
+  .check-list{list-style:none;padding:0;margin:0;}
+  .check-list li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#F5F3FF;
+    padding:12px 14px;
+    border-radius:14px;
+    margin-bottom:10px;
+    font-size:16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .check-list li .star{font-size:22px;}
+  .check-list li.done{background:#DCFCE7;}
+  .check-list li.done .star::before{content:"⭐";}
+  .check-list li:not(.done) .star::before{content:"☆";}
+
+  #confetti-layer{
+    position:fixed;inset:0;pointer-events:none;z-index:999;
+  }
+  .celebrate{
+    display:none;
+    text-align:center;
+    font-size:20px;
+    font-weight:900;
+    color:var(--success);
+    margin-top:14px;
+  }
+
+  @media print{
+    header.top::after{display:none;}
+    .btn, .crater-controls{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div id="confetti-layer"></div>
+
+<header class="top">
+  <h1>🚀 달 남극에 기지를 짓는다면?</h1>
+  <p>달에서 가장 특별한 곳, 남극 이야기를 함께 알아봐요</p>
+</header>
+
+<div class="progressbar" id="progressbar">
+  <div class="seg" data-idx="0"></div>
+  <div class="seg" data-idx="1"></div>
+  <div class="seg" data-idx="2"></div>
+  <div class="seg" data-idx="3"></div>
+</div>
+
+<div class="wrap">
+
+  <section class="goal">
+    <h2>🎯 오늘 알게 될 것</h2>
+    <div class="card">
+      <p>① 달 궤도를 도는 <span class="term">우주정거장</span>이 있다는 것<br>
+      ② 달 <span class="term">남극</span>이 특별한 이유<br>
+      ③ 달 기지를 <span class="term">블록처럼 조립</span>하는 이유</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🛰️ 달 궤도를 도는 우주정거장</h2>
+    <p>지구 주위를 도는 국제우주정거장(ISS)처럼, <span class="term">달 주위를 도는 우주정거장</span>도 계획되고 있어요. 이 정거장은 땅에 있는 건물이 아니라, 우주선처럼 달 궤도를 빙글빙글 도는 구조물이에요.</p>
+    <div class="card">
+      <p>🔭 우주비행사와 물건을 실은 우주선이 지구에서 오면, 이 정거장을 거쳐서 달 표면으로 내려갈 수 있어요. 일종의 <span class="term">우주 정류장</span> 같은 역할이에요.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🌑 달 남극이 특별한 이유</h2>
+    <p>달에서 기지를 지을 곳으로 특히 <span class="term">남극</span>이 주목받고 있어요. 왜 그럴까요? 아래 그림을 눌러서 직접 확인해보세요!</p>
+
+    <div class="crater-box">
+      <svg id="craterSvg" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- 배경 별 -->
+        <circle cx="30" cy="20" r="1.5" fill="#fff"/>
+        <circle cx="80" cy="40" r="1" fill="#fff"/>
+        <circle cx="450" cy="30" r="1.5" fill="#fff"/>
+        <circle cx="470" cy="70" r="1" fill="#fff"/>
+        <circle cx="20" cy="90" r="1" fill="#fff"/>
+
+        <!-- 태양 -->
+        <g id="sunGroup">
+          <circle cx="440" cy="60" r="26" fill="#FBBF24"/>
+          <g id="sunRays" stroke="#FBBF24" stroke-width="3">
+            <line x1="440" y1="20" x2="440" y2="8"/>
+            <line x1="480" y1="60" x2="494" y2="60"/>
+            <line x1="470" y1="30" x2="480" y2="20"/>
+            <line x1="470" y1="90" x2="480" y2="100"/>
+          </g>
+        </g>
+
+        <!-- 달 표면 (크레이터 단면) -->
+        <path d="M0,180 Q100,150 180,190 Q250,225 320,190 Q400,150 500,180 L500,260 L0,260 Z" fill="#9CA3AF"/>
+        <path d="M150,190 Q250,235 350,190 L340,205 Q250,240 160,205 Z" fill="#4B5563"/>
+
+        <!-- 그림자(영구 음영지역) -->
+        <path id="shadowArea" d="M170,196 Q250,225 330,196 Q250,215 170,196 Z" fill="#111827"/>
+
+        <!-- 얼음 표시 (그림자 안에서만 보임) -->
+        <g id="iceMarks">
+          <circle cx="230" cy="205" r="4" fill="#93C5FD"/>
+          <circle cx="255" cy="210" r="3" fill="#93C5FD"/>
+          <circle cx="270" cy="203" r="3.5" fill="#93C5FD"/>
+        </g>
+
+        <!-- 빛 받는 가장자리 표시 -->
+        <g id="lightMarks">
+          <line x1="370" y1="180" x2="410" y2="150" stroke="#FDE68A" stroke-width="4" stroke-linecap="round"/>
+          <line x1="390" y1="195" x2="430" y2="170" stroke="#FDE68A" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <text x="250" y="245" font-size="13" fill="#fff" text-anchor="middle" font-family="Noto Sans KR">달 남극 크레이터 (단면 모습)</text>
+      </svg>
+      <div class="crater-controls">
+        <button class="btn" onclick="showShadow()">🌑 그림자 속 살펴보기</button>
+        <button class="btn secondary" onclick="showLight()">☀️ 가장자리 살펴보기</button>
+      </div>
+      <p class="caption" id="craterCaption">버튼을 눌러 크레이터의 두 얼굴을 확인해보세요!</p>
+    </div>
+
+    <div class="card">
+      <p>🧊 크레이터(웅덩이 모양의 땅) <span class="term">안쪽</span>은 햇빛이 전혀 들지 않아서 아주 춥고 어두워요. 그래서 오래전부터 있던 <span class="term">물 얼음</span>이 녹지 않고 그대로 남아있을 수 있어요.</p>
+      <p>☀️ 반대로 크레이터 <span class="term">가장자리</span>는 거의 하루 종일 햇빛이 들어요. 그래서 태양광 전지판으로 <span class="term">전기</span>를 만들기에 아주 좋아요.</p>
+      <p>💧 물(마실 물, 로켓 연료 재료) + ⚡ 전기(에너지), 이 두 가지를 한 곳에서 구할 수 있다는 게 이곳이 특별한 이유예요!</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧑‍🚀 왜 '섀클턴'이라는 이름이 붙었을까?</h2>
+    <p>이 특별한 크레이터에는 <span class="term">섀클턴</span>이라는 이름이 붙어 있어요. 옛날 지구의 남극을 탐험했던 유명한 탐험가의 이름을 딴 거예요. 아주 춥고 힘든 곳을 씩씩하게 탐험했던 사람의 이름을, 달에서 가장 춥고 어두운 곳에 붙인 셈이지요.</p>
+  </section>
+
+  <section>
+    <h2>🧱 기지를 왜 블록처럼 조립할까?</h2>
+    <p>로켓 한 대에는 실을 수 있는 무게와 크기에 한계가 있어요. 그래서 사는 곳, 연구하는 곳, 전기를 만드는 곳을 각각 따로 만들어서 여러 번 나눠 보낸 다음, 레고 블록처럼 하나씩 이어 붙여요.</p>
+    <div class="card">
+      <p>🏗️ 이렇게 만들면 필요한 만큼 공간을 나중에 더 늘릴 수도 있어요. 마치 블록을 하나씩 추가하는 것처럼요!</p>
+    </div>
+  </section>
+
+  <section class="quiz">
+    <h2>✏️ 확인 퀴즈</h2>
+
+    <div class="q-block" data-q="1">
+      <div class="q-title">1. 달 크레이터 '안쪽'이 특별한 이유는 무엇일까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">🌞 햇빛이 항상 밝게 비쳐서</div>
+        <div class="opt" data-correct="true">🧊 그늘이 져서 물 얼음이 녹지 않고 남아있어서</div>
+        <div class="opt" data-correct="false">🎮 게임을 할 수 있어서</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="2">
+      <div class="q-title">2. 크레이터 '가장자리'가 좋은 이유는 무엇일까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">❄️ 항상 그늘이 져서</div>
+        <div class="opt" data-correct="true">☀️ 햇빛이 거의 계속 비쳐서 전기를 만들기 좋아서</div>
+        <div class="opt" data-correct="false">🐧 펭귄이 살아서</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="3">
+      <div class="q-title">3. 달 기지를 지을 때 왜 여러 조각으로 나눠서 만들까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="true">🚀 로켓에 실을 수 있는 무게와 크기가 정해져 있어서</div>
+        <div class="opt" data-correct="false">🎨 색깔을 다양하게 하려고</div>
+        <div class="opt" data-correct="false">😴 조립하는 게 재밌어서</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="4">
+      <div class="q-title">4. 달 궤도를 도는 우주정거장은 어떤 역할을 할까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">🏖️ 우주비행사들의 휴가지</div>
+        <div class="opt" data-correct="true">🛰️ 우주선이 잠깐 거쳐가는 우주 정류장</div>
+        <div class="opt" data-correct="false">🍕 우주 식당</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section class="summary">
+    <h2>📝 오늘 배운 핵심 정리</h2>
+    <div class="card"><p>🛰️ <span class="term">우주정거장</span> — 달 궤도를 빙글빙글 도는 우주 정류장</p></div>
+    <div class="card"><p>🌑 <span class="term">달 남극</span> — 물 얼음(그늘)과 전기(가장자리 햇빛)를 함께 얻을 수 있는 특별한 곳</p></div>
+    <div class="card"><p>🧱 <span class="term">모듈 조립</span> — 기지를 여러 조각으로 나눠 만들어 우주에서 블록처럼 이어붙이는 방법</p></div>
+  </section>
+
+  <section class="check">
+    <h2>📊 나의 학습 체크리스트</h2>
+    <ul class="check-list" id="checkList">
+      <li data-id="c1"><span class="star"></span> 달 궤도를 도는 우주정거장이 무엇인지 알았어요</li>
+      <li data-id="c2"><span class="star"></span> 달 남극이 왜 특별한지 설명할 수 있어요</li>
+      <li data-id="c3"><span class="star"></span> 기지를 블록처럼 나눠 짓는 이유를 알았어요</li>
+      <li data-id="c4"><span class="star"></span> 확인 퀴즈를 모두 풀어봤어요</li>
+    </ul>
+    <div class="celebrate" id="celebrate">🏆 오늘 학습 완료! 정말 잘했어요!</div>
+  </section>
+
+</div>
+
+<script>
+  // 크레이터 애니메이션
+  function showShadow(){
+    document.getElementById('shadowArea').setAttribute('fill', '#000000');
+    document.getElementById('iceMarks').style.opacity = 1;
+    document.getElementById('lightMarks').style.opacity = 0.25;
+    document.getElementById('craterCaption').textContent = '🧊 그림자 속엔 오래된 물 얼음이 숨어있어요!';
+  }
+  function showLight(){
+    document.getElementById('shadowArea').setAttribute('fill', '#1f2937');
+    document.getElementById('iceMarks').style.opacity = 0.3;
+    document.getElementById('lightMarks').style.opacity = 1;
+    document.getElementById('craterCaption').textContent = '☀️ 가장자리는 거의 항상 햇빛이 비쳐서 전기를 만들 수 있어요!';
+  }
+
+  // 퀴즈 로직
+  document.querySelectorAll('.q-block').forEach(block => {
+    const opts = block.querySelectorAll('.opt');
+    const feedback = block.querySelector('.feedback');
+    let answered = false;
+    opts.forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const isCorrect = opt.dataset.correct === 'true';
+        opts.forEach(o => {
+          if (o.dataset.correct === 'true') o.classList.add('correct');
+          else o.classList.add('wrong');
+        });
+        if (isCorrect){
+          feedback.textContent = '🎉 정답이에요! 잘했어요!';
+          feedback.className = 'feedback ok';
+          launchConfetti();
+        } else {
+          feedback.textContent = '😊 괜찮아요! 초록색 정답을 다시 확인해보세요.';
+          feedback.className = 'feedback no';
+        }
+      });
+    });
+  });
+
+  // 체크리스트
+  const checkList = document.getElementById('checkList');
+  const progress = JSON.parse(localStorage.getItem('moon-south-pole-progress') || '{}');
+
+  function renderCheck(){
+    checkList.querySelectorAll('li').forEach(li => {
+      const id = li.dataset.id;
+      if (progress[id]) li.classList.add('done');
+      else li.classList.remove('done');
+    });
+    updateProgressBar();
+    if (Object.keys(progress).length === 4 && Object.values(progress).every(v => v)){
+      document.getElementById('celebrate').style.display = 'block';
+    } else {
+      document.getElementById('celebrate').style.display = 'none';
+    }
+  }
+
+  function updateProgressBar(){
+    const total = 4;
+    const done = Object.values(progress).filter(v => v).length;
+    const segs = document.querySelectorAll('.progressbar .seg');
+    segs.forEach((seg, i) => {
+      if (i < Math.round((done/total) * segs.length)) seg.classList.add('done');
+      else seg.classList.remove('done');
+    });
+  }
+
+  checkList.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      const id = li.dataset.id;
+      progress[id] = !progress[id];
+      localStorage.setItem('moon-south-pole-progress', JSON.stringify(progress));
+      renderCheck();
+    });
+  });
+
+  renderCheck();
+
+  // 간단한 컨페티
+  function launchConfetti(){
+    const layer = document.getElementById('confetti-layer');
+    const colors = ['#6366F1','#F97316','#22C55E','#FBBF24','#F43F5E'];
+    for(let i=0;i<24;i++){
+      const p = document.createElement('div');
+      const size = 6 + Math.random()*6;
+      p.style.position='absolute';
+      p.style.width=size+'px';
+      p.style.height=size+'px';
+      p.style.background=colors[Math.floor(Math.random()*colors.length)];
+      p.style.left=(40+Math.random()*20)+'%';
+      p.style.top='30%';
+      p.style.borderRadius='50%';
+      p.style.opacity='1';
+      p.style.transition='transform 1s ease-out, opacity 1s ease-out';
+      layer.appendChild(p);
+      requestAnimationFrame(()=>{
+        const dx=(Math.random()-0.5)*300;
+        const dy=200+Math.random()*200;
+        p.style.transform=`translate(${dx}px, ${dy}px) rotate(${Math.random()*360}deg)`;
+        p.style.opacity='0';
+      });
+      setTimeout(()=>p.remove(),1100);
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1948 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI와 함께하는 아르테미스 프로젝트 3차시</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --navy: #07172f;
+      --blue: #1769c2;
+      --cyan: #35c9df;
+      --amber: #ffd166;
+      --ink: #132238;
+      --muted: #627086;
+      --line: #d9e8f5;
+      --soft: #f4f9ff;
+      --panel: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(5, 17, 40, .97), rgba(17, 75, 137, .92) 330px, #f8fbff 331px);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .62; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      color: white;
+      background: rgba(5, 17, 40, .96);
+      border-bottom: 1px solid rgba(255, 255, 255, .16);
+    }
+    .top-inner {
+      width: min(1000px, calc(100% - 40px));
+      min-height: 78px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .95fr);
+      gap: 18px;
+      align-items: center;
+      padding: 12px 0;
+    }
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 2.6vw, 28px);
+      line-height: 1.2;
+    }
+    .top-status {
+      display: grid;
+      gap: 8px;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .status-chip {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .1);
+    }
+    .status-chip span {
+      display: block;
+      margin-bottom: 3px;
+      color: #cbdcf0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .status-chip strong {
+      display: block;
+      overflow: hidden;
+      color: white;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #d7e8fb;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    progress {
+      width: 100%;
+      height: 13px;
+      overflow: hidden;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .18);
+    }
+    progress::-webkit-progress-bar { background: rgba(255, 255, 255, .18); }
+    progress::-webkit-progress-value { background: linear-gradient(90deg, var(--cyan), var(--amber)); }
+    progress::-moz-progress-bar { background: linear-gradient(90deg, var(--cyan), var(--amber)); }
+
+    .layout {
+      width: min(1000px, calc(100% - 40px));
+      margin: 26px auto 72px;
+      display: grid;
+      grid-template-columns: 156px minmax(0, 1fr);
+      gap: 22px;
+    }
+    nav {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      display: grid;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .1);
+    }
+    nav a {
+      min-height: 38px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      color: #edf8ff;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    nav a:hover, nav a:focus-visible {
+      color: #061226;
+      background: var(--cyan);
+      outline: 0;
+    }
+    main {
+      min-width: 0;
+      display: grid;
+      gap: 0;
+      background: rgba(255, 255, 255, .98);
+      border-radius: 8px;
+    }
+    section, .hero {
+      scroll-margin-top: 104px;
+      padding: clamp(26px, 4vw, 38px);
+      border-bottom: 1px solid var(--line);
+    }
+    section:last-child { border-bottom: 0; }
+    .hero {
+      min-height: 330px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      align-items: center;
+      color: white;
+      background: linear-gradient(135deg, #07172f, #175fa4);
+      border-radius: 8px 8px 0 0;
+    }
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(34px, 5.2vw, 58px);
+      line-height: 1.08;
+    }
+    .lead {
+      margin: 16px 0 0;
+      color: #d9ebff;
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.58;
+    }
+    .mission-strip {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-left: 6px solid var(--amber);
+      border-radius: 8px;
+      color: #08213f;
+      background: #fff4cf;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+    .gateway-diagram {
+      position: relative;
+      min-height: 260px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 255, 255, .9) 0 2px, transparent 3px),
+        radial-gradient(circle at 72% 36%, rgba(255, 255, 255, .7) 0 2px, transparent 3px),
+        radial-gradient(circle at 36% 72%, rgba(255, 255, 255, .58) 0 2px, transparent 3px),
+        linear-gradient(145deg, #0b2855, #123e72);
+      overflow: hidden;
+    }
+    .module, .corridor, .solar, .moon-arc { position: absolute; }
+    .module {
+      display: grid;
+      place-items: center;
+      min-width: 70px;
+      min-height: 54px;
+      padding: 8px 10px;
+      border: 2px solid rgba(255, 255, 255, .76);
+      border-radius: 8px;
+      color: white;
+      background: rgba(53, 201, 223, .26);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .module.center { left: 104px; top: 98px; background: rgba(255, 209, 102, .28); }
+    .module.lab { left: 24px; top: 68px; }
+    .module.life { right: 28px; top: 132px; }
+    .corridor {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .78);
+      transform-origin: left center;
+    }
+    .corridor.one { left: 88px; top: 102px; width: 62px; transform: rotate(18deg); }
+    .corridor.two { left: 168px; top: 142px; width: 72px; transform: rotate(12deg); }
+    .solar {
+      right: 22px;
+      top: 44px;
+      width: 76px;
+      height: 42px;
+      border: 2px solid var(--cyan);
+      border-radius: 6px;
+      background: repeating-linear-gradient(90deg, rgba(53, 201, 223, .78) 0 8px, rgba(255, 255, 255, .82) 8px 10px);
+    }
+    .moon-arc {
+      left: 18px;
+      right: 18px;
+      bottom: -94px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #d9e3ee, #7e8da0);
+      opacity: .9;
+    }
+
+    .section-head {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .num {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      font-size: 19px;
+      font-weight: 900;
+    }
+    .section-head h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(25px, 3.8vw, 35px);
+      line-height: 1.18;
+    }
+    .text-block {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+    .knowledge-action {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin: -2px 0 22px;
+    }
+    .knowledge-action p {
+      flex: 1 1 320px;
+      margin: 0;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .text-block li {
+      padding-left: 18px;
+      border-left: 4px solid var(--cyan);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 18px;
+    }
+    .card p, section p {
+      line-height: 1.58;
+    }
+    .ox-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .ox-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(116px, auto);
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid #e6f0f8;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+    .ox-list li:last-child { border-bottom: 0; }
+    .answer {
+      display: grid;
+      place-items: center;
+      min-height: 42px;
+      border-radius: 8px;
+      color: #061226;
+      background: #e8fbff;
+      font-weight: 900;
+    }
+    .ox-options {
+      display: grid;
+      grid-template-columns: repeat(2, 52px);
+      gap: 8px;
+      justify-content: end;
+    }
+    .ox-options label {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 5px;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-weight: 900;
+    }
+    .ox-feedback {
+      grid-column: 1 / -1;
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .ox-feedback.correct { color: #176046; }
+    .ox-feedback.wrong { color: #9c2f2f; }
+    .book-row {
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 22px;
+      align-items: center;
+    }
+    .book-cover {
+      display: grid;
+      place-items: center;
+      width: 132px;
+      aspect-ratio: 3 / 4;
+      border: 2px dashed #bcd7ee;
+      border-radius: 8px;
+      color: var(--muted);
+      background: linear-gradient(145deg, #f3f9ff, #ffffff);
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .mission-list, .build-list, .check-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .mission-list li, .build-list li {
+      position: relative;
+      min-height: 54px;
+      padding: 14px 15px 14px 56px;
+      border-bottom: 1px solid #e6f0f8;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+    .mission-list li::before, .build-list li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 8px;
+      top: 13px;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      color: white;
+      background: var(--blue);
+      font-weight: 900;
+    }
+    .login-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field span {
+      color: var(--navy);
+      font-weight: 900;
+    }
+    input, textarea {
+      width: 100%;
+      border: 2px solid #dae7f4;
+      border-radius: 8px;
+      color: #111827;
+      background: white;
+    }
+    input {
+      min-height: 48px;
+      padding: 0 13px;
+    }
+    textarea {
+      min-height: 110px;
+      padding: 13px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+    fieldset {
+      min-width: 0;
+      margin: 0;
+    }
+    legend {
+      padding: 0 6px;
+      color: var(--navy);
+      font-weight: 900;
+    }
+    .name-space {
+      min-height: 170px;
+      margin-top: 12px;
+      border: 1px dashed #badcf5;
+      border-radius: 8px;
+      background: #f8fbff;
+    }
+    .student-name-button {
+      min-height: 44px;
+      margin: 6px;
+      padding: 0 13px;
+      border: 2px solid #d5eaff;
+      border-radius: 8px;
+      color: #162235;
+      background: white;
+      font-weight: 900;
+    }
+    .student-name-button:hover,
+    .student-name-button:focus-visible,
+    .student-name-button.selected {
+      border-color: var(--cyan);
+      background: #e9fbff;
+      outline: 0;
+    }
+    .account-preview {
+      display: grid;
+      gap: 11px;
+    }
+    .account-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 8px;
+      background: #f4f8fc;
+      font-weight: 900;
+    }
+    .account-row span:first-child { color: var(--muted); }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .primary, .secondary {
+      min-height: 48px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    .primary {
+      border: 0;
+      color: #061226;
+      background: linear-gradient(135deg, #5bdaf0, #a7f0ff);
+    }
+    .secondary {
+      border: 1px solid #b8ddf8;
+      color: #0d4379;
+      background: #eff8ff;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .status-message {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .status-message.error {
+      color: #9c2f2f;
+    }
+    .history-area {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #e6f0f8;
+    }
+    .history-area h3 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+    .history-list {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .history-list li {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e6f0f8;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+    .history-list li:last-child {
+      border-bottom: 0;
+    }
+    .skill-box {
+      display: grid;
+      gap: 16px;
+      padding: 20px;
+      border-left: 6px solid var(--cyan);
+      border-radius: 8px;
+      background: #eefaff;
+    }
+    .skill-box h3 { margin: 0; color: var(--navy); }
+    .request {
+      margin: 0;
+      padding: 18px;
+      border-left: 6px solid var(--amber);
+      border-radius: 8px;
+      background: #fff6db;
+      color: #392800;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .practice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .step-item {
+      display: grid;
+      gap: 12px;
+      padding: 0 0 18px;
+      border-bottom: 1px solid #e6f0f8;
+    }
+    .step-item h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 18px;
+    }
+    .image-slot {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 1px dashed #badcf5;
+      border-radius: 8px;
+      background-color: #f8fbff;
+      background-image: var(--shot-image);
+      background-size: cover;
+      background-position: center;
+    }
+    .required-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .pill {
+      min-height: 68px;
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fbff;
+      color: var(--navy);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .free-rules {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .free-rules li {
+      padding: 13px 0 13px 18px;
+      border-left: 4px solid var(--amber);
+      font-weight: 900;
+      line-height: 1.5;
+    }
+    .check-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .check-list label {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-height: 52px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e6f0f8;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+    input[type="checkbox"], input[type="radio"] {
+      width: 22px;
+      min-height: 22px;
+      accent-color: var(--blue);
+    }
+    .record-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .full { grid-column: 1 / -1; }
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .choice-row label {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+    .validation {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      color: #4b3500;
+      background: #fff2cf;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+    .validation a {
+      color: #0d4379;
+      text-underline-offset: 3px;
+    }
+    .submit-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .summary-line {
+      padding: 16px 18px;
+      border-left: 5px solid var(--cyan);
+      border-radius: 8px;
+      background: #f4faff;
+    }
+    .summary-line span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .summary-line strong, .summary-line p {
+      margin: 0;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .top-inner, .layout, .hero, .login-panel { grid-template-columns: 1fr; }
+      .status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      nav {
+        position: static;
+        display: flex;
+        overflow-x: auto;
+      }
+      nav a { flex: 0 0 auto; }
+      .practice-grid, .required-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .top { position: static; }
+      .top-inner, .layout { width: min(100% - 28px, 1000px); }
+      .status-grid { grid-template-columns: 1fr; }
+      main { border-radius: 0; }
+      .hero { border-radius: 0; }
+      .grid2, .grid3, .book-row, .practice-grid, .required-grid, .check-list, .record-grid, .choice-row, .submit-summary {
+        grid-template-columns: 1fr;
+      }
+      .row { display: grid; }
+      .primary, .secondary { width: 100%; }
+      .account-row { grid-template-columns: 1fr; }
+      .ox-list li, .history-list li { grid-template-columns: 1fr; }
+      .ox-options { justify-content: start; }
+      .hero h2 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div>
+        <p class="eyebrow">Delightex Edu</p>
+        <h1>AI와 함께하는 아르테미스 프로젝트 3차시</h1>
+      </div>
+      <div class="top-status" aria-label="3차시 진행 상태">
+        <div class="status-grid">
+          <div class="status-chip"><span>선택 학생</span><strong id="selStatus">아직 선택 전</strong></div>
+          <div class="status-chip"><span>자동 저장</span><strong id="saveStatus">준비 중</strong></div>
+          <div class="status-chip"><span>제출 상태</span><strong id="submitTopStatus">제출 전</strong></div>
+        </div>
+        <div class="progress-label"><span>전체 진행률</span><strong id="progressText">0 / 17</strong></div>
+        <progress id="overallProgress" value="0" max="17">0 / 17</progress>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="3차시 목차">
+      <a href="#knowledge">기본 지식</a>
+      <a href="#book">관련 책</a>
+      <a href="#mission">오늘 미션</a>
+      <a href="#login">로그인</a>
+      <a href="#skill">AI Skill</a>
+      <a href="#build">필수 건설</a>
+      <a href="#custom">특징 추가</a>
+      <a href="#safety">안전 점검</a>
+      <a href="#record">기록</a>
+      <a href="#submit">제출</a>
+    </nav>
+
+    <main>
+      <div class="hero">
+        <div>
+          <p class="eyebrow">명주도서관 3차시</p>
+          <h2>AI Skill로 출발하는 루나 게이트웨이 건설</h2>
+          <p class="lead">AI Buddy에게 다음 임무를 요청하고, 장면 3에서 달 주위를 도는 우주정거장을 만듭니다.</p>
+          <div class="mission-strip">오늘은 이동 Skill을 만들고, 중심·연구·생활 모듈을 통로와 에너지 시설로 연결합니다.</div>
+        </div>
+        <div class="gateway-diagram" aria-label="달 궤도 위 루나 게이트웨이 모듈 구성 그림">
+          <span class="moon-arc" aria-hidden="true"></span>
+          <span class="solar" aria-hidden="true"></span>
+          <span class="module lab">연구<br>모듈</span>
+          <span class="module center">중심<br>모듈</span>
+          <span class="module life">생활<br>모듈</span>
+          <span class="corridor one" aria-hidden="true"></span>
+          <span class="corridor two" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <section id="knowledge" aria-labelledby="knowledge-title">
+        <div class="section-head">
+          <span class="num">1</span>
+          <div>
+            <p class="eyebrow">루나 게이트웨이 기본 지식</p>
+            <h2 id="knowledge-title">루나 게이트웨이는 어떤 곳일까요?</h2>
+          </div>
+        </div>
+        <div class="knowledge-action">
+          <p>달 남극 기본 지식을 먼저 살펴본 뒤,<br>루나 게이트웨이 건설 임무를 시작해 보세요.</p>
+          <a class="primary" href="./moon-south-pole-knowledge.html" target="_blank" rel="noopener noreferrer" aria-label="달 남극 기본 지식 페이지를 새 탭에서 열기">달 남극 기본 지식 알아보기 ↗</a>
+        </div>
+        <ul class="text-block">
+          <li>루나 게이트웨이는 달 표면의 건물이 아니라 달 주위를 도는 우주정거장입니다.</li>
+          <li>생활·연구·에너지·도킹 기능을 가진 여러 모듈을 연결하여 만듭니다.</li>
+          <li>우주인이 달을 탐사하고 우주선이 머무는 중간 기지 역할을 합니다.</li>
+        </ul>
+        <ol class="ox-list" aria-label="루나 게이트웨이 OX 확인">
+          <li>
+            <span>루나 게이트웨이는 달 표면에 세우는 건물이다.</span>
+            <div class="ox-options" role="radiogroup" aria-label="1번 OX 답변" data-correct="X" data-feedback="knowledgeFeedback1">
+              <label><input type="radio" name="knowledge-q1" value="O"> O</label>
+              <label><input type="radio" name="knowledge-q1" value="X"> X</label>
+            </div>
+            <span id="knowledgeFeedback1" class="ox-feedback" aria-live="polite"></span>
+          </li>
+          <li>
+            <span>루나 게이트웨이는 여러 모듈을 연결해 만든다.</span>
+            <div class="ox-options" role="radiogroup" aria-label="2번 OX 답변" data-correct="O" data-feedback="knowledgeFeedback2">
+              <label><input type="radio" name="knowledge-q2" value="O"> O</label>
+              <label><input type="radio" name="knowledge-q2" value="X"> X</label>
+            </div>
+            <span id="knowledgeFeedback2" class="ox-feedback" aria-live="polite"></span>
+          </li>
+          <li>
+            <span>생활·연구·도킹·에너지 시설이 필요하다.</span>
+            <div class="ox-options" role="radiogroup" aria-label="3번 OX 답변" data-correct="O" data-feedback="knowledgeFeedback3">
+              <label><input type="radio" name="knowledge-q3" value="O"> O</label>
+              <label><input type="radio" name="knowledge-q3" value="X"> X</label>
+            </div>
+            <span id="knowledgeFeedback3" class="ox-feedback" aria-live="polite"></span>
+          </li>
+        </ol>
+      </section>
+
+      <section id="book" aria-labelledby="book-title">
+        <div class="section-head">
+          <span class="num">2</span>
+          <div>
+            <p class="eyebrow">관련 책 안내</p>
+            <h2 id="book-title">섀클턴 달 기지를 짓다</h2>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="book-cover" role="img" aria-label="섀클턴 달 기지를 짓다 표지 이미지 자리">표지 이미지</div>
+          <p class="lead" style="color: var(--ink); margin: 0;">역할이 다른 모듈을 연결해 우주 기지를 만드는 과정을 떠올리며, 오늘의 루나 게이트웨이 설계에 필요한 공간을 생각합니다.</p>
+        </div>
+      </section>
+
+      <section id="mission" aria-labelledby="mission-title">
+        <div class="section-head">
+          <span class="num">3</span>
+          <div>
+            <p class="eyebrow">오늘의 미션</p>
+            <h2 id="mission-title">AI Skill로 장면 3에 도착하고 우주정거장을 완성합니다.</h2>
+          </div>
+        </div>
+        <ol class="mission-list">
+          <li>AI Buddy에게 이동 요청</li>
+          <li>AI Skill로 장면 3 이동</li>
+          <li>중심·연구·생활 모듈 연결</li>
+          <li>통로와 에너지 시설 설치</li>
+          <li>마지막 10분에 나만의 특징 추가</li>
+          <li>점검 후 기록 제출</li>
+        </ol>
+      </section>
+
+      <section id="login" aria-labelledby="login-title">
+        <div class="section-head">
+          <span class="num">4</span>
+          <div>
+            <p class="eyebrow">학생 이름 선택과 로그인</p>
+            <h2 id="login-title">내 이름을 선택하고 3차시 프로젝트를 엽니다.</h2>
+          </div>
+        </div>
+        <div class="login-panel">
+          <div>
+            <label class="field">
+              <span>학생 이름 검색 및 선택</span>
+              <input id="studentSearch" type="search" autocomplete="off" placeholder="내 이름을 입력하세요">
+            </label>
+            <p id="listStatus" class="status-message" aria-live="polite">학생 목록을 불러오고 있어요.</p>
+            <div id="nameList" class="name-space" role="listbox" aria-label="학생 이름 목록"></div>
+          </div>
+          <div class="account-preview">
+            <div class="account-row"><span>선택한 학생</span><span id="studentNameText">내 이름을 선택해 주세요.</span></div>
+            <div class="account-row"><span>아이디</span><span id="loginIdText">선택 후 표시</span></div>
+            <div class="account-row"><span>비밀번호</span><span>••••••••••••</span></div>
+            <div class="row">
+              <button id="copyId" class="secondary" type="button" disabled>아이디 복사</button>
+              <button id="copyPw" class="secondary" type="button" disabled>비밀번호 복사</button>
+              <a class="primary" href="https://edu.delightex.com/" target="_blank" rel="noopener noreferrer">Delightex Edu 로그인</a>
+            </div>
+            <p id="copyStatus" class="status-message" aria-live="polite"></p>
+            <p class="muted">비밀번호는 화면에 표시하지 않습니다.</p>
+            <div class="history-area" aria-labelledby="history-title">
+              <h3 id="history-title">이 기기의 이전 차시 기록</h3>
+              <p id="historyStatus" class="muted">내 이름을 선택하면 이 기기에 남은 기록만 확인합니다.</p>
+              <ul id="historyList" class="history-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="skill" aria-labelledby="skill-title">
+        <div class="section-head">
+          <span class="num">5</span>
+          <div>
+            <p class="eyebrow">AI Skill 실험</p>
+            <h2 id="skill-title">AI Buddy가 루나 게이트웨이 이동 요청을 알아듣게 합니다.</h2>
+          </div>
+        </div>
+        <div class="skill-box">
+          <h3>Skill 이름: 루나 게이트웨이로 이동</h3>
+          <p>학생이 다음 임무를 시작하거나 루나 게이트웨이 또는 우주정거장으로 이동해 달라고 요청하면 이 스킬을 실행한다. 자전, 공전, 동주기 자전에 관한 과학 질문에는 실행하지 않는다.</p>
+          <p class="request">대표 요청: 버디야, 루나 게이트웨이로 이동해 줘.</p>
+        </div>
+        <div class="practice-grid" style="margin-top: 22px;">
+          <article class="step-item">
+            <h3>1. 장면 2의 AI Buddy 선택</h3>
+            <div class="image-slot" role="img" aria-label="장면 2에서 AI Buddy를 선택하는 이미지 자리" data-image-path="assets/lesson03/step01-select-buddy.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step01-select-buddy.png -->
+          </article>
+          <article class="step-item">
+            <h3>2. 이동 Skill 만들기</h3>
+            <div class="image-slot" role="img" aria-label="루나 게이트웨이 이동 Skill을 만드는 이미지 자리" data-image-path="assets/lesson03/step02-create-skill.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step02-create-skill.png -->
+          </article>
+          <article class="step-item">
+            <h3>3. 장면 이동 CoBlocks 연결</h3>
+            <div class="image-slot" role="img" aria-label="Skill과 장면 이동 CoBlocks를 연결하는 이미지 자리" data-image-path="assets/lesson03/step03-skill-coblocks.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step03-skill-coblocks.png -->
+          </article>
+          <article class="step-item">
+            <h3>4. 자연어로 장면 이동 시험</h3>
+            <div class="image-slot" role="img" aria-label="자연어 요청으로 장면 이동을 시험하는 이미지 자리" data-image-path="assets/lesson03/step04-test-move.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step04-test-move.png -->
+          </article>
+        </div>
+      </section>
+
+      <section id="build" aria-labelledby="build-title">
+        <div class="section-head">
+          <span class="num">6</span>
+          <div>
+            <p class="eyebrow">루나 게이트웨이 필수 건설</p>
+            <h2 id="build-title">역할이 다른 모듈을 연결해 우주정거장을 만듭니다.</h2>
+          </div>
+        </div>
+        <div class="required-grid" aria-label="필수 건설 요소">
+          <div class="pill">중심 모듈</div>
+          <div class="pill">연구 모듈</div>
+          <div class="pill">생활 모듈</div>
+          <div class="pill">연결 통로 2개 이상</div>
+          <div class="pill">태양광 패널 또는 에너지 시설</div>
+        </div>
+        <div class="practice-grid" style="margin-top: 22px;">
+          <article class="step-item">
+            <h3>5. 중심 모듈 배치</h3>
+            <div class="image-slot" role="img" aria-label="중심 모듈을 배치하는 이미지 자리" data-image-path="assets/lesson03/step05-center-module.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step05-center-module.png -->
+          </article>
+          <article class="step-item">
+            <h3>6. 연구·생활 모듈 연결</h3>
+            <div class="image-slot" role="img" aria-label="연구 모듈과 생활 모듈을 연결하는 이미지 자리" data-image-path="assets/lesson03/step06-connect-modules.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step06-connect-modules.png -->
+          </article>
+          <article class="step-item">
+            <h3>7. 연결 통로 설치</h3>
+            <div class="image-slot" role="img" aria-label="연결 통로를 설치하는 이미지 자리" data-image-path="assets/lesson03/step07-connect-corridors.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step07-connect-corridors.png -->
+          </article>
+          <article class="step-item">
+            <h3>8. 에너지·외부 시설 설치</h3>
+            <div class="image-slot" role="img" aria-label="에너지 시설과 외부 시설을 설치하는 이미지 자리" data-image-path="assets/lesson03/step08-external-facilities.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step08-external-facilities.png -->
+          </article>
+        </div>
+      </section>
+
+      <section id="custom" aria-labelledby="custom-title">
+        <div class="section-head">
+          <span class="num">7</span>
+          <div>
+            <p class="eyebrow">나만의 특징 추가 10분</p>
+            <h2 id="custom-title">필수 구조를 완성한 뒤 나만의 특징을 더합니다.</h2>
+          </div>
+        </div>
+        <ul class="free-rules">
+          <li>필수 구조 완성 후 진행합니다.</li>
+          <li>자신만의 특징을 최소 1개 추가합니다.</li>
+          <li>장면 1·2와 필수 모듈은 수정·삭제하지 않습니다.</li>
+          <li>문과 통로를 막지 않습니다.</li>
+        </ul>
+        <div class="practice-grid" style="margin-top: 22px;">
+          <article class="step-item">
+            <h3>9. 나만의 특징 추가</h3>
+            <div class="image-slot" role="img" aria-label="루나 게이트웨이에 나만의 특징을 추가하는 이미지 자리" data-image-path="assets/lesson03/step09-customize.png"></div>
+            <!-- 예정 이미지: assets/lesson03/step09-customize.png -->
+          </article>
+        </div>
+      </section>
+
+      <section id="safety" aria-labelledby="safety-title">
+        <div class="section-head">
+          <span class="num">8</span>
+          <div>
+            <p class="eyebrow">안전 점검</p>
+            <h2 id="safety-title">완성한 루나 게이트웨이를 제출 전에 확인합니다.</h2>
+          </div>
+        </div>
+        <div class="check-list" aria-label="3차시 점검표">
+          <label><input type="checkbox" name="check-center" data-check="centerModule"> 중심 모듈</label>
+          <label><input type="checkbox" name="check-lab" data-check="researchModule"> 연구 모듈</label>
+          <label><input type="checkbox" name="check-life" data-check="livingModule"> 생활 모듈</label>
+          <label><input type="checkbox" name="check-corridor" data-check="corridors"> 연결 통로 2개 이상</label>
+          <label><input type="checkbox" name="check-energy" data-check="energyFacility"> 에너지·외부 시설</label>
+          <label><input type="checkbox" name="check-custom" data-check="customFeatureAdded"> 나만의 특징</label>
+          <label><input type="checkbox" name="check-safe" data-check="passageSafe"> 통로 안전</label>
+          <label><input type="checkbox" name="check-save" data-check="projectSaved"> 프로젝트 저장</label>
+        </div>
+      </section>
+
+      <section id="record" aria-labelledby="record-title">
+        <div class="section-head">
+          <span class="num">9</span>
+          <div>
+            <p class="eyebrow">오늘의 기록</p>
+            <h2 id="record-title">AI Skill 실험과 건설 결과를 남깁니다.</h2>
+          </div>
+        </div>
+        <form class="record-grid">
+          <fieldset class="card full">
+            <legend>AI Skill 이동 결과</legend>
+            <div class="choice-row">
+              <label><input type="radio" name="skill-result" value="success"> 요청대로 장면 3으로 이동했어요.</label>
+              <label><input type="radio" name="skill-result" value="retry"> 다시 고쳐서 시험해야 해요.</label>
+              <label><input type="radio" name="skill-result" value="direct"> AI Skill 대신 직접 장면 3으로 이동했어요.</label>
+            </div>
+          </fieldset>
+          <label class="field full">
+            <span>실제 입력한 이동 요청 문장</span>
+            <input type="text" name="move-request" placeholder="예: 버디야, 루나 게이트웨이로 이동해 줘.">
+          </label>
+          <fieldset class="card full">
+            <legend>완성한 시설 복수 선택</legend>
+            <div class="choice-row">
+              <label><input type="checkbox" name="facility" value="center"> 중심 모듈</label>
+              <label><input type="checkbox" name="facility" value="lab"> 연구 모듈</label>
+              <label><input type="checkbox" name="facility" value="life"> 생활 모듈</label>
+              <label><input type="checkbox" name="facility" value="corridor"> 연결 통로</label>
+              <label><input type="checkbox" name="facility" value="energy"> 에너지 시설</label>
+              <label><input type="checkbox" name="facility" value="custom"> 나만의 특징</label>
+            </div>
+          </fieldset>
+          <label class="field">
+            <span>나만의 특징</span>
+            <textarea name="custom-feature"></textarea>
+          </label>
+          <label class="field">
+            <span>특징을 추가한 이유</span>
+            <textarea name="custom-reason"></textarea>
+          </label>
+          <label class="field">
+            <span>어려웠던 점</span>
+            <textarea name="difficulty"></textarea>
+          </label>
+          <label class="field">
+            <span>다음 시간에 더 해보고 싶은 것</span>
+            <textarea name="next-question"></textarea>
+          </label>
+        </form>
+      </section>
+
+      <section id="submit" aria-labelledby="submit-title">
+        <div class="section-head">
+          <span class="num">10</span>
+          <div>
+            <p class="eyebrow">저장 및 제출</p>
+            <h2 id="submit-title">3차시 기록을 확인하고 제출합니다.</h2>
+          </div>
+        </div>
+        <div class="submit-summary">
+          <div class="summary-line"><span>현재 차시</span><strong>3차시 - AI Skill로 출발하는 루나 게이트웨이 건설</strong></div>
+          <div class="summary-line"><span>제출 상태</span><p id="submitStatus" class="muted">아직 제출하지 않았어요.</p></div>
+        </div>
+        <div id="validationBox" class="validation" hidden aria-live="polite"></div>
+        <div class="row">
+          <button id="saveNow" class="secondary" type="button">임시 저장</button>
+          <button id="resetLesson" class="secondary" type="button">처음부터 다시 하기</button>
+          <button id="submitRecord" class="primary" type="button">3차시 기록 제출하기</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const STUDENT_API_URL = "https://script.google.com/macros/s/AKfycbxPbD6lnhX-tn8WYW9xIvs3EvCUPQeJHhEV_wWqdEP6ihAdvt0OlbCey0lQWQJWpeaU/exec";
+    const RECORD_API_URL = "https://script.google.com/macros/s/AKfycbyqV2Gd3m1iACig-vM5OluKCBCbopfRLpdzo_z32-tFhRLupZX3aHiBF8gKaqdoGKajcQ/exec";
+    const LESSON_NUMBER = 3;
+    const LESSON_TITLE = "AI Skill로 출발하는 루나 게이트웨이 건설";
+    const STORAGE_PREFIX = "myeongjuArtemisLesson3.v1:";
+    const LESSON1_STORAGE_KEY = "delightexEduArtemisStudent.v1";
+    const LESSON2_STORAGE_KEY = "myeongjuArtemisLesson2.v3";
+    const CHECK_KEYS = [
+      "centerModule",
+      "researchModule",
+      "livingModule",
+      "corridors",
+      "energyFacility",
+      "customFeatureAdded",
+      "passageSafe",
+      "projectSaved"
+    ];
+
+    let storageEnabled = true;
+    let saveTimer = null;
+    let names = [];
+    let account = null;
+    let submitting = false;
+    let state = createEmptyState();
+
+    document.addEventListener("DOMContentLoaded", initLesson3);
+
+    function initLesson3() {
+      storageEnabled = checkStorage();
+      bindLesson3Events();
+      fillFormFromState();
+      updateAccountUi();
+      updatePreviousHistory();
+      updateProgress();
+      updateSubmitUi();
+      loadAvailableImages();
+      loadNames();
+      window.__lesson03Debug = {
+        buildPayload,
+        collectFormData,
+        validateRequired,
+        storageKeyFor,
+        loadStudentState
+      };
+    }
+
+    function createEmptyState(studentInfo = {}) {
+      return {
+        version: 1,
+        lessonNumber: LESSON_NUMBER,
+        lessonTitle: LESSON_TITLE,
+        studentInfo: sanitizeStudentInfo(studentInfo),
+        knowledgeAnswers: { q1: "", q2: "", q3: "" },
+        aiSkillResult: "",
+        moveRequestText: "",
+        completedFacilities: [],
+        customFeature: "",
+        checklistData: createEmptyChecklist(),
+        reflectionData: {
+          customFeatureReason: "",
+          difficulty: "",
+          nextQuestion: ""
+        },
+        startedAt: new Date().toISOString(),
+        completedAt: "",
+        submittedAt: "",
+        submissionId: "",
+        savedAt: "",
+        submissionStatus: "아직 제출하지 않았어요."
+      };
+    }
+
+    function createEmptyChecklist() {
+      return CHECK_KEYS.reduce((items, key) => {
+        items[key] = false;
+        return items;
+      }, {});
+    }
+
+    function bindLesson3Events() {
+      document.getElementById("studentSearch").addEventListener("input", renderNames);
+      document.getElementById("copyId").addEventListener("click", copyLoginId);
+      document.getElementById("copyPw").addEventListener("click", copyPassword);
+      document.getElementById("saveNow").addEventListener("click", () => saveState(true));
+      document.getElementById("resetLesson").addEventListener("click", resetCurrentLesson);
+      document.getElementById("submitRecord").addEventListener("click", submitLessonRecord);
+      document.querySelectorAll("#knowledge input, #safety input, #record input, #record textarea").forEach((element) => {
+        element.addEventListener("input", scheduleSave);
+        element.addEventListener("change", scheduleSave);
+      });
+    }
+
+    function loadAvailableImages() {
+      if (location.protocol === "file:") {
+        return;
+      }
+      document.querySelectorAll(".image-slot[data-image-path]").forEach(async (slot) => {
+        const imagePath = slot.dataset.imagePath;
+        if (!imagePath) {
+          return;
+        }
+        try {
+          const response = await fetch(imagePath, { method: "HEAD" });
+          if (response.ok) {
+            slot.style.setProperty("--shot-image", `url("${imagePath}")`);
+          }
+        } catch (error) {}
+      });
+    }
+
+    function checkStorage() {
+      try {
+        localStorage.setItem("__lesson3_check", "1");
+        localStorage.removeItem("__lesson3_check");
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function studentUrl(action, params = {}) {
+      const url = new URL(STUDENT_API_URL);
+      url.searchParams.set("action", action);
+      Object.keys(params).forEach((key) => url.searchParams.set(key, params[key]));
+      return url.toString();
+    }
+
+    async function loadNames() {
+      setListStatus("학생 목록을 불러오고 있어요.");
+      try {
+        const response = await fetch(studentUrl("listStudents"), { method: "GET" });
+        const data = await response.json();
+        if (!response.ok || data.success === false) {
+          throw new Error("학생 목록을 불러오지 못했어요.");
+        }
+        const rows = Array.isArray(data) ? data : data.students || [];
+        names = rows.map((row) => String(row.studentName || "").trim()).filter(Boolean);
+        renderNames();
+        setListStatus(names.length ? "내 이름을 선택해 주세요." : "학생 목록을 불러오지 못했어요.", !names.length);
+      } catch (error) {
+        names = [];
+        renderNames();
+        setListStatus("학생 목록을 불러오지 못했어요. 선생님께 알려 주세요.", true);
+      }
+    }
+
+    function renderNames() {
+      const container = document.getElementById("nameList");
+      const query = document.getElementById("studentSearch").value.trim().toLowerCase();
+      container.innerHTML = "";
+      names
+        .filter((name) => !query || name.toLowerCase().includes(query))
+        .slice(0, 80)
+        .forEach((name) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "student-name-button";
+          button.textContent = name;
+          button.setAttribute("role", "option");
+          button.setAttribute("aria-selected", account && account.studentName === name ? "true" : "false");
+          button.classList.toggle("selected", Boolean(account && account.studentName === name));
+          button.addEventListener("click", () => selectName(name));
+          container.appendChild(button);
+        });
+    }
+
+    async function selectName(name) {
+      const selectedName = String(name || "").trim();
+      if (!selectedName) {
+        setListStatus("내 이름을 선택해 주세요.", true);
+        return false;
+      }
+      if (studentIdForStorage()) {
+        saveState(false);
+      }
+      clearStudentRuntime(selectedName);
+      setListStatus("학생 정보를 확인하고 있어요.");
+      try {
+        const response = await fetch(studentUrl("getStudent", { studentName: selectedName }), { method: "GET" });
+        const data = await response.json();
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || "학생 정보를 찾을 수 없어요.");
+        }
+        const loginId = String(data.loginId || data.studentId || "").trim();
+        const studentName = String(data.studentName || selectedName).trim();
+        if (!loginId || !studentName) {
+          throw new Error("학생 정보를 찾을 수 없어요.");
+        }
+        account = {
+          studentId: String(data.studentId || loginId),
+          studentName,
+          loginId,
+          className: data.className || "",
+          grade: data.grade || "",
+          school: data.school || "",
+          password: String(data.password || "")
+        };
+        state = loadStudentState(account);
+        document.getElementById("studentSearch").value = studentName;
+        fillFormFromState();
+        updateAccountUi();
+        renderNames();
+        updatePreviousHistory();
+        updateProgress();
+        updateSubmitUi();
+        saveState(false);
+        setListStatus("이름을 선택했어요.");
+        return true;
+      } catch (error) {
+        account = null;
+        state = createEmptyState();
+        fillFormFromState();
+        updateAccountUi();
+        updatePreviousHistory();
+        updateProgress();
+        updateSubmitUi();
+        setListStatus(error.message || "학생 정보를 찾을 수 없어요.", true);
+        return false;
+      }
+    }
+
+    function clearStudentRuntime(pendingName) {
+      account = null;
+      state = createEmptyState({ studentName: pendingName });
+      fillFormFromState();
+      updateAccountUi();
+      updatePreviousHistory();
+      updateProgress();
+      updateSubmitUi();
+      document.getElementById("copyStatus").textContent = "";
+    }
+
+    function sanitizeStudentInfo(info = {}) {
+      return {
+        studentId: String(info.studentId || info.loginId || "").trim(),
+        studentName: String(info.studentName || "").trim(),
+        loginId: String(info.loginId || info.studentId || "").trim(),
+        className: String(info.className || "").trim(),
+        grade: String(info.grade || "").trim(),
+        school: String(info.school || "").trim()
+      };
+    }
+
+    function storageKeyFor(studentId) {
+      return STORAGE_PREFIX + encodeURIComponent(String(studentId || "").trim());
+    }
+
+    function studentIdForStorage() {
+      const info = account || state.studentInfo || {};
+      return String(info.studentId || info.loginId || "").trim();
+    }
+
+    function loadStudentState(info) {
+      const cleanInfo = sanitizeStudentInfo(info);
+      if (!storageEnabled || !cleanInfo.studentId) {
+        return createEmptyState(cleanInfo);
+      }
+      try {
+        const raw = localStorage.getItem(storageKeyFor(cleanInfo.studentId));
+        if (!raw) {
+          return createEmptyState(cleanInfo);
+        }
+        const saved = JSON.parse(raw);
+        const savedInfo = sanitizeStudentInfo(saved.studentInfo || {});
+        if (!isSameStudent(savedInfo, cleanInfo)) {
+          return createEmptyState(cleanInfo);
+        }
+        return {
+          ...createEmptyState(cleanInfo),
+          ...saved,
+          studentInfo: cleanInfo,
+          knowledgeAnswers: {
+            q1: saved.knowledgeAnswers && saved.knowledgeAnswers.q1 || "",
+            q2: saved.knowledgeAnswers && saved.knowledgeAnswers.q2 || "",
+            q3: saved.knowledgeAnswers && saved.knowledgeAnswers.q3 || ""
+          },
+          completedFacilities: Array.isArray(saved.completedFacilities) ? saved.completedFacilities : [],
+          checklistData: {
+            ...createEmptyChecklist(),
+            ...(saved.checklistData || {})
+          },
+          reflectionData: {
+            customFeatureReason: saved.reflectionData && saved.reflectionData.customFeatureReason || "",
+            difficulty: saved.reflectionData && saved.reflectionData.difficulty || "",
+            nextQuestion: saved.reflectionData && saved.reflectionData.nextQuestion || ""
+          }
+        };
+      } catch (error) {
+        return createEmptyState(cleanInfo);
+      }
+    }
+
+    function fillFormFromState() {
+      setRadio("knowledge-q1", state.knowledgeAnswers.q1);
+      setRadio("knowledge-q2", state.knowledgeAnswers.q2);
+      setRadio("knowledge-q3", state.knowledgeAnswers.q3);
+      updateKnowledgeFeedback();
+      setRadio("skill-result", state.aiSkillResult);
+      setValue("move-request", state.moveRequestText);
+      document.querySelectorAll("input[name='facility']").forEach((input) => {
+        input.checked = state.completedFacilities.includes(input.value);
+      });
+      setValue("custom-feature", state.customFeature);
+      setValue("custom-reason", state.reflectionData.customFeatureReason);
+      setValue("difficulty", state.reflectionData.difficulty);
+      setValue("next-question", state.reflectionData.nextQuestion);
+      document.querySelectorAll("[data-check]").forEach((input) => {
+        input.checked = Boolean(state.checklistData[input.dataset.check]);
+      });
+    }
+
+    function collectFormData() {
+      return {
+        knowledgeAnswers: {
+          q1: getRadio("knowledge-q1"),
+          q2: getRadio("knowledge-q2"),
+          q3: getRadio("knowledge-q3")
+        },
+        aiSkillResult: getRadio("skill-result"),
+        moveRequestText: getValue("move-request"),
+        completedFacilities: Array.from(document.querySelectorAll("input[name='facility']:checked")).map((input) => input.value),
+        customFeature: getValue("custom-feature"),
+        checklistData: CHECK_KEYS.reduce((items, key) => {
+          const input = document.querySelector(`[data-check="${key}"]`);
+          items[key] = Boolean(input && input.checked);
+          return items;
+        }, {}),
+        reflectionData: {
+          customFeatureReason: getValue("custom-reason"),
+          difficulty: getValue("difficulty"),
+          nextQuestion: getValue("next-question")
+        }
+      };
+    }
+
+    function syncStateFromForm() {
+      const formData = collectFormData();
+      state = {
+        ...state,
+        ...formData,
+        lessonNumber: LESSON_NUMBER,
+        lessonTitle: LESSON_TITLE,
+        studentInfo: sanitizeStudentInfo(account || state.studentInfo || {}),
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function scheduleSave() {
+      syncStateFromForm();
+      updateKnowledgeFeedback();
+      updateProgress();
+      updateSubmitUi();
+      if (!studentIdForStorage()) {
+        setSaveStatus("이름 선택 후 저장");
+        return;
+      }
+      setSaveStatus("저장 중");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saveState(true), 160);
+    }
+
+    function saveState(showSavedMessage) {
+      if (!storageEnabled) {
+        setSaveStatus("자동 저장 불가");
+        return false;
+      }
+      const id = studentIdForStorage();
+      if (!id) {
+        setSaveStatus("이름 선택 후 저장");
+        return false;
+      }
+      syncStateFromForm();
+      try {
+        const cleanState = stripSensitive({
+          ...state,
+          studentInfo: sanitizeStudentInfo(account || state.studentInfo || {})
+        });
+        localStorage.setItem(storageKeyFor(id), JSON.stringify(cleanState));
+        if (showSavedMessage) {
+          setSaveStatus(`저장됨 ${new Date().toLocaleTimeString("ko-KR", { hour12: false })}`);
+        }
+        return true;
+      } catch (error) {
+        storageEnabled = false;
+        setSaveStatus("자동 저장 불가");
+        return false;
+      }
+    }
+
+    function stripSensitive(value) {
+      if (Array.isArray(value)) {
+        return value.map(stripSensitive);
+      }
+      if (value && typeof value === "object") {
+        return Object.keys(value).reduce((clean, key) => {
+          if (/password|비밀번호|pass|pw/i.test(key)) {
+            return clean;
+          }
+          clean[key] = stripSensitive(value[key]);
+          return clean;
+        }, {});
+      }
+      return value;
+    }
+
+    function resetCurrentLesson() {
+      const id = studentIdForStorage();
+      if (!id) {
+        showValidation([{ href: "#login", text: "먼저 학생 이름을 선택해 주세요." }]);
+        return;
+      }
+      localStorage.removeItem(storageKeyFor(id));
+      const cleanInfo = sanitizeStudentInfo(account || state.studentInfo || {});
+      state = createEmptyState(cleanInfo);
+      fillFormFromState();
+      updateProgress();
+      updateSubmitUi();
+      setSaveStatus("현재 학생 기록 삭제됨");
+      document.getElementById("validationBox").hidden = true;
+    }
+
+    function updateAccountUi() {
+      const info = sanitizeStudentInfo(account || state.studentInfo || {});
+      document.getElementById("selStatus").textContent = info.studentName || "아직 선택 전";
+      document.getElementById("studentNameText").textContent = info.studentName || "내 이름을 선택해 주세요.";
+      document.getElementById("loginIdText").textContent = info.loginId ? info.loginId : "선택 후 표시";
+      document.getElementById("copyId").disabled = !account || !account.loginId;
+      document.getElementById("copyPw").disabled = !account || !account.password;
+    }
+
+    async function copyLoginId() {
+      if (!account || !account.loginId) {
+        setCopyStatus("먼저 내 이름을 선택해 주세요.", true);
+        return;
+      }
+      await copyText(account.loginId, "아이디가 복사되었어요.");
+    }
+
+    async function copyPassword() {
+      if (!account || !account.password) {
+        setCopyStatus("비밀번호를 불러오지 못했어요.", true);
+        return;
+      }
+      await copyText(account.password, "비밀번호가 복사되었어요.", true);
+    }
+
+    async function copyText(text, message, secret = false) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopyStatus(message);
+      } catch (error) {
+        setCopyStatus(secret ? "복사가 막혔어요. 선생님께 알려 주세요." : "복사가 막혔어요. 직접 선택해서 복사해 주세요.", true);
+      }
+    }
+
+    function updatePreviousHistory() {
+      const list = document.getElementById("historyList");
+      const status = document.getElementById("historyStatus");
+      list.innerHTML = "";
+      if (!storageEnabled || !account) {
+        status.textContent = account ? "이 기기에서는 이전 차시 기록을 확인할 수 없습니다." : "내 이름을 선택하면 이 기기에 남은 기록만 확인합니다.";
+        return;
+      }
+      const summaries = collectPreviousSummaries(account);
+      if (!summaries.length) {
+        status.textContent = "이 기기에서는 이전 차시 기록을 확인할 수 없습니다.";
+        return;
+      }
+      status.textContent = "선택한 학생과 식별값이 일치하는 이 기기 기록만 표시합니다.";
+      summaries.forEach((summary) => {
+        const item = document.createElement("li");
+        const lesson = document.createElement("strong");
+        const text = document.createElement("span");
+        lesson.textContent = `${summary.lessonNumber}차시`;
+        text.textContent = summary.status;
+        item.append(lesson, text);
+        list.appendChild(item);
+      });
+    }
+
+    function collectPreviousSummaries(info) {
+      const byLesson = new Map();
+      try {
+        const lesson1Raw = localStorage.getItem(LESSON1_STORAGE_KEY);
+        if (lesson1Raw) {
+          const saved = JSON.parse(lesson1Raw);
+          if (isSameStudent(saved.studentInfo || {}, info)) {
+            ["1", "2"].forEach((lessonNumber) => {
+              const lesson = saved.lessons && saved.lessons[lessonNumber];
+              const summary = summarizeLessonRecord(Number(lessonNumber), lesson);
+              if (summary) {
+                byLesson.set(summary.lessonNumber, summary);
+              }
+            });
+          }
+        }
+      } catch (error) {}
+
+      try {
+        const lesson2Raw = localStorage.getItem(LESSON2_STORAGE_KEY);
+        if (lesson2Raw) {
+          const saved = JSON.parse(lesson2Raw);
+          if (isSameStudent(saved.studentInfo || {}, info)) {
+            const summary = summarizeLessonRecord(2, saved);
+            if (summary) {
+              byLesson.set(2, summary);
+            }
+          }
+        }
+      } catch (error) {}
+
+      return Array.from(byLesson.values()).sort((a, b) => a.lessonNumber - b.lessonNumber);
+    }
+
+    function summarizeLessonRecord(lessonNumber, lesson) {
+      if (!lesson || typeof lesson !== "object") {
+        return null;
+      }
+      const written = hasMeaningfulLessonData(lesson);
+      const submitted = Boolean(lesson.submittedAt);
+      const completed = Boolean(lesson.completedAt || lesson.lessonComplete);
+      if (!written && !submitted && !completed) {
+        return { lessonNumber, status: "작성 흔적 없음 · 제출 전" };
+      }
+      const writtenText = written ? "작성 있음" : "작성 흔적 없음";
+      const submitText = submitted ? "제출 완료" : completed ? "완료 상태" : "제출 전";
+      return { lessonNumber, status: `${writtenText} · ${submitText}` };
+    }
+
+    function hasMeaningfulLessonData(value, key = "") {
+      if (["startedAt", "submittedAt", "completedAt", "lessonNumber", "lessonTitle", "submissionStatus", "submissionId", "version"].includes(key)) {
+        return false;
+      }
+      if (typeof value === "string") {
+        return value.trim() !== "";
+      }
+      if (typeof value === "boolean") {
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.some((item) => hasMeaningfulLessonData(item));
+      }
+      if (value && typeof value === "object") {
+        return Object.keys(value).some((childKey) => hasMeaningfulLessonData(value[childKey], childKey));
+      }
+      return false;
+    }
+
+    function isSameStudent(savedInfo, currentInfo) {
+      const saved = sanitizeStudentInfo(savedInfo);
+      const current = sanitizeStudentInfo(currentInfo);
+      const savedIds = [saved.studentId, saved.loginId].filter(Boolean);
+      const currentIds = [current.studentId, current.loginId].filter(Boolean);
+      return savedIds.length > 0 && currentIds.length > 0 && savedIds.some((id) => currentIds.includes(id));
+    }
+
+    function calculateCompletionStatus(formData = collectFormData()) {
+      const doneChecks = Object.values(formData.checklistData).filter(Boolean).length;
+      const hasCustom = Boolean(formData.customFeature.trim()) && Boolean(formData.checklistData.customFeatureAdded);
+      const recordComplete = Boolean(
+        formData.aiSkillResult &&
+        formData.moveRequestText.trim() &&
+        formData.completedFacilities.length &&
+        formData.customFeature.trim() &&
+        formData.reflectionData.customFeatureReason.trim() &&
+        formData.reflectionData.difficulty.trim() &&
+        formData.reflectionData.nextQuestion.trim()
+      );
+      if (doneChecks >= 6 && hasCustom && recordComplete && formData.aiSkillResult !== "direct") {
+        return "완료";
+      }
+      if (recordComplete || doneChecks >= 3 || formData.aiSkillResult || formData.moveRequestText.trim()) {
+        return "부분완료";
+      }
+      return "미완료";
+    }
+
+    function buildPayload(submittedAt = new Date().toISOString()) {
+      syncStateFromForm();
+      const formData = collectFormData();
+      const info = sanitizeStudentInfo(account || state.studentInfo || {});
+      const completionStatus = calculateCompletionStatus(formData);
+      const completedAt = state.completedAt || (completionStatus !== "미완료" ? submittedAt : "");
+      return stripSensitive({
+        action: "submitLessonRecord",
+        submissionId: state.submissionId,
+        schemaVersion: "lesson03.v1",
+        studentId: info.studentId || info.loginId,
+        studentName: info.studentName,
+        loginId: info.loginId || info.studentId,
+        className: info.className,
+        grade: info.grade,
+        school: info.school,
+        lessonNumber: LESSON_NUMBER,
+        lessonTitle: LESSON_TITLE,
+        activityData: {
+          knowledgeAnswers: formData.knowledgeAnswers,
+          aiSkillResult: formData.aiSkillResult,
+          moveRequestText: formData.moveRequestText,
+          completedFacilities: formData.completedFacilities,
+          customFeature: formData.customFeature,
+          completionStatus
+        },
+        checklistData: formData.checklistData,
+        reflectionData: formData.reflectionData,
+        startedAt: state.startedAt,
+        completedAt,
+        submittedAt
+      });
+    }
+
+    function validateRequired() {
+      const formData = collectFormData();
+      const messages = [];
+      if (!account || !(account.studentId || account.loginId)) {
+        messages.push({ href: "#login", text: "학생 이름과 아이디를 확인해 주세요." });
+      }
+      if (!formData.knowledgeAnswers.q1 || !formData.knowledgeAnswers.q2 || !formData.knowledgeAnswers.q3) {
+        messages.push({ href: "#knowledge", text: "기본 지식 O/X 답변을 모두 선택해 주세요." });
+      }
+      if (!formData.aiSkillResult) {
+        messages.push({ href: "#record", text: "AI Skill 이동 결과를 선택해 주세요." });
+      }
+      if (!formData.moveRequestText.trim()) {
+        messages.push({ href: "#record", text: "실제 입력한 이동 요청 문장을 적어 주세요." });
+      }
+      if (!formData.completedFacilities.length) {
+        messages.push({ href: "#record", text: "완성한 시설을 1개 이상 선택해 주세요." });
+      }
+      if (!formData.customFeature.trim()) {
+        messages.push({ href: "#record", text: "나만의 특징을 적어 주세요." });
+      }
+      if (!formData.reflectionData.customFeatureReason.trim()) {
+        messages.push({ href: "#record", text: "특징을 추가한 이유를 적어 주세요." });
+      }
+      if (!formData.reflectionData.difficulty.trim()) {
+        messages.push({ href: "#record", text: "어려웠던 점을 적어 주세요." });
+      }
+      if (!formData.reflectionData.nextQuestion.trim()) {
+        messages.push({ href: "#record", text: "다음 시간에 더 해보고 싶은 것을 적어 주세요." });
+      }
+      return messages;
+    }
+
+    async function submitLessonRecord() {
+      if (submitting) {
+        return;
+      }
+      syncStateFromForm();
+      saveState(false);
+      const missing = validateRequired();
+      if (missing.length) {
+        showValidation(missing);
+        return;
+      }
+      document.getElementById("validationBox").hidden = true;
+      if (!state.submissionId) {
+        state.submissionId = makeSubmissionId();
+      }
+      const submittedAt = new Date().toISOString();
+      const payload = buildPayload(submittedAt);
+      submitting = true;
+      setSubmitStatus("기록을 보내고 있어요.");
+      setSubmitButton(true, "제출 중");
+      try {
+        const response = await fetch(RECORD_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const text = await response.text();
+        let result = {};
+        try {
+          result = JSON.parse(text);
+        } catch (error) {
+          throw new Error("제출 응답을 확인할 수 없어요.");
+        }
+        if (!response.ok || result.ok === false) {
+          throw new Error(result.error || "제출에 실패했어요.");
+        }
+        state.submissionId = result.submissionId || state.submissionId;
+        state.submittedAt = submittedAt;
+        state.completedAt = payload.completedAt || submittedAt;
+        state.submissionStatus = "3차시 기록이 저장되었어요.";
+        saveState(false);
+        setSubmitStatus(state.submissionStatus);
+        setSubmitButton(false, "다시 제출하기");
+      } catch (error) {
+        state.submissionStatus = "인터넷 연결을 확인하고 다시 제출해 주세요.";
+        saveState(false);
+        setSubmitStatus(state.submissionStatus);
+        setSubmitButton(false, "3차시 기록 제출하기");
+      } finally {
+        submitting = false;
+      }
+    }
+
+    function showValidation(items) {
+      const box = document.getElementById("validationBox");
+      box.hidden = false;
+      box.innerHTML = items.map((item) => `<a href="${item.href}">${escapeHtml(item.text)}</a>`).join("");
+      setSubmitStatus("필수 항목을 확인해 주세요.");
+      const firstLink = box.querySelector("a");
+      if (firstLink) {
+        firstLink.focus();
+      }
+    }
+
+    function updateProgress() {
+      const formData = collectFormData();
+      const units = [
+        Boolean(formData.knowledgeAnswers.q1),
+        Boolean(formData.knowledgeAnswers.q2),
+        Boolean(formData.knowledgeAnswers.q3),
+        Boolean(formData.aiSkillResult),
+        Boolean(formData.moveRequestText.trim()),
+        formData.completedFacilities.length > 0,
+        Boolean(formData.customFeature.trim()),
+        Boolean(formData.reflectionData.customFeatureReason.trim()),
+        Boolean(formData.reflectionData.difficulty.trim()),
+        Boolean(formData.reflectionData.nextQuestion.trim()),
+        ...Object.values(formData.checklistData)
+      ];
+      const completed = units.filter(Boolean).length;
+      const total = units.length;
+      const progress = document.getElementById("overallProgress");
+      progress.max = total;
+      progress.value = completed;
+      progress.textContent = `${completed} / ${total}`;
+      document.getElementById("progressText").textContent = `${completed} / ${total}`;
+    }
+
+    function updateKnowledgeFeedback() {
+      document.querySelectorAll(".ox-options").forEach((group) => {
+        const feedback = document.getElementById(group.dataset.feedback);
+        const checked = group.querySelector("input:checked");
+        if (!feedback) {
+          return;
+        }
+        feedback.classList.remove("correct", "wrong");
+        if (!checked) {
+          feedback.textContent = "";
+          return;
+        }
+        const correct = checked.value === group.dataset.correct;
+        feedback.textContent = correct ? "정답입니다." : `다시 생각해 보세요. 정답은 ${group.dataset.correct}입니다.`;
+        feedback.classList.add(correct ? "correct" : "wrong");
+      });
+    }
+
+    function updateSubmitUi() {
+      setSubmitStatus(state.submissionStatus || (state.submittedAt ? "3차시 기록이 저장되었어요." : "아직 제출하지 않았어요."));
+      setSubmitButton(false, state.submittedAt ? "다시 제출하기" : "3차시 기록 제출하기");
+    }
+
+    function setSubmitButton(disabled, text) {
+      const button = document.getElementById("submitRecord");
+      button.disabled = disabled;
+      button.textContent = text;
+    }
+
+    function setSubmitStatus(message) {
+      document.getElementById("submitStatus").textContent = message;
+      document.getElementById("submitTopStatus").textContent = message;
+    }
+
+    function setSaveStatus(message) {
+      document.getElementById("saveStatus").textContent = message;
+    }
+
+    function setListStatus(message, isError = false) {
+      const status = document.getElementById("listStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function setCopyStatus(message, isError = false) {
+      const status = document.getElementById("copyStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function setRadio(name, value) {
+      document.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
+        input.checked = input.value === value;
+      });
+    }
+
+    function getRadio(name) {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : "";
+    }
+
+    function setValue(name, value) {
+      const element = document.querySelector(`[name="${name}"]`);
+      if (element) {
+        element.value = value || "";
+      }
+    }
+
+    function getValue(name) {
+      const element = document.querySelector(`[name="${name}"]`);
+      return element ? element.value.trim() : "";
+    }
+
+    function makeSubmissionId() {
+      if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return "lesson03-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+  </script>
+</body>
+</html>
