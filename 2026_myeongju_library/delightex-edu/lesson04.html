@@ -1,0 +1,2584 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI와 함께하는 아르테미스 프로젝트 4차시</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --navy: #07172f;
+      --deep: #0d2448;
+      --blue: #1769c2;
+      --cyan: #35c9df;
+      --amber: #ffd166;
+      --ink: #14243a;
+      --muted: #637389;
+      --line: #d9e8f5;
+      --soft: #f4f9ff;
+      --white: #fff;
+      --danger: #b93b3b;
+      --shadow: 0 18px 42px rgba(12, 39, 78, .16);
+      --sticky-top: 112px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--sticky-top) + 12px);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(53, 201, 223, .22), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(255, 209, 102, .18), transparent 26%),
+        linear-gradient(180deg, #06162d 0, #0b2345 210px, #eef6ff 211px, #f7fbff 100%);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+
+    a { color: inherit; }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button, .primary-link {
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .58;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      color: var(--white);
+      background: rgba(5, 17, 40, .96);
+      border-bottom: 1px solid rgba(255, 255, 255, .16);
+      backdrop-filter: blur(12px);
+    }
+
+    .top-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 96px;
+      padding: 16px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .85fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(21px, 2.4vw, 30px);
+      line-height: 1.22;
+    }
+
+    .top-status {
+      display: grid;
+      gap: 10px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .status-chip {
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .1);
+      min-width: 0;
+    }
+
+    .status-chip span {
+      display: block;
+      color: #cbdcf0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status-chip strong {
+      display: block;
+      overflow: hidden;
+      color: #fff;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #dcecff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    progress {
+      width: 100%;
+      height: 12px;
+      overflow: hidden;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .18);
+    }
+
+    progress::-webkit-progress-bar { background: rgba(255, 255, 255, .18); }
+    progress::-webkit-progress-value { background: linear-gradient(90deg, var(--cyan), var(--amber)); }
+    progress::-moz-progress-bar { background: linear-gradient(90deg, var(--cyan), var(--amber)); }
+
+    .layout {
+      max-width: 1180px;
+      margin: 26px auto 76px;
+      padding: 0 22px;
+      display: grid;
+      grid-template-columns: 184px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    nav {
+      position: sticky;
+      top: var(--sticky-top);
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 18px;
+      background: rgba(6, 23, 47, .78);
+      box-shadow: var(--shadow);
+    }
+
+    nav a {
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #eef8ff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.3;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    nav a:hover, nav a:focus-visible {
+      background: rgba(255, 255, 255, .16);
+      outline: none;
+      transform: translateX(2px);
+    }
+
+    nav a.active, nav a[aria-current="true"] {
+      color: #07172f;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+    }
+
+    main {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    section {
+      overflow: hidden;
+      border: 1px solid rgba(217, 232, 245, .95);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+    }
+
+    .section-inner {
+      padding: clamp(22px, 3.2vw, 34px);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      color: #061226;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+      font-weight: 950;
+      box-shadow: 0 12px 20px rgba(7, 23, 47, .15);
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.2;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: var(--deep);
+      line-height: 1.25;
+    }
+
+    .lead {
+      margin: 8px 0 0;
+      color: #334a67;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mission-grid li,
+    .ready-card,
+    .info-card,
+    .account-preview,
+    .login-flow {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff, var(--soft));
+    }
+
+    .mission-grid li {
+      padding: 16px 18px;
+      font-weight: 900;
+    }
+
+    .mission-grid li::before {
+      content: "✓";
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      border-radius: 50%;
+      color: #06233e;
+      background: var(--amber);
+      font-size: 13px;
+    }
+
+    .login-panel {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(280px, .95fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      color: var(--deep);
+      font-weight: 900;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid #bfd5e9;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .field select {
+      min-height: 44px;
+    }
+
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .student-name-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+      gap: 8px;
+      max-height: 260px;
+      overflow: auto;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f7fbff;
+    }
+
+    .student-name-button {
+      padding: 10px 8px;
+      color: #12304f;
+      background: #fff;
+      border: 1px solid #cfe0ee;
+      box-shadow: 0 6px 12px rgba(7, 23, 47, .07);
+    }
+
+    .student-name-button:hover,
+    .student-name-button:focus-visible,
+    .student-name-button.selected {
+      color: #061226;
+      background: linear-gradient(135deg, #dff8ff, #fff3c3);
+      border-color: var(--cyan);
+      outline: none;
+    }
+
+    .account-preview,
+    .login-flow,
+    .ready-card,
+    .info-card {
+      padding: 18px;
+    }
+
+    .account-preview {
+      display: grid;
+      gap: 12px;
+    }
+
+    .account-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(217, 232, 245, .9);
+    }
+
+    .account-row:last-of-type {
+      border-bottom: 0;
+    }
+
+    .account-row span:first-child {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .account-row span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .primary,
+    .primary-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 11px 16px;
+      color: #061226;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+      text-decoration: none;
+      box-shadow: 0 10px 18px rgba(7, 23, 47, .13);
+    }
+
+    .secondary {
+      min-height: 44px;
+      padding: 10px 14px;
+      color: #12304f;
+      background: #fff;
+      border: 1px solid #bfd5e9;
+    }
+
+    .status-message,
+    .inline-status {
+      min-height: 22px;
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .status-message.error,
+    .inline-status.error {
+      color: var(--danger);
+    }
+
+    .login-flow {
+      margin-top: 16px;
+    }
+
+    .skip {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: #223b59;
+      font-weight: 900;
+    }
+
+    .skip input {
+      width: 18px;
+      height: 18px;
+      margin-top: 4px;
+      accent-color: var(--blue);
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .info-card {
+      background: #fff;
+    }
+
+    .info-card p,
+    .ready-card p {
+      margin: 0;
+      color: #425872;
+      font-weight: 700;
+    }
+
+    .ready-card {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+      border-style: dashed;
+      background: #f8fcff;
+    }
+
+    .ready-card strong {
+      color: var(--blue);
+    }
+
+    .activity-panel {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .activity-block {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .activity-block h3 {
+      margin: 0;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 24px;
+      color: #263e5c;
+      font-weight: 800;
+    }
+
+    .check-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .check-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      min-height: 52px;
+      padding: 13px 14px;
+      border: 1px solid #cfe0ee;
+      border-radius: 14px;
+      color: #203957;
+      background: #f8fcff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .check-item input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .choice-card {
+      min-height: 52px;
+      padding: 13px 14px;
+      color: #183654;
+      background: #fff;
+      border: 1px solid #cfe0ee;
+      box-shadow: 0 6px 14px rgba(7, 23, 47, .07);
+      text-align: left;
+    }
+
+    .choice-card:hover,
+    .choice-card:focus-visible,
+    .choice-card.selected,
+    .choice-card[aria-pressed="true"] {
+      color: #061226;
+      background: linear-gradient(135deg, #dff8ff, #fff3c3);
+      border-color: var(--cyan);
+      outline: none;
+    }
+
+    .choice-card:disabled {
+      opacity: .45;
+    }
+
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .route-steps {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .route-steps li {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .route-steps select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #bfd5e9;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+
+    .step-label {
+      color: var(--deep);
+      font-weight: 950;
+    }
+
+    .example-route {
+      margin: 0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #1e3c5f;
+      background: #eef8ff;
+      font-weight: 850;
+    }
+
+    .code-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .code-flow li {
+      padding: 10px 12px;
+      border-radius: 999px;
+      color: #09213b;
+      background: #e8f8ff;
+      border: 1px solid #c5e9f5;
+      font-weight: 900;
+    }
+
+    .code-flow li::after {
+      content: "→";
+      margin-left: 8px;
+      color: var(--blue);
+    }
+
+    .code-flow li:last-child::after {
+      content: "";
+      margin: 0;
+    }
+
+    .count-note {
+      color: var(--blue);
+      font-weight: 950;
+    }
+
+    .prompt-preview {
+      min-height: 148px;
+      padding: 16px;
+      border: 1px solid #bfd5e9;
+      border-radius: 16px;
+      color: #1d3552;
+      background: #f8fcff;
+      white-space: pre-wrap;
+      font-weight: 800;
+    }
+
+    .padlet-link {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 13px;
+      color: #061226;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+      font-weight: 950;
+      text-decoration: none;
+      box-shadow: 0 10px 18px rgba(7, 23, 47, .13);
+    }
+
+    .peer-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+      gap: 8px;
+      max-height: 220px;
+      overflow: auto;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f7fbff;
+    }
+
+    .validation-box {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #fff8dc;
+      border: 1px solid #ead58a;
+    }
+
+    .validation-box a,
+    .validation-box p {
+      margin: 0;
+      color: #5d4700;
+      font-weight: 900;
+    }
+
+    .placeholder-copy {
+      margin: 0;
+      color: #425872;
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .disabled-zone {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .manual-copy {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      width: min(360px, calc(100vw - 36px));
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .manual-copy p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .screen-reader {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1100px) {
+      .top-inner {
+        grid-template-columns: 1fr;
+      }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      nav {
+        position: static;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(132px, max-content);
+        overflow-x: auto;
+      }
+      nav a {
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        background: linear-gradient(180deg, #06162d 0, #0b2345 180px, #eef6ff 181px, #f7fbff 100%);
+      }
+      .top-inner,
+      .layout {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .status-grid,
+      .mission-grid,
+      .login-panel,
+      .flow-grid,
+      .check-list,
+      .choice-grid,
+      .choice-grid.three,
+      .route-grid {
+        grid-template-columns: 1fr;
+      }
+      .route-steps li {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        grid-template-columns: 42px minmax(0, 1fr);
+      }
+      .num {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+      .account-row {
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div>
+        <p class="eyebrow">Delightex Edu · 명주도서관 · 초등학교 3~6학년</p>
+        <h1>AI 우주 가이드와 함께하는 정거장 투어</h1>
+      </div>
+      <div class="top-status" aria-label="4차시 진행 상태">
+        <div class="status-grid">
+          <div class="status-chip"><span>선택 학생</span><strong id="selStatus">아직 선택 전</strong></div>
+          <div class="status-chip"><span>자동 저장</span><strong id="saveStatus">준비 중</strong></div>
+          <div class="status-chip"><span>제출 상태</span><strong id="submitTopStatus">활동을 모두 완료한 뒤 4차시 기록을 제출하세요.</strong></div>
+        </div>
+        <div class="progress-label"><span>기본 준비 진행률</span><strong id="progressText">0 / 12</strong></div>
+        <progress id="overallProgress" value="0" max="12">0 / 12</progress>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="4차시 목차">
+      <a href="#mission">1. 최종 임무</a>
+      <a href="#login">2. 학생 선택</a>
+      <a href="#review">3. 작품 점검</a>
+      <a href="#rocket">4. Rocket 배치</a>
+      <a href="#route">5. 이동 경로</a>
+      <a href="#autopilot">6. 자동 항행</a>
+      <a href="#guide">7. 우주 가이드</a>
+      <a href="#final-check">8. 전체 점검</a>
+      <a href="#gallery">9. 작품 관람</a>
+      <a href="#reflection">10. 최종 성찰</a>
+      <a href="#submit">11. 기록 제출</a>
+      <a href="#report">12. 탐사 보고서</a>
+    </nav>
+
+    <main>
+      <section id="mission" aria-labelledby="mission-title">
+        <div class="section-inner">
+          <div class="section-head">
+            <span class="num">1</span>
+            <div>
+              <p class="eyebrow">오늘의 최종 임무</p>
+              <h2 id="mission-title">내 우주정거장을 움직이고, 안내하고, 전시합니다.</h2>
+              <p class="lead">4차시는 Rocket, 자동 항행, AI Buddy, 친구 작품 관람을 연결하는 마무리 수업입니다.</p>
+            </div>
+          </div>
+          <ul class="mission-grid" aria-label="오늘 할 일">
+            <li>Rocket을 달 수송선으로 배치하기</li>
+            <li>수송선 이동 경로 설계하기</li>
+            <li>CoBlocks로 자동 항행 만들기</li>
+            <li>AI Buddy를 우주정거장 안내원으로 설정하기</li>
+            <li>친구 작품을 관람하고 칭찬 기록하기</li>
+            <li>1~4차시 탐사 보고서 확인하기</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="login" aria-labelledby="login-title">
+        <div class="section-inner">
+          <div class="section-head">
+            <span class="num">2</span>
+            <div>
+              <p class="eyebrow">학생 선택과 로그인</p>
+              <h2 id="login-title">내 이름을 선택하고 지난 시간에 만든 프로젝트를 엽니다.</h2>
+              <p class="lead">비밀번호는 화면에 표시하지 않고, 복사할 때만 사용합니다.</p>
+            </div>
+          </div>
+
+          <div class="login-panel">
+            <div>
+              <label class="field">
+                <span>학생 이름 검색 및 선택</span>
+                <input id="studentSearch" type="search" autocomplete="off" placeholder="내 이름을 입력하세요">
+              </label>
+              <p id="listStatus" class="status-message" aria-live="polite">학생 목록을 불러오고 있어요.</p>
+              <div id="studentNameList" class="student-name-list" role="listbox" aria-label="학생 이름 목록"></div>
+            </div>
+
+            <div class="account-preview">
+              <div class="account-row"><span>선택한 학생</span><span id="studentNameText">내 이름을 선택해 주세요.</span></div>
+              <div class="account-row"><span>아이디</span><span id="loginIdText">선택 후 표시</span></div>
+              <div class="account-row"><span>비밀번호</span><span aria-label="비밀번호는 숨겨져 있습니다">••••••••••••</span></div>
+              <div class="button-row">
+                <button id="copyId" class="secondary" type="button" disabled>아이디 복사</button>
+                <button id="copyPw" class="secondary" type="button" disabled>비밀번호 복사</button>
+                <a class="primary-link" href="https://edu.delightex.com/" target="_blank" rel="noopener noreferrer">Delightex Edu 열기</a>
+                <button id="saveNow" class="secondary" type="button" disabled>지금 저장</button>
+                <button id="resetLesson" class="secondary" type="button" disabled>현재 학생 기록 초기화</button>
+              </div>
+              <p id="copyStatus" class="inline-status" aria-live="polite"></p>
+              <p id="resetStatus" class="inline-status" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="login-flow" id="loginFlow" hidden>
+            <label class="skip">
+              <input id="alreadyLoggedIn" type="checkbox">
+              <span>이미 로그인했어요. 로그인 안내를 건너뛰고 학급과 프로젝트 확인 단계로 갑니다.</span>
+            </label>
+            <div class="flow-grid">
+              <article id="loginCard" class="info-card">
+                <h3>1. Delightex Edu 로그인</h3>
+                <p>복사한 아이디와 비밀번호를 붙여넣고 로그인합니다.</p>
+              </article>
+              <article class="info-card">
+                <h3><span id="classStepNo">2</span>. 학급 선택</h3>
+                <p>2026 명주도서관 학급을 선택합니다.</p>
+              </article>
+              <article class="info-card">
+                <h3><span id="projectStepNo">3</span>. 지난 시간에 만든 내 프로젝트 열기</h3>
+                <p>지난 시간에 이어 작업할 자신의 Delightex Edu 프로젝트를 엽니다.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" aria-labelledby="review-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">3</span><div><p class="eyebrow">지난 작품 점검</p><h2 id="review-title">3차시 작품을 다시 열고 출발 준비를 확인합니다.</h2></div></div>
+          <p class="placeholder-copy">지난 시간에 만든 우주정거장을 열고, 오늘 활동에 필요한 구조가 남아 있는지 확인하세요.</p>
+          <div class="activity-panel">
+            <div class="activity-block">
+              <h3>지난 작품 점검표</h3>
+              <ul class="check-list">
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.centerModule"> 중심 모듈이 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.researchModule"> 연구 모듈이 연결되어 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.lifeModule"> 생활 모듈이 연결되어 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.twoCorridors"> 연결 통로가 2개 이상 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.energyDevice"> 에너지 장치가 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.airlock"> Airlock이 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.aiBuddy"> AI Buddy가 남아 있어요.</label></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rocket" aria-labelledby="rocket-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">4</span><div><p class="eyebrow">Rocket 배치</p><h2 id="rocket-title">Rocket을 달 수송선으로 배치합니다.</h2></div></div>
+          <p class="placeholder-copy">우주정거장을 오가는 수송선 역할을 할 Rocket의 위치와 방향을 정합니다.</p>
+          <div class="activity-panel">
+            <div class="activity-block">
+              <h3>작업 순서</h3>
+              <ol class="action-list">
+                <li>Library 검색창에 Rocket 입력</li>
+                <li>Rocket 배치</li>
+                <li>이름을 ‘달 수송선’으로 변경</li>
+                <li>Airlock과 떨어진 출발 위치로 이동</li>
+                <li>크기와 방향 조절</li>
+              </ol>
+            </div>
+            <div class="route-grid">
+              <label class="field" for="rocketName">
+                <span>수송선 이름</span>
+                <input id="rocketName" type="text" maxlength="16" data-state-path="activityData.rocket.name" value="달 수송선">
+              </label>
+              <div class="activity-block">
+                <h3>수송 임무 선택</h3>
+                <div class="choice-grid" role="group" aria-label="수송 임무 선택">
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="탐사 대원 수송" aria-pressed="false">탐사 대원 수송</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="연구 장비 운반" aria-pressed="false">연구 장비 운반</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="생활 물자 운반" aria-pressed="false">생활 물자 운반</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="긴급 구조" aria-pressed="false">긴급 구조</button>
+                </div>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>배치 확인</h3>
+              <ul class="check-list">
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.librarySearched"> Rocket을 찾았어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.placed"> Rocket을 배치했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.renamed"> 이름을 정했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.adjusted"> 크기와 방향을 조절했어요.</label></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="route" aria-labelledby="route-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">5</span><div><p class="eyebrow">이동 경로 설계</p><h2 id="route-title">수송선이 지나갈 길을 간단히 설계합니다.</h2></div></div>
+          <p class="placeholder-copy">출발점, 도착점, 관람자가 볼 장면을 생각하며 이동 경로를 정합니다.</p>
+          <div class="activity-panel">
+            <p class="example-route">기본 경로 예시: 앞으로 이동 → 위로 이동 → 정거장 방향으로 회전 → Airlock 앞으로 이동 → 정지</p>
+            <div class="route-grid">
+              <label class="field" for="routeStart">
+                <span>출발 위치 선택</span>
+                <select id="routeStart" data-state-path="activityData.route.startPoint">
+                  <option value="">선택하세요</option>
+                  <option>달 표면</option>
+                  <option>정거장 아래쪽</option>
+                  <option>정거장 옆쪽</option>
+                  <option>내가 정한 위치</option>
+                </select>
+              </label>
+              <label class="field" for="routeDestination">
+                <span>도착 위치</span>
+                <select id="routeDestination" data-state-path="activityData.route.destination">
+                  <option value="">선택하세요</option>
+                  <option>Airlock 앞</option>
+                  <option>도킹 구역</option>
+                </select>
+              </label>
+            </div>
+            <div class="activity-block">
+              <h3>이동 순서 5단계</h3>
+              <ol class="route-steps">
+                <li><span class="step-label">1단계</span><select id="routeStep1" data-route-step="0" aria-label="이동 경로 1단계"></select></li>
+                <li><span class="step-label">2단계</span><select id="routeStep2" data-route-step="1" aria-label="이동 경로 2단계"></select></li>
+                <li><span class="step-label">3단계</span><select id="routeStep3" data-route-step="2" aria-label="이동 경로 3단계"></select></li>
+                <li><span class="step-label">4단계</span><select id="routeStep4" data-route-step="3" aria-label="이동 경로 4단계"></select></li>
+                <li><span class="step-label">5단계</span><select id="routeStep5" data-route-step="4" aria-label="이동 경로 5단계"></select></li>
+              </ol>
+            </div>
+            <label class="field" for="routeNote">
+              <span>선택 입력: 내 경로 한 줄 설명</span>
+              <input id="routeNote" type="text" maxlength="60" data-state-path="activityData.route.optionalNote" placeholder="예: Airlock 앞에서 천천히 멈추게 만들 거예요.">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section id="autopilot" aria-labelledby="autopilot-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">6</span><div><p class="eyebrow">자동 항행 코딩</p><h2 id="autopilot-title">CoBlocks로 수송선의 자동 항행을 만듭니다.</h2></div></div>
+          <p class="placeholder-copy">Rocket이 정해진 길을 따라 움직이도록 필요한 명령 순서를 준비합니다.</p>
+          <div class="activity-panel">
+            <div class="activity-block">
+              <h3>Delightex Edu에서 만들 코드 순서</h3>
+              <ul class="code-flow" aria-label="자동 항행 코드 순서">
+                <li>출발 버튼을 클릭했을 때</li>
+                <li>달 수송선 위치 초기화</li>
+                <li>달 수송선 방향 초기화</li>
+                <li>설계한 경로대로 이동</li>
+                <li>Airlock 앞에서 정지</li>
+              </ul>
+            </div>
+            <div class="activity-block">
+              <h3>자동 항행 점검</h3>
+              <ul class="check-list">
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.buttonStarts"> 출발 버튼을 누르면 시작돼요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.positionReset"> 시작 위치가 초기화돼요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.directionReset"> 시작 방향이 초기화돼요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.noCollision"> 정거장과 충돌하지 않아요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.airlockStop"> Airlock 앞에서 정지해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.repeatable"> 다시 실행해도 같은 위치에서 시작해요.</label></li>
+              </ul>
+            </div>
+            <div class="activity-block">
+              <h3>실행 결과</h3>
+              <div class="choice-grid three" role="group" aria-label="자동 항행 실행 결과">
+                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="자동 항행 성공" aria-pressed="false">자동 항행 성공</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="일부 구간만 성공" aria-pressed="false">일부 구간만 성공</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="아직 수정 중" aria-pressed="false">아직 수정 중</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="guide" aria-labelledby="guide-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">7</span><div><p class="eyebrow">AI Buddy 우주 가이드</p><h2 id="guide-title">AI Buddy를 우주정거장 안내원으로 설정합니다.</h2></div></div>
+          <p class="placeholder-copy">친구가 방문했을 때 AI Buddy가 어떤 안내를 해 주면 좋을지 생각합니다.</p>
+          <div class="activity-panel">
+            <div class="route-grid">
+              <label class="field" for="guideName">
+                <span>AI Buddy 이름</span>
+                <input id="guideName" type="text" maxlength="18" data-state-path="activityData.guide.name" value="기존 AI Buddy">
+              </label>
+              <div class="activity-block">
+                <h3>이름을 모르면</h3>
+                <button id="useDefaultBuddyName" class="secondary" type="button">기존 AI Buddy 사용</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>역할 선택</h3>
+              <div class="choice-grid" role="group" aria-label="AI Buddy 역할 선택">
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.role" data-choice-value="우주정거장 안내원" aria-pressed="false">우주정거장 안내원</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.role" data-choice-value="정거장 안전관리자" aria-pressed="false">정거장 안전관리자</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.role" data-choice-value="우주 연구 해설가" aria-pressed="false">우주 연구 해설가</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.role" data-choice-value="생활 공간 안내원" aria-pressed="false">생활 공간 안내원</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>말투 선택</h3>
+              <div class="choice-grid" role="group" aria-label="AI Buddy 말투 선택">
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.tone" data-choice-value="짧고 친절한 말투" aria-pressed="false">짧고 친절한 말투</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.tone" data-choice-value="쉽고 정확한 말투" aria-pressed="false">쉽고 정확한 말투</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.tone" data-choice-value="재미있는 비유를 쓰는 말투" aria-pressed="false">재미있는 비유를 쓰는 말투</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.guide.tone" data-choice-value="차분하고 안내하기 좋은 말투" aria-pressed="false">차분하고 안내하기 좋은 말투</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>안내 장소 선택 <span id="guideLocationCount" class="count-note">0 / 3</span></h3>
+              <p class="placeholder-copy">정확히 3곳을 선택하세요. 3곳을 넘으면 추가 선택이 막힙니다.</p>
+              <div class="choice-grid three" role="group" aria-label="AI Buddy 안내 장소 다중 선택">
+                <button class="choice-card" type="button" data-guide-location="중심 모듈" aria-pressed="false">중심 모듈</button>
+                <button class="choice-card" type="button" data-guide-location="연구 구역" aria-pressed="false">연구 구역</button>
+                <button class="choice-card" type="button" data-guide-location="생활 구역" aria-pressed="false">생활 구역</button>
+                <button class="choice-card" type="button" data-guide-location="에너지 구역" aria-pressed="false">에너지 구역</button>
+                <button class="choice-card" type="button" data-guide-location="Airlock" aria-pressed="false">Airlock</button>
+                <button class="choice-card" type="button" data-guide-location="Greenhouse" aria-pressed="false">Greenhouse</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>설정 문장 미리보기</h3>
+              <div id="guidePromptPreview" class="prompt-preview" aria-live="polite"></div>
+              <div class="button-row">
+                <button id="copyGuidePrompt" class="primary" type="button">설정 문장 복사</button>
+                <span id="guideCopyStatus" class="inline-status" aria-live="polite"></span>
+              </div>
+              <p class="placeholder-copy">계정에서 가능한 경우 AI Skill이나 TTS를 선택 활동으로 사용할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="final-check" aria-labelledby="final-check-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">8</span><div><p class="eyebrow">전체 작품 점검</p><h2 id="final-check-title">관람 전에 전체 작품을 한 번 더 확인합니다.</h2></div></div>
+          <p class="placeholder-copy">수송선, 이동, 안내, 저장 상태를 차례대로 살펴봅니다.</p>
+          <div class="activity-panel">
+            <div class="activity-block">
+              <h3>최종 체크리스트</h3>
+              <ul class="check-list">
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.rocketVisible"> Rocket이 보이는 위치에 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.navigationWorks"> 자동 항행이 작동해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.airlockStop"> Airlock 앞에서 정지해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.guideReady"> AI Buddy 안내 설정을 완료했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.threeLocations"> 안내 장소 3곳을 정했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.projectSaved"> 프로젝트를 저장했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.noPersonalInfo"> 작품 안에 학생 개인정보를 넣지 않았어요.</label></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" aria-labelledby="gallery-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">9</span><div><p class="eyebrow">친구 작품 관람</p><h2 id="gallery-title">친구 작품을 보고 좋은 점을 찾아봅니다.</h2></div></div>
+          <p class="placeholder-copy">친구의 우주정거장을 관람하며 배울 점과 칭찬할 점을 떠올립니다.</p>
+          <div class="activity-panel">
+            <a id="padletLink" class="padlet-link" href="https://padlet.com/sorbaram/breakout-room/K8wMqGdZ0YxavZJO-5YprXgo6d2dxXlJ0" target="_blank" rel="noopener noreferrer">친구들의 우주정거장 관람하기 ↗</a>
+            <label class="check-item"><input type="checkbox" data-state-path="activityData.gallery.viewed"> 친구 작품을 실제로 관람했어요.</label>
+            <div class="activity-block">
+              <h3>친구 이름 선택</h3>
+              <p class="placeholder-copy">학생 목록을 다시 불러오지 않고, 위에서 불러온 이름 목록을 사용합니다.</p>
+              <div id="peerNameList" class="peer-list" role="listbox" aria-label="친구 이름 목록"></div>
+            </div>
+            <div class="activity-block">
+              <h3>가장 인상적인 특징</h3>
+              <div class="choice-grid three" role="group" aria-label="친구 작품의 인상적인 특징">
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="모듈 연결" aria-pressed="false">모듈 연결</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="수송선 이동" aria-pressed="false">수송선 이동</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="AI Buddy 안내" aria-pressed="false">AI Buddy 안내</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="내부 꾸미기" aria-pressed="false">내부 꾸미기</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="안전 장치" aria-pressed="false">안전 장치</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="창의적인 아이디어" aria-pressed="false">창의적인 아이디어</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>칭찬 내용</h3>
+              <div class="choice-grid" role="group" aria-label="친구 작품 칭찬 내용">
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="구조가 알아보기 쉬워요." aria-pressed="false">구조가 알아보기 쉬워요.</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="실제 우주정거장처럼 보여요." aria-pressed="false">실제 우주정거장처럼 보여요.</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="이동이 자연스러워요." aria-pressed="false">이동이 자연스러워요.</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="안내가 이해하기 쉬워요." aria-pressed="false">안내가 이해하기 쉬워요.</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="아이디어가 새로워요." aria-pressed="false">아이디어가 새로워요.</button>
+              </div>
+            </div>
+            <label class="field" for="galleryComment">
+              <span>선택 입력: 친구에게 남기고 싶은 한마디</span>
+              <input id="galleryComment" type="text" maxlength="60" data-state-path="activityData.gallery.optionalComment" placeholder="예: 다음에는 내 작품에도 이런 아이디어를 넣어 보고 싶어.">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section id="reflection" aria-labelledby="reflection-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">10</span><div><p class="eyebrow">최종 성찰</p><h2 id="reflection-title">1~4차시의 탐사 과정을 돌아봅니다.</h2></div></div>
+          <p class="placeholder-copy">내가 만든 공간, AI Buddy, 자동 항행에서 가장 기억에 남는 점을 정리합니다.</p>
+          <div class="activity-panel">
+            <div class="activity-block">
+              <h3>가장 기억에 남는 활동</h3>
+              <div class="choice-grid three" role="group" aria-label="가장 기억에 남는 활동">
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="Rocket 배치" aria-pressed="false">Rocket 배치</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="이동 경로 설계" aria-pressed="false">이동 경로 설계</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="자동 항행 코딩" aria-pressed="false">자동 항행 코딩</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="AI Buddy 안내" aria-pressed="false">AI Buddy 안내</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="친구 작품 관람" aria-pressed="false">친구 작품 관람</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>내가 가장 잘한 것</h3>
+              <div class="choice-grid three" role="group" aria-label="내가 가장 잘한 것">
+                <button class="choice-card" type="button" data-choice-path="reflectionData.bestAchievement" data-choice-value="3D 공간 배치" aria-pressed="false">3D 공간 배치</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.bestAchievement" data-choice-value="코딩 순서 만들기" aria-pressed="false">코딩 순서 만들기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.bestAchievement" data-choice-value="문제를 찾아 수정하기" aria-pressed="false">문제를 찾아 수정하기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.bestAchievement" data-choice-value="AI Buddy 설정하기" aria-pressed="false">AI Buddy 설정하기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.bestAchievement" data-choice-value="친구 작품에서 좋은 점 찾기" aria-pressed="false">친구 작품에서 좋은 점 찾기</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>가장 어려웠던 점</h3>
+              <div class="choice-grid three" role="group" aria-label="가장 어려웠던 점">
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="Rocket 찾기" aria-pressed="false">Rocket 찾기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="위치와 방향 조절" aria-pressed="false">위치와 방향 조절</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="코딩 순서" aria-pressed="false">코딩 순서</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="이동 거리 맞추기" aria-pressed="false">이동 거리 맞추기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="AI Buddy 설정" aria-pressed="false">AI Buddy 설정</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="어려운 점이 없었음" aria-pressed="false">어려운 점이 없었음</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>해결 방법</h3>
+              <div class="choice-grid three" role="group" aria-label="해결 방법">
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="여러 번 다시 실행함" aria-pressed="false">여러 번 다시 실행함</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="이동 거리를 조금씩 바꿈" aria-pressed="false">이동 거리를 조금씩 바꿈</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="블록 순서를 다시 확인함" aria-pressed="false">블록 순서를 다시 확인함</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="친구에게 도움을 받음" aria-pressed="false">친구에게 도움을 받음</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="선생님께 질문함" aria-pressed="false">선생님께 질문함</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="예시와 비교함" aria-pressed="false">예시와 비교함</button>
+              </div>
+            </div>
+            <div class="activity-block">
+              <h3>다음에 만들고 싶은 것</h3>
+              <div class="choice-grid three" role="group" aria-label="다음에 만들고 싶은 것">
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="더 복잡한 수송선 경로" aria-pressed="false">더 복잡한 수송선 경로</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="정거장 안전 경보" aria-pressed="false">정거장 안전 경보</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="여러 구역 자동 안내" aria-pressed="false">여러 구역 자동 안내</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="물자 운반 시스템" aria-pressed="false">물자 운반 시스템</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="다른 행성의 우주기지" aria-pressed="false">다른 행성의 우주기지</button>
+              </div>
+            </div>
+            <label class="field" for="reflectionComment">
+              <span>선택 입력: 내가 남기고 싶은 한마디</span>
+              <input id="reflectionComment" type="text" maxlength="70" data-state-path="reflectionData.optionalComment" placeholder="예: 내가 만든 우주정거장을 친구에게 소개해서 뿌듯했어요.">
+            </label>
+            <div class="button-row">
+              <button id="checkCompletion" class="primary" type="button">활동 완료 상태 확인</button>
+            </div>
+            <div id="validationBox" class="validation-box" hidden aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="submit" aria-labelledby="submit-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">11</span><div><p class="eyebrow">4차시 기록 제출</p><h2 id="submit-title">4차시 활동 기록을 저장합니다.</h2></div></div>
+          <p class="placeholder-copy">학생 이름과 활동 내용을 확인한 뒤 제출하세요.</p>
+          <div id="submitValidationBox" class="validation-box" hidden aria-live="polite"></div>
+          <div class="disabled-zone">
+            <button id="submitRecord" class="primary" type="button">4차시 기록 제출하기</button>
+            <button id="resubmitRecord" class="secondary" type="button" hidden>다시 제출 준비</button>
+          </div>
+          <p id="submitStatus" class="inline-status" aria-live="polite">활동을 모두 완료한 뒤 4차시 기록을 제출하세요.</p>
+        </div>
+      </section>
+
+      <section id="report" aria-labelledby="report-title">
+        <div class="section-inner">
+          <div class="section-head"><span class="num">12</span><div><p class="eyebrow">나의 탐사 보고서 확인</p><h2 id="report-title">1~4차시 탐사 기록을 확인합니다.</h2></div></div>
+          <p class="placeholder-copy">4차시 기록 제출이 끝나면 학부모용 탐사 보고서를 새 탭에서 열 수 있어요.</p>
+          <div class="ready-card"><strong>확인 방법</strong><p>보고서 화면에서는 자녀 이름을 다시 정확히 입력해 탐사 기록을 확인합니다.</p></div>
+          <div class="disabled-zone">
+            <button id="openReport" class="secondary" type="button" disabled>나의 탐사 보고서 확인</button>
+          </div>
+          <p id="reportStatus" class="inline-status" aria-live="polite">기록 제출 후 탐사 보고서를 열 수 있어요.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="manual-copy" id="manualCopyBox" hidden>
+    <label class="field">
+      <span>복사 도움</span>
+      <textarea id="manualCopyText" aria-label="수동 복사용 글상자"></textarea>
+    </label>
+    <p>글상자를 선택했어요. Ctrl+C를 눌러요.</p>
+  </div>
+
+  <div class="screen-reader" id="a11yStatus" aria-live="polite"></div>
+
+  <script>
+    const STUDENT_API_URL = "https://script.google.com/macros/s/AKfycbxPbD6lnhX-tn8WYW9xIvs3EvCUPQeJHhEV_wWqdEP6ihAdvt0OlbCey0lQWQJWpeaU/exec";
+    const RECORD_API_URL = "https://script.google.com/macros/s/AKfycbyqV2Gd3m1iACig-vM5OluKCBCbopfRLpdzo_z32-tFhRLupZX3aHiBF8gKaqdoGKajcQ/exec";
+    const LESSON_NUMBER = 4;
+    const LESSON_TITLE = "AI 우주 가이드와 함께하는 정거장 투어";
+    const STORAGE_PREFIX = "myeongjuArtemisLesson4.v1:";
+    const LAST_STUDENT_KEY = "myeongjuArtemisLesson4.lastStudent.v1";
+    const REPORT_PAGE_URL = "report.html";
+    const SUBMISSION_PENDING_MESSAGE = "활동을 모두 완료한 뒤 4차시 기록을 제출하세요.";
+    const SUBMISSION_READY_MESSAGE = "4차시 기록을 제출할 수 있어요.";
+    const SUBMISSION_SENDING_MESSAGE = "기록을 보내고 있어요.";
+    const SUBMISSION_SUCCESS_MESSAGE = "4차시 기록이 저장되었어요.";
+    const SUBMISSION_CHANGED_MESSAGE = "내용이 변경되었습니다. 다시 제출해 주세요.";
+    const SUBMISSION_FAILED_MESSAGE = "인터넷 연결을 확인하고 다시 제출해 주세요.";
+    const SUBMISSION_MISSING_HINT = "활동 완료 상태 확인에서 남은 항목을 먼저 확인하세요.";
+    const ROUTE_OPTIONS = [
+      "앞으로 이동",
+      "위로 이동",
+      "아래로 이동",
+      "왼쪽으로 회전",
+      "오른쪽으로 회전",
+      "잠시 기다리기",
+      "Airlock 앞으로 이동",
+      "정지",
+      "사용하지 않음"
+    ];
+    const REVIEW_CHECK_KEYS = ["centerModule", "researchModule", "lifeModule", "twoCorridors", "energyDevice", "airlock", "aiBuddy"];
+    const ROCKET_CHECK_KEYS = ["librarySearched", "placed", "renamed", "adjusted"];
+    const AUTOPILOT_CHECK_KEYS = ["buttonStarts", "positionReset", "directionReset", "noCollision", "airlockStop", "repeatable"];
+    const FINAL_CHECK_KEYS = ["rocketVisible", "navigationWorks", "airlockStop", "guideReady", "threeLocations", "projectSaved", "noPersonalInfo"];
+    const REFLECTION_REQUIRED_KEYS = ["memorableActivity", "bestAchievement", "difficulty", "solution", "nextChallenge"];
+
+    let storageEnabled = true;
+    let saveTimer = null;
+    let names = [];
+    let account = null;
+    let state = createEmptyState();
+    let submitting = false;
+
+    document.addEventListener("DOMContentLoaded", initLesson4);
+
+    function initLesson4() {
+      storageEnabled = checkStorage();
+      populateRouteStepOptions();
+      bindLesson4Events();
+      initStepNav();
+      fillFormFromState();
+      updateAccountUi();
+      updateProgress();
+      updateSubmitUi();
+      loadNames();
+      window.__lesson04Debug = {
+        storageKeyFor,
+        loadStudentState,
+        resetCurrentLesson,
+        validateRequired,
+        buildPayload,
+        calculateCompletionStatus,
+        submissionFingerprint,
+        updateSubmitUi,
+        getState: () => stripSensitive(state)
+      };
+    }
+
+    function createEmptyState(studentInfo = {}) {
+      return {
+        version: 1,
+        studentInfo: sanitizeStudentInfo(studentInfo),
+        alreadyLoggedIn: false,
+        startedAt: new Date().toISOString(),
+        completedAt: "",
+        submittedAt: "",
+        submissionId: "",
+        submissionStatus: SUBMISSION_PENDING_MESSAGE,
+        needsResubmit: false,
+        reportOpened: false,
+        lastSubmittedFingerprint: "",
+        activityData: createDefaultActivityData(),
+        checklistData: createDefaultChecklistData(),
+        reflectionData: createDefaultReflectionData(),
+        savedAt: ""
+      };
+    }
+
+    function createDefaultActivityData() {
+      return {
+        reviewChecks: {},
+        rocket: {
+          name: "달 수송선",
+          role: "",
+          librarySearched: false,
+          placed: false,
+          renamed: false,
+          adjusted: false
+        },
+        route: {
+          startPoint: "",
+          destination: "",
+          steps: ["", "", "", "", ""],
+          optionalNote: ""
+        },
+        autopilot: {
+          checks: {},
+          result: ""
+        },
+        guide: {
+          name: "기존 AI Buddy",
+          role: "",
+          tone: "",
+          locations: []
+        },
+        gallery: {
+          opened: false,
+          viewed: false,
+          peerName: "",
+          highlight: "",
+          praise: "",
+          optionalComment: ""
+        }
+      };
+    }
+
+    function createDefaultChecklistData() {
+      return {
+        rocketVisible: false,
+        navigationWorks: false,
+        airlockStop: false,
+        guideReady: false,
+        threeLocations: false,
+        projectSaved: false,
+        noPersonalInfo: false
+      };
+    }
+
+    function createDefaultReflectionData() {
+      return {
+        memorableActivity: "",
+        bestAchievement: "",
+        difficulty: "",
+        solution: "",
+        nextChallenge: "",
+        optionalComment: ""
+      };
+    }
+
+    function bindLesson4Events() {
+      document.getElementById("studentSearch").addEventListener("input", renderNames);
+      document.getElementById("copyId").addEventListener("click", copyLoginId);
+      document.getElementById("copyPw").addEventListener("click", copyPassword);
+      document.getElementById("saveNow").addEventListener("click", () => saveState(true));
+      document.getElementById("resetLesson").addEventListener("click", resetCurrentLesson);
+      document.getElementById("submitRecord").addEventListener("click", submitLessonRecord);
+      document.getElementById("resubmitRecord").addEventListener("click", prepareResubmit);
+      document.getElementById("openReport").addEventListener("click", openReportPage);
+      document.getElementById("alreadyLoggedIn").addEventListener("change", scheduleSave);
+      document.getElementById("useDefaultBuddyName").addEventListener("click", useDefaultBuddyName);
+      document.getElementById("copyGuidePrompt").addEventListener("click", copyGuidePrompt);
+      document.getElementById("padletLink").addEventListener("click", markPadletOpened);
+      document.getElementById("checkCompletion").addEventListener("click", showCompletionCheck);
+      document.querySelectorAll("[data-state-path]").forEach((element) => {
+        element.addEventListener("input", scheduleSave);
+        element.addEventListener("change", scheduleSave);
+      });
+      document.querySelectorAll("[data-route-step]").forEach((element) => {
+        element.addEventListener("change", scheduleSave);
+      });
+      document.querySelectorAll("[data-choice-path]").forEach((button) => {
+        button.addEventListener("click", () => {
+          setPath(state, button.dataset.choicePath, button.dataset.choiceValue);
+          updateChoiceButtons();
+          scheduleSave();
+        });
+      });
+      document.querySelectorAll("[data-guide-location]").forEach((button) => {
+        button.addEventListener("click", () => toggleGuideLocation(button.dataset.guideLocation));
+      });
+    }
+
+    function populateRouteStepOptions() {
+      document.querySelectorAll("[data-route-step]").forEach((select) => {
+        select.innerHTML = '<option value="">선택하세요</option>' + ROUTE_OPTIONS.map((option) => {
+          return `<option>${escapeHtml(option)}</option>`;
+        }).join("");
+      });
+    }
+
+    function initStepNav() {
+      const links = Array.from(document.querySelectorAll("nav a[href^='#']"));
+      const sections = links
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+      if (!links.length || !sections.length) {
+        return;
+      }
+      const setActive = (id) => {
+        links.forEach((link) => {
+          const active = link.getAttribute("href") === `#${id}`;
+          link.classList.toggle("active", active);
+          if (active) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
+      };
+      syncStickyOffset();
+      window.addEventListener("resize", syncStickyOffset);
+      if (!("IntersectionObserver" in window)) {
+        setActive(sections[0].id);
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (current) {
+          setActive(current.target.id);
+        }
+      }, {
+        rootMargin: `-${getHeaderOffset() + 18}px 0px -62% 0px`,
+        threshold: [0.08, 0.25, 0.5]
+      });
+      sections.forEach((section) => observer.observe(section));
+      setActive(sections[0].id);
+    }
+
+    function getHeaderOffset() {
+      const header = document.querySelector(".top");
+      return header ? Math.ceil(header.getBoundingClientRect().height) : 96;
+    }
+
+    function syncStickyOffset() {
+      const top = window.matchMedia("(max-width: 680px)").matches ? 18 : getHeaderOffset() + 20;
+      document.documentElement.style.setProperty("--sticky-top", `${top}px`);
+    }
+
+    function checkStorage() {
+      try {
+        localStorage.setItem("__lesson4_check", "1");
+        localStorage.removeItem("__lesson4_check");
+        return true;
+      } catch (error) {
+        setSaveStatus("자동 저장 불가");
+        return false;
+      }
+    }
+
+    function studentUrl(action, params = {}) {
+      const url = new URL(STUDENT_API_URL);
+      url.searchParams.set("action", action);
+      Object.keys(params).forEach((key) => url.searchParams.set(key, params[key]));
+      return url.toString();
+    }
+
+    async function loadNames() {
+      setListStatus("학생 목록을 불러오고 있어요.");
+      try {
+        const response = await fetch(studentUrl("listStudents"), { method: "GET" });
+        const data = await response.json();
+        if (!response.ok || data.success === false) {
+          throw new Error("학생 목록을 불러오지 못했어요.");
+        }
+        const rows = Array.isArray(data) ? data : data.students || [];
+        names = rows.map((row) => String(row.studentName || "").trim()).filter(Boolean);
+        renderNames();
+        renderPeerNames();
+        setListStatus(names.length ? "내 이름을 선택해 주세요." : "학생 목록을 불러오지 못했어요.", !names.length);
+        const lastStudent = readLastStudent();
+        if (lastStudent.studentName && names.includes(lastStudent.studentName)) {
+          await selectName(lastStudent.studentName, true);
+        }
+      } catch (error) {
+        names = [];
+        renderNames();
+        renderPeerNames();
+        setListStatus("학생 목록을 불러오지 못했어요. 선생님께 알려 주세요.", true);
+      }
+    }
+
+    function renderNames() {
+      const container = document.getElementById("studentNameList");
+      const query = document.getElementById("studentSearch").value.trim().toLowerCase();
+      container.innerHTML = "";
+      names
+        .filter((name) => !query || name.toLowerCase().includes(query))
+        .slice(0, 80)
+        .forEach((name) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "student-name-button";
+          button.textContent = name;
+          button.setAttribute("role", "option");
+          button.setAttribute("aria-selected", account && account.studentName === name ? "true" : "false");
+          button.classList.toggle("selected", Boolean(account && account.studentName === name));
+          button.addEventListener("click", () => selectName(name));
+          container.appendChild(button);
+        });
+      renderPeerNames();
+    }
+
+    async function selectName(name, silent = false) {
+      const selectedName = String(name || "").trim();
+      if (!selectedName) {
+        setListStatus("내 이름을 선택해 주세요.", true);
+        return false;
+      }
+      if (studentIdForStorage()) {
+        saveState(false);
+      }
+      clearStudentRuntime(selectedName);
+      if (!silent) {
+        setListStatus("학생 정보를 확인하고 있어요.");
+      }
+      try {
+        const response = await fetch(studentUrl("getStudent", { studentName: selectedName }), { method: "GET" });
+        const data = await response.json();
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || "학생 정보를 찾을 수 없어요.");
+        }
+        const loginId = String(data.loginId || data.studentId || "").trim();
+        const studentName = String(data.studentName || selectedName).trim();
+        if (!loginId || !studentName) {
+          throw new Error("학생 정보를 찾을 수 없어요.");
+        }
+        account = {
+          studentId: String(data.studentId || loginId),
+          studentName,
+          loginId,
+          className: data.className || "",
+          grade: data.grade || "",
+          school: data.school || "",
+          password: String(data.password || "")
+        };
+        state = loadStudentState(account);
+        document.getElementById("studentSearch").value = studentName;
+        fillFormFromState();
+        updateAccountUi();
+        updateProgress();
+        updateSubmitUi();
+        renderNames();
+        renderPeerNames();
+        saveLastStudent(account);
+        saveState(false);
+        setListStatus("이름을 선택했어요.");
+        announce("학생 선택이 완료되었습니다.");
+        return true;
+      } catch (error) {
+        account = null;
+        state = createEmptyState();
+        fillFormFromState();
+        updateAccountUi();
+        updateProgress();
+        updateSubmitUi();
+        setListStatus(error.message || "학생 정보를 찾을 수 없어요.", true);
+        return false;
+      }
+    }
+
+    function clearStudentRuntime(pendingName) {
+      account = null;
+      state = createEmptyState({ studentName: pendingName });
+      fillFormFromState();
+      updateAccountUi();
+      updateProgress();
+      updateSubmitUi();
+      setCopyStatus("");
+      setResetStatus("");
+      setGuideCopyStatus("");
+    }
+
+    function sanitizeStudentInfo(info = {}) {
+      return {
+        studentId: String(info.studentId || info.loginId || "").trim(),
+        studentName: String(info.studentName || "").trim(),
+        loginId: String(info.loginId || info.studentId || "").trim(),
+        className: String(info.className || "").trim(),
+        grade: String(info.grade || "").trim(),
+        school: String(info.school || "").trim()
+      };
+    }
+
+    function storageKeyFor(studentId) {
+      return STORAGE_PREFIX + encodeURIComponent(String(studentId || "").trim());
+    }
+
+    function studentIdForStorage() {
+      const info = account || state.studentInfo || {};
+      return String(info.studentId || info.loginId || "").trim();
+    }
+
+    function loadStudentState(info) {
+      const cleanInfo = sanitizeStudentInfo(info);
+      if (!storageEnabled || !cleanInfo.studentId) {
+        return createEmptyState(cleanInfo);
+      }
+      try {
+        const raw = localStorage.getItem(storageKeyFor(cleanInfo.studentId));
+        if (!raw) {
+          return createEmptyState(cleanInfo);
+        }
+        const saved = stripSensitive(JSON.parse(raw));
+        const savedInfo = sanitizeStudentInfo(saved.studentInfo || {});
+        if (!isSameStudent(savedInfo, cleanInfo)) {
+          return createEmptyState(cleanInfo);
+        }
+        return normalizeState(saved, cleanInfo);
+      } catch (error) {
+        return createEmptyState(cleanInfo);
+      }
+    }
+
+    function normalizeState(saved = {}, info = {}) {
+      const cleanInfo = sanitizeStudentInfo(info);
+      const base = createEmptyState(cleanInfo);
+      const cleanSaved = stripSensitive(saved || {});
+      const mergedActivity = deepMerge(base.activityData, cleanSaved.activityData || {});
+      mergedActivity.route.steps = normalizeRouteSteps(mergedActivity.route && mergedActivity.route.steps);
+      mergedActivity.guide.locations = normalizeLocations(mergedActivity.guide && mergedActivity.guide.locations);
+      return {
+        ...base,
+        ...cleanSaved,
+        version: 1,
+        studentInfo: cleanInfo,
+        alreadyLoggedIn: Boolean(cleanSaved.alreadyLoggedIn),
+        needsResubmit: Boolean(cleanSaved.needsResubmit),
+        reportOpened: Boolean(cleanSaved.reportOpened),
+        lastSubmittedFingerprint: String(cleanSaved.lastSubmittedFingerprint || ""),
+        activityData: mergedActivity,
+        checklistData: {
+          ...base.checklistData,
+          ...(cleanSaved.checklistData || {})
+        },
+        reflectionData: {
+          ...base.reflectionData,
+          ...(cleanSaved.reflectionData || {})
+        },
+        submissionStatus: cleanSaved.submissionStatus || SUBMISSION_PENDING_MESSAGE
+      };
+    }
+
+    function normalizeRouteSteps(steps) {
+      const values = Array.isArray(steps) ? steps.slice(0, 5) : [];
+      while (values.length < 5) {
+        values.push("");
+      }
+      return values.map((value) => String(value || ""));
+    }
+
+    function normalizeLocations(locations) {
+      return Array.isArray(locations) ? locations.map((value) => String(value || "").trim()).filter(Boolean).slice(0, 3) : [];
+    }
+
+    function deepMerge(base, incoming) {
+      const output = Array.isArray(base) ? base.slice() : { ...base };
+      if (!incoming || typeof incoming !== "object") {
+        return output;
+      }
+      Object.keys(incoming).forEach((key) => {
+        const value = incoming[key];
+        if (Array.isArray(value)) {
+          output[key] = value.slice();
+        } else if (value && typeof value === "object" && output[key] && typeof output[key] === "object" && !Array.isArray(output[key])) {
+          output[key] = deepMerge(output[key], value);
+        } else {
+          output[key] = value;
+        }
+      });
+      return output;
+    }
+
+    function fillFormFromState() {
+      state = normalizeState(state, account || state.studentInfo || {});
+      const already = document.getElementById("alreadyLoggedIn");
+      if (already) {
+        already.checked = Boolean(state.alreadyLoggedIn);
+      }
+      document.querySelectorAll("[data-state-path]").forEach((element) => {
+        const value = getPath(state, element.dataset.statePath);
+        if (element.type === "checkbox") {
+          element.checked = Boolean(value);
+        } else {
+          element.value = value == null ? "" : value;
+        }
+      });
+      document.querySelectorAll("[data-route-step]").forEach((select) => {
+        const index = Number(select.dataset.routeStep);
+        select.value = state.activityData.route.steps[index] || "";
+      });
+      updateLoginFlow();
+      updateChoiceButtons();
+      renderGuideLocations();
+      renderGuidePrompt();
+      renderPeerNames();
+      updateCompletionBox();
+    }
+
+    function collectFormData() {
+      const next = normalizeState(state, account || state.studentInfo || {});
+      next.alreadyLoggedIn = Boolean(document.getElementById("alreadyLoggedIn").checked);
+      document.querySelectorAll("[data-state-path]").forEach((element) => {
+        const value = element.type === "checkbox" ? Boolean(element.checked) : element.value.trim();
+        setPath(next, element.dataset.statePath, value);
+      });
+      next.activityData.route.steps = Array.from(document.querySelectorAll("[data-route-step]")).map((select) => select.value);
+      next.activityData.guide.locations = normalizeLocations(next.activityData.guide.locations);
+      return next;
+    }
+
+    function syncStateFromForm() {
+      const next = collectFormData();
+      state = {
+        ...next,
+        studentInfo: sanitizeStudentInfo(account || next.studentInfo || {}),
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function scheduleSave() {
+      syncStateFromForm();
+      markIfSubmittedContentChanged();
+      updateLoginFlow();
+      updateChoiceButtons();
+      renderGuideLocations();
+      renderGuidePrompt();
+      renderPeerNames();
+      updateProgress();
+      updateSubmitUi();
+      updateCompletionBox();
+      if (!studentIdForStorage()) {
+        setSaveStatus("이름 선택 후 저장");
+        return;
+      }
+      setSaveStatus("저장 중");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saveState(true), 160);
+    }
+
+    function saveState(showSavedMessage) {
+      if (!storageEnabled) {
+        setSaveStatus("자동 저장 불가");
+        return false;
+      }
+      const id = studentIdForStorage();
+      if (!id) {
+        setSaveStatus("이름 선택 후 저장");
+        return false;
+      }
+      syncStateFromForm();
+      try {
+        const cleanState = stripSensitive({
+          ...state,
+          studentInfo: sanitizeStudentInfo(account || state.studentInfo || {})
+        });
+        localStorage.setItem(storageKeyFor(id), JSON.stringify(cleanState));
+        if (showSavedMessage) {
+          setSaveStatus(`저장됨 ${new Date().toLocaleTimeString("ko-KR", { hour12: false })}`);
+        } else {
+          setSaveStatus("자동 저장 준비");
+        }
+        return true;
+      } catch (error) {
+        storageEnabled = false;
+        setSaveStatus("자동 저장 불가");
+        return false;
+      }
+    }
+
+    function stripSensitive(value) {
+      if (Array.isArray(value)) {
+        return value.map(stripSensitive);
+      }
+      if (value && typeof value === "object") {
+        return Object.keys(value).reduce((clean, key) => {
+          if (/password|비밀번호/i.test(key) || /^(pass|pw)$/i.test(key)) {
+            return clean;
+          }
+          clean[key] = stripSensitive(value[key]);
+          return clean;
+        }, {});
+      }
+      return value;
+    }
+
+    function resetCurrentLesson() {
+      const id = studentIdForStorage();
+      if (!id) {
+        setResetStatus("먼저 학생 이름을 선택해 주세요.", true);
+        return;
+      }
+      localStorage.removeItem(storageKeyFor(id));
+      const cleanInfo = sanitizeStudentInfo(account || state.studentInfo || {});
+      state = createEmptyState(cleanInfo);
+      fillFormFromState();
+      updateProgress();
+      updateSubmitUi();
+      saveState(true);
+      setResetStatus("현재 학생의 4차시 준비 기록을 초기화했어요.");
+      announce("현재 학생 기록이 초기화되었습니다.");
+    }
+
+    function updateAccountUi() {
+      const info = sanitizeStudentInfo(account || state.studentInfo || {});
+      const hasAccount = Boolean(account && (account.studentId || account.loginId));
+      document.getElementById("selStatus").textContent = info.studentName || "아직 선택 전";
+      document.getElementById("studentNameText").textContent = info.studentName || "내 이름을 선택해 주세요.";
+      document.getElementById("loginIdText").textContent = hasAccount && info.loginId ? info.loginId : "선택 후 표시";
+      document.getElementById("copyId").disabled = !hasAccount || !account.loginId;
+      document.getElementById("copyPw").disabled = !hasAccount || !account.password;
+      document.getElementById("saveNow").disabled = !hasAccount;
+      document.getElementById("resetLesson").disabled = !hasAccount;
+      document.getElementById("loginFlow").hidden = !hasAccount;
+      updateLoginFlow();
+    }
+
+    function updateLoginFlow() {
+      const already = Boolean(state.alreadyLoggedIn);
+      document.getElementById("loginCard").hidden = already;
+      document.getElementById("classStepNo").textContent = already ? "1" : "2";
+      document.getElementById("projectStepNo").textContent = already ? "2" : "3";
+    }
+
+    async function copyLoginId() {
+      if (!account || !account.loginId) {
+        setCopyStatus("먼저 내 이름을 선택해 주세요.", true);
+        return;
+      }
+      await copyText(account.loginId, {
+        successMessage: "아이디가 복사되었어요.",
+        setStatus: setCopyStatus
+      });
+    }
+
+    async function copyPassword() {
+      if (!account || !account.password) {
+        setCopyStatus("비밀번호를 불러오지 못했어요.", true);
+        return;
+      }
+      await copyText(account.password, {
+        successMessage: "비밀번호가 복사되었어요.",
+        setStatus: setCopyStatus,
+        secret: true
+      });
+    }
+
+    async function copyText(text, options = {}) {
+      const setStatus = options.setStatus || setCopyStatus;
+      if (!text) {
+        setStatus("복사할 내용이 없어요.", true);
+        return;
+      }
+      try {
+        if (!navigator.clipboard) {
+          throw new Error("clipboard unavailable");
+        }
+        await navigator.clipboard.writeText(text);
+        hideManualCopy();
+        setStatus(options.successMessage || "복사되었어요.");
+      } catch (error) {
+        if (options.secret) {
+          hideManualCopy();
+          setStatus("복사가 막혔어요. 선생님께 알려 주세요.", true);
+          return;
+        }
+        const copied = fallbackCopy(text);
+        setStatus(copied ? (options.successMessage || "복사되었어요.") : "글상자를 선택했어요. Ctrl+C를 눌러요.", !copied);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const box = document.getElementById("manualCopyBox");
+      const textarea = document.getElementById("manualCopyText");
+      box.hidden = false;
+      textarea.value = text;
+      textarea.focus();
+      textarea.select();
+      try {
+        return document.execCommand("copy");
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function hideManualCopy() {
+      const box = document.getElementById("manualCopyBox");
+      const textarea = document.getElementById("manualCopyText");
+      box.hidden = true;
+      textarea.value = "";
+    }
+
+    function updateProgress() {
+      const hasStudent = Boolean(account && (account.studentId || account.loginId));
+      const units = [
+        hasStudent,
+        hasStudent,
+        isReviewComplete(),
+        isRocketComplete(),
+        isRouteComplete(),
+        isAutopilotComplete(),
+        isGuideComplete(),
+        isFinalChecklistComplete(),
+        isGalleryComplete(),
+        isReflectionComplete(),
+        Boolean(state.submittedAt) && !state.needsResubmit,
+        Boolean(state.reportOpened) && Boolean(state.submittedAt) && !state.needsResubmit
+      ];
+      const completed = units.filter(Boolean).length;
+      const total = 12;
+      const progress = document.getElementById("overallProgress");
+      progress.max = total;
+      progress.value = completed;
+      progress.textContent = `${completed} / ${total}`;
+      document.getElementById("progressText").textContent = `${completed} / ${total}`;
+    }
+
+    function updateSubmitUi() {
+      const submitButton = document.getElementById("submitRecord");
+      const resubmitButton = document.getElementById("resubmitRecord");
+      const submitBox = document.getElementById("submitValidationBox");
+      const missing = validateRequired();
+      const hasSubmitted = Boolean(state.submittedAt) && !state.needsResubmit;
+      const canSubmit = missing.length === 0 && !submitting && !hasSubmitted;
+      let message = state.submissionStatus || SUBMISSION_PENDING_MESSAGE;
+      submitButton.disabled = !canSubmit;
+      if (submitting) {
+        submitButton.textContent = "제출 중";
+        message = SUBMISSION_SENDING_MESSAGE;
+      } else if (hasSubmitted) {
+        submitButton.textContent = "제출 완료";
+        message = SUBMISSION_SUCCESS_MESSAGE;
+      } else if (missing.length > 0) {
+        submitButton.textContent = "4차시 기록 제출하기";
+        message = SUBMISSION_PENDING_MESSAGE;
+      } else if (state.submissionStatus === SUBMISSION_FAILED_MESSAGE) {
+        submitButton.textContent = state.needsResubmit ? "변경 내용 다시 제출하기" : "4차시 기록 제출하기";
+        message = SUBMISSION_FAILED_MESSAGE;
+      } else if (state.needsResubmit) {
+        submitButton.textContent = "변경 내용 다시 제출하기";
+        message = state.submissionStatus === SUBMISSION_READY_MESSAGE ? SUBMISSION_READY_MESSAGE : SUBMISSION_CHANGED_MESSAGE;
+      } else {
+        submitButton.textContent = "4차시 기록 제출하기";
+        message = state.submissionStatus === SUBMISSION_FAILED_MESSAGE ? SUBMISSION_FAILED_MESSAGE : SUBMISSION_READY_MESSAGE;
+      }
+      document.getElementById("submitStatus").textContent = message;
+      document.getElementById("submitTopStatus").textContent = message;
+      resubmitButton.hidden = !hasSubmitted;
+      if (missing.length > 0) {
+        submitBox.hidden = false;
+        submitBox.innerHTML = `<p>${SUBMISSION_MISSING_HINT}</p>`;
+      } else {
+        submitBox.hidden = true;
+        submitBox.innerHTML = "";
+      }
+      updateReportUi();
+    }
+
+    function updateReportUi() {
+      const reportButton = document.getElementById("openReport");
+      const reportStatus = document.getElementById("reportStatus");
+      const canOpenReport = Boolean(state.submittedAt) && !state.needsResubmit && !submitting;
+      reportButton.disabled = !canOpenReport;
+      reportButton.setAttribute("aria-disabled", canOpenReport ? "false" : "true");
+      if (submitting) {
+        reportStatus.textContent = "기록 제출이 끝난 뒤 탐사 보고서를 열 수 있어요.";
+      } else if (canOpenReport && state.reportOpened) {
+        reportStatus.textContent = "탐사 보고서를 열었어요. 다른 탭에서 확인해 주세요.";
+      } else if (canOpenReport) {
+        reportStatus.textContent = "탐사 보고서를 새 탭에서 열 수 있어요.";
+      } else if (state.needsResubmit) {
+        reportStatus.textContent = "변경 내용을 다시 제출한 뒤 탐사 보고서를 열 수 있어요.";
+      } else {
+        reportStatus.textContent = "기록 제출 후 탐사 보고서를 열 수 있어요.";
+      }
+    }
+
+    function openReportPage() {
+      if (!state.submittedAt || state.needsResubmit || submitting) {
+        updateReportUi();
+        return;
+      }
+      syncStateFromForm();
+      const reportWindow = window.open(REPORT_PAGE_URL, "_blank", "noopener,noreferrer");
+      if (!reportWindow) {
+        state.reportOpened = false;
+        saveState(false);
+        updateProgress();
+        updateSubmitUi();
+        document.getElementById("reportStatus").textContent = "새 탭이 열리지 않았어요. 브라우저 팝업 설정을 확인해 주세요.";
+        announce("탐사 보고서 새 탭을 열지 못했습니다.");
+        return;
+      }
+      reportWindow.opener = null;
+      state.reportOpened = true;
+      saveState(false);
+      updateProgress();
+      updateSubmitUi();
+      announce("탐사 보고서를 새 탭에서 열었습니다.");
+    }
+
+    function setSaveStatus(message) {
+      document.getElementById("saveStatus").textContent = message;
+    }
+
+    function setListStatus(message, isError = false) {
+      const status = document.getElementById("listStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function setCopyStatus(message, isError = false) {
+      const status = document.getElementById("copyStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function setResetStatus(message, isError = false) {
+      const status = document.getElementById("resetStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function setGuideCopyStatus(message, isError = false) {
+      const status = document.getElementById("guideCopyStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function getPath(source, path) {
+      return String(path || "").split(".").reduce((current, key) => {
+        return current && Object.prototype.hasOwnProperty.call(current, key) ? current[key] : undefined;
+      }, source);
+    }
+
+    function setPath(target, path, value) {
+      const parts = String(path || "").split(".").filter(Boolean);
+      let current = target;
+      parts.forEach((part, index) => {
+        if (index === parts.length - 1) {
+          current[part] = value;
+          return;
+        }
+        if (!current[part] || typeof current[part] !== "object") {
+          current[part] = {};
+        }
+        current = current[part];
+      });
+    }
+
+    function updateChoiceButtons() {
+      document.querySelectorAll("[data-choice-path]").forEach((button) => {
+        const selected = getPath(state, button.dataset.choicePath) === button.dataset.choiceValue;
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+    }
+
+    function toggleGuideLocation(location) {
+      syncStateFromForm();
+      const locations = state.activityData.guide.locations.slice();
+      const index = locations.indexOf(location);
+      if (index >= 0) {
+        locations.splice(index, 1);
+      } else if (locations.length < 3) {
+        locations.push(location);
+      }
+      state.activityData.guide.locations = locations;
+      renderGuideLocations();
+      renderGuidePrompt();
+      scheduleSave();
+    }
+
+    function renderGuideLocations() {
+      const locations = normalizeLocations(state.activityData && state.activityData.guide && state.activityData.guide.locations);
+      const full = locations.length >= 3;
+      document.querySelectorAll("[data-guide-location]").forEach((button) => {
+        const selected = locations.includes(button.dataset.guideLocation);
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", selected ? "true" : "false");
+        button.disabled = !selected && full;
+      });
+      document.getElementById("guideLocationCount").textContent = `${locations.length} / 3`;
+    }
+
+    function renderGuidePrompt() {
+      const guide = state.activityData.guide || {};
+      const name = String(guide.name || "기존 AI Buddy").trim() || "기존 AI Buddy";
+      const role = guide.role || "선택한 역할";
+      const tone = guide.tone || "선택한 말투";
+      const locations = normalizeLocations(guide.locations);
+      const locationText = locations.length ? locations.join(", ") : "선택한 안내 장소 3곳";
+      document.getElementById("guidePromptPreview").textContent =
+`너는 루나 게이트웨이의 AI 우주 가이드야.
+너의 이름은 ‘${name}’이야.
+너의 역할은 ‘${role}’이야.
+${locationText}을 초등학생이 이해할 수 있도록 짧고 친절하게 설명해 줘.
+‘${tone}’로 이야기해 줘.
+확실하지 않은 우주 과학 내용은 추측하지 말고 모른다고 알려 줘.`;
+    }
+
+    function useDefaultBuddyName() {
+      document.getElementById("guideName").value = "기존 AI Buddy";
+      setPath(state, "activityData.guide.name", "기존 AI Buddy");
+      renderGuidePrompt();
+      scheduleSave();
+    }
+
+    async function copyGuidePrompt() {
+      renderGuidePrompt();
+      const text = document.getElementById("guidePromptPreview").textContent.trim();
+      await copyText(text, {
+        successMessage: "설정 문장이 복사되었어요.",
+        setStatus: setGuideCopyStatus
+      });
+    }
+
+    function markPadletOpened() {
+      setPath(state, "activityData.gallery.opened", true);
+      scheduleSave();
+    }
+
+    function renderPeerNames() {
+      const container = document.getElementById("peerNameList");
+      if (!container) {
+        return;
+      }
+      const currentName = account && account.studentName ? account.studentName : "";
+      const selectedName = state.activityData && state.activityData.gallery ? state.activityData.gallery.peerName : "";
+      const peerNames = names.filter((name) => name && name !== currentName);
+      container.innerHTML = "";
+      if (!peerNames.length) {
+        const message = document.createElement("p");
+        message.className = "status-message";
+        message.textContent = "학생 이름을 선택하면 친구 이름 목록이 나타납니다.";
+        container.appendChild(message);
+        return;
+      }
+      peerNames.forEach((name) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "student-name-button";
+        button.textContent = name;
+        button.setAttribute("role", "option");
+        button.setAttribute("aria-selected", selectedName === name ? "true" : "false");
+        button.classList.toggle("selected", selectedName === name);
+        button.addEventListener("click", () => {
+          setPath(state, "activityData.gallery.peerName", name);
+          renderPeerNames();
+          scheduleSave();
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function isReviewComplete() {
+      return REVIEW_CHECK_KEYS.every((key) => Boolean(state.activityData.reviewChecks[key]));
+    }
+
+    function isRocketComplete() {
+      const rocket = state.activityData.rocket;
+      return Boolean(rocket.name.trim()) && Boolean(rocket.role) && ROCKET_CHECK_KEYS.every((key) => Boolean(rocket[key]));
+    }
+
+    function isRouteComplete() {
+      const route = state.activityData.route;
+      return Boolean(route.startPoint) && Boolean(route.destination) && route.steps.every((step) => Boolean(step));
+    }
+
+    function isAutopilotComplete() {
+      const autopilot = state.activityData.autopilot;
+      return Boolean(autopilot.result) && AUTOPILOT_CHECK_KEYS.every((key) => Boolean(autopilot.checks[key]));
+    }
+
+    function isGuideComplete() {
+      const guide = state.activityData.guide;
+      return Boolean(guide.name.trim()) && Boolean(guide.role) && Boolean(guide.tone) && normalizeLocations(guide.locations).length === 3;
+    }
+
+    function isFinalChecklistComplete() {
+      return FINAL_CHECK_KEYS.every((key) => Boolean(state.checklistData[key]));
+    }
+
+    function isGalleryComplete() {
+      const gallery = state.activityData.gallery;
+      return Boolean(gallery.opened) && Boolean(gallery.viewed) && Boolean(gallery.peerName) && Boolean(gallery.highlight) && Boolean(gallery.praise);
+    }
+
+    function isReflectionComplete() {
+      return REFLECTION_REQUIRED_KEYS.every((key) => Boolean(String(state.reflectionData[key] || "").trim()));
+    }
+
+    function validateRequired() {
+      syncStateFromForm();
+      const items = [];
+      if (!(account && (account.studentId || account.loginId))) {
+        items.push({ href: "#login", text: "학생 이름과 아이디를 확인해 주세요." });
+      }
+      if (!isReviewComplete()) {
+        items.push({ href: "#review", text: "지난 작품 점검 항목을 모두 확인해 주세요." });
+      }
+      if (!state.activityData.rocket.role) {
+        items.push({ href: "#rocket", text: "수송선 임무를 선택해 주세요." });
+      }
+      if (!ROCKET_CHECK_KEYS.every((key) => Boolean(state.activityData.rocket[key]))) {
+        items.push({ href: "#rocket", text: "Rocket 배치 확인을 모두 체크해 주세요." });
+      }
+      if (!isRouteComplete()) {
+        items.push({ href: "#route", text: "출발·도착 위치와 이동 경로 5칸을 선택해 주세요." });
+      }
+      if (!isAutopilotComplete()) {
+        items.push({ href: "#autopilot", text: "자동 항행 점검과 실행 결과를 기록해 주세요." });
+      }
+      if (!isGuideComplete()) {
+        items.push({ href: "#guide", text: "AI Buddy 이름·역할·말투·안내 장소 3곳을 완성해 주세요." });
+      }
+      if (!isFinalChecklistComplete()) {
+        items.push({ href: "#final-check", text: "전체 작품 점검 체크리스트를 모두 확인해 주세요." });
+      }
+      if (!isGalleryComplete()) {
+        items.push({ href: "#gallery", text: "친구 작품 관람 기록을 완성해 주세요." });
+      }
+      if (!isReflectionComplete()) {
+        items.push({ href: "#reflection", text: "최종 성찰 필수 선택 5개를 모두 선택해 주세요." });
+      }
+      return items;
+    }
+
+    function showCompletionCheck() {
+      const items = validateRequired();
+      const box = document.getElementById("validationBox");
+      box.hidden = false;
+      if (!items.length) {
+        box.innerHTML = "<p>4차시 활동 기록 준비가 완료되었습니다.</p>";
+        if (!state.submittedAt) {
+          state.submissionStatus = SUBMISSION_PENDING_MESSAGE;
+        }
+        updateSubmitUi();
+        saveState(false);
+        return;
+      }
+      box.innerHTML = items.map((item) => `<a href="${item.href}">${escapeHtml(item.text)}</a>`).join("");
+      setSaveStatus("확인할 활동이 있어요");
+    }
+
+    function updateCompletionBox() {
+      const box = document.getElementById("validationBox");
+      if (!box || box.hidden) {
+        return;
+      }
+      const items = validateRequired();
+      box.innerHTML = items.length ? items.map((item) => `<a href="${item.href}">${escapeHtml(item.text)}</a>`).join("") : "<p>4차시 활동 기록 준비가 완료되었습니다.</p>";
+    }
+
+    function calculateCompletionStatus() {
+      const missing = validateRequired();
+      if (!missing.length) {
+        return "완료";
+      }
+      const hasStudent = Boolean(account && (account.studentId || account.loginId));
+      const activityUnits = [
+        isReviewComplete(),
+        isRocketComplete(),
+        isRouteComplete(),
+        isAutopilotComplete(),
+        isGuideComplete(),
+        isFinalChecklistComplete(),
+        isGalleryComplete(),
+        isReflectionComplete()
+      ];
+      const completedUnits = activityUnits.filter(Boolean).length;
+      return hasStudent && completedUnits > 1 ? "부분완료" : "미완료";
+    }
+
+    function buildPayload(submittedAt = new Date().toISOString()) {
+      syncStateFromForm();
+      const info = sanitizeStudentInfo(account || state.studentInfo || {});
+      const completionStatus = calculateCompletionStatus();
+      const completedAt = state.completedAt || (completionStatus === "완료" ? submittedAt : "");
+      const activityData = toPlainJson({
+        reviewChecks: state.activityData.reviewChecks || {},
+        rocket: state.activityData.rocket || {},
+        route: {
+          ...(state.activityData.route || {}),
+          steps: normalizeRouteSteps(state.activityData.route && state.activityData.route.steps)
+        },
+        autopilot: state.activityData.autopilot || {},
+        guide: {
+          ...(state.activityData.guide || {}),
+          locations: normalizeLocations(state.activityData.guide && state.activityData.guide.locations)
+        },
+        gallery: state.activityData.gallery || {},
+        completionStatus
+      });
+      return stripSensitive({
+        action: "submitLessonRecord",
+        submissionId: state.submissionId,
+        schemaVersion: "lesson04.v1",
+        studentId: info.studentId || info.loginId,
+        studentName: info.studentName,
+        loginId: info.loginId || info.studentId,
+        className: info.className,
+        grade: info.grade,
+        school: info.school,
+        lessonNumber: LESSON_NUMBER,
+        lessonTitle: LESSON_TITLE,
+        activityData,
+        checklistData: toPlainJson(state.checklistData || {}),
+        reflectionData: toPlainJson(state.reflectionData || {}),
+        startedAt: state.startedAt,
+        completedAt,
+        submittedAt
+      });
+    }
+
+    async function submitLessonRecord() {
+      if (submitting) {
+        return;
+      }
+      syncStateFromForm();
+      const info = sanitizeStudentInfo(account || state.studentInfo || {});
+      if (!info.studentId && !info.loginId) {
+        state.submissionStatus = SUBMISSION_PENDING_MESSAGE;
+        updateSubmitUi();
+        showSubmitValidation([{ href: "#login", text: "학생 이름과 아이디를 확인해 주세요." }]);
+        return;
+      }
+      const missing = validateRequired();
+      if (missing.length) {
+        state.submissionStatus = SUBMISSION_PENDING_MESSAGE;
+        updateSubmitUi();
+        showSubmitValidation(missing);
+        return;
+      }
+      if (state.needsResubmit && state.submittedAt) {
+        state.submissionId = makeSubmissionId();
+        state.submittedAt = "";
+      }
+      if (!state.submissionId) {
+        state.submissionId = makeSubmissionId();
+      }
+      const submittedAt = new Date().toISOString();
+      const payload = buildPayload(submittedAt);
+      submitting = true;
+      state.submissionStatus = SUBMISSION_SENDING_MESSAGE;
+      updateSubmitUi();
+      try {
+        const response = await fetch(RECORD_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const text = await response.text();
+        let result = {};
+        try {
+          result = JSON.parse(text);
+        } catch (error) {
+          throw new Error("submit failed");
+        }
+        if (!response.ok || result.ok === false) {
+          throw new Error("submit failed");
+        }
+        state.submissionId = result.submissionId || state.submissionId;
+        state.submittedAt = submittedAt;
+        state.completedAt = payload.completedAt;
+        state.submissionStatus = SUBMISSION_SUCCESS_MESSAGE;
+        state.needsResubmit = false;
+        state.reportOpened = false;
+        state.lastSubmittedFingerprint = submissionFingerprint();
+        document.getElementById("submitValidationBox").hidden = true;
+        document.getElementById("submitValidationBox").innerHTML = "";
+        saveState(false);
+      } catch (error) {
+        state.submissionStatus = SUBMISSION_FAILED_MESSAGE;
+        saveState(false);
+      } finally {
+        submitting = false;
+        updateProgress();
+        updateSubmitUi();
+      }
+    }
+
+    function prepareResubmit() {
+      state.submissionId = makeSubmissionId();
+      state.submittedAt = "";
+      state.needsResubmit = true;
+      state.reportOpened = false;
+      state.submissionStatus = SUBMISSION_READY_MESSAGE;
+      saveState(false);
+      updateProgress();
+      updateSubmitUi();
+    }
+
+    function markIfSubmittedContentChanged() {
+      if (!state.submittedAt || state.needsResubmit || submitting) {
+        return;
+      }
+      const fingerprint = submissionFingerprint();
+      if (state.lastSubmittedFingerprint && fingerprint !== state.lastSubmittedFingerprint) {
+        state.needsResubmit = true;
+        state.reportOpened = false;
+        state.submissionStatus = SUBMISSION_CHANGED_MESSAGE;
+      }
+    }
+
+    function submissionFingerprint() {
+      return JSON.stringify(toPlainJson({
+        activityData: state.activityData,
+        checklistData: state.checklistData,
+        reflectionData: state.reflectionData
+      }));
+    }
+
+    function toPlainJson(value) {
+      return JSON.parse(JSON.stringify(stripSensitive(value || {})));
+    }
+
+    function showSubmitValidation(items) {
+      const box = document.getElementById("submitValidationBox");
+      box.hidden = false;
+      box.innerHTML = items.map((item) => `<a href="${item.href}">${escapeHtml(item.text)}</a>`).join("");
+    }
+
+    function makeSubmissionId() {
+      if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return "lesson04-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function saveLastStudent(info) {
+      if (!storageEnabled) {
+        return;
+      }
+      const cleanInfo = sanitizeStudentInfo(info);
+      if (!cleanInfo.studentId || !cleanInfo.studentName) {
+        return;
+      }
+      try {
+        localStorage.setItem(LAST_STUDENT_KEY, JSON.stringify(stripSensitive({
+          studentId: cleanInfo.studentId,
+          studentName: cleanInfo.studentName,
+          savedAt: new Date().toISOString()
+        })));
+      } catch (error) {
+        storageEnabled = false;
+      }
+    }
+
+    function readLastStudent() {
+      if (!storageEnabled) {
+        return {};
+      }
+      try {
+        return stripSensitive(JSON.parse(localStorage.getItem(LAST_STUDENT_KEY) || "{}"));
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function isSameStudent(savedInfo, currentInfo) {
+      const saved = sanitizeStudentInfo(savedInfo);
+      const current = sanitizeStudentInfo(currentInfo);
+      const savedIds = [saved.studentId, saved.loginId].filter(Boolean);
+      const currentIds = [current.studentId, current.loginId].filter(Boolean);
+      return savedIds.length > 0 && currentIds.length > 0 && savedIds.some((id) => currentIds.includes(id));
+    }
+
+    function announce(message) {
+      document.getElementById("a11yStatus").textContent = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+  </script>
+</body>
+</html>

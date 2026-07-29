@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>명주도서관 Delightex Edu 탐사 보고서</title>
+  <style>
+    :root {
+      --ink: #eff8ff;
+      --muted: #b8cde8;
+      --panel: rgba(10, 30, 64, .86);
+      --panel-soft: rgba(19, 54, 104, .66);
+      --line: rgba(172, 210, 255, .24);
+      --navy: #07182f;
+      --blue: #1d66ff;
+      --cyan: #4fd8ff;
+      --amber: #ffd36e;
+      --danger: #ffb4b4;
+      --success: #9ef2cb;
+      --shadow: 0 20px 52px rgba(0, 0, 0, .28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 0;
+      overflow-x: hidden;
+      background: var(--navy);
+    }
+
+    body {
+      min-width: 0;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(79, 216, 255, .16) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 22%, rgba(255, 211, 110, .2) 0 1px, transparent 2px),
+        radial-gradient(circle at 38% 72%, rgba(255, 255, 255, .16) 0 1px, transparent 2px),
+        linear-gradient(180deg, #07182f 0%, #0c2553 48%, #102b5a 100%);
+      background-size: auto;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .62;
+    }
+
+    .page {
+      width: min(100%, 900px);
+      margin: 0 auto;
+      padding: 24px 16px 42px;
+    }
+
+    .top {
+      padding: 18px 0 20px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: .84rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 8vw, 3.8rem);
+    }
+
+    h2 {
+      font-size: 1.35rem;
+    }
+
+    h3 {
+      font-size: 1.08rem;
+    }
+
+    .lead {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .panel,
+    .lesson-card,
+    .summary-row,
+    .growth-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .lookup-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid rgba(190, 220, 255, .34);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--ink);
+      background: rgba(3, 16, 37, .84);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(79, 216, 255, .18);
+    }
+
+    .primary {
+      color: #06172f;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+    }
+
+    .secondary {
+      color: var(--ink);
+      border: 1px solid rgba(190, 220, 255, .34);
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .status {
+      min-height: 28px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .status.error {
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .report {
+      display: grid;
+      gap: 16px;
+    }
+
+    .report-head {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(29, 102, 255, .28), rgba(79, 216, 255, .12));
+    }
+
+    .report-title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-row {
+      padding: 14px;
+      box-shadow: none;
+      background: var(--panel-soft);
+    }
+
+    .summary-row span,
+    .lesson-meta span,
+    dt {
+      color: var(--muted);
+      font-size: .92rem;
+      font-weight: 800;
+    }
+
+    .summary-row strong,
+    .lesson-meta strong,
+    dd {
+      color: var(--ink);
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .lesson-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .lesson-card {
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .lesson-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .lesson-badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #06172f;
+      background: var(--amber);
+      font-size: .88rem;
+      font-weight: 900;
+    }
+
+    .lesson-meta {
+      display: grid;
+      grid-template-columns: minmax(88px, auto) 1fr;
+      gap: 4px 10px;
+      margin: 0 0 12px;
+      padding: 10px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    dl {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .fact {
+      display: grid;
+      gap: 3px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(172, 210, 255, .16);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .item-list {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    .item-list li {
+      margin: 2px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .growth-box {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      box-shadow: none;
+      background: rgba(8, 35, 72, .84);
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (min-width: 720px) {
+      .page {
+        padding: 38px 22px 56px;
+      }
+
+      .panel,
+      .report-head {
+        padding: 24px;
+      }
+
+      .lookup-form {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+
+      .lookup-form label {
+        min-width: 0;
+      }
+
+      .lookup-form button {
+        min-width: 170px;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .actions {
+        justify-items: start;
+      }
+
+      .actions button {
+        min-width: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <p class="eyebrow">Delightex Edu · 명주도서관</p>
+      <h1>탐사 보고서</h1>
+      <p class="lead">자녀 이름을 정확히 입력하면 1~4차시 탐사 기록을 확인할 수 있습니다.</p>
+    </header>
+
+    <main>
+      <section id="lookupPanel" class="panel" aria-labelledby="lookupTitle">
+        <h2 id="lookupTitle">자녀 이름으로 조회하기</h2>
+        <form id="lookupForm" class="lookup-form" autocomplete="off" novalidate>
+          <label for="studentNameInput">
+            <span>자녀 이름</span>
+            <input id="studentNameInput" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="30" aria-describedby="lookupStatus">
+          </label>
+          <button id="lookupButton" class="primary" type="submit">탐사 기록 확인</button>
+        </form>
+        <p id="lookupStatus" class="status" aria-live="polite">자녀 이름을 정확히 입력해 주세요.</p>
+      </section>
+
+      <section id="reportPanel" class="report" aria-labelledby="reportTitle" hidden>
+        <div class="report-head">
+          <div class="report-title">
+            <p class="eyebrow">탐사 기록 요약</p>
+            <h2 id="reportTitle">보고서</h2>
+          </div>
+          <div class="summary-grid" aria-label="보고서 기본 정보">
+            <div class="summary-row"><span>학생 이름</span><strong id="summaryStudent"></strong></div>
+            <div class="summary-row"><span>프로그램명</span><strong id="summaryProgram"></strong></div>
+            <div class="summary-row"><span>제출 차시 수</span><strong id="summaryCount"></strong></div>
+            <div class="summary-row" id="lastUpdatedRow"><span>마지막 업데이트</span><strong id="summaryUpdated"></strong></div>
+            <div class="summary-row"><span>전체 참여 상태</span><strong id="summaryStatus"></strong></div>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow">1~4차시 기록</p>
+          <div id="lessonCards" class="lesson-grid"></div>
+        </div>
+
+        <section class="growth-box" aria-labelledby="growthTitle">
+          <h2 id="growthTitle">성장 요약</h2>
+          <dl id="growthList"></dl>
+          <p id="growthEmpty" class="empty-note" hidden>표시할 성장 요약이 아직 없습니다.</p>
+        </section>
+
+        <div class="actions">
+          <button id="resetLookup" class="secondary" type="button">다른 이름으로 확인하기</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const REPORT_API_URL = "https://script.google.com/macros/s/AKfycbxPbD6lnhX-tn8WYW9xIvs3EvCUPQeJHhEV_wWqdEP6ihAdvt0OlbCey0lQWQJWpeaU/exec";
+    const TOTAL_LESSONS = 4;
+    const LESSON_TITLES = {
+      1: "AI로 창조하는 달의 뒷면과 탐사 대원",
+      2: "AI 버디에게 듣는 우주의 신비 - 자전과 공전",
+      3: "AI 생성 기술로 완성하는 루나 게이트웨이",
+      4: "AI 우주 가이드와 함께하는 정거장 투어"
+    };
+    const ERROR_MESSAGES = {
+      EMPTY_NAME: "자녀 이름을 입력해 주세요.",
+      MISSING_NAME: "자녀 이름을 입력해 주세요.",
+      NOT_FOUND: "입력한 이름과 일치하는 기록을 찾지 못했습니다.",
+      DUPLICATE_NAME: "같은 이름의 학생이 있어 조회할 수 없습니다. 강사에게 문의해 주세요.",
+      NETWORK: "잠시 후 다시 시도해 주세요.",
+      INVALID_RESPONSE: "잠시 후 다시 시도해 주세요.",
+      UNKNOWN_ERROR: "기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+    };
+    const LESSON_FIELDS = {
+      1: [
+        ["highlights", "buddyName", "AI Buddy 이름"],
+        ["highlights", "buddyRole", "AI Buddy 역할"],
+        ["highlights", "buddySpecialty", "전문 분야"],
+        ["highlights", "representativeQuestion", "대표 질문"],
+        ["highlights", "scienceFact", "새롭게 알게 된 과학적 사실"],
+        ["reflection", "buddyStrength", "AI Buddy가 잘한 점"],
+        ["reflection", "usefulQuestion", "가장 유용했던 질문"],
+        ["reflection", "difficulty", "어려웠던 점"],
+        ["reflection", "nextQuestion", "다음 질문"]
+      ],
+      2: [
+        ["highlights", "experimentAResult", "실험 A 결과"],
+        ["highlights", "experimentBResult", "실험 B 결과"],
+        ["highlights", "rotationOrbitConclusion", "자전·공전 결론"],
+        ["highlights", "buddyQuestion", "AI Buddy에게 물어본 질문"],
+        ["highlights", "buddyNewFact", "새롭게 알게 된 사실"],
+        ["highlights", "verifiedFact", "확인한 과학적 사실"],
+        ["highlights", "extraReflection", "추가 성찰"],
+        ["reflection", "experimentDifference", "실험에서 알게 된 차이"],
+        ["reflection", "newFact", "새롭게 알게 된 사실"],
+        ["reflection", "difficulty", "어려웠던 점"]
+      ],
+      3: [
+        ["highlights", "aiSkillResult", "AI Skill 이동 결과"],
+        ["highlights", "completedFacilities", "완성한 시설"],
+        ["highlights", "customFeature", "나만의 특징"],
+        ["highlights", "completionStatus", "완성 상태"],
+        ["reflection", "customFeatureReason", "특징을 추가한 이유"],
+        ["reflection", "difficulty", "어려웠던 점"],
+        ["reflection", "nextQuestion", "다음에 해보고 싶은 것"]
+      ],
+      4: [
+        ["highlights", "rocketName", "수송선 이름"],
+        ["highlights", "rocketRole", "수송 임무"],
+        ["highlights", "routeStart", "출발 위치"],
+        ["highlights", "routeDestination", "도착 위치"],
+        ["highlights", "routeSteps", "이동 경로"],
+        ["highlights", "autopilotResult", "자동 항행 결과"],
+        ["highlights", "guideName", "AI Buddy 이름"],
+        ["highlights", "guideRole", "AI Buddy 역할"],
+        ["highlights", "guideLocations", "안내 장소 3곳"],
+        ["highlights", "galleryHighlight", "친구 작품의 인상적인 특징"],
+        ["highlights", "galleryPraise", "칭찬 내용"],
+        ["reflection", "memorableActivity", "가장 기억에 남는 활동"],
+        ["reflection", "bestAchievement", "가장 잘한 것"],
+        ["reflection", "difficulty", "어려웠던 점"],
+        ["reflection", "solution", "해결 방법"],
+        ["reflection", "nextChallenge", "다음 도전"]
+      ]
+    };
+
+    const form = document.getElementById("lookupForm");
+    const nameInput = document.getElementById("studentNameInput");
+    const lookupButton = document.getElementById("lookupButton");
+    const lookupStatus = document.getElementById("lookupStatus");
+    const lookupPanel = document.getElementById("lookupPanel");
+    const reportPanel = document.getElementById("reportPanel");
+    const lessonCards = document.getElementById("lessonCards");
+    const growthList = document.getElementById("growthList");
+    const growthEmpty = document.getElementById("growthEmpty");
+    let currentReport = null;
+    let lookupInProgress = false;
+
+    form.addEventListener("submit", handleLookup);
+    nameInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+      event.preventDefault();
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        lookupButton.click();
+      }
+    });
+    document.getElementById("resetLookup").addEventListener("click", resetLookup);
+
+    async function handleLookup(event) {
+      event.preventDefault();
+      if (lookupInProgress) {
+        return;
+      }
+      const studentName = cleanName(nameInput.value);
+      if (!studentName) {
+        setLookupMessage(ERROR_MESSAGES.EMPTY_NAME, true);
+        return;
+      }
+      clearReport();
+      setLoading(true);
+      setLookupMessage("탐사 기록을 확인하고 있어요.", false);
+      try {
+        const report = await fetchReport(studentName);
+        nameInput.value = "";
+        currentReport = report;
+        renderReport(report);
+        lookupPanel.hidden = true;
+        reportPanel.hidden = false;
+      } catch (error) {
+        setLookupMessage(ERROR_MESSAGES[error.code] || ERROR_MESSAGES.UNKNOWN_ERROR, true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function fetchReport(studentName) {
+      const url = new URL(REPORT_API_URL);
+      url.searchParams.set("action", "getStudentReport");
+      url.searchParams.set("studentName", studentName);
+      let response;
+      try {
+        response = await fetch(url.toString(), { method: "GET", cache: "no-store" });
+      } catch (error) {
+        throw lookupError("NETWORK");
+      }
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        throw lookupError("INVALID_RESPONSE");
+      }
+      if (!response.ok) {
+        throw lookupError(knownCode(data && data.code) || "UNKNOWN_ERROR");
+      }
+      if (data && data.ok === true && data.report && typeof data.report === "object") {
+        return data.report;
+      }
+      if (data && data.ok === false) {
+        throw lookupError(knownCode(data.code) || "UNKNOWN_ERROR");
+      }
+      throw lookupError("INVALID_RESPONSE");
+    }
+
+    function renderReport(report) {
+      const totalLessons = clampTotal(report.totalLessons);
+      const submittedCount = clampCount(report.submittedLessonCount);
+      document.getElementById("reportTitle").textContent = `${safeText(report.studentName) || "학생"} 탐사 보고서`;
+      document.getElementById("summaryStudent").textContent = safeText(report.studentName);
+      document.getElementById("summaryProgram").textContent = safeText(report.programTitle);
+      document.getElementById("summaryCount").textContent = `${submittedCount}/${totalLessons}`;
+      document.getElementById("summaryStatus").textContent = participationStatus(submittedCount, totalLessons);
+      const lastUpdated = formatDate(report.lastUpdated);
+      document.getElementById("lastUpdatedRow").hidden = !lastUpdated;
+      document.getElementById("summaryUpdated").textContent = lastUpdated;
+      renderLessons(report.lessons);
+      renderGrowth(report.growth || {});
+    }
+
+    function renderLessons(lessons) {
+      lessonCards.replaceChildren();
+      const lessonMap = new Map();
+      if (Array.isArray(lessons)) {
+        lessons.forEach((lesson) => {
+          const lessonNumber = Number(lesson && lesson.lessonNumber);
+          if (lessonNumber >= 1 && lessonNumber <= TOTAL_LESSONS) {
+            lessonMap.set(lessonNumber, lesson);
+          }
+        });
+      }
+      for (let number = 1; number <= TOTAL_LESSONS; number += 1) {
+        lessonCards.appendChild(renderLessonCard(number, lessonMap.get(number) || {}));
+      }
+    }
+
+    function renderLessonCard(number, lesson) {
+      const card = document.createElement("article");
+      card.classList.add("lesson-card");
+      const top = document.createElement("div");
+      top.classList.add("lesson-top");
+      const titleWrap = document.createElement("div");
+      const title = document.createElement("h3");
+      title.textContent = safeText(lesson.lessonTitle) || LESSON_TITLES[number] || `${number}차시`;
+      const badge = document.createElement("span");
+      badge.classList.add("lesson-badge");
+      badge.textContent = `${number}차시`;
+      titleWrap.appendChild(title);
+      top.append(titleWrap, badge);
+      card.appendChild(top);
+
+      if (!lesson.submitted) {
+        const empty = document.createElement("p");
+        empty.classList.add("empty-note");
+        empty.textContent = "아직 제출된 탐사 기록이 없습니다.";
+        card.appendChild(empty);
+        return card;
+      }
+
+      const meta = document.createElement("div");
+      meta.classList.add("lesson-meta");
+      const submittedAt = formatDate(lesson.submittedAt);
+      if (submittedAt) {
+        appendMeta(meta, "제출일", submittedAt);
+      }
+      if (hasValue(lesson.completionStatus)) {
+        appendMeta(meta, "활동 상태", lesson.completionStatus);
+      }
+      if (meta.children.length) {
+        card.appendChild(meta);
+      }
+
+      const details = document.createElement("dl");
+      let shown = 0;
+      (LESSON_FIELDS[number] || []).forEach(([group, key, label]) => {
+        const value = lesson[group] && lesson[group][key];
+        if (appendFact(details, label, value)) {
+          shown += 1;
+        }
+      });
+      if (shown) {
+        card.appendChild(details);
+      } else {
+        const empty = document.createElement("p");
+        empty.classList.add("empty-note");
+        empty.textContent = "표시할 세부 기록이 아직 없습니다.";
+        card.appendChild(empty);
+      }
+      return card;
+    }
+
+    function renderGrowth(growth) {
+      growthList.replaceChildren();
+      const rows = [
+        ["강점", growth.strength],
+        ["어려움", growth.difficulty],
+        ["다음 탐구", growth.nextStep]
+      ];
+      let shown = 0;
+      rows.forEach(([label, value]) => {
+        if (appendFact(growthList, label, value)) {
+          shown += 1;
+        }
+      });
+      growthEmpty.hidden = shown > 0;
+    }
+
+    function appendMeta(parent, label, value) {
+      const labelNode = document.createElement("span");
+      const valueNode = document.createElement("strong");
+      labelNode.textContent = label;
+      valueNode.textContent = safeText(value);
+      parent.append(labelNode, valueNode);
+    }
+
+    function appendFact(parent, label, value) {
+      if (!hasValue(value)) {
+        return false;
+      }
+      const wrap = document.createElement("div");
+      wrap.classList.add("fact");
+      const term = document.createElement("dt");
+      const detail = document.createElement("dd");
+      term.textContent = label;
+      const valueNode = formatValue(value);
+      if (!valueNode) {
+        return false;
+      }
+      detail.appendChild(valueNode);
+      wrap.append(term, detail);
+      parent.appendChild(wrap);
+      return true;
+    }
+
+    function formatValue(value) {
+      if (Array.isArray(value)) {
+        const items = value.filter(hasValue);
+        if (!items.length) {
+          return null;
+        }
+        const list = document.createElement("ul");
+        list.classList.add("item-list");
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = flattenText(item).join(" / ");
+          if (li.textContent) {
+            list.appendChild(li);
+          }
+        });
+        return list.children.length ? list : null;
+      }
+      const text = flattenText(value).join(" / ");
+      if (!text) {
+        return null;
+      }
+      return document.createTextNode(text);
+    }
+
+    function flattenText(value, output = []) {
+      if (value === null || value === undefined || value === false) {
+        return output;
+      }
+      if (Array.isArray(value)) {
+        value.forEach((item) => flattenText(item, output));
+        return output;
+      }
+      if (typeof value === "object") {
+        Object.keys(value).forEach((key) => flattenText(value[key], output));
+        return output;
+      }
+      const text = safeText(value);
+      if (text) {
+        output.push(text);
+      }
+      return output;
+    }
+
+    function hasValue(value) {
+      if (value === null || value === undefined || value === false) {
+        return false;
+      }
+      if (Array.isArray(value)) {
+        return value.some(hasValue);
+      }
+      if (typeof value === "object") {
+        return Object.keys(value).some((key) => hasValue(value[key]));
+      }
+      return safeText(value) !== "";
+    }
+
+    function resetLookup() {
+      currentReport = null;
+      clearReport();
+      reportPanel.hidden = true;
+      lookupPanel.hidden = false;
+      nameInput.value = "";
+      setLookupMessage("자녀 이름을 정확히 입력해 주세요.", false);
+      window.requestAnimationFrame(() => nameInput.focus());
+    }
+
+    function clearReport() {
+      currentReport = null;
+      lessonCards.replaceChildren();
+      growthList.replaceChildren();
+      growthEmpty.hidden = true;
+      document.getElementById("reportTitle").textContent = "보고서";
+      document.getElementById("summaryStudent").textContent = "";
+      document.getElementById("summaryProgram").textContent = "";
+      document.getElementById("summaryCount").textContent = "";
+      document.getElementById("summaryUpdated").textContent = "";
+      document.getElementById("summaryStatus").textContent = "";
+    }
+
+    function setLoading(isLoading) {
+      lookupInProgress = isLoading;
+      lookupButton.disabled = isLoading;
+      lookupButton.textContent = isLoading ? "확인 중" : "탐사 기록 확인";
+    }
+
+    function setLookupMessage(message, isError) {
+      lookupStatus.textContent = message;
+      lookupStatus.classList.toggle("error", Boolean(isError));
+    }
+
+    function cleanName(value) {
+      return String(value || "").trim().replace(/\s+/g, " ");
+    }
+
+    function participationStatus(count, total = TOTAL_LESSONS) {
+      if (count <= 0) {
+        return "아직 제출된 탐사 기록이 없습니다.";
+      }
+      if (count >= total) {
+        return "네 차시의 탐사 기록을 모두 완료했습니다.";
+      }
+      return "탐사 활동을 진행하고 있습니다.";
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "";
+      }
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+      return date.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function clampCount(value) {
+      const count = Number(value);
+      if (!Number.isFinite(count)) {
+        return 0;
+      }
+      return Math.max(0, Math.min(TOTAL_LESSONS, Math.round(count)));
+    }
+
+    function clampTotal(value) {
+      const total = Number(value);
+      if (!Number.isFinite(total) || total < 1) {
+        return TOTAL_LESSONS;
+      }
+      return Math.max(1, Math.min(TOTAL_LESSONS, Math.round(total)));
+    }
+
+    function safeText(value) {
+      if (value === null || value === undefined || value === false) {
+        return "";
+      }
+      if (value === true) {
+        return "예";
+      }
+      return String(value).trim();
+    }
+
+    function knownCode(code) {
+      const cleanCode = String(code || "").trim();
+      return Object.prototype.hasOwnProperty.call(ERROR_MESSAGES, cleanCode) ? cleanCode : "";
+    }
+
+    function lookupError(code) {
+      const error = new Error("lookup failed");
+      error.code = code;
+      return error;
+    }
+  </script>
+</body>
+</html>
