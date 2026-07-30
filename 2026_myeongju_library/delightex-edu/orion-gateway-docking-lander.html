@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오리온호와 함께하는 달 여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6366F1;
+    --secondary:#F97316;
+    --success:#22C55E;
+    --warning:#FBBF24;
+    --danger:#F43F5E;
+    --bg:#FFF8F0;
+    --card:#FFFFFF;
+    --text:#1E1B4B;
+    --muted:#7C3AED;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.8;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:16px;}
+
+  header.top{
+    background:linear-gradient(135deg,var(--primary),var(--muted));
+    color:#fff;
+    padding:28px 20px;
+    border-radius:0 0 28px 28px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"🚀";
+    position:absolute;
+    font-size:110px;
+    opacity:0.15;
+    right:-10px;
+    top:-10px;
+  }
+  header.top h1{
+    font-size:24px;
+    margin:6px 0;
+    font-weight:900;
+  }
+  header.top p{
+    font-size:15px;
+    opacity:0.95;
+    margin:4px 0 0;
+  }
+
+  .progressbar{
+    max-width:860px;
+    margin:16px auto 0;
+    padding:0 16px;
+    display:flex;
+    gap:6px;
+  }
+  .progressbar .seg{
+    flex:1;
+    height:10px;
+    background:#e7e3ff;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progressbar .seg.done{background:var(--success);}
+
+  section{
+    background:var(--card);
+    border-radius:20px;
+    padding:22px 20px;
+    margin:18px 0;
+    box-shadow:0 4px 14px rgba(99,102,241,0.08);
+    border-top:6px solid var(--primary);
+  }
+  section.goal{border-top-color:var(--secondary);}
+  section.quiz{border-top-color:var(--warning);}
+  section.summary{border-top-color:var(--success);}
+  section.check{border-top-color:var(--danger);}
+
+  h2{
+    font-size:20px;
+    margin-top:0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  p{font-size:16px;}
+
+  .card{
+    background:#F5F3FF;
+    border-radius:16px;
+    padding:14px 16px;
+    margin:12px 0;
+  }
+  .term{font-weight:700;color:var(--primary);}
+
+  /* 여행 순서 스테퍼 */
+  .journey-box{
+    background:#0b0b23;
+    border-radius:16px;
+    padding:18px;
+    text-align:center;
+    color:#fff;
+  }
+  .journey-scene{
+    font-size:56px;
+    height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .journey-label{
+    font-size:16px;
+    font-weight:700;
+    margin-top:6px;
+  }
+  .journey-desc{
+    font-size:14px;
+    opacity:0.9;
+    margin-top:4px;
+    min-height:40px;
+  }
+  .journey-dots{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+  }
+  .journey-dots span{
+    width:10px;height:10px;border-radius:50%;
+    background:#3f3f6f;
+  }
+  .journey-dots span.active{background:var(--warning);}
+  .journey-controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .btn:hover{transform:scale(1.05);}
+  .btn.secondary{background:var(--secondary);}
+  .btn:disabled{opacity:0.4;cursor:default;transform:none;}
+
+  /* 도킹 애니메이션 - 단순 접합 */
+  .dock-visual{
+    background:#0b0b23;
+    border-radius:14px;
+    padding:10px 6px 4px;
+    color:#fff;
+    text-align:center;
+  }
+  .dock-visual svg{width:100%;max-width:520px;height:auto;}
+  #shipLeft, #shipRight{transition:transform 1.1s cubic-bezier(.34,1.2,.64,1);}
+  #shipLeft.approach{transform:translateX(80px);}
+  #shipRight.approach{transform:translateX(-80px);}
+  #portLeft, #portRight{transition:fill .4s ease, stroke .4s ease;}
+  #portLeft.locked, #portRight.locked{fill:var(--success);stroke:var(--success);}
+  #seamLine{opacity:0;transition:opacity .3s ease;}
+  #seamLine.show{opacity:1;}
+  #statusLight{transition:fill .4s ease;}
+  #statusLight.green{fill:var(--success);}
+  .dock-status{font-size:15px;font-weight:700;margin-top:6px;min-height:20px;}
+
+  /* 퀴즈 */
+  .q-block{margin-bottom:22px;}
+  .q-title{font-weight:700;font-size:17px;margin-bottom:10px;}
+  .options{display:grid;gap:10px;}
+  .opt{
+    background:#F5F3FF;
+    border:2px solid transparent;
+    border-radius:14px;
+    padding:12px 14px;
+    font-size:16px;
+    cursor:pointer;
+    text-align:left;
+    transition:all .15s;
+  }
+  .opt:hover{border-color:var(--primary);}
+  .opt.correct{background:#DCFCE7;border-color:var(--success);}
+  .opt.wrong{background:#FEE2E2;border-color:var(--danger);}
+  .feedback{
+    margin-top:8px;
+    font-size:15px;
+    font-weight:700;
+    min-height:22px;
+  }
+  .feedback.ok{color:var(--success);}
+  .feedback.no{color:var(--danger);}
+
+  /* 체크리스트 */
+  .check-list{list-style:none;padding:0;margin:0;}
+  .check-list li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#F5F3FF;
+    padding:12px 14px;
+    border-radius:14px;
+    margin-bottom:10px;
+    font-size:16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .check-list li .star{font-size:22px;}
+  .check-list li.done{background:#DCFCE7;}
+  .check-list li.done .star::before{content:"⭐";}
+  .check-list li:not(.done) .star::before{content:"☆";}
+
+  #confetti-layer{
+    position:fixed;inset:0;pointer-events:none;z-index:999;
+  }
+  .celebrate{
+    display:none;
+    text-align:center;
+    font-size:20px;
+    font-weight:900;
+    color:var(--success);
+    margin-top:14px;
+  }
+
+  @media print{
+    header.top::after{display:none;}
+    .btn, .journey-controls{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div id="confetti-layer"></div>
+
+<header class="top">
+  <h1>🚀 오리온호와 함께하는 달 여행</h1>
+  <p>지구에서 달까지, 우주선은 어떤 길을 거쳐 갈까요?</p>
+</header>
+
+<div class="progressbar" id="progressbar">
+  <div class="seg" data-idx="0"></div>
+  <div class="seg" data-idx="1"></div>
+  <div class="seg" data-idx="2"></div>
+  <div class="seg" data-idx="3"></div>
+</div>
+
+<div class="wrap">
+
+  <section class="goal">
+    <h2>🎯 오늘 알게 될 것</h2>
+    <div class="card">
+      <p>① <span class="term">오리온호</span> — 우주비행사가 타고 달까지 가는 우주선<br>
+      ② <span class="term">도킹</span> — 우주에서 두 우주선이 서로 연결되는 것<br>
+      ③ <span class="term">착륙선</span> — 실제로 달 표면에 내려앉는 작은 우주선<br>
+      ④ <span class="term">게이트웨이</span> — 달 궤도에 만들려고 했던 우주 정류장</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🗺️ 달까지 가는 여행, 순서대로 보기</h2>
+    <p>버튼을 눌러 우주비행사가 지구에서 달 표면까지 가는 과정을 순서대로 확인해보세요.</p>
+    <div class="journey-box">
+      <div class="journey-scene" id="journeyScene">🌍 🚀</div>
+      <div class="journey-label" id="journeyLabel">1. 오리온호 발사</div>
+      <div class="journey-desc" id="journeyDesc">오리온호가 우주비행사를 태우고 지구를 출발해 달을 향해 날아가요.</div>
+      <div class="journey-dots" id="journeyDots">
+        <span class="active"></span><span></span><span></span><span></span>
+      </div>
+      <div class="journey-controls">
+        <button class="btn" id="prevBtn" onclick="moveStep(-1)" disabled>◀ 이전</button>
+        <button class="btn secondary" id="nextBtn" onclick="moveStep(1)">다음 ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧑‍🚀 오리온호는 무엇일까?</h2>
+    <div class="card">
+      <p><span class="term">오리온호</span>는 우주비행사가 직접 타고 지구에서 달까지 오가는 우주선이에요. 2022년에는 사람 없이 달 궤도를 도는 시험비행에 성공했고, 이후에는 우주비행사를 태우고 달 가까이까지 다녀오는 비행도 이루어졌어요. 오리온호는 달 표면까지 직접 내려가지는 않고, <span class="term">달 궤도까지만</span> 우주비행사를 데려다줘요.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔗 도킹이란 무엇일까?</h2>
+    <p><span class="term">도킹</span>은 우주에 떠 있는 두 우주선이 서로 가까이 다가가 딱 맞게 연결되는 것을 말해요. 우주비행사는 도킹이 끝난 뒤, 오리온호에서 착륙선으로 안전하게 걸어서 옮겨 탈 수 있어요.</p>
+    <div class="dock-visual">
+      <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="20" r="1.5" fill="#fff"/>
+        <circle cx="460" cy="30" r="1" fill="#fff"/>
+        <circle cx="470" cy="170" r="1.5" fill="#fff"/>
+        <circle cx="15" cy="160" r="1" fill="#fff"/>
+
+        <!-- 왼쪽: 오리온호 -->
+        <g id="shipLeft">
+          <rect x="60" y="75" width="110" height="50" rx="12" fill="#93C5FD"/>
+          <text x="115" y="105" font-size="13" fill="#0b0b23" text-anchor="middle" font-family="Noto Sans KR" font-weight="700">오리온호</text>
+          <circle id="portLeft" cx="170" cy="100" r="11" fill="#0b0b23" stroke="#DDD6FE" stroke-width="4"/>
+        </g>
+
+        <!-- 오른쪽: 착륙선 -->
+        <g id="shipRight">
+          <circle id="portRight" cx="330" cy="100" r="11" fill="#0b0b23" stroke="#DDD6FE" stroke-width="4"/>
+          <rect x="330" y="75" width="110" height="50" rx="12" fill="#FDE68A"/>
+          <text x="385" y="105" font-size="13" fill="#0b0b23" text-anchor="middle" font-family="Noto Sans KR" font-weight="700">착륙선</text>
+        </g>
+
+        <!-- 접합 표시선 -->
+        <line id="seamLine" x1="250" y1="70" x2="250" y2="130" stroke="#22C55E" stroke-width="4" stroke-linecap="round"/>
+
+        <!-- 상태등 -->
+        <circle id="statusLight" cx="250" cy="45" r="7" fill="#4B5563"/>
+      </svg>
+      <div class="dock-status" id="dockStatus">버튼을 눌러 도킹 과정을 확인해보세요.</div>
+    </div>
+    <div class="journey-controls">
+      <button class="btn" id="dockBtn" onclick="doDock()">🔗 도킹 시작</button>
+      <button class="btn secondary" onclick="undock()">↺ 되돌리기</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>🌕 착륙선은 무엇일까?</h2>
+    <div class="card">
+      <p><span class="term">착륙선</span>은 오리온호와 도킹한 뒤, 우주비행사만 따로 타고 실제로 <span class="term">달 표면까지 내려가는</span> 작은 우주선이에요. 오리온호는 크고 무거워서 달 표면에 직접 착륙하기 어렵기 때문에, 가볍고 착륙에 알맞게 만들어진 착륙선으로 갈아타는 거예요. 일을 마친 뒤에는 다시 착륙선을 타고 올라와 오리온호와 도킹해서 지구로 돌아와요.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🛰️ 게이트웨이는 무엇일까?</h2>
+    <div class="card">
+      <p><span class="term">게이트웨이</span>는 달 궤도를 도는 작은 우주 정류장으로 계획됐던 시설이에요. 원래는 오리온호와 착륙선이 이곳에서 만나 도킹을 하고, 우주비행사가 정거장을 거쳐 착륙선으로 갈아타는 '중간 정류장' 역할을 할 예정이었어요.</p>
+      <p>💡 다만 최근에는 계획이 조금 바뀌어서, 정류장을 거치지 않고 달 궤도에서 오리온호와 착륙선이 직접 만나 도킹하는 방식도 함께 준비되고 있어요. 그래서 책 속 이야기와 실제 최신 뉴스가 조금 다르게 느껴질 수 있다는 점, 알아두면 좋아요.</p>
+    </div>
+  </section>
+
+  <section class="quiz">
+    <h2>✏️ 확인 퀴즈</h2>
+
+    <div class="q-block" data-q="1">
+      <div class="q-title">1. 오리온호는 어디까지 우주비행사를 데려다줄까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">🌑 달 표면까지 직접 착륙시켜준다</div>
+        <div class="opt" data-correct="true">🛰️ 달 궤도까지 데려다준다</div>
+        <div class="opt" data-correct="false">🪐 목성까지 데려다준다</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="2">
+      <div class="q-title">2. '도킹'이란 무엇일까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">🎨 우주선에 색을 칠하는 것</div>
+        <div class="opt" data-correct="true">🔗 두 우주선이 우주에서 서로 연결되는 것</div>
+        <div class="opt" data-correct="false">💤 우주선이 잠자는 것</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="3">
+      <div class="q-title">3. 실제로 달 표면에 내려앉는 것은 무엇일까요?</div>
+      <div class="options">
+        <div class="opt" data-correct="false">🚀 오리온호</div>
+        <div class="opt" data-correct="true">🌕 착륙선</div>
+        <div class="opt" data-correct="false">🛰️ 게이트웨이</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="q-block" data-q="4">
+      <div class="q-title">4. 게이트웨이는 어떤 역할을 하기로 계획되었나요?</div>
+      <div class="options">
+        <div class="opt" data-correct="true">🛰️ 오리온호와 착륙선이 만나는 중간 정류장</div>
+        <div class="opt" data-correct="false">🍕 우주 식당</div>
+        <div class="opt" data-correct="false">🏫 지구의 학교</div>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section class="check">
+    <h2>📊 나의 학습 체크리스트</h2>
+    <ul class="check-list" id="checkList">
+      <li data-id="c1"><span class="star"></span> 오리온호가 무엇인지 설명할 수 있어요</li>
+      <li data-id="c2"><span class="star"></span> 도킹이 무엇인지 알았어요</li>
+      <li data-id="c3"><span class="star"></span> 착륙선의 역할을 알았어요</li>
+      <li data-id="c4"><span class="star"></span> 게이트웨이가 어떤 곳인지 알았어요</li>
+    </ul>
+    <div class="celebrate" id="celebrate">🏆 오늘 학습 완료! 정말 잘했어요!</div>
+  </section>
+
+</div>
+
+<script>
+  const steps = [
+    { scene:"🌍 🚀", label:"1. 오리온호 발사", desc:"오리온호가 우주비행사를 태우고 지구를 출발해 달을 향해 날아가요." },
+    { scene:"🚀 🛰️", label:"2. 달 궤도 도착 & 도킹", desc:"달 궤도에서 오리온호가 착륙선(또는 정류장)과 만나 서로 연결(도킹)해요." },
+    { scene:"🛰️ 🌕", label:"3. 착륙선으로 갈아타기", desc:"우주비행사가 착륙선으로 옮겨 타고 달 표면을 향해 내려가요." },
+    { scene:"🌕✨", label:"4. 달 표면 탐사", desc:"착륙선이 달에 도착! 임무를 마치면 다시 올라와 오리온호와 도킹해 지구로 돌아와요." }
+  ];
+  let stepIdx = 0;
+
+  function renderStep(){
+    document.getElementById('journeyScene').textContent = steps[stepIdx].scene;
+    document.getElementById('journeyLabel').textContent = steps[stepIdx].label;
+    document.getElementById('journeyDesc').textContent = steps[stepIdx].desc;
+    document.querySelectorAll('#journeyDots span').forEach((dot,i)=>{
+      dot.classList.toggle('active', i===stepIdx);
+    });
+    document.getElementById('prevBtn').disabled = stepIdx===0;
+    document.getElementById('nextBtn').disabled = stepIdx===steps.length-1;
+  }
+  function moveStep(dir){
+    stepIdx = Math.min(steps.length-1, Math.max(0, stepIdx+dir));
+    renderStep();
+  }
+  renderStep();
+
+  function doDock(){
+    const btn = document.getElementById('dockBtn');
+    const status = document.getElementById('dockStatus');
+    btn.disabled = true;
+
+    // 1단계: 접근
+    status.textContent = '1/2 · 두 우주선이 천천히 가까워지고 있어요...';
+    document.getElementById('shipLeft').classList.add('approach');
+    document.getElementById('shipRight').classList.add('approach');
+
+    // 2단계: 접합 완료
+    setTimeout(()=>{
+      status.textContent = '2/2 · 딱 붙었어요! 도킹 완료, 안전하게 이동할 수 있어요.';
+      document.getElementById('portLeft').classList.add('locked');
+      document.getElementById('portRight').classList.add('locked');
+      document.getElementById('seamLine').classList.add('show');
+      document.getElementById('statusLight').classList.add('green');
+    }, 1150);
+  }
+
+  function undock(){
+    document.getElementById('shipLeft').classList.remove('approach');
+    document.getElementById('shipRight').classList.remove('approach');
+    document.getElementById('portLeft').classList.remove('locked');
+    document.getElementById('portRight').classList.remove('locked');
+    document.getElementById('seamLine').classList.remove('show');
+    document.getElementById('statusLight').classList.remove('green');
+    document.getElementById('dockStatus').textContent = '버튼을 눌러 도킹 과정을 확인해보세요.';
+    document.getElementById('dockBtn').disabled = false;
+  }
+
+  // 퀴즈 로직
+  document.querySelectorAll('.q-block').forEach(block => {
+    const opts = block.querySelectorAll('.opt');
+    const feedback = block.querySelector('.feedback');
+    let answered = false;
+    opts.forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const isCorrect = opt.dataset.correct === 'true';
+        opts.forEach(o => {
+          if (o.dataset.correct === 'true') o.classList.add('correct');
+          else o.classList.add('wrong');
+        });
+        if (isCorrect){
+          feedback.textContent = '🎉 정답이에요! 잘했어요!';
+          feedback.className = 'feedback ok';
+          launchConfetti();
+        } else {
+          feedback.textContent = '😊 괜찮아요! 초록색 정답을 다시 확인해보세요.';
+          feedback.className = 'feedback no';
+        }
+      });
+    });
+  });
+
+  // 체크리스트
+  const checkList = document.getElementById('checkList');
+  const progress = JSON.parse(localStorage.getItem('orion-docking-progress') || '{}');
+
+  function renderCheck(){
+    checkList.querySelectorAll('li').forEach(li => {
+      const id = li.dataset.id;
+      if (progress[id]) li.classList.add('done');
+      else li.classList.remove('done');
+    });
+    updateProgressBar();
+    if (Object.keys(progress).length === 4 && Object.values(progress).every(v => v)){
+      document.getElementById('celebrate').style.display = 'block';
+    } else {
+      document.getElementById('celebrate').style.display = 'none';
+    }
+  }
+
+  function updateProgressBar(){
+    const total = 4;
+    const done = Object.values(progress).filter(v => v).length;
+    const segs = document.querySelectorAll('.progressbar .seg');
+    segs.forEach((seg, i) => {
+      if (i < Math.round((done/total) * segs.length)) seg.classList.add('done');
+      else seg.classList.remove('done');
+    });
+  }
+
+  checkList.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      const id = li.dataset.id;
+      progress[id] = !progress[id];
+      localStorage.setItem('orion-docking-progress', JSON.stringify(progress));
+      renderCheck();
+    });
+  });
+
+  renderCheck();
+
+  function launchConfetti(){
+    const layer = document.getElementById('confetti-layer');
+    const colors = ['#6366F1','#F97316','#22C55E','#FBBF24','#F43F5E'];
+    for(let i=0;i<24;i++){
+      const p = document.createElement('div');
+      const size = 6 + Math.random()*6;
+      p.style.position='absolute';
+      p.style.width=size+'px';
+      p.style.height=size+'px';
+      p.style.background=colors[Math.floor(Math.random()*colors.length)];
+      p.style.left=(40+Math.random()*20)+'%';
+      p.style.top='30%';
+      p.style.borderRadius='50%';
+      p.style.opacity='1';
+      p.style.transition='transform 1s ease-out, opacity 1s ease-out';
+      layer.appendChild(p);
+      requestAnimationFrame(()=>{
+        const dx=(Math.random()-0.5)*300;
+        const dy=200+Math.random()*200;
+        p.style.transform=`translate(${dx}px, ${dy}px) rotate(${Math.random()*360}deg)`;
+        p.style.opacity='0';
+      });
+      setTimeout(()=>p.remove(),1100);
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -291,6 +291,26 @@
       font-size: 13px;
     }
 
+    .knowledge-action {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin: 18px 0 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff, var(--soft));
+    }
+
+    .knowledge-action p {
+      flex: 1 1 320px;
+      margin: 0;
+      color: #263e5c;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
     .login-panel {
       display: grid;
       grid-template-columns: minmax(260px, 1fr) minmax(280px, .95fr);
@@ -504,6 +524,31 @@
       margin: 0;
     }
 
+    .rocket-scene-guide {
+      gap: 14px;
+    }
+
+    .rocket-scene-figure {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .rocket-scene-image {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fcff;
+    }
+
+    .rocket-scene-figure figcaption {
+      color: var(--deep);
+      font-weight: 950;
+    }
+
     .action-list {
       display: grid;
       gap: 10px;
@@ -608,6 +653,13 @@
       color: var(--ink);
       background: #fff;
       font: inherit;
+    }
+
+    .route-steps select:disabled {
+      color: #1d3552;
+      background: #eef8ff;
+      opacity: 1;
+      cursor: default;
     }
 
     .step-label {
@@ -832,13 +884,13 @@
   </header>
 
   <div class="layout">
-    <nav aria-label="4차시 목차">
+      <nav aria-label="4차시 목차">
       <a href="#mission">1. 최종 임무</a>
       <a href="#login">2. 학생 선택</a>
       <a href="#review">3. 작품 점검</a>
-      <a href="#rocket">4. Rocket 배치</a>
-      <a href="#route">5. 이동 경로</a>
-      <a href="#autopilot">6. 자동 항행</a>
+      <a href="#rocket">4. 투어 셔틀 준비</a>
+      <a href="#route">5. 투어 경로</a>
+      <a href="#autopilot">6. Path 이동 코딩</a>
       <a href="#guide">7. 우주 가이드</a>
       <a href="#final-check">8. 전체 점검</a>
       <a href="#gallery">9. 작품 관람</a>
@@ -854,18 +906,22 @@
             <span class="num">1</span>
             <div>
               <p class="eyebrow">오늘의 최종 임무</p>
-              <h2 id="mission-title">내 우주정거장을 움직이고, 안내하고, 전시합니다.</h2>
-              <p class="lead">4차시는 Rocket, 자동 항행, AI Buddy, 친구 작품 관람을 연결하는 마무리 수업입니다.</p>
+              <h2 id="mission-title">투어 셔틀을 움직이고, 안내하고, 전시합니다.</h2>
+              <p class="lead">4차시는 장면 3에서 Rover를 투어 셔틀로 활용하고, 직선 Path 2개를 차례로 연결해 정거장 투어를 완성하는 마무리 수업입니다.</p>
             </div>
           </div>
           <ul class="mission-grid" aria-label="오늘 할 일">
-            <li>Rocket을 달 수송선으로 배치하기</li>
-            <li>수송선 이동 경로 설계하기</li>
-            <li>CoBlocks로 자동 항행 만들기</li>
-            <li>AI Buddy를 우주정거장 안내원으로 설정하기</li>
+            <li>Rover를 정거장 투어 셔틀로 배치하기</li>
+            <li>직선 Path 2개로 투어 경로 설계하기</li>
+            <li>CoBlocks로 Path 1 → Path 2 순차 이동 만들기</li>
+            <li>AI Buddy를 정거장 안내원으로 설정하기</li>
             <li>친구 작품을 관람하고 칭찬 기록하기</li>
             <li>1~4차시 탐사 보고서 확인하기</li>
           </ul>
+          <div class="knowledge-action">
+            <p>오리온호, 착륙선, 도킹, 달 게이트웨이의 역할을 먼저 알아봅니다.</p>
+            <a class="primary" href="orion-gateway-docking-lander.html" target="_blank" rel="noopener noreferrer" aria-label="오리온호와 도킹 사전 지식 페이지를 새 탭에서 열기">오리온호·도킹 사전 지식 확인하기 ↗</a>
+          </div>
         </div>
       </section>
 
@@ -931,8 +987,8 @@
 
       <section id="review" aria-labelledby="review-title">
         <div class="section-inner">
-          <div class="section-head"><span class="num">3</span><div><p class="eyebrow">지난 작품 점검</p><h2 id="review-title">3차시 작품을 다시 열고 출발 준비를 확인합니다.</h2></div></div>
-          <p class="placeholder-copy">지난 시간에 만든 우주정거장을 열고, 오늘 활동에 필요한 구조가 남아 있는지 확인하세요.</p>
+          <div class="section-head"><span class="num">3</span><div><p class="eyebrow">지난 작품 점검</p><h2 id="review-title">3차시 작품을 다시 열고 투어 준비를 확인합니다.</h2></div></div>
+          <p class="placeholder-copy">지난 시간에 만든 우주정거장을 열고, 장면 3에 Rover가 지나갈 수 있는 바닥이나 통로가 있는지 함께 살펴봅니다.</p>
           <div class="activity-panel">
             <div class="activity-block">
               <h3>지난 작품 점검표</h3>
@@ -941,8 +997,8 @@
                 <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.researchModule"> 연구 모듈이 연결되어 있어요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.lifeModule"> 생활 모듈이 연결되어 있어요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.twoCorridors"> 연결 통로가 2개 이상 있어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.energyDevice"> 에너지 장치가 있어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.airlock"> Airlock이 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.energyDevice"> Rover가 이동할 바닥이나 통로가 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.airlock"> 출발 위치로 사용할 Airlock 또는 도킹 구역이 있어요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="activityData.reviewChecks.aiBuddy"> AI Buddy가 남아 있어요.</label></li>
               </ul>
             </div>
@@ -952,41 +1008,42 @@
 
       <section id="rocket" aria-labelledby="rocket-title">
         <div class="section-inner">
-          <div class="section-head"><span class="num">4</span><div><p class="eyebrow">Rocket 배치</p><h2 id="rocket-title">Rocket을 달 수송선으로 배치합니다.</h2></div></div>
-          <p class="placeholder-copy">우주정거장을 오가는 수송선 역할을 할 Rocket의 위치와 방향을 정합니다.</p>
+          <div class="section-head"><span class="num">4</span><div><p class="eyebrow">투어 셔틀과 Path 준비</p><h2 id="rocket-title">장면 3에 Rover와 직선 Path 1·2를 배치합니다.</h2></div></div>
+          <p class="placeholder-copy">Rover는 실제로 달 표면 탐사에 쓰이지만, 이번 작품에서는 상상 속 ‘정거장 투어 셔틀’로 활용합니다.</p>
           <div class="activity-panel">
-            <div class="activity-block">
+            <div class="activity-block rocket-scene-guide">
               <h3>작업 순서</h3>
               <ol class="action-list">
-                <li>Library 검색창에 Rocket 입력</li>
-                <li>Rocket 배치</li>
-                <li>이름을 ‘달 수송선’으로 변경</li>
-                <li>Airlock과 떨어진 출발 위치로 이동</li>
-                <li>크기와 방향 조절</li>
+                <li>왼쪽 장면 목록에서 장면 3을 선택합니다.</li>
+                <li>Library에서 Rover를 찾아 이동 가능한 바닥이나 통로 위에 배치합니다.</li>
+                <li>Rover 이름을 ‘정거장 투어 셔틀’로 바꾸고 ‘코블록스에서 사용’을 켭니다.</li>
+                <li>직선 Path 2개를 배치하고 각각 Path 1, Path 2로 구분합니다.</li>
+                <li>Rover와 Path 1·2가 CoBlocks에서 사용할 수 있는지 확인합니다.</li>
+                <li>두 Path의 화살표 방향과 높이가 자연스럽게 이어지는지 살펴봅니다.</li>
               </ol>
             </div>
             <div class="route-grid">
               <label class="field" for="rocketName">
-                <span>수송선 이름</span>
-                <input id="rocketName" type="text" maxlength="16" data-state-path="activityData.rocket.name" value="달 수송선">
+                <span>투어 셔틀 이름</span>
+                <input id="rocketName" type="text" maxlength="20" data-state-path="activityData.rocket.name" value="정거장 투어 셔틀">
               </label>
               <div class="activity-block">
-                <h3>수송 임무 선택</h3>
-                <div class="choice-grid" role="group" aria-label="수송 임무 선택">
-                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="탐사 대원 수송" aria-pressed="false">탐사 대원 수송</button>
-                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="연구 장비 운반" aria-pressed="false">연구 장비 운반</button>
-                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="생활 물자 운반" aria-pressed="false">생활 물자 운반</button>
-                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="긴급 구조" aria-pressed="false">긴급 구조</button>
+                <h3>투어 임무 선택</h3>
+                <div class="choice-grid" role="group" aria-label="투어 임무 선택">
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="연구 구역 투어" aria-pressed="false">연구 구역 투어</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="생활 구역 투어" aria-pressed="false">생활 구역 투어</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="정거장 안전 점검" aria-pressed="false">정거장 안전 점검</button>
+                  <button class="choice-card" type="button" data-choice-path="activityData.rocket.role" data-choice-value="연구 물자 운반" aria-pressed="false">연구 물자 운반</button>
                 </div>
               </div>
             </div>
             <div class="activity-block">
               <h3>배치 확인</h3>
               <ul class="check-list">
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.librarySearched"> Rocket을 찾았어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.placed"> Rocket을 배치했어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.renamed"> 이름을 정했어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.adjusted"> 크기와 방향을 조절했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.librarySearched"> Rover를 찾았어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.placed"> Rover를 장면 3에 배치했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.renamed"> 이름을 정하고 코블록스 사용을 켰어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.rocket.adjusted"> Path 1과 Path 2를 배치하고 연결했어요.</label></li>
               </ul>
             </div>
           </div>
@@ -995,43 +1052,46 @@
 
       <section id="route" aria-labelledby="route-title">
         <div class="section-inner">
-          <div class="section-head"><span class="num">5</span><div><p class="eyebrow">이동 경로 설계</p><h2 id="route-title">수송선이 지나갈 길을 간단히 설계합니다.</h2></div></div>
-          <p class="placeholder-copy">출발점, 도착점, 관람자가 볼 장면을 생각하며 이동 경로를 정합니다.</p>
+          <div class="section-head"><span class="num">5</span><div><p class="eyebrow">투어 경로 설계</p><h2 id="route-title">Rover가 이동할 두 구간을 순서대로 설계합니다.</h2></div></div>
+          <p class="placeholder-copy">도킹 구역에서 출발해 첫 번째 안내 장소를 지나 두 번째 안내 장소에서 멈추는 Path 1·2 흐름을 만듭니다.</p>
           <div class="activity-panel">
-            <p class="example-route">기본 경로 예시: 앞으로 이동 → 위로 이동 → 정거장 방향으로 회전 → Airlock 앞으로 이동 → 정지</p>
+            <p class="example-route">기본 경로 예시: 도킹 구역 → Path 1 따라 이동 → 첫 번째 안내 장소에서 잠시 정차 → Path 2 따라 이동 → 두 번째 안내 장소에서 최종 정차</p>
             <div class="route-grid">
               <label class="field" for="routeStart">
-                <span>출발 위치 선택</span>
+                <span>첫 번째 안내 장소</span>
                 <select id="routeStart" data-state-path="activityData.route.startPoint">
                   <option value="">선택하세요</option>
-                  <option>달 표면</option>
-                  <option>정거장 아래쪽</option>
-                  <option>정거장 옆쪽</option>
+                  <option>연구 구역</option>
+                  <option>생활 구역</option>
+                  <option>중심 모듈</option>
+                  <option>Greenhouse</option>
                   <option>내가 정한 위치</option>
                 </select>
               </label>
               <label class="field" for="routeDestination">
-                <span>도착 위치</span>
+                <span>두 번째 안내 장소</span>
                 <select id="routeDestination" data-state-path="activityData.route.destination">
                   <option value="">선택하세요</option>
-                  <option>Airlock 앞</option>
-                  <option>도킹 구역</option>
+                  <option>생활 구역</option>
+                  <option>연구 구역</option>
+                  <option>중심 모듈</option>
+                  <option>내가 정한 위치</option>
                 </select>
               </label>
             </div>
             <div class="activity-block">
-              <h3>이동 순서 5단계</h3>
+              <h3>투어 이동 순서 5단계</h3>
               <ol class="route-steps">
-                <li><span class="step-label">1단계</span><select id="routeStep1" data-route-step="0" aria-label="이동 경로 1단계"></select></li>
-                <li><span class="step-label">2단계</span><select id="routeStep2" data-route-step="1" aria-label="이동 경로 2단계"></select></li>
-                <li><span class="step-label">3단계</span><select id="routeStep3" data-route-step="2" aria-label="이동 경로 3단계"></select></li>
-                <li><span class="step-label">4단계</span><select id="routeStep4" data-route-step="3" aria-label="이동 경로 4단계"></select></li>
-                <li><span class="step-label">5단계</span><select id="routeStep5" data-route-step="4" aria-label="이동 경로 5단계"></select></li>
+                <li><span class="step-label">1단계</span><select id="routeStep1" data-route-step="0" aria-label="투어 이동 1단계"></select></li>
+                <li><span class="step-label">2단계</span><select id="routeStep2" data-route-step="1" aria-label="투어 이동 2단계"></select></li>
+                <li><span class="step-label">3단계</span><select id="routeStep3" data-route-step="2" aria-label="투어 이동 3단계"></select></li>
+                <li><span class="step-label">4단계</span><select id="routeStep4" data-route-step="3" aria-label="투어 이동 4단계"></select></li>
+                <li><span class="step-label">5단계</span><select id="routeStep5" data-route-step="4" aria-label="투어 이동 5단계"></select></li>
               </ol>
             </div>
             <label class="field" for="routeNote">
-              <span>선택 입력: 내 경로 한 줄 설명</span>
-              <input id="routeNote" type="text" maxlength="60" data-state-path="activityData.route.optionalNote" placeholder="예: Airlock 앞에서 천천히 멈추게 만들 거예요.">
+              <span>선택 입력: 내 투어 경로 한 줄 설명</span>
+              <input id="routeNote" type="text" maxlength="60" data-state-path="activityData.route.optionalNote" placeholder="예: 연구 구역에서 잠시 멈춘 뒤 생활 구역으로 이동해요.">
             </label>
           </div>
         </div>
@@ -1039,35 +1099,36 @@
 
       <section id="autopilot" aria-labelledby="autopilot-title">
         <div class="section-inner">
-          <div class="section-head"><span class="num">6</span><div><p class="eyebrow">자동 항행 코딩</p><h2 id="autopilot-title">CoBlocks로 수송선의 자동 항행을 만듭니다.</h2></div></div>
-          <p class="placeholder-copy">Rocket이 정해진 길을 따라 움직이도록 필요한 명령 순서를 준비합니다.</p>
+          <div class="section-head"><span class="num">6</span><div><p class="eyebrow">Path 순차 이동 코딩</p><h2 id="autopilot-title">CoBlocks로 Rover가 Path 1과 Path 2를 차례로 이동하게 만듭니다.</h2></div></div>
+          <p class="placeholder-copy">한 번에 긴 길을 만들지 않고 두 구간으로 나누어 순서대로 실행합니다.</p>
           <div class="activity-panel">
             <div class="activity-block">
               <h3>Delightex Edu에서 만들 코드 순서</h3>
-              <ul class="code-flow" aria-label="자동 항행 코드 순서">
-                <li>출발 버튼을 클릭했을 때</li>
-                <li>달 수송선 위치 초기화</li>
-                <li>달 수송선 방향 초기화</li>
-                <li>설계한 경로대로 이동</li>
-                <li>Airlock 앞에서 정지</li>
+              <ul class="code-flow" aria-label="Path 이동 코드 순서">
+                <li>투어 시작 버튼을 클릭했을 때</li>
+                <li>정거장 투어 셔틀 위치와 방향 초기화</li>
+                <li>정거장 투어 셔틀을 Path 1을 따라 이동</li>
+                <li>첫 번째 정차 지점에서 잠시 기다리기</li>
+                <li>정거장 투어 셔틀을 Path 2를 따라 이동</li>
+                <li>최종 도착 지점에서 정지</li>
               </ul>
             </div>
             <div class="activity-block">
-              <h3>자동 항행 점검</h3>
+              <h3>Path 이동 점검</h3>
               <ul class="check-list">
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.buttonStarts"> 출발 버튼을 누르면 시작돼요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.positionReset"> 시작 위치가 초기화돼요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.directionReset"> 시작 방향이 초기화돼요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.noCollision"> 정거장과 충돌하지 않아요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.airlockStop"> Airlock 앞에서 정지해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.buttonStarts"> 투어 시작 버튼을 누르면 움직여요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.positionReset"> Rover가 정한 출발 위치에서 시작해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.directionReset"> Rover의 시작 방향이 맞아요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.noCollision"> Path 1의 끝과 Path 2의 시작이 자연스럽게 이어져요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.airlockStop"> Path 1 이동 뒤 잠시 멈추고 Path 2가 실행돼요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="activityData.autopilot.checks.repeatable"> 다시 실행해도 같은 위치에서 시작해요.</label></li>
               </ul>
             </div>
             <div class="activity-block">
               <h3>실행 결과</h3>
-              <div class="choice-grid three" role="group" aria-label="자동 항행 실행 결과">
-                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="자동 항행 성공" aria-pressed="false">자동 항행 성공</button>
-                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="일부 구간만 성공" aria-pressed="false">일부 구간만 성공</button>
+              <div class="choice-grid three" role="group" aria-label="Path 이동 실행 결과">
+                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="투어 이동 성공" aria-pressed="false">투어 이동 성공</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="Path 1만 성공" aria-pressed="false">Path 1만 성공</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.autopilot.result" data-choice-value="아직 수정 중" aria-pressed="false">아직 수정 중</button>
               </div>
             </div>
@@ -1077,8 +1138,8 @@
 
       <section id="guide" aria-labelledby="guide-title">
         <div class="section-inner">
-          <div class="section-head"><span class="num">7</span><div><p class="eyebrow">AI Buddy 우주 가이드</p><h2 id="guide-title">AI Buddy를 우주정거장 안내원으로 설정합니다.</h2></div></div>
-          <p class="placeholder-copy">친구가 방문했을 때 AI Buddy가 어떤 안내를 해 주면 좋을지 생각합니다.</p>
+          <div class="section-head"><span class="num">7</span><div><p class="eyebrow">AI Buddy 우주 가이드</p><h2 id="guide-title">AI Buddy를 투어 셔틀의 정거장 안내원으로 설정합니다.</h2></div></div>
+          <p class="placeholder-copy">Rover가 정차하는 장소와 AI Buddy가 안내할 장소가 이어지도록 설정합니다.</p>
           <div class="activity-panel">
             <div class="route-grid">
               <label class="field" for="guideName">
@@ -1112,10 +1173,10 @@
               <h3>안내 장소 선택 <span id="guideLocationCount" class="count-note">0 / 3</span></h3>
               <p class="placeholder-copy">정확히 3곳을 선택하세요. 3곳을 넘으면 추가 선택이 막힙니다.</p>
               <div class="choice-grid three" role="group" aria-label="AI Buddy 안내 장소 다중 선택">
+                <button class="choice-card" type="button" data-guide-location="도킹 구역" aria-pressed="false">도킹 구역</button>
                 <button class="choice-card" type="button" data-guide-location="중심 모듈" aria-pressed="false">중심 모듈</button>
                 <button class="choice-card" type="button" data-guide-location="연구 구역" aria-pressed="false">연구 구역</button>
                 <button class="choice-card" type="button" data-guide-location="생활 구역" aria-pressed="false">생활 구역</button>
-                <button class="choice-card" type="button" data-guide-location="에너지 구역" aria-pressed="false">에너지 구역</button>
                 <button class="choice-card" type="button" data-guide-location="Airlock" aria-pressed="false">Airlock</button>
                 <button class="choice-card" type="button" data-guide-location="Greenhouse" aria-pressed="false">Greenhouse</button>
               </div>
@@ -1127,7 +1188,7 @@
                 <button id="copyGuidePrompt" class="primary" type="button">설정 문장 복사</button>
                 <span id="guideCopyStatus" class="inline-status" aria-live="polite"></span>
               </div>
-              <p class="placeholder-copy">계정에서 가능한 경우 AI Skill이나 TTS를 선택 활동으로 사용할 수 있습니다.</p>
+              <p class="placeholder-copy">투어 셔틀이 멈추는 곳에서 선택한 장소를 짧고 정확하게 설명하도록 설정합니다.</p>
             </div>
           </div>
         </div>
@@ -1136,16 +1197,16 @@
       <section id="final-check" aria-labelledby="final-check-title">
         <div class="section-inner">
           <div class="section-head"><span class="num">8</span><div><p class="eyebrow">전체 작품 점검</p><h2 id="final-check-title">관람 전에 전체 작품을 한 번 더 확인합니다.</h2></div></div>
-          <p class="placeholder-copy">수송선, 이동, 안내, 저장 상태를 차례대로 살펴봅니다.</p>
+          <p class="placeholder-copy">Rover, Path 연결, 순차 이동, AI Buddy 안내, 저장 상태를 차례대로 살펴봅니다.</p>
           <div class="activity-panel">
             <div class="activity-block">
               <h3>최종 체크리스트</h3>
               <ul class="check-list">
-                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.rocketVisible"> Rocket이 보이는 위치에 있어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.navigationWorks"> 자동 항행이 작동해요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.airlockStop"> Airlock 앞에서 정지해요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.rocketVisible"> Rover가 장면 3의 출발 위치에 있어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.navigationWorks"> Path 1·2가 올바른 순서로 연결되었어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.airlockStop"> Path 화살표 방향과 높이가 맞아요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.guideReady"> AI Buddy 안내 설정을 완료했어요.</label></li>
-                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.threeLocations"> 안내 장소 3곳을 정했어요.</label></li>
+                <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.threeLocations"> Rover가 Path 1 뒤 Path 2로 이동하고 정차 지점에서 멈춰요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.projectSaved"> 프로젝트를 저장했어요.</label></li>
                 <li><label class="check-item"><input type="checkbox" data-state-path="checklistData.noPersonalInfo"> 작품 안에 학생 개인정보를 넣지 않았어요.</label></li>
               </ul>
@@ -1157,7 +1218,7 @@
       <section id="gallery" aria-labelledby="gallery-title">
         <div class="section-inner">
           <div class="section-head"><span class="num">9</span><div><p class="eyebrow">친구 작품 관람</p><h2 id="gallery-title">친구 작품을 보고 좋은 점을 찾아봅니다.</h2></div></div>
-          <p class="placeholder-copy">친구의 우주정거장을 관람하며 배울 점과 칭찬할 점을 떠올립니다.</p>
+          <p class="placeholder-copy">친구의 우주정거장과 투어 셔틀을 관람하며 배울 점과 칭찬할 점을 떠올립니다.</p>
           <div class="activity-panel">
             <a id="padletLink" class="padlet-link" href="https://padlet.com/sorbaram/breakout-room/K8wMqGdZ0YxavZJO-5YprXgo6d2dxXlJ0" target="_blank" rel="noopener noreferrer">친구들의 우주정거장 관람하기 ↗</a>
             <label class="check-item"><input type="checkbox" data-state-path="activityData.gallery.viewed"> 친구 작품을 실제로 관람했어요.</label>
@@ -1170,10 +1231,10 @@
               <h3>가장 인상적인 특징</h3>
               <div class="choice-grid three" role="group" aria-label="친구 작품의 인상적인 특징">
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="모듈 연결" aria-pressed="false">모듈 연결</button>
-                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="수송선 이동" aria-pressed="false">수송선 이동</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="투어 셔틀 이동" aria-pressed="false">투어 셔틀 이동</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="AI Buddy 안내" aria-pressed="false">AI Buddy 안내</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="내부 꾸미기" aria-pressed="false">내부 꾸미기</button>
-                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="안전 장치" aria-pressed="false">안전 장치</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="Path 연결" aria-pressed="false">Path 연결</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.highlight" data-choice-value="창의적인 아이디어" aria-pressed="false">창의적인 아이디어</button>
               </div>
             </div>
@@ -1182,14 +1243,14 @@
               <div class="choice-grid" role="group" aria-label="친구 작품 칭찬 내용">
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="구조가 알아보기 쉬워요." aria-pressed="false">구조가 알아보기 쉬워요.</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="실제 우주정거장처럼 보여요." aria-pressed="false">실제 우주정거장처럼 보여요.</button>
-                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="이동이 자연스러워요." aria-pressed="false">이동이 자연스러워요.</button>
+                <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="투어 이동이 자연스러워요." aria-pressed="false">투어 이동이 자연스러워요.</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="안내가 이해하기 쉬워요." aria-pressed="false">안내가 이해하기 쉬워요.</button>
                 <button class="choice-card" type="button" data-choice-path="activityData.gallery.praise" data-choice-value="아이디어가 새로워요." aria-pressed="false">아이디어가 새로워요.</button>
               </div>
             </div>
             <label class="field" for="galleryComment">
               <span>선택 입력: 친구에게 남기고 싶은 한마디</span>
-              <input id="galleryComment" type="text" maxlength="60" data-state-path="activityData.gallery.optionalComment" placeholder="예: 다음에는 내 작품에도 이런 아이디어를 넣어 보고 싶어.">
+              <input id="galleryComment" type="text" maxlength="60" data-state-path="activityData.gallery.optionalComment" placeholder="예: Path를 자연스럽게 이어서 투어가 재미있었어.">
             </label>
           </div>
         </div>
@@ -1198,14 +1259,14 @@
       <section id="reflection" aria-labelledby="reflection-title">
         <div class="section-inner">
           <div class="section-head"><span class="num">10</span><div><p class="eyebrow">최종 성찰</p><h2 id="reflection-title">1~4차시의 탐사 과정을 돌아봅니다.</h2></div></div>
-          <p class="placeholder-copy">내가 만든 공간, AI Buddy, 자동 항행에서 가장 기억에 남는 점을 정리합니다.</p>
+          <p class="placeholder-copy">내가 만든 공간, AI Buddy, Rover의 Path 이동에서 가장 기억에 남는 점을 정리합니다.</p>
           <div class="activity-panel">
             <div class="activity-block">
               <h3>가장 기억에 남는 활동</h3>
               <div class="choice-grid three" role="group" aria-label="가장 기억에 남는 활동">
-                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="Rocket 배치" aria-pressed="false">Rocket 배치</button>
-                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="이동 경로 설계" aria-pressed="false">이동 경로 설계</button>
-                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="자동 항행 코딩" aria-pressed="false">자동 항행 코딩</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="Rover와 Path 배치" aria-pressed="false">Rover와 Path 배치</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="투어 경로 설계" aria-pressed="false">투어 경로 설계</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="Path 순차 이동 코딩" aria-pressed="false">Path 순차 이동 코딩</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="AI Buddy 안내" aria-pressed="false">AI Buddy 안내</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.memorableActivity" data-choice-value="친구 작품 관람" aria-pressed="false">친구 작품 관람</button>
               </div>
@@ -1223,10 +1284,10 @@
             <div class="activity-block">
               <h3>가장 어려웠던 점</h3>
               <div class="choice-grid three" role="group" aria-label="가장 어려웠던 점">
-                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="Rocket 찾기" aria-pressed="false">Rocket 찾기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="Rover와 Path 찾기" aria-pressed="false">Rover와 Path 찾기</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="위치와 방향 조절" aria-pressed="false">위치와 방향 조절</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="코딩 순서" aria-pressed="false">코딩 순서</button>
-                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="이동 거리 맞추기" aria-pressed="false">이동 거리 맞추기</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="Path 연결 지점 맞추기" aria-pressed="false">Path 연결 지점 맞추기</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="AI Buddy 설정" aria-pressed="false">AI Buddy 설정</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.difficulty" data-choice-value="어려운 점이 없었음" aria-pressed="false">어려운 점이 없었음</button>
               </div>
@@ -1235,7 +1296,7 @@
               <h3>해결 방법</h3>
               <div class="choice-grid three" role="group" aria-label="해결 방법">
                 <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="여러 번 다시 실행함" aria-pressed="false">여러 번 다시 실행함</button>
-                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="이동 거리를 조금씩 바꿈" aria-pressed="false">이동 거리를 조금씩 바꿈</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="Path 위치를 조금씩 바꿈" aria-pressed="false">Path 위치를 조금씩 바꿈</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="블록 순서를 다시 확인함" aria-pressed="false">블록 순서를 다시 확인함</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="친구에게 도움을 받음" aria-pressed="false">친구에게 도움을 받음</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.solution" data-choice-value="선생님께 질문함" aria-pressed="false">선생님께 질문함</button>
@@ -1245,7 +1306,7 @@
             <div class="activity-block">
               <h3>다음에 만들고 싶은 것</h3>
               <div class="choice-grid three" role="group" aria-label="다음에 만들고 싶은 것">
-                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="더 복잡한 수송선 경로" aria-pressed="false">더 복잡한 수송선 경로</button>
+                <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="더 다양한 투어 경로" aria-pressed="false">더 다양한 투어 경로</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="정거장 안전 경보" aria-pressed="false">정거장 안전 경보</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="여러 구역 자동 안내" aria-pressed="false">여러 구역 자동 안내</button>
                 <button class="choice-card" type="button" data-choice-path="reflectionData.nextChallenge" data-choice-value="물자 운반 시스템" aria-pressed="false">물자 운반 시스템</button>
@@ -1254,7 +1315,7 @@
             </div>
             <label class="field" for="reflectionComment">
               <span>선택 입력: 내가 남기고 싶은 한마디</span>
-              <input id="reflectionComment" type="text" maxlength="70" data-state-path="reflectionData.optionalComment" placeholder="예: 내가 만든 우주정거장을 친구에게 소개해서 뿌듯했어요.">
+              <input id="reflectionComment" type="text" maxlength="70" data-state-path="reflectionData.optionalComment" placeholder="예: 두 Path를 이어서 셔틀이 이동하는 모습이 뿌듯했어요.">
             </label>
             <div class="button-row">
               <button id="checkCompletion" class="primary" type="button">활동 완료 상태 확인</button>
@@ -1317,14 +1378,11 @@
     const SUBMISSION_FAILED_MESSAGE = "인터넷 연결을 확인하고 다시 제출해 주세요.";
     const SUBMISSION_MISSING_HINT = "활동 완료 상태 확인에서 남은 항목을 먼저 확인하세요.";
     const ROUTE_OPTIONS = [
-      "앞으로 이동",
-      "위로 이동",
-      "아래로 이동",
-      "왼쪽으로 회전",
-      "오른쪽으로 회전",
-      "잠시 기다리기",
-      "Airlock 앞으로 이동",
-      "정지",
+      "Path 1을 따라 이동",
+      "첫 번째 정차 지점에서 잠시 기다리기",
+      "AI Buddy 안내 듣기",
+      "Path 2를 따라 이동",
+      "최종 지점에서 정지",
       "사용하지 않음"
     ];
     const REVIEW_CHECK_KEYS = ["centerModule", "researchModule", "lifeModule", "twoCorridors", "energyDevice", "airlock", "aiBuddy"];
@@ -1389,7 +1447,7 @@
       return {
         reviewChecks: {},
         rocket: {
-          name: "달 수송선",
+          name: "정거장 투어 셔틀",
           role: "",
           librarySearched: false,
           placed: false,
@@ -2194,7 +2252,7 @@
 `너는 루나 게이트웨이의 AI 우주 가이드야.
 너의 이름은 ‘${name}’이야.
 너의 역할은 ‘${role}’이야.
-${locationText}을 초등학생이 이해할 수 있도록 짧고 친절하게 설명해 줘.
+투어 셔틀이 멈추는 곳에서 ${locationText}을 초등학생이 이해할 수 있도록 짧고 친절하게 설명해 줘.
 ‘${tone}’로 이야기해 줘.
 확실하지 않은 우주 과학 내용은 추측하지 말고 모른다고 알려 줘.`;
     }
@@ -2300,16 +2358,16 @@ ${locationText}을 초등학생이 이해할 수 있도록 짧고 친절하게 �
         items.push({ href: "#review", text: "지난 작품 점검 항목을 모두 확인해 주세요." });
       }
       if (!state.activityData.rocket.role) {
-        items.push({ href: "#rocket", text: "수송선 임무를 선택해 주세요." });
+        items.push({ href: "#rocket", text: "투어 임무를 선택해 주세요." });
       }
       if (!ROCKET_CHECK_KEYS.every((key) => Boolean(state.activityData.rocket[key]))) {
-        items.push({ href: "#rocket", text: "Rocket 배치 확인을 모두 체크해 주세요." });
+        items.push({ href: "#rocket", text: "Rover와 Path 배치 확인을 모두 체크해 주세요." });
       }
       if (!isRouteComplete()) {
-        items.push({ href: "#route", text: "출발·도착 위치와 이동 경로 5칸을 선택해 주세요." });
+        items.push({ href: "#route", text: "첫 번째·두 번째 안내 장소와 투어 이동 순서 5칸을 선택해 주세요." });
       }
       if (!isAutopilotComplete()) {
-        items.push({ href: "#autopilot", text: "자동 항행 점검과 실행 결과를 기록해 주세요." });
+        items.push({ href: "#autopilot", text: "Path 순차 이동 점검과 실행 결과를 기록해 주세요." });
       }
       if (!isGuideComplete()) {
         items.push({ href: "#guide", text: "AI Buddy 이름·역할·말투·안내 장소 3곳을 완성해 주세요." });
