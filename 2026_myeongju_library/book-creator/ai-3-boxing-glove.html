@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상상대로 AI 실험실 - 3차시</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        },
+                        bgLight: '#f8f9fc',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8f9fc;
+            -webkit-font-smoothing: antialiased;
+        }
+        .step-transition {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c7cc;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a5;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col items-center py-6 px-4 sm:px-6 lg:px-8">
+
+    <script>
+        // 학생 데이터 (엑셀 파일 기반)
+        // url 부분에 실제 Book Creator 학생별 링크를 넣어주세요.
+        const students = [
+            { name: "김나영", url: "https://app.bookcreator.com/qr/-CbeW4Y38JoJDrqG/%EA%B9%80%EB%82%98%EC%98%81" },
+            { name: "김동주", url: "https://app.bookcreator.com/qr/Ktj6pmPyyofpYpxx/%EA%B9%80%EB%8F%99%EC%A3%BC" },
+            { name: "김민설", url: "https://app.bookcreator.com/qr/wLCtv-Kn1lpV5lUZ/%EA%B9%80%EB%AF%BC%EC%84%A4" },
+            { name: "김윤후", url: "https://app.bookcreator.com/qr/4G3qCoDI3SG8tw_M/%EA%B9%80%EC%9C%A4%ED%9B%84" },
+            { name: "도유민", url: "https://app.bookcreator.com/qr/5lqFSrIUoPMbHAbv/%EB%8F%84%EC%9C%A0%EB%AF%BC" },
+            { name: "송시우", url: "https://app.bookcreator.com/qr/RSHygN4fAWvlXqA3/%EC%86%A1%EC%8B%9C%EC%9A%B0" },
+            { name: "이윤환", url: "https://app.bookcreator.com/qr/SBx5XvxZkHdT3spb/%EC%9D%B4%EC%9C%A4%ED%99%98" },
+            { name: "이은욱", url: "https://app.bookcreator.com/qr/xqxLr3sMU8R8BrIQ/%EC%9D%B4%EC%9D%80%EC%9A%B1" },
+            { name: "이채현", url: "https://app.bookcreator.com/qr/xyTn3IKo3ZIGQm6Z/%EC%9D%B4%EC%B1%84%ED%98%84" },
+            { name: "조하윤", url: "https://app.bookcreator.com/qr/loY0YpzFhQBRzzjW/%EC%A1%B0%ED%95%98%EC%9C%A4" },
+            { name: "지산", url: "https://app.bookcreator.com/qr/EQNm5gdJuXLby9Qg/%EC%A7%80%EC%82%B0" },
+            { name: "김숙", url: "https://app.bookcreator.com/qr/Wgs6cIncIa4J_xzH/%EA%B9%80%EC%88%99" },
+            { name: "박민하", url: "https://app.bookcreator.com/qr/S9h4tEtJhQapS4m8/%EB%B0%95%EB%AF%BC%ED%95%98" },
+            { name: "박시준", url: "https://app.bookcreator.com/qr/5bDgexZ20k2SEibu/%EB%B0%95%EC%8B%9C%EC%A4%80" },
+            { name: "심아라", url: "https://app.bookcreator.com/qr/oOh_rarB8rhIn94d/%EC%8B%AC%EC%95%84%EB%9D%BC" },
+            { name: "함지윤", url: "https://app.bookcreator.com/qr/243aRKnjHybaTXH6/%ED%95%A8%EC%A7%80%EC%9C%A4" },
+            { name: "권보민", url: "https://app.bookcreator.com/qr/Cqku4JSzY9OLfVkt/%EA%B6%8C%EB%B3%B4%EB%AF%BC" },
+            { name: "김윤회", url: "https://app.bookcreator.com/qr/npuBM1LnLrAtfcAW/%EA%B9%80%EC%9C%A4%ED%9A%8C" },
+            { name: "전준휴", url: "https://app.bookcreator.com/qr/ngLQODaMLYCuzybw/%EC%A0%84%EC%A4%80%ED%9C%B4" },
+            { name: "정루아", url: "https://app.bookcreator.com/qr/56_Nnhmm7udQ9Naf/%EC%A0%95%EB%A3%A8%EC%95%84" },
+            { name: "전유나", url: "https://app.bookcreator.com/qr/3iBSRGUhp_Jj1KAv/%EC%A0%84%EC%9C%A0%EB%82%98" },
+        ];
+
+        // 캐릭터 정체성 (모든 이미지 프롬프트에 항상 포함되어, AI가 엉뚱한 그림 대신
+        // '책 속 권투 장갑 캐릭터'를 그리도록 고정해 주는 문구입니다.
+        // 아래 문구는 책 삽화(첨부 이미지) 속 캐릭터 모습을 그대로 옮긴 것입니다.
+        // 실제 수업에서 쓰는 캐릭터 디자인이 바뀌면 그에 맞게 수정하세요.
+        const CHARACTER_IDENTITY = "파란색의 동글동글하고 푹신한 권투 장갑 모양 캐릭터, 손목에는 검정색 밴드가 있고 그 위에 하얀색 X자 무늬가 두 개 있음, 얼굴에는 X자 모양의 눈과 살짝 찌푸린 눈썹이 있고, 볼은 발그레하게 물들어 있음, 색연필로 그린 듯 부드럽고 따뜻한 느낌의 그림책 그림체";
+
+        // 스토리 카드 데이터 설정
+        const stepsData = [
+            {
+                id: 1,
+                title: "오늘의 상상 여행",
+                subtitle: "행동으로 마음을 보여 줘요!",
+                question: "어떤 위기가 발생했나요?",
+                desc: "미래의 뜨개방에서 어떤 다급한 일이 벌어졌는지 장소와 상황을 선택하세요.",
+                type: "intro" // 시작 화면
+            },
+            {
+                id: 2,
+                stepNum: "1단계 · 1컷 장소",
+                question: "위험이 닥친 장소는 어디인가요?",
+                desc: "장소를 하나 선택하거나 직접 입력하세요.",
+                icon: "📍",
+                options: [
+                    "알록달록 털실이 가득한 미래의 뜨개방",
+                    "커다란 바구니에 털실이 담긴 작업실",
+                    "어른 권투 장갑이 일하는 조용한 가게",
+                    "털실 모자와 목도리가 걸린 따뜻한 공간",
+                    "시간 여행 우산이 흔들리는 문 앞",
+                    "아이들이 옹기종기 모인 뜨개방 한가운데"
+                ]
+            },
+            {
+                id: 3,
+                stepNum: "2단계 · 1컷 상황",
+                question: "어떤 위기 상황이 발생했나요?",
+                desc: "다급한 상황을 하나 선택하거나 직접 입력하세요.",
+                icon: "🚨",
+                options: [
+                    "친구의 털실 몸이 스르르 풀려버린 다급한 상황",
+                    "시간이 없어 모두 발을 동동 구르는 위기",
+                    "털실이 계속 풀려나가 어찌할 바를 모르는 상황",
+                    "도와달라고 소리치는 친구를 발견한 순간",
+                    "어른 권투 장갑 혼자서는 일손이 부족한 상황",
+                    "찢어질 듯 풀려가는 친구를 보며 굳어버린 순간"
+                ]
+            },
+            {
+                id: 4,
+                stepNum: "3단계 · 2컷 마음",
+                question: "권투 장갑은 어떤 마음이었을까요?",
+                desc: "평소 쑥스러움이 많은 권투 장갑이 낸 용기를 선택하세요.",
+                icon: "❤️",
+                options: [
+                    "제가 도울게요라며 씩씩하게 나서는",
+                    "자신이 제일 잘할 수 있는 일이라며 주먹을 꽉 쥐는",
+                    "숨겨두었던 뜨개질 실력을 꺼내기로 마음먹는",
+                    "어른 권투 장갑 곁에 앉아 흔들림 없이 바늘을 쥐는",
+                    "누구보다 자신감 있는 표정으로 앞으로 나가는",
+                    "친구를 살리겠다는 다정한 마음으로 집중하는"
+                ]
+            },
+            {
+                id: 5,
+                stepNum: "4단계 · 3컷 행동",
+                question: "어떤 멋진 행동을 보여주었나요?",
+                desc: "권투 장갑의 화려하고 다정한 활약상을 선택하세요.",
+                icon: "🧶",
+                options: [
+                    "손이 안 보일 만큼 빠른 속도로 뜨개질을 하는",
+                    "푹신한 주먹으로 섬세하고 정확하게 엮어내는",
+                    "어른 권투 장갑과 호흡을 맞추며 순식간에 꿰매어 주는",
+                    "다정한 손놀림으로 엉킨 털실을 재빠르게 풀어내는",
+                    "화려한 뜨개질 솜씨를 발휘하며 마법처럼 엮는",
+                    "거침없이 바늘을 움직여 털실 몸을 따뜻하게 메워주는"
+                ]
+            },
+            {
+                id: 6,
+                stepNum: "5단계 · 4컷 결말",
+                question: "이야기는 어떻게 끝이 났나요?",
+                desc: "위기를 극복한 후의 감동적인 결말을 선택하세요.",
+                icon: "✨",
+                options: [
+                    "원래 모습을 되찾은 쌍둥이 장갑이 안도하는 훈훈한",
+                    "바느질을 끝내고 우산을 타며 씩씩하게 인사하는",
+                    "직접 뜬 목도리를 선물하며 모두가 감동하는",
+                    "놀라운 재능에 친구들이 환호하며 고마워하는",
+                    "자신이 만든 목도리를 맨 친구들을 보며 수줍게 웃는",
+                    "다정한 바늘로 친구를 구했다는 사실에 뭉클해지는"
+                ]
+            },
+            {
+                id: 7,
+                stepNum: "6단계 · 그림 스타일",
+                question: "어떤 만화 스타일로 그릴까요?",
+                desc: "나만의 4컷 만화에 어울리는 웹툰 그림체를 선택하세요.",
+                icon: "🎨",
+                options: [
+                    "반짝반짝하고 부드러운 순정 만화 스타일",
+                    "선이 굵고 힘이 넘치는 액션 웹툰 스타일",
+                    "동글동글하고 귀여운 꼬마 캐릭터 스타일",
+                    "따뜻한 색감의 수채화풍 그림책 스타일",
+                    "단순하고 유쾌한 명랑 코믹 만화 스타일",
+                    "연필로 쓱쓱 그린 듯한 흑백 스케치 스타일"
+                ]
+            },
+            {
+                id: 8,
+                title: "프롬프트 꿀팁 & 약속",
+                stepNum: "7단계 · 프롬프트 준비",
+                question: "그림을 부탁하기 전에 알아두면 좋아요!",
+                desc: "더 멋진 그림을 만드는 비법과, AI와 함께 지킬 약속을 확인해요.",
+                type: "tips"
+            },
+            {
+                id: 9,
+                title: "프롬프트 완성",
+                stepNum: "8단계 · 프롬프트 복사",
+                question: "나만의 4컷 만화 프롬프트 완성!",
+                desc: "복사 버튼을 눌러 AI 이미지 생성 사이트에 붙여넣으세요.",
+                type: "prompt"
+            },
+            {
+                id: 10,
+                title: "작품 저장",
+                stepNum: "9단계 · 마무리",
+                question: "그림을 만들고 내 책에 저장해요",
+                desc: "생성된 이미지를 저장하고 Book Creator에 넣어주세요.",
+                type: "final"
+            }
+        ];
+
+        let currentStep = 1;
+        const totalSteps = stepsData.length;
+        const userSelections = {
+            place: "",
+            situation: "",
+            emotion: "",
+            action: "",
+            resolution: "",
+            style: "",
+            ethics: [false, false, false] // AI와 함께 지킬 약속 체크 여부
+        };
+    </script>
+
+    <div class="w-full max-w-5xl mx-auto">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl">
+                    🥊
+                </div>
+                <div>
+                    <h1 class="text-brand-600 font-bold text-sm">상상대로</h1>
+                    <h2 class="text-slate-900 font-extrabold text-xl leading-tight">AI 실험실</h2>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="flex-1 max-w-md ml-auto hidden sm:block">
+                <div class="flex justify-between text-xs font-semibold text-slate-500 mb-2">
+                    <span id="header-subtitle">오늘의 상상 여행</span>
+                    <span id="progress-text">1 / 8</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-500 h-2.5 rounded-full transition-all duration-300" style="width: 12.5%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Steps Indicators (Circles) -->
+        <div class="flex justify-center gap-2 mb-8" id="step-circles">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- Main Content Box -->
+        <main class="bg-white rounded-[2rem] shadow-sm p-6 sm:p-10 md:p-12 mb-6 min-h-[500px] relative step-transition" id="main-content">
+            <!-- Content injected here -->
+        </main>
+
+        <!-- Navigation Buttons -->
+        <footer class="flex justify-between items-center px-2">
+            <button id="btn-prev" onclick="goPrev()" class="px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-2xl shadow-sm hover:bg-slate-50 transition-colors hidden">
+                ← 이전
+            </button>
+            <div class="text-sm text-slate-400 font-medium hidden sm:block" id="nav-hint">
+                필수 활동을 완료하면 다음 단계로 갈 수 있어요.
+            </div>
+            <button id="btn-next" onclick="goNext()" class="px-8 py-3 bg-brand-50 text-brand-600 font-bold rounded-2xl hover:bg-brand-100 transition-colors ml-auto">
+                다음 단계 →
+            </button>
+        </footer>
+
+        <div class="text-center mt-6">
+            <button onclick="resetAll()" class="text-sm text-slate-400 underline hover:text-slate-600 transition-colors">
+                ↺ 처음부터 다시 작성하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const mainContent = document.getElementById('main-content');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        const stepCircles = document.getElementById('step-circles');
+        const headerSubtitle = document.getElementById('header-subtitle');
+
+        // Initialize
+        function init() {
+            renderStepCircles();
+            renderStep();
+        }
+
+        // Render Step Circles
+        function renderStepCircles() {
+            let html = '';
+            for(let i=1; i<=totalSteps; i++) {
+                if(i === currentStep) {
+                    html += `<div class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 border border-brand-200 flex items-center justify-center font-bold text-sm transition-all">${i}</div>`;
+                } else if (i < currentStep) {
+                    html += `<div class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-sm transition-all">${i}</div>`;
+                } else {
+                    html += `<div class="w-8 h-8 rounded-full bg-white text-slate-400 border border-slate-200 flex items-center justify-center font-bold text-sm transition-all">${i}</div>`;
+                }
+            }
+            stepCircles.innerHTML = html;
+        }
+
+        // Save Selection
+        function selectOption(key, value) {
+            userSelections[key] = value;
+            renderStep(); // Re-render to show selected state
+        }
+
+        // Prompt Tip Mini-Quiz Feedback
+        function checkPromptTip(isGood) {
+            const feedback = document.getElementById('tip-feedback');
+            feedback.classList.remove('hidden');
+            if (isGood) {
+                feedback.className = 'mt-5 p-4 rounded-xl font-semibold bg-green-50 text-green-700';
+                feedback.innerHTML = '🎉 맞아요! 색깔, 재료, 표정, 동작, 그림체를 자세히 적을수록 AI가 상상한 그림에 더 가깝게 그려줘요.';
+            } else {
+                feedback.className = 'mt-5 p-4 rounded-xl font-semibold bg-amber-50 text-amber-700';
+                feedback.innerHTML = '음, 이 부탁은 너무 간단해서 AI가 마음대로 그릴 수도 있어요. 오른쪽처럼 자세하게 적어보면 어떨까요?';
+            }
+        }
+
+        // Toggle AI Ethics Checklist
+        function toggleEthics(idx) {
+            userSelections.ethics[idx] = !userSelections.ethics[idx];
+            renderStep();
+        }
+
+        // Handle custom input
+        function handleCustomInput(key, event) {
+            userSelections[key] = event.target.value;
+            // Also select the radio button visually
+            const radios = document.getElementsByName(key);
+            radios.forEach(r => r.checked = false);
+            document.getElementById(`custom_${key}`).checked = true;
+        }
+
+        function checkCustomRadio(key) {
+             const input = document.getElementById(`custom_input_${key}`);
+             userSelections[key] = input.value;
+             renderStep();
+        }
+
+        function renderStep() {
+            const step = stepsData[currentStep - 1];
+            let contentHTML = '';
+
+            // Update Header & Progress
+            progressText.innerText = `${currentStep} / ${totalSteps}`;
+            progressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
+            headerSubtitle.innerText = step.title || "4컷 만화 만들기";
+            renderStepCircles();
+
+            // Trigger Animation
+            mainContent.classList.remove('step-transition');
+            void mainContent.offsetWidth; // trigger reflow
+            mainContent.classList.add('step-transition');
+
+            // Intro Step
+            if (step.type === 'intro') {
+                contentHTML = `
+                    <div class="text-center max-w-2xl mx-auto py-8">
+                        <div class="inline-flex items-center justify-center px-4 py-2 mb-6 rounded-full bg-brand-50 border border-brand-200 text-brand-600 font-extrabold text-sm tracking-wide shadow-sm">
+                            🎨 오늘은 내가 AI 웹툰 작가!
+                        </div>
+
+                        <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-sm">
+                            🎬
+                        </div>
+
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-8">${step.subtitle}</h2>
+
+                        <div class="bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8 mb-8 text-left shadow-sm">
+                            <h3 class="text-xl font-bold text-brand-600 mb-3 flex items-center gap-2">
+                                💡 왜 4컷 만화로 만들까요?
+                            </h3>
+                            <p class="text-lg text-slate-700 leading-relaxed mb-5">
+                                진짜 용기와 따뜻한 마음은 말보다 <strong class="bg-brand-50 text-brand-600 px-1 rounded">하나의 멋진 행동</strong>으로 더 잘 전해져요.<br>
+                                권투 장갑이 위기에 처한 친구를 구하는 빛나는 순간! 그 순간의 표정과 힘찬 움직임을 컷마다 가장 생생하게 담아내기에는 웹툰(만화)이 최고랍니다.
+                            </p>
+                            <div class="w-full h-px bg-slate-100 mb-5"></div>
+                            <p class="text-lg text-slate-600 leading-relaxed font-medium">
+                                시간 여행 우산을 타고 온 미래의 뜨개방!<br>
+                                그곳에서 어떤 다급한 위기가 벌어졌을까요? 지금부터 작가가 되어 카드를 고르고, 세상에 하나뿐인 나만의 이야기를 완성해 보세요.
+                            </p>
+                        </div>
+
+                        <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 sm:p-8 mb-8 text-left shadow-sm">
+                            <h3 class="text-xl font-bold text-amber-700 mb-3 flex items-center gap-2">
+                                🤔 어? 이야기 결말을 이미 아는데, 왜 다시 만들까요?
+                            </h3>
+                            <p class="text-lg text-slate-700 leading-relaxed">
+                                책 속 그림은 그림 작가님 한 분이 상상해서 그린 장면이에요.<br>
+                                그런데 같은 이야기를 읽어도 우리 머릿속에 떠오르는 모습은 조금씩 달라요!<br>
+                                오늘 여러분은 이 장면을 그리는 또 다른 <strong class="bg-white text-amber-700 px-1 rounded">그림 작가</strong>가 되어, 내가 상상한 모습을 AI의 도움을 받아 직접 그림으로 꺼내 보는 거예요. 세상에 하나뿐인 나만의 그림이 완성돼요!
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            // Option Selection Steps (2~7)
+            else if (!step.type) {
+                const keyMap = {2: 'place', 3: 'situation', 4: 'emotion', 5: 'action', 6: 'resolution', 7: 'style'};
+                const currentKey = keyMap[currentStep];
+                const selectedValue = userSelections[currentKey];
+
+                contentHTML = `
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center gap-2 mb-3">
+                            <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-xl text-brand-600">${step.icon}</div>
+                            <span class="text-brand-600 font-bold text-sm tracking-wide">${step.stepNum}</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 mb-3">${step.question}</h2>
+                        <p class="text-slate-500">${step.desc}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                `;
+
+                step.options.forEach((opt, idx) => {
+                    const isSelected = selectedValue === opt;
+                    contentHTML += `
+                        <label class="relative flex items-center p-5 cursor-pointer rounded-2xl border-2 transition-all duration-200 ${isSelected ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:border-brand-300 bg-white'}">
+                            <input type="radio" name="${currentKey}" value="${opt}" class="hidden" onchange="selectOption('${currentKey}', '${opt}')" ${isSelected ? 'checked' : ''}>
+                            <div class="flex-1 pr-8">
+                                <span class="block text-slate-800 font-semibold text-lg leading-snug">${opt}</span>
+                            </div>
+                            <div class="absolute right-5 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-brand-500 bg-brand-500' : 'border-slate-300'}">
+                                ${isSelected ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                            </div>
+                        </label>
+                    `;
+                });
+
+                // Direct Input Option
+                const isCustomSelected = selectedValue !== "" && !step.options.includes(selectedValue);
+                const customValue = isCustomSelected ? selectedValue : "";
+                contentHTML += `
+                        <label class="relative flex items-center p-5 cursor-pointer rounded-2xl border-2 transition-all duration-200 ${isCustomSelected ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:border-brand-300 bg-white'}" onclick="checkCustomRadio('${currentKey}')">
+                            <input type="radio" id="custom_${currentKey}" name="${currentKey}" class="hidden" ${isCustomSelected ? 'checked' : ''}>
+                            <div class="flex-1 pr-8">
+                                <span class="block text-sm text-brand-500 font-bold mb-1">직접 입력하기</span>
+                                <input type="text" id="custom_input_${currentKey}" value="${customValue}" placeholder="여기에 직접 적어주세요." class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none py-1 text-slate-800 font-semibold text-lg placeholder-slate-400" oninput="handleCustomInput('${currentKey}', event)">
+                            </div>
+                            <div class="absolute right-5 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isCustomSelected ? 'border-brand-500 bg-brand-500' : 'border-slate-300'}">
+                                ${isCustomSelected ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                            </div>
+                        </label>
+                `;
+
+                contentHTML += `
+                    </div>
+                    <div class="text-center mt-6 text-sm text-slate-400">한 가지 항목만 골라 주세요. 다시 누르면 선택을 바꿀 수 있어요.</div>
+                `;
+            }
+            else if (step.type === 'tips') {
+                const ethicsLabels = [
+                    "유명한 연예인이나 친구, 선생님의 실제 이름은 넣지 않을게요.",
+                    "실제 사람의 얼굴 사진처럼 진짜 같은 그림은 부탁하지 않을게요.",
+                    "무섭거나 다치게 하는 장면은 부탁하지 않을게요."
+                ];
+
+                contentHTML = `
+                    <div class="max-w-3xl mx-auto">
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center gap-2 mb-3">
+                                <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-xl text-brand-600">🔑</div>
+                                <span class="text-brand-600 font-bold text-sm tracking-wide">${step.stepNum}</span>
+                            </div>
+                            <h2 class="text-3xl font-extrabold text-slate-900 mb-3">${step.question}</h2>
+                            <p class="text-slate-500">${step.desc}</p>
+                        </div>
+
+                        <!-- 프롬프트 꿀팁 미니 퀴즈 -->
+                        <div class="bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8 mb-6 shadow-sm">
+                            <h3 class="text-xl font-bold text-brand-600 mb-4 flex items-center gap-2">
+                                🔑 어떤 부탁이 더 멋진 그림을 만들어 줄까요?
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button onclick="checkPromptTip(false)" id="tip-simple" class="text-left p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-300 bg-white transition-all">
+                                    <span class="block text-sm font-bold text-slate-400 mb-2">간단한 부탁</span>
+                                    <span class="block text-slate-800 font-semibold text-lg leading-snug">"권투 장갑이 있어요"</span>
+                                </button>
+                                <button onclick="checkPromptTip(true)" id="tip-detail" class="text-left p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-300 bg-white transition-all">
+                                    <span class="block text-sm font-bold text-slate-400 mb-2">자세한 부탁</span>
+                                    <span class="block text-slate-800 font-semibold text-lg leading-snug">"파란색의 푹신한 권투 장갑 캐릭터가 눈썹을 찌푸리며 힘차게 주먹을 뻗는 모습, 색연필로 그린 그림책 그림체"</span>
+                                </button>
+                            </div>
+                            <div id="tip-feedback" class="mt-5 p-4 rounded-xl font-semibold hidden"></div>
+                            <p class="text-sm text-slate-400 mt-4">💡 색깔, 재료, 표정, 동작, 그림체를 자세히 적을수록 AI가 상상한 그림에 더 가깝게 그려줘요.</p>
+                        </div>
+
+                        <!-- AI 윤리 약속 -->
+                        <div class="bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+                            <h3 class="text-xl font-bold text-brand-600 mb-4 flex items-center gap-2">
+                                🤝 AI와 함께 그림 그릴 때 약속해요
+                            </h3>
+                            <div class="space-y-3">
+                                ${ethicsLabels.map((label, idx) => `
+                                    <label class="flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${userSelections.ethics[idx] ? 'border-brand-500 bg-brand-50' : 'border-slate-200 bg-white hover:border-brand-300'}">
+                                        <input type="checkbox" class="w-5 h-5 accent-brand-500" onchange="toggleEthics(${idx})" ${userSelections.ethics[idx] ? 'checked' : ''}>
+                                        <span class="text-slate-700 font-semibold">${label}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (step.type === 'prompt') {
+                const prompt1 = `${userSelections.place} 배경, ${userSelections.situation}, ${userSelections.style}`;
+                const prompt2 = `${CHARACTER_IDENTITY}. 이 캐릭터가 ${userSelections.emotion} 표정을 짓고 있어요, ${userSelections.style}`;
+                const prompt3 = `${CHARACTER_IDENTITY}. 이 캐릭터가 ${userSelections.action} 모습이에요, 힘차게 움직이는 장면, ${userSelections.style}`;
+                const prompt4 = `${CHARACTER_IDENTITY}. 이 캐릭터를 포함한 장갑 친구들이 ${userSelections.resolution} 결말을 맞이해요, ${userSelections.style}`;
+
+                contentHTML = `
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center gap-2 mb-3">
+                            <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-xl text-brand-600">✍️</div>
+                            <span class="text-brand-600 font-bold text-sm tracking-wide">${step.stepNum}</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 mb-3">${step.question}</h2>
+                        <p class="text-slate-500">${step.desc}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                        ${renderPromptBox('1컷', prompt1, 'prompt1')}
+                        ${renderPromptBox('2컷', prompt2, 'prompt2')}
+                        ${renderPromptBox('3컷', prompt3, 'prompt3')}
+                        ${renderPromptBox('4컷', prompt4, 'prompt4')}
+                    </div>
+                `;
+            }
+            else if (step.type === 'final') {
+                contentHTML = `
+                    <div class="max-w-4xl mx-auto">
+                        <!-- Top Action Buttons -->
+                        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
+                            <a href="https://85656ad2.ai-chat-image-studio.pages.dev/image/" target="_blank" class="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-md transition-colors">
+                                이미지 생성 사이트 열기 ↗
+                            </a>
+                            <button id="btn-save-check" onclick="toggleSaveCheck()" class="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-white border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-bold text-lg py-4 px-8 rounded-2xl shadow-sm transition-colors">
+                                그림을 저장했어요
+                            </button>
+                        </div>
+
+                        <!-- Book Creator Links Box -->
+                        <div class="bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="text-2xl">📚</div>
+                                <h3 class="text-2xl font-bold text-slate-900">내 Book Creator 열기</h3>
+                            </div>
+                            <p class="text-slate-500 mb-6">내 이름을 찾아 누르면 내 책이 새 창으로 열려요.</p>
+
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                ${students.map(student => `
+                                    <a href="${student.url}" target="_blank" class="flex justify-between items-center bg-white border border-slate-200 hover:border-brand-300 hover:shadow-md text-brand-600 font-bold py-3 px-4 rounded-xl transition-all group">
+                                        <span>${student.name}</span>
+                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            mainContent.innerHTML = contentHTML;
+            updateNavButtons();
+        }
+
+        // Prompt Box Component
+        function renderPromptBox(title, content, id) {
+            return `
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col h-full">
+                    <h3 class="font-bold text-brand-600 mb-2">${title}</h3>
+                    <div class="bg-white border border-slate-200 rounded-xl p-3 text-slate-700 text-sm mb-4 flex-grow break-keep leading-relaxed" id="${id}">
+                        ${content}
+                    </div>
+                    <button onclick="copyText('${id}')" class="w-full py-2.5 bg-white border border-brand-200 text-brand-600 font-bold rounded-xl hover:bg-brand-50 transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        복사하기
+                    </button>
+                </div>
+            `;
+        }
+
+        function updateNavButtons() {
+            // Prev Button
+            if (currentStep === 1) {
+                btnPrev.classList.add('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+            }
+
+            // Next Button Logic
+            if (currentStep === totalSteps) {
+                btnNext.classList.add('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+
+                // Style Next button based on step completion (Mock validation)
+                const step = stepsData[currentStep - 1];
+                let isComplete = true;
+
+                if (step.id === 2 && !userSelections.place) isComplete = false;
+                if (step.id === 3 && !userSelections.situation) isComplete = false;
+                if (step.id === 4 && !userSelections.emotion) isComplete = false;
+                if (step.id === 5 && !userSelections.action) isComplete = false;
+                if (step.id === 6 && !userSelections.resolution) isComplete = false;
+                if (step.id === 7 && !userSelections.style) isComplete = false;
+                if (step.id === 8 && !userSelections.ethics.every(v => v)) isComplete = false;
+
+                if (isComplete) {
+                    btnNext.className = "px-8 py-3 bg-brand-500 text-white font-bold rounded-2xl hover:bg-brand-600 transition-colors ml-auto shadow-sm";
+                } else {
+                    btnNext.className = "px-8 py-3 bg-brand-50 text-brand-400 font-bold rounded-2xl cursor-not-allowed ml-auto";
+                }
+            }
+        }
+
+        function goNext() {
+            // Validation Check
+            const step = stepsData[currentStep - 1];
+            if (step.id === 2 && !userSelections.place) return alert("장소를 선택해 주세요.");
+            if (step.id === 3 && !userSelections.situation) return alert("상황을 선택해 주세요.");
+            if (step.id === 4 && !userSelections.emotion) return alert("마음을 선택해 주세요.");
+            if (step.id === 5 && !userSelections.action) return alert("행동을 선택해 주세요.");
+            if (step.id === 6 && !userSelections.resolution) return alert("결말을 선택해 주세요.");
+            if (step.id === 7 && !userSelections.style) return alert("그림 스타일을 선택해 주세요.");
+            if (step.id === 8 && !userSelections.ethics.every(v => v)) return alert("AI와 함께하는 약속 3가지를 모두 확인해 주세요.");
+
+            if (currentStep < totalSteps) {
+                currentStep++;
+                renderStep();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function goPrev() {
+            if (currentStep > 1) {
+                currentStep--;
+                renderStep();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function resetAll() {
+            if(confirm("처음부터 다시 작성하시겠어요? 선택한 내용이 모두 지워집니다.")) {
+                currentStep = 1;
+                userSelections.place = "";
+                userSelections.situation = "";
+                userSelections.emotion = "";
+                userSelections.action = "";
+                userSelections.resolution = "";
+                userSelections.style = "";
+                userSelections.ethics = [false, false, false];
+                renderStep();
+            }
+        }
+
+        // Copy to clipboard
+        function copyText(elementId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('프롬프트가 복사되었습니다!');
+            } catch (err) {
+                alert('복사에 실패했습니다. 직접 드래그해서 복사해주세요.');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Toggle Save Check Button (Final Step)
+        let isSaved = false;
+        function toggleSaveCheck() {
+            const btn = document.getElementById('btn-save-check');
+            isSaved = !isSaved;
+            if(isSaved) {
+                btn.className = "flex-1 sm:flex-none flex justify-center items-center gap-2 bg-[#1A8D5F] text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-md transition-colors";
+                btn.innerHTML = "✔ 그림을 저장했어요";
+            } else {
+                btn.className = "flex-1 sm:flex-none flex justify-center items-center gap-2 bg-white border-2 border-slate-200 text-slate-500 hover:bg-slate-50 font-bold text-lg py-4 px-8 rounded-2xl shadow-sm transition-colors";
+                btn.innerHTML = "그림을 저장했어요";
+            }
+        }
+
+        // Start
+        window.onload = init;
+    </script>
+</body>
+</html>
