@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상상대로 AI 실험실 - 4차시</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#f0f3ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca'
+            },
+            ink: '#0f172a',
+            bgLight: '#f8f9fc'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #f8f9fc;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .step-transition {
+      animation: fadeIn 0.36s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .focus-ring:focus-visible {
+      outline: 4px solid rgba(99, 102, 241, 0.35);
+      outline-offset: 3px;
+    }
+
+    .story-paper {
+      background:
+        linear-gradient(#ffffff 29px, #eef2ff 30px),
+        #ffffff;
+      background-size: 100% 30px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .no-scrollbar::-webkit-scrollbar-thumb {
+      background: #c7c7cc;
+      border-radius: 4px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #a0a0a5;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+  </style>
+</head>
+<body class="no-scrollbar text-slate-800 min-h-screen flex flex-col items-center py-6 px-4 sm:px-6 lg:px-8">
+  <div class="w-full max-w-5xl mx-auto">
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-7">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl" aria-hidden="true">📚</div>
+        <div>
+          <h1 class="text-brand-600 font-bold text-sm">상상대로</h1>
+          <h2 class="text-slate-900 font-extrabold text-xl leading-tight">AI 실험실</h2>
+        </div>
+      </div>
+
+      <div class="flex-1 w-full sm:max-w-md sm:ml-auto">
+        <div class="flex justify-between text-xs font-semibold text-slate-500 mb-2">
+          <span id="header-subtitle">오늘은 나의 꿈 이야기</span>
+          <span id="progress-text">1 / 9</span>
+        </div>
+        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+          <div id="progress-bar" class="bg-brand-500 h-2.5 rounded-full transition-all duration-300" style="width: 11.11%"></div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="flex justify-center gap-2 mb-7 overflow-x-auto pb-1" id="step-circles" aria-label="수업 단계"></nav>
+
+    <main class="bg-white rounded-[2rem] shadow-sm p-5 sm:p-8 md:p-11 mb-6 min-h-[540px] relative step-transition" id="main-content" tabindex="-1"></main>
+
+    <footer class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-1">
+      <button id="btn-prev" type="button" class="focus-ring px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-2xl shadow-sm hover:bg-slate-50 transition-colors hidden">
+        이전
+      </button>
+      <div class="text-sm text-slate-400 font-medium sm:text-center" id="nav-hint" aria-live="polite">
+        필수 활동을 완료하면 다음 단계로 갈 수 있어요.
+      </div>
+      <button id="btn-next" type="button" class="focus-ring px-8 py-3 bg-brand-50 text-brand-600 font-bold rounded-2xl hover:bg-brand-100 transition-colors sm:ml-auto">
+        다음 단계
+      </button>
+    </footer>
+
+    <div class="text-center mt-6">
+      <button id="btn-reset" type="button" class="focus-ring text-sm text-slate-400 underline hover:text-slate-600 transition-colors">
+        처음부터 다시 작성하기
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const AI_IMAGE_URL = 'https://85656ad2.ai-chat-image-studio.pages.dev/image/';
+    const STORAGE_KEY = 'myeongjuBookCreatorLesson4.v1';
+
+    const students = [
+      { name: '김나영', url: 'https://app.bookcreator.com/qr/-CbeW4Y38JoJDrqG/%EA%B9%80%EB%82%98%EC%98%81' },
+      { name: '김동주', url: 'https://app.bookcreator.com/qr/Ktj6pmPyyofpYpxx/%EA%B9%80%EB%8F%99%EC%A3%BC' },
+      { name: '김민설', url: 'https://app.bookcreator.com/qr/wLCtv-Kn1lpV5lUZ/%EA%B9%80%EB%AF%BC%EC%84%A4' },
+      { name: '김윤후', url: 'https://app.bookcreator.com/qr/4G3qCoDI3SG8tw_M/%EA%B9%80%EC%9C%A4%ED%9B%84' },
+      { name: '도유민', url: 'https://app.bookcreator.com/qr/5lqFSrIUoPMbHAbv/%EB%8F%84%EC%9C%A0%EB%AF%BC' },
+      { name: '송시우', url: 'https://app.bookcreator.com/qr/RSHygN4fAWvlXqA3/%EC%86%A1%EC%8B%9C%EC%9A%B0' },
+      { name: '이윤환', url: 'https://app.bookcreator.com/qr/SBx5XvxZkHdT3spb/%EC%9D%B4%EC%9C%A4%ED%99%98' },
+      { name: '이은욱', url: 'https://app.bookcreator.com/qr/xqxLr3sMU8R8BrIQ/%EC%9D%B4%EC%9D%80%EC%9A%B1' },
+      { name: '이채현', url: 'https://app.bookcreator.com/qr/xyTn3IKo3ZIGQm6Z/%EC%9D%B4%EC%B1%84%ED%98%84' },
+      { name: '조하윤', url: 'https://app.bookcreator.com/qr/loY0YpzFhQBRzzjW/%EC%A1%B0%ED%95%98%EC%9C%A4' },
+      { name: '지산', url: 'https://app.bookcreator.com/qr/EQNm5gdJuXLby9Qg/%EC%A7%80%EC%82%B0' },
+      { name: '김숙', url: 'https://app.bookcreator.com/qr/Wgs6cIncIa4J_xzH/%EA%B9%80%EC%88%99' },
+      { name: '박민하', url: 'https://app.bookcreator.com/qr/S9h4tEtJhQapS4m8/%EB%B0%95%EB%AF%BC%ED%95%98' },
+      { name: '박시준', url: 'https://app.bookcreator.com/qr/5bDgexZ20k2SEibu/%EB%B0%95%EC%8B%9C%EC%A4%80' },
+      { name: '심아라', url: 'https://app.bookcreator.com/qr/oOh_rarB8rhIn94d/%EC%8B%AC%EC%95%84%EB%9D%BC' },
+      { name: '함지윤', url: 'https://app.bookcreator.com/qr/243aRKnjHybaTXH6/%ED%95%A8%EC%A7%80%EC%9C%A4' },
+      { name: '권보민', url: 'https://app.bookcreator.com/qr/Cqku4JSzY9OLfVkt/%EA%B6%8C%EB%B3%B4%EB%AF%BC' },
+      { name: '김윤회', url: 'https://app.bookcreator.com/qr/npuBM1LnLrAtfcAW/%EA%B9%80%EC%9C%A4%ED%9A%8C' },
+      { name: '전준휴', url: 'https://app.bookcreator.com/qr/ngLQODaMLYCuzybw/%EC%A0%84%EC%A4%80%ED%9C%B4' },
+      { name: '정루아', url: 'https://app.bookcreator.com/qr/56_Nnhmm7udQ9Naf/%EC%A0%95%EB%A3%A8%EC%95%84' },
+      { name: '전유나', url: 'https://app.bookcreator.com/qr/3iBSRGUhp_Jj1KAv/%EC%A0%84%EC%9C%A0%EB%82%98' }
+    ];
+
+    const steps = [
+      '오늘은 나의 꿈 이야기',
+      '나에게 어울리는 꿈 찾기',
+      '미래의 나 상상하기',
+      '이야기에 사건 만들기',
+      '첫 이야기를 고쳐요',
+      'AI 그림 만들기',
+      '나의 그림책 설계하기',
+      'Book Creator에서 완성하기',
+      '작가의 마지막 검수'
+    ];
+
+    const options = {
+      dreams: ['과학자', '동물 의사', '요리사', '선생님', '운동선수', '화가', '작가', '게임 개발자', '로봇 개발자', '디자이너', '영상 제작자', '기타/아직 정하지 못함'],
+      values: ['새로운 것을 만들기', '어려운 문제 해결하기', '다른 사람 돕기', '동물이나 자연 돌보기', '사람들에게 즐거움 주기', '새로운 것 발견하기', '몸을 움직이며 도전하기'],
+      reasons: ['재미있어 보여서', '내가 좋아하는 일이어서', '다른 사람을 돕고 싶어서', '새로운 것을 만들고 싶어서', '잘해 보고 싶어서', '아직 잘 모르지만 궁금해서'],
+      places: ['연구실', '학교', '병원', '경기장', '작업실', '미래 도시', '우주', '바다', '자연 속', '무대'],
+      futureActions: ['만들고 있어요', '연구하고 있어요', '사람을 돕고 있어요', '가르치고 있어요', '치료하고 있어요', '새로운 것을 발견하고 있어요', '멋진 작품을 만들고 있어요', '도전하고 있어요'],
+      companions: ['친구', '동료', '어린이', '가족', '동물', '로봇', '많은 사람들', '혼자'],
+      moods: ['따뜻한', '신나는', '활기찬', '멋진', '평화로운', '신비로운', '힘찬'],
+      challenges: ['중요한 물건이 고장 났어요.', '생각했던 방법이 잘되지 않았어요.', '누군가 도움이 필요했어요.', '처음 보는 어려운 문제가 생겼어요.', '중요한 실수를 했어요.', '친구가 어려움을 겪고 있었어요.'],
+      storyActions: ['다시 도전했어요.', '새로운 방법을 생각했어요.', '친구와 힘을 합쳤어요.', '도움을 요청했어요.', '끝까지 연습했어요.', '다른 사람을 도와주었어요.'],
+      results: ['문제를 해결했어요.', '새로운 것을 발견했어요.', '친구에게 도움이 되었어요.', '처음보다 더 잘하게 되었어요.', '모두 함께 성공했어요.', '새로운 도전을 시작하게 되었어요.']
+    };
+
+    const reviewQuestions = [
+      { key: 'fit', question: '꿈과 장소가 잘 어울리나요?', answers: ['잘 어울려요', '다시 생각해 볼래요'] },
+      { key: 'flow', question: '사건과 행동이 자연스럽게 연결되나요?', answers: ['자연스러워요', '조금 이상해요'] },
+      { key: 'ending', question: '마지막 결과가 내가 한 행동과 연결되나요?', answers: ['잘 연결돼요', '다시 고칠래요'] }
+    ];
+
+    const revisionTargets = [
+      { key: 'future.place', label: '미래 장소', options: options.places },
+      { key: 'future.action', label: '미래 행동', options: options.futureActions },
+      { key: 'story.challenge', label: '사건', options: options.challenges },
+      { key: 'story.action', label: '해결 행동', options: options.storyActions },
+      { key: 'story.result', label: '결과', options: options.results },
+      { key: 'future.mood', label: '분위기', options: options.moods }
+    ];
+
+    const imageCheckQuestions = [
+      { key: 'dream', question: '내 꿈이 그림에서 잘 보이나요?', answers: ['잘 보여요', '조금 보여요', '잘 안 보여요'] },
+      { key: 'action', question: '내가 하려고 한 행동이 보이나요?', answers: ['보여요', '애매해요', '안 보여요'] },
+      { key: 'mood', question: '내가 원한 분위기인가요?', answers: ['맞아요', '조금 달라요', '많이 달라요'] }
+    ];
+
+    const bookPages = [
+      { key: 'cover', title: '1쪽 · 표지', body: '책 제목, 만든 사람, 대표 이미지를 넣어요.' },
+      { key: 'future', title: '2쪽 · 미래의 나', body: 'AI 이미지 1과 미래의 나 소개 1~2문장을 넣어요.' },
+      { key: 'challenge', title: '3쪽 · 사건이 생겼어요', body: '어떤 어려움이 생겼는지 1~2문장으로 보여 줘요.' },
+      { key: 'action', title: '4쪽 · 나는 이렇게 행동했어요', body: 'AI 이미지 2와 내가 한 행동 1~2문장을 넣어요.' },
+      { key: 'result', title: '5쪽 · 꿈의 결말', body: '사건 결과와 미래의 내가 어떤 사람이 되었는지 보여 줘요.' },
+      { key: 'thanks', title: '6쪽 · 나의 꿈을 응원해요', body: '나에게 보내는 응원과 AI가 도와준 부분을 표시해요.' }
+    ];
+
+    const creatorRules = [
+      { key: 'cover', title: '규칙 1', body: '표지를 꼭 만들어요. 책 제목, 만든 사람, 대표 이미지를 넣어요.' },
+      { key: 'oneScene', title: '규칙 2', body: '한 페이지에는 중요한 장면 하나. 큰 이미지 1장, 제목, 이야기 1~3문장 정도가 좋아요.' },
+      { key: 'match', title: '규칙 3', body: '글과 그림이 서로 어울려야 해요. 이야기와 다른 AI 그림을 무조건 쓰지 않아요.' },
+      { key: 'design', title: '규칙 4', body: '책 전체 디자인을 비슷하게 해요. 제목 위치와 글자 크기를 맞추고 배경색은 2~3가지 안에서 사용해요.' },
+      { key: 'credit', title: '규칙 5', body: '마지막 페이지와 제작 정보를 꼭 넣어요. 글·구성 작성자와 AI가 도와준 부분을 표시해요.' }
+    ];
+
+    const selfChecks = [
+      ['cover', '표지가 있어요.'],
+      ['title', '책 제목이 있어요.'],
+      ['author', '만든 사람 이름이 있어요.'],
+      ['sixPages', '6쪽이 모두 있어요.'],
+      ['flow', '꿈 → 사건 → 행동 → 결과 순서로 이야기가 이어져요.'],
+      ['imageText', '그림과 글이 서로 어울려요.'],
+      ['readable', '글자가 그림을 너무 많이 가리지 않아요.'],
+      ['lastPage', '마지막 페이지가 있어요.'],
+      ['cheer', '나에게 보내는 응원 문장이 있어요.'],
+      ['aiCredit', 'AI의 도움을 받은 부분을 표시했어요.'],
+      ['readAll', '책을 처음부터 끝까지 직접 읽어 봤어요.']
+    ];
+
+    const mainContent = document.getElementById('main-content');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const btnReset = document.getElementById('btn-reset');
+    const progressText = document.getElementById('progress-text');
+    const progressBar = document.getElementById('progress-bar');
+    const stepCircles = document.getElementById('step-circles');
+    const headerSubtitle = document.getElementById('header-subtitle');
+    const navHint = document.getElementById('nav-hint');
+
+    let state = loadState();
+
+    function defaultState() {
+      return {
+        currentStep: 1,
+        dreamCandidates: [],
+        dreamValue: '',
+        finalDream: '',
+        dreamReason: '',
+        future: { place: '', action: '', companion: '', mood: '' },
+        futureFit: '',
+        story: { challenge: '', action: '', result: '' },
+        firstStory: '',
+        originalSnapshot: null,
+        revisedStory: '',
+        storyReview: { fit: '', flow: '', ending: '' },
+        revisionTarget: '',
+        imageChecks: {
+          image1: { dream: '', action: '', mood: '', decision: '' },
+          image2: { dream: '', action: '', mood: '', decision: '' },
+          image3: { dream: '', action: '', mood: '', decision: '' }
+        },
+        bookChecklist: {},
+        creatorRules: {},
+        creatorOpened: false,
+        peerReview: {},
+        selfChecklist: {},
+        completed: false,
+        challenges: {
+          betterTitle: '',
+          page7: false,
+          image3Started: false,
+          editorMemory: '',
+          editorQuestion: ''
+        }
+      };
+    }
+
+    function mergeState(saved, base) {
+      if (!saved || typeof saved !== 'object') return base;
+      const merged = { ...base, ...saved };
+      merged.future = { ...base.future, ...(saved.future || {}) };
+      merged.story = { ...base.story, ...(saved.story || {}) };
+      merged.storyReview = { ...base.storyReview, ...(saved.storyReview || {}) };
+      merged.imageChecks = {
+        image1: { ...base.imageChecks.image1, ...((saved.imageChecks || {}).image1 || {}) },
+        image2: { ...base.imageChecks.image2, ...((saved.imageChecks || {}).image2 || {}) },
+        image3: { ...base.imageChecks.image3, ...((saved.imageChecks || {}).image3 || {}) }
+      };
+      merged.bookChecklist = { ...base.bookChecklist, ...(saved.bookChecklist || {}) };
+      merged.creatorRules = { ...base.creatorRules, ...(saved.creatorRules || {}) };
+      merged.peerReview = { ...base.peerReview, ...(saved.peerReview || {}) };
+      merged.selfChecklist = { ...base.selfChecklist, ...(saved.selfChecklist || {}) };
+      merged.challenges = { ...base.challenges, ...(saved.challenges || {}) };
+      merged.currentStep = Math.min(Math.max(Number(merged.currentStep) || 1, 1), steps.length);
+      return merged;
+    }
+
+    function loadState() {
+      try {
+        return mergeState(JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'), defaultState());
+      } catch (error) {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        navHint.textContent = '저장 공간을 사용할 수 없어요. 지금 화면에서 계속 진행해 주세요.';
+      }
+    }
+
+    function getValue(path) {
+      return path.split('.').reduce((obj, part) => obj && obj[part], state);
+    }
+
+    function setValue(path, value) {
+      const parts = path.split('.');
+      let obj = state;
+      while (parts.length > 1) {
+        obj = obj[parts.shift()];
+      }
+      obj[parts[0]] = value;
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function safeText(value, fallback = '선택한 내용') {
+      return escapeHtml(value || fallback);
+    }
+
+    function render() {
+      captureFirstDraftIfNeeded();
+      state.revisedStory = makeStory();
+
+      const current = state.currentStep;
+      headerSubtitle.textContent = steps[current - 1];
+      progressText.textContent = `${current} / ${steps.length}`;
+      progressBar.style.width = `${(current / steps.length) * 100}%`;
+      renderStepCircles();
+
+      mainContent.classList.remove('step-transition');
+      void mainContent.offsetWidth;
+      mainContent.classList.add('step-transition');
+      mainContent.innerHTML = [
+        renderIntro,
+        renderDreamStep,
+        renderFutureStep,
+        renderStoryStep,
+        renderRevisionStep,
+        renderImageStep,
+        renderBookPlanStep,
+        renderCreatorStep,
+        renderFinalStep
+      ][current - 1]();
+
+      updateNav();
+      saveState();
+    }
+
+    function renderStepCircles() {
+      stepCircles.innerHTML = steps.map((label, index) => {
+        const number = index + 1;
+        const isCurrent = number === state.currentStep;
+        const isPast = number < state.currentStep;
+        const classes = isCurrent
+          ? 'bg-brand-100 text-brand-600 border-brand-200'
+          : isPast
+            ? 'bg-brand-500 text-white border-brand-500'
+            : 'bg-white text-slate-400 border-slate-200';
+        return `<button type="button" class="focus-ring shrink-0 w-8 h-8 rounded-full border flex items-center justify-center font-bold text-sm transition-all ${classes}" title="${escapeHtml(label)}" aria-label="${number}단계 ${escapeHtml(label)}" onclick="jumpToStep(${number})">${number}</button>`;
+      }).join('');
+    }
+
+    function stepHead(number, title, desc, icon) {
+      return `
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center gap-2 mb-3">
+            <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-xl text-brand-600" aria-hidden="true">${icon}</div>
+            <span class="text-brand-600 font-bold text-sm tracking-wide">${number}단계</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3 break-keep">${title}</h2>
+          <p class="text-slate-500 text-lg leading-relaxed break-keep">${desc}</p>
+        </div>
+      `;
+    }
+
+    function cardButton(label, onClick, selected = false, extra = '') {
+      const selectedClasses = selected
+        ? 'border-brand-500 bg-brand-50 text-slate-900 shadow-sm'
+        : 'border-slate-200 bg-white text-slate-800 hover:border-brand-300 hover:bg-brand-50';
+      return `
+        <button type="button" aria-pressed="${selected ? 'true' : 'false'}" onclick="${onClick}" class="focus-ring relative min-h-[76px] text-left p-5 rounded-2xl border-2 transition-all ${selectedClasses} ${extra}">
+          <span class="block pr-9 text-lg font-bold leading-snug break-keep">${escapeHtml(label)}</span>
+          <span class="absolute right-5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-2 flex items-center justify-center ${selected ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-300 text-transparent'}" aria-hidden="true">✓</span>
+        </button>
+      `;
+    }
+
+    function sectionTitle(title, desc) {
+      return `
+        <div class="mb-4">
+          <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 break-keep">${title}</h3>
+          <p class="text-slate-500 mt-1 break-keep">${desc}</p>
+        </div>
+      `;
+    }
+
+    function renderChoiceGroup(title, desc, items, path, cols = 'md:grid-cols-2') {
+      const selected = getValue(path);
+      return `
+        <section class="mb-8">
+          ${sectionTitle(title, desc)}
+          <div class="grid grid-cols-1 ${cols} gap-4">
+            ${items.map((item) => cardButton(item, `pick('${path}', '${escapeJs(item)}')`, selected === item)).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function escapeJs(value) {
+      return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function renderIntro() {
+      return `
+        <div class="max-w-3xl mx-auto py-4">
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center px-4 py-2 mb-6 rounded-full bg-brand-50 border border-brand-200 text-brand-600 font-extrabold text-sm tracking-wide shadow-sm">
+              프로젝트 · 상상대로 AI 실험실 4차시
+            </div>
+            <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-sm" aria-hidden="true">📖</div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 break-keep">내 꿈으로 만드는 AI 그림책</h2>
+            <p class="text-xl sm:text-2xl font-bold text-slate-600 mb-8 break-keep">「내 꿈이 이루어진 어느 날」 이야기를 만들어요</p>
+          </div>
+
+          <div class="border-2 border-slate-100 rounded-3xl p-6 sm:p-8 mb-7 shadow-sm">
+            <p class="text-lg sm:text-xl text-slate-700 leading-relaxed break-keep">
+              권투 장갑도 자신만의 꿈과 잘하는 일을 발견했어요.<br>
+              사람마다 좋아하는 것도, 잘하는 것도, 꿈도 다를 수 있어요.<br><br>
+              이제 마지막 이야기는 여러분의 이야기입니다.
+            </p>
+          </div>
+
+          <div class="bg-brand-50 border-2 border-brand-100 rounded-3xl p-6 sm:p-8 mb-8">
+            <h3 class="text-2xl font-extrabold text-brand-700 mb-4 break-keep">오늘의 도전 카드</h3>
+            <p class="text-xl font-bold text-slate-900 mb-5 break-keep">「내 꿈이 이루어진 어느 날」이라는 나만의 그림책을 만들어 보세요.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${['나의 꿈', '미래의 나', '이야기 속 사건', '내가 한 행동', '이야기의 결과', 'AI 그림 2장', 'Book Creator 그림책 1권'].map((item) => `
+                <div class="bg-white border border-brand-100 rounded-2xl px-4 py-3 font-bold text-slate-700">✓ ${item}</div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="button" onclick="goNext()" class="focus-ring inline-flex justify-center items-center bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xl py-4 px-8 rounded-2xl shadow-md transition-colors">
+              내 이야기 시작하기
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDreamStep() {
+      const candidates = state.dreamCandidates;
+      const candidateSummary = candidates.length === 2
+        ? `<div class="bg-white border border-slate-200 rounded-2xl p-5"><p class="text-sm font-bold text-brand-600 mb-2">내가 관심 있는 꿈</p><p class="text-xl font-extrabold">${safeText(candidates[0])} / ${safeText(candidates[1])}</p></div>`
+        : `<div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-slate-500 font-semibold">관심 있는 미래를 정확히 2개 골라 주세요.</div>`;
+      const valueSummary = state.dreamValue
+        ? `<div class="bg-white border border-slate-200 rounded-2xl p-5"><p class="text-sm font-bold text-brand-600 mb-2">내가 좋아하는 것</p><p class="text-xl font-extrabold">${safeText(state.dreamValue)}</p></div>`
+        : `<div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-slate-500 font-semibold">즐거운 일을 하나 골라 주세요.</div>`;
+
+      return `
+        ${stepHead(2, '나에게 어울리는 꿈 찾기', '먼저 꿈 후보 2개를 고르고, 그중 지금 더 해 보고 싶은 꿈을 결정해요.', '🧭')}
+
+        <section class="mb-8">
+          ${sectionTitle('활동 A · 관심 있는 미래를 2개 골라보세요.', `현재 ${candidates.length}/2개를 골랐어요.`)}
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${options.dreams.map((item) => cardButton(item, `toggleDream('${escapeJs(item)}')`, candidates.includes(item))).join('')}
+          </div>
+        </section>
+
+        <section class="mb-8">
+          ${sectionTitle('활동 B · 나는 어떤 일을 할 때 즐거울까요?', '내 마음에 가장 가까운 카드를 하나 골라요.')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${options.values.map((item) => cardButton(item, `pick('dreamValue', '${escapeJs(item)}')`, state.dreamValue === item)).join('')}
+          </div>
+        </section>
+
+        <section class="bg-slate-50 border border-slate-200 rounded-3xl p-5 sm:p-7 mb-8">
+          ${sectionTitle('활동 C · 선택 결과 확인', '둘 중 지금 더 해 보고 싶은 꿈은 무엇인가요?')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            ${candidateSummary}
+            ${valueSummary}
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            ${candidates.map((item) => cardButton(item, `pick('finalDream', '${escapeJs(item)}')`, state.finalDream === item)).join('')}
+          </div>
+        </section>
+
+        <section>
+          ${sectionTitle('활동 D · 이 꿈을 고른 가장 큰 이유는?', '지금 마음에 가장 가까운 이유 하나를 고릅니다.')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${options.reasons.map((item) => cardButton(item, `pick('dreamReason', '${escapeJs(item)}')`, state.dreamReason === item)).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderFutureStep() {
+      const sentence = makeFutureSentence();
+      return `
+        ${stepHead(3, '미래의 나 상상하기', '선택한 꿈을 중심으로 미래 장면을 만들고, 어울리는지 다시 확인해요.', '🌟')}
+        ${renderChoiceGroup('어디에 있나요?', '미래의 내가 있는 장소를 고릅니다.', options.places, 'future.place')}
+        ${renderChoiceGroup('무엇을 하고 있나요?', '미래의 내가 하는 일을 고릅니다.', options.futureActions, 'future.action')}
+        ${renderChoiceGroup('누구와 함께 있나요?', '함께 있는 사람이나 대상을 고릅니다.', options.companions, 'future.companion')}
+        ${renderChoiceGroup('어떤 분위기인가요?', '그림책 장면의 느낌을 고릅니다.', options.moods, 'future.mood')}
+
+        <section class="bg-brand-50 border-2 border-brand-100 rounded-3xl p-6 sm:p-8">
+          <h3 class="text-2xl font-extrabold text-brand-700 mb-4">내 미래 문장</h3>
+          <p class="story-paper rounded-2xl border border-brand-100 p-5 text-xl leading-loose font-bold text-slate-800 break-keep">${sentence}</p>
+          <div class="mt-6">
+            ${sectionTitle('내가 상상한 미래와 잘 어울리나요?', '조금 바꾸고 싶다면 위 카드에서 다시 골라요.')}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              ${cardButton('아주 잘 어울려요', "pick('futureFit', 'yes')", state.futureFit === 'yes')}
+              ${cardButton('조금 바꾸고 싶어요', "pick('futureFit', 'change')", state.futureFit === 'change')}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderStoryStep() {
+      return `
+        ${stepHead(4, '이야기에 사건 만들기', '꿈 소개에서 끝나지 않도록 도전, 행동, 결과가 이어지는 이야기를 만들어요.', '⚡')}
+        ${renderChoiceGroup('사건 · 미래의 나에게 어떤 일이 생겼을까요?', '이야기에 변화가 생기는 순간을 고릅니다.', options.challenges, 'story.challenge')}
+        ${renderChoiceGroup('행동 · 나는 어떻게 했을까요?', '주인공인 내가 선택한 행동을 고릅니다.', options.storyActions, 'story.action')}
+        ${renderChoiceGroup('결과 · 그래서 어떤 일이 일어났나요?', '내 행동 뒤에 이어지는 결과를 고릅니다.', options.results, 'story.result')}
+        <section class="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8">
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-4">전체 이야기 초안</h3>
+          <p class="story-paper rounded-2xl border border-slate-200 p-5 text-xl leading-loose font-bold text-slate-800 break-keep">${makeStory()}</p>
+        </section>
+      `;
+    }
+
+    function renderRevisionStep() {
+      const changed = getChangedItems();
+      const target = revisionTargets.find((item) => item.key === state.revisionTarget);
+      const allReviewsDone = reviewQuestions.every((item) => state.storyReview[item.key]);
+      return `
+        ${stepHead(5, '첫 이야기를 고쳐요', '작가는 첫 번째 이야기를 그대로 사용하지 않아요. 한 곳을 더 좋게 바꾸어 봅니다.', '🕵️')}
+
+        <section class="mb-8">
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-4">첫 이야기</h3>
+          <p class="story-paper rounded-2xl border border-slate-200 p-5 text-xl leading-loose font-bold text-slate-800 break-keep">${safeText(state.firstStory || makeStory())}</p>
+        </section>
+
+        <section class="mb-8">
+          ${sectionTitle('이야기 탐정 검사', '세 가지를 모두 읽고 확인해요.')}
+          <div class="grid grid-cols-1 gap-4">
+            ${reviewQuestions.map((item, index) => `
+              <div class="border-2 border-slate-100 rounded-3xl p-5">
+                <p class="text-lg font-extrabold text-slate-900 mb-4">${index + 1}. ${item.question}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  ${item.answers.map((answer) => cardButton(answer, `setStoryReview('${item.key}', '${escapeJs(answer)}')`, state.storyReview[item.key] === answer)).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+
+        <section class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 sm:p-8 mb-8">
+          <h3 class="text-2xl font-extrabold text-amber-700 mb-3">한 곳을 더 좋게 바꾸어 보세요.</h3>
+          <p class="text-lg text-slate-700 font-semibold mb-5 break-keep">처음 선택값과 달라진 항목이 최소 1개 있어야 이야기 수정 완료가 됩니다.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            ${revisionTargets.map((item) => cardButton(item.label, `setRevisionTarget('${item.key}')`, state.revisionTarget === item.key)).join('')}
+          </div>
+          ${target ? renderRevisionOptions(target) : '<p class="text-slate-500 font-semibold">먼저 바꾸고 싶은 항목을 골라 주세요.</p>'}
+        </section>
+
+        <section class="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div>
+              <h3 class="text-xl font-extrabold text-slate-900 mb-3">수정한 이야기</h3>
+              <p class="story-paper rounded-2xl border border-slate-200 p-5 text-lg leading-loose font-bold text-slate-800 break-keep">${makeStory()}</p>
+            </div>
+            <div>
+              <h3 class="text-xl font-extrabold text-slate-900 mb-3">변경 전 / 변경 후</h3>
+              ${changed.length
+                ? `<div class="space-y-3">${changed.map((item) => `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                      <p class="text-sm font-extrabold text-brand-600 mb-1">${item.label}</p>
+                      <p class="text-slate-500">처음: ${safeText(item.before)}</p>
+                      <p class="text-slate-900 font-bold">수정: ${safeText(item.after)}</p>
+                    </div>
+                  `).join('')}</div>`
+                : '<div class="bg-white border border-slate-200 rounded-2xl p-5 text-slate-500 font-semibold">아직 실제로 바뀐 항목이 없어요.</div>'}
+              <p class="mt-4 text-sm font-bold ${allReviewsDone && changed.length ? 'text-green-700' : 'text-amber-700'}">
+                ${allReviewsDone && changed.length ? '이야기 수정 완료 조건을 만족했어요.' : '검사 3개와 실제 수정 1개가 필요해요.'}
+              </p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderRevisionOptions(target) {
+      const current = getValue(target.key);
+      return `
+        <div>
+          <p class="text-lg font-extrabold text-slate-900 mb-4">${escapeHtml(target.label)}을 어떻게 바꿀까요?</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${target.options.map((item) => {
+              const isCurrent = current === item;
+              return `
+                <button type="button" ${isCurrent ? 'disabled' : ''} onclick="applyRevision('${target.key}', '${escapeJs(item)}')" class="focus-ring relative min-h-[76px] text-left p-5 rounded-2xl border-2 transition-all ${isCurrent ? 'border-slate-200 bg-white text-slate-400 cursor-not-allowed' : 'border-slate-200 bg-white text-slate-800 hover:border-brand-300 hover:bg-white'}">
+                  <span class="block text-sm font-bold ${isCurrent ? 'text-slate-400' : 'text-brand-600'} mb-1">${isCurrent ? '지금 선택' : '바꾸기'}</span>
+                  <span class="block text-lg font-bold leading-snug break-keep">${escapeHtml(item)}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderImageStep() {
+      return `
+        ${stepHead(6, 'AI 그림 만들기', '기본 그림은 2장만 만들어요. 만든 뒤에는 결과를 꼭 평가합니다.', '🎨')}
+        <div class="grid grid-cols-1 gap-7">
+          ${renderImagePanel('image1', '그림 1 · 미래의 나', makePrompt(1))}
+          ${renderImagePanel('image2', '그림 2 · 사건을 해결하는 미래의 나', makePrompt(2))}
+        </div>
+      `;
+    }
+
+    function renderImagePanel(imageKey, title, prompt) {
+      const check = state.imageChecks[imageKey];
+      const done = imageCheckQuestions.every((item) => check[item.key]);
+      return `
+        <section class="border-2 ${done ? 'border-green-200 bg-green-50' : 'border-slate-100 bg-white'} rounded-3xl p-5 sm:p-7 shadow-sm">
+          <div class="flex flex-col lg:flex-row gap-5">
+            <div class="lg:w-1/2">
+              <h3 class="text-2xl font-extrabold text-slate-900 mb-3">${title}</h3>
+              <div id="${imageKey}-prompt" class="story-paper min-h-[170px] rounded-2xl border border-slate-200 p-5 text-lg leading-loose font-bold text-slate-800 break-keep">${escapeHtml(prompt)}</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                <button type="button" onclick="copyPrompt('${imageKey}-prompt')" class="focus-ring min-h-[56px] bg-white border border-brand-200 text-brand-600 hover:bg-brand-50 font-extrabold rounded-2xl px-4 py-3 transition-colors">프롬프트 복사하기</button>
+                <a href="${AI_IMAGE_URL}" target="_blank" rel="noopener noreferrer" class="focus-ring min-h-[56px] inline-flex items-center justify-center bg-brand-500 hover:bg-brand-600 text-white font-extrabold rounded-2xl px-4 py-3 transition-colors">AI 그림 만들러 가기</a>
+              </div>
+            </div>
+            <div class="lg:w-1/2">
+              <h4 class="text-xl font-extrabold text-slate-900 mb-4">AI 이미지 검수</h4>
+              <div class="space-y-4">
+                ${imageCheckQuestions.map((item) => `
+                  <div>
+                    <p class="font-bold text-slate-700 mb-2">${item.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      ${item.answers.map((answer) => cardButton(answer, `setImageCheck('${imageKey}', '${item.key}', '${escapeJs(answer)}')`, check[item.key] === answer, 'min-h-[58px] p-3')).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                ${cardButton('이 그림 사용하기', `setImageCheck('${imageKey}', 'decision', 'use')`, check.decision === 'use', 'min-h-[62px]')}
+                ${cardButton('프롬프트 수정해서 다시 만들기', `setImageCheck('${imageKey}', 'decision', 'retry')`, check.decision === 'retry', 'min-h-[62px]')}
+              </div>
+              <p class="text-sm text-slate-500 font-semibold mt-4 break-keep">다시 만드는 것은 선택이에요. 하지만 위 평가 3개는 꼭 마쳐야 해요.</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderBookPlanStep() {
+      const title = makeBookTitle();
+      return `
+        ${stepHead(7, '나의 그림책 설계하기', 'Book Creator에 들어가기 전에 6쪽 구조를 먼저 확인해요.', '🗂️')}
+        <section class="bg-brand-50 border-2 border-brand-100 rounded-3xl p-6 sm:p-8 mb-8">
+          <h3 class="text-2xl font-extrabold text-brand-700 mb-3">책 제목 예시</h3>
+          <p class="text-3xl font-extrabold text-slate-900 break-keep">${safeText(title)}</p>
+          <p class="text-slate-600 font-semibold mt-3 break-keep">글·이야기 구성: 김○○ / 이미지 생성 도움: AI</p>
+        </section>
+        <section>
+          ${sectionTitle('6쪽 구성 확인', '모든 쪽을 읽고, Book Creator에 넣을 내용을 마음속으로 확인해요.')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${bookPages.map((page) => {
+              const selected = Boolean(state.bookChecklist[page.key]);
+              return `
+                <button type="button" onclick="toggleGroup('bookChecklist', '${page.key}')" class="focus-ring text-left min-h-[150px] rounded-3xl border-2 p-5 transition-all ${selected ? 'border-brand-500 bg-brand-50' : 'border-slate-200 bg-white hover:border-brand-300'}">
+                  <div class="flex justify-between gap-3 mb-3">
+                    <h3 class="text-xl font-extrabold text-slate-900">${page.title}</h3>
+                    <span class="shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center ${selected ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-300 text-transparent'}">✓</span>
+                  </div>
+                  <p class="text-lg text-slate-700 font-semibold leading-relaxed break-keep">${page.body}</p>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </section>
+        <section class="mt-8 bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8">
+          <h3 class="text-xl font-extrabold text-slate-900 mb-3">제작 정보는 이렇게 써요</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 font-bold text-slate-700">글·이야기 구성: 김○○<br>이미지 생성 도움: AI</div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 font-bold text-slate-700">글·이야기 구성: 김○○<br>이미지 생성·문장 다듬기 도움: AI</div>
+          </div>
+          <p class="text-slate-500 font-semibold mt-4">실제로 사용한 AI 도움만 표시해요. 학생이 책의 작가입니다.</p>
+        </section>
+      `;
+    }
+
+    function renderCreatorStep() {
+      return `
+        ${stepHead(8, 'Book Creator에서 완성하기', '새 탭에서 내 책을 만들고, 이 화면으로 돌아와 규칙을 확인해요.', '🛠️')}
+        <section class="bg-brand-50 border-2 border-brand-100 rounded-3xl p-6 sm:p-8 mb-8">
+          <div class="text-center">
+            <button type="button" onclick="showBookLinks()" class="focus-ring inline-flex justify-center items-center bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xl py-4 px-8 rounded-2xl shadow-md transition-colors">
+              내 그림책 만들러 가기
+            </button>
+            <p class="text-slate-600 font-semibold mt-4 break-keep">내 이름을 찾아 누르면 Book Creator가 새 탭으로 열립니다.</p>
+          </div>
+          <div id="book-links" class="${state.creatorOpened ? '' : 'hidden'} mt-7">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              ${students.map((student) => `
+                <a href="${student.url}" target="_blank" rel="noopener noreferrer" onclick="markCreatorOpened()" class="focus-ring flex justify-between items-center bg-white border border-slate-200 hover:border-brand-300 hover:shadow-md text-brand-600 font-bold py-3 px-4 rounded-xl transition-all group">
+                  <span>${escapeHtml(student.name)}</span>
+                  <span class="text-slate-400 group-hover:text-brand-500" aria-hidden="true">↗</span>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-8">
+          ${sectionTitle('책 만들기 규칙', '카드를 눌러 하나씩 확인해요.')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${creatorRules.map((rule) => {
+              const selected = Boolean(state.creatorRules[rule.key]);
+              return `
+                <button type="button" onclick="toggleGroup('creatorRules', '${rule.key}')" class="focus-ring text-left min-h-[144px] rounded-3xl border-2 p-5 transition-all ${selected ? 'border-brand-500 bg-brand-50' : 'border-slate-200 bg-white hover:border-brand-300'}">
+                  <div class="flex justify-between gap-3 mb-3">
+                    <h3 class="text-xl font-extrabold text-brand-700">${rule.title}</h3>
+                    <span class="shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center ${selected ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-300 text-transparent'}">✓</span>
+                  </div>
+                  <p class="text-lg text-slate-700 font-semibold leading-relaxed break-keep">${rule.body}</p>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </section>
+
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 text-center">
+          <p class="text-xl font-extrabold text-amber-800 break-keep">꾸미기보다 이야기가 잘 보이는 것이 먼저예요.</p>
+        </div>
+      `;
+    }
+
+    function renderFinalStep() {
+      const selfComplete = isSelfChecklistComplete();
+      const peerConcern = Object.values(state.peerReview).some((value) => value === 'think');
+      return `
+        ${stepHead(9, '작가의 마지막 검수', 'Book Creator 작업 후 이 화면으로 돌아와 내 책을 처음부터 끝까지 확인해요.', '✅')}
+        <section class="mb-8">
+          ${sectionTitle('자기 검수', '11개를 모두 체크해야 최종 완료 버튼이 켜져요.')}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${selfChecks.map(([key, label]) => {
+              const selected = Boolean(state.selfChecklist[key]);
+              return `
+                <button type="button" onclick="toggleGroup('selfChecklist', '${key}')" class="focus-ring text-left min-h-[82px] rounded-2xl border-2 p-5 transition-all ${selected ? 'border-brand-500 bg-brand-50' : 'border-slate-200 bg-white hover:border-brand-300'}">
+                  <span class="inline-flex w-7 h-7 rounded-full border-2 items-center justify-center mr-3 ${selected ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-300 text-transparent'}" aria-hidden="true">✓</span>
+                  <span class="text-lg font-bold text-slate-800 break-keep">${label}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </section>
+
+        ${selfComplete ? renderPeerReview(peerConcern) : '<div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-slate-500 font-bold mb-8">자기 검수를 모두 마치면 친구 검수 카드가 나타나요.</div>'}
+
+        <section class="text-center bg-brand-50 border-2 border-brand-100 rounded-3xl p-6 sm:p-8">
+          <button type="button" onclick="completeProject()" ${selfComplete ? '' : 'disabled'} class="focus-ring inline-flex justify-center items-center text-xl font-extrabold rounded-2xl px-8 py-4 transition-colors ${selfComplete ? 'bg-brand-500 hover:bg-brand-600 text-white shadow-md' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}">
+            나의 AI 그림책 완성!
+          </button>
+          ${state.completed ? `
+            <div class="mt-7 bg-white border border-brand-100 rounded-3xl p-6">
+              <p class="text-2xl font-extrabold text-slate-900 leading-relaxed break-keep">상상하고,<br>이야기를 만들고,<br>고치고,<br>AI와 함께 그림을 만들고,<br>직접 한 권의 책으로 완성했어요.</p>
+            </div>
+          ` : ''}
+        </section>
+
+        ${state.completed ? renderChallenges() : ''}
+      `;
+    }
+
+    function renderPeerReview(peerConcern) {
+      const peerItems = [
+        { key: 'title', question: '제목을 보고 어떤 이야기인지 궁금한가요?' },
+        { key: 'match', question: '그림과 이야기가 잘 어울리나요?' },
+        { key: 'dream', question: '주인공이 어떤 꿈을 가진 사람인지 알 수 있나요?' }
+      ];
+      return `
+        <section class="mb-8 bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8">
+          ${sectionTitle('친구 검수', '친구가 없다면 자기 검수만으로도 완료할 수 있어요.')}
+          <div class="grid grid-cols-1 gap-4">
+            ${peerItems.map((item) => `
+              <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                <p class="text-lg font-extrabold text-slate-900 mb-3 break-keep">${item.question}</p>
+                <div class="grid grid-cols-2 gap-3">
+                  ${cardButton('좋아요', `setPeer('${item.key}', 'good')`, state.peerReview[item.key] === 'good', 'min-h-[58px]')}
+                  ${cardButton('궁금해요', `setPeer('${item.key}', 'think')`, state.peerReview[item.key] === 'think', 'min-h-[58px]')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${peerConcern ? '<p class="mt-5 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-800 font-extrabold break-keep">친구가 궁금해한 곳을 한 번 더 살펴보세요.</p>' : ''}
+        </section>
+      `;
+    }
+
+    function renderChallenges() {
+      const titleOptions = [
+        makeBookTitle(),
+        `${state.finalDream || '꿈'}의 하루`,
+        `내 꿈이 반짝인 날`,
+        `미래의 내가 해낸 일`
+      ];
+      return `
+        <section class="mt-8 bg-white border-2 border-slate-100 rounded-3xl p-6 sm:p-8">
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-2">빠른 학생용 확장 활동</h3>
+          <p class="text-slate-500 font-semibold mb-6">기본 9단계를 끝낸 학생만 도전해요.</p>
+
+          <div class="space-y-7">
+            <div>
+              ${sectionTitle('도전 1 · 더 좋은 제목', '제목 후보를 보고 하나를 골라요.')}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${titleOptions.map((title) => cardButton(title, `setChallenge('betterTitle', '${escapeJs(title)}')`, state.challenges.betterTitle === title)).join('')}
+              </div>
+            </div>
+
+            <div>
+              ${sectionTitle('도전 2 · 7쪽 추가', '「꿈을 이루기 전의 나」 한 장을 더 넣어 봐요.')}
+              ${cardButton('현재 내가 꿈을 위해 해 보고 싶은 일을 한 장 추가했어요.', "toggleChallenge('page7')", state.challenges.page7)}
+            </div>
+
+            <div>
+              ${sectionTitle('도전 3 · AI 그림 한 장 더', '이야기에서 가장 중요한 장면을 세 번째 그림으로 만들고 평가해요.')}
+              <div class="mb-4">${cardButton('세 번째 그림 만들기를 시작했어요.', "toggleChallenge('image3Started')", state.challenges.image3Started)}</div>
+              ${state.challenges.image3Started ? renderImagePanel('image3', '그림 3 · 가장 중요한 장면', makePrompt(3)) : ''}
+            </div>
+
+            <div>
+              ${sectionTitle('도전 4 · 친구 책 편집자', '친구 작품에서 전하고 싶은 피드백을 골라요.')}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${cardButton('가장 기억에 남는 장면을 알려줬어요.', "setChallenge('editorMemory', 'memory')", state.challenges.editorMemory === 'memory')}
+                ${cardButton('더 알고 싶은 부분을 알려줬어요.', "setChallenge('editorQuestion', 'question')", state.challenges.editorQuestion === 'question')}
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function makeFutureSentence(snapshot = state) {
+      const finalDream = snapshot.finalDream || '선택한 꿈';
+      const place = snapshot.future.place || '선택한 장소';
+      const action = snapshot.future.action || '선택한 일';
+      const companion = snapshot.future.companion || '선택한 대상';
+      const mood = snapshot.future.mood || '선택한 분위기';
+      const companionText = companion === '혼자' ? '혼자' : `${companion}와 함께`;
+      return `나는 미래에 ${finalDream}가 되었어요. ${place}에서 ${companionText} ${action}. ${place}은 ${mood} 분위기예요.`;
+    }
+
+    function makeStory(snapshot = state) {
+      const futureText = makeFutureSentence(snapshot);
+      const challenge = snapshot.story.challenge || '어떤 일이 생겼어요.';
+      const action = snapshot.story.action || '나는 방법을 찾았어요.';
+      const result = snapshot.story.result || '좋은 결과가 생겼어요.';
+      return `${futureText} 그런데 어느 날 ${challenge} 나는 ${action} 결국 ${result}`;
+    }
+
+    function makePrompt(number) {
+      const finalDream = state.finalDream || '미래의 꿈';
+      const place = state.future.place || '미래 공간';
+      const action = state.future.action || '꿈을 이루는 모습';
+      const companion = state.future.companion || '친구';
+      const mood = state.future.mood || '따뜻한';
+      const challenge = state.story.challenge || '어려운 일이 생긴 장면';
+      const storyAction = state.story.action || '새로운 방법을 찾는 모습';
+      const result = state.story.result || '문제를 해결한 장면';
+
+      if (number === 1) {
+        return `초등학생 그림책 삽화. 미래의 내가 ${finalDream}가 되어 ${place}에서 ${companion === '혼자' ? '혼자' : `${companion}와 함께`} ${action}. ${mood} 분위기, 밝고 따뜻한 색감, 글자 없음, 안전하고 희망적인 장면.`;
+      }
+      if (number === 2) {
+        return `초등학생 그림책 삽화. ${finalDream}가 된 미래의 내가 ${place}에서 ${challenge} 그래서 ${storyAction} 결국 ${result} ${mood} 분위기, 행동이 잘 보이는 장면, 글자 없음, 밝고 따뜻한 색감.`;
+      }
+      return `초등학생 그림책 삽화. 「${makeBookTitle()}」에서 가장 중요한 장면, ${finalDream}가 된 내가 ${place}에서 ${storyAction} ${mood} 분위기, 꿈과 행동이 분명하게 보이는 장면, 글자 없음.`;
+    }
+
+    function makeBookTitle() {
+      const dream = state.finalDream || '꿈';
+      return `「${dream}가 된 나」`;
+    }
+
+    function captureFirstDraftIfNeeded() {
+      if (state.currentStep >= 5 && !state.originalSnapshot && isStepComplete(4)) {
+        state.originalSnapshot = {
+          future: { ...state.future },
+          story: { ...state.story },
+          finalDream: state.finalDream
+        };
+        state.firstStory = makeStory(state.originalSnapshot);
+      }
+    }
+
+    function getChangedItems() {
+      if (!state.originalSnapshot) return [];
+      const checks = [
+        { key: 'future.place', label: '미래 장소' },
+        { key: 'future.action', label: '미래 행동' },
+        { key: 'story.challenge', label: '사건' },
+        { key: 'story.action', label: '해결 행동' },
+        { key: 'story.result', label: '결과' },
+        { key: 'future.mood', label: '분위기' }
+      ];
+      return checks.map((item) => {
+        const before = item.key.split('.').reduce((obj, part) => obj && obj[part], state.originalSnapshot);
+        const after = getValue(item.key);
+        return { ...item, before, after };
+      }).filter((item) => item.before && item.after && item.before !== item.after);
+    }
+
+    function isStepComplete(stepNumber) {
+      if (stepNumber === 1) return true;
+      if (stepNumber === 2) return Boolean(state.dreamCandidates.length === 2 && state.dreamValue && state.finalDream && state.dreamReason);
+      if (stepNumber === 3) return Object.values(state.future).every(Boolean) && state.futureFit === 'yes';
+      if (stepNumber === 4) return Object.values(state.story).every(Boolean);
+      if (stepNumber === 5) return reviewQuestions.every((item) => state.storyReview[item.key]) && getChangedItems().length > 0;
+      if (stepNumber === 6) return ['image1', 'image2'].every((imageKey) => imageCheckQuestions.every((item) => state.imageChecks[imageKey][item.key]));
+      if (stepNumber === 7) return bookPages.every((page) => state.bookChecklist[page.key]);
+      if (stepNumber === 8) return state.creatorOpened && creatorRules.every((rule) => state.creatorRules[rule.key]);
+      if (stepNumber === 9) return isSelfChecklistComplete();
+      return false;
+    }
+
+    function isSelfChecklistComplete() {
+      return selfChecks.every(([key]) => state.selfChecklist[key]);
+    }
+
+    function missingMessage(stepNumber) {
+      const messages = {
+        2: '꿈 후보 2개, 좋아하는 일, 최종 꿈, 이유를 모두 골라 주세요.',
+        3: '미래 장면 4가지를 고르고 "아주 잘 어울려요"로 확인해 주세요.',
+        4: '사건, 해결 행동, 결과를 모두 골라 주세요.',
+        5: '이야기 탐정 검사 3개를 마치고, 처음 선택에서 최소 1개를 실제로 바꿔 주세요.',
+        6: '그림 1과 그림 2의 평가 3개씩을 모두 골라 주세요.',
+        7: '6쪽 구성 카드를 모두 눌러 확인해 주세요.',
+        8: '내 Book Creator 링크를 열고, 책 만들기 규칙 5개를 모두 확인해 주세요.',
+        9: '자기 검수 11개를 모두 체크해 주세요.'
+      };
+      return messages[stepNumber] || '남은 활동을 확인해 주세요.';
+    }
+
+    function updateNav() {
+      btnPrev.classList.toggle('hidden', state.currentStep === 1);
+      btnNext.classList.toggle('hidden', state.currentStep === steps.length);
+      if (state.currentStep < steps.length) {
+        const complete = isStepComplete(state.currentStep);
+        btnNext.disabled = false;
+        btnNext.className = complete
+          ? 'focus-ring px-8 py-3 bg-brand-500 text-white font-bold rounded-2xl hover:bg-brand-600 transition-colors sm:ml-auto shadow-sm'
+          : 'focus-ring px-8 py-3 bg-brand-50 text-brand-400 font-bold rounded-2xl hover:bg-brand-100 transition-colors sm:ml-auto';
+        navHint.textContent = complete ? '좋아요. 다음 단계로 갈 수 있어요.' : missingMessage(state.currentStep);
+      } else {
+        navHint.textContent = isStepComplete(9) ? '마지막 완료 버튼을 눌러 마무리해요.' : missingMessage(9);
+      }
+    }
+
+    function toggleDream(value) {
+      const index = state.dreamCandidates.indexOf(value);
+      if (index >= 0) {
+        state.dreamCandidates.splice(index, 1);
+        if (state.finalDream === value) state.finalDream = '';
+      } else if (state.dreamCandidates.length < 2) {
+        state.dreamCandidates.push(value);
+      } else {
+        alert('꿈 후보는 정확히 2개까지만 고를 수 있어요. 바꾸고 싶다면 선택한 카드를 다시 눌러 빼 주세요.');
+        return;
+      }
+      render();
+    }
+
+    function pick(path, value) {
+      setValue(path, value);
+      if (path.startsWith('future.')) {
+        state.futureFit = '';
+      }
+      render();
+    }
+
+    function setStoryReview(key, value) {
+      state.storyReview[key] = value;
+      render();
+    }
+
+    function setRevisionTarget(key) {
+      state.revisionTarget = key;
+      render();
+    }
+
+    function applyRevision(key, value) {
+      setValue(key, value);
+      render();
+    }
+
+    function setImageCheck(imageKey, key, value) {
+      state.imageChecks[imageKey][key] = value;
+      render();
+    }
+
+    function toggleGroup(group, key) {
+      state[group][key] = !state[group][key];
+      render();
+    }
+
+    function showBookLinks() {
+      state.creatorOpened = true;
+      render();
+      setTimeout(() => {
+        const links = document.getElementById('book-links');
+        if (links) links.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+
+    function markCreatorOpened() {
+      state.creatorOpened = true;
+      saveState();
+    }
+
+    function setPeer(key, value) {
+      state.peerReview[key] = value;
+      render();
+    }
+
+    function completeProject() {
+      if (!isSelfChecklistComplete()) {
+        alert(missingMessage(9));
+        return;
+      }
+      state.completed = true;
+      render();
+    }
+
+    function setChallenge(key, value) {
+      state.challenges[key] = value;
+      render();
+    }
+
+    function toggleChallenge(key) {
+      state.challenges[key] = !state.challenges[key];
+      render();
+    }
+
+    function goNext() {
+      if (!isStepComplete(state.currentStep)) {
+        alert(missingMessage(state.currentStep));
+        return;
+      }
+      if (state.currentStep < steps.length) {
+        state.currentStep += 1;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        mainContent.focus({ preventScroll: true });
+      }
+    }
+
+    function goPrev() {
+      if (state.currentStep > 1) {
+        state.currentStep -= 1;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        mainContent.focus({ preventScroll: true });
+      }
+    }
+
+    function jumpToStep(stepNumber) {
+      if (stepNumber <= state.currentStep) {
+        state.currentStep = stepNumber;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      for (let index = 1; index < stepNumber; index += 1) {
+        if (!isStepComplete(index)) {
+          alert(`${index}단계: ${missingMessage(index)}`);
+          return;
+        }
+      }
+      state.currentStep = stepNumber;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetAll() {
+      if (confirm('처음부터 다시 작성하시겠어요? 선택한 내용이 모두 지워집니다.')) {
+        state = defaultState();
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {}
+        render();
+      }
+    }
+
+    function copyPrompt(elementId) {
+      const source = document.getElementById(elementId);
+      if (!source) return;
+      const text = source.innerText.trim();
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('프롬프트가 복사되었습니다!');
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        alert('프롬프트가 복사되었습니다!');
+      } catch (error) {
+        alert('복사에 실패했어요. 프롬프트를 직접 드래그해서 복사해 주세요.');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    btnPrev.addEventListener('click', goPrev);
+    btnNext.addEventListener('click', goNext);
+    btnReset.addEventListener('click', resetAll);
+
+    render();
+  </script>
+</body>
+</html>
