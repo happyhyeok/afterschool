@@ -24,11 +24,13 @@ const PRACTICE_GROUPS = [
   ...Array.from({ length: 3 }, (_, index) => ({
     title: `자리연습 ${index + 1}회차`,
     subtitle: "기본자리부터 숫자자리까지",
+    layout: "position",
     entries: POSITION_STAGES.map((stage) => makeEntry(stage, index + 1)),
   })),
   {
     title: "낱말연습",
     subtitle: "10회차",
+    layout: "word",
     entries: Array.from({ length: 10 }, (_, index) => makeEntry("낱말연습", index + 1)),
   },
   {
@@ -358,7 +360,7 @@ function renderEntries() {
   const fragment = document.createDocumentFragment();
   for (const group of PRACTICE_GROUPS) {
     const section = document.createElement("section");
-    section.className = `stage-section ${group.entries.length === POSITION_STAGES.length ? "position-section" : ""}`;
+    section.className = ["stage-section", group.layout ? `${group.layout}-section` : ""].filter(Boolean).join(" ");
 
     const title = document.createElement("div");
     title.className = "stage-title";

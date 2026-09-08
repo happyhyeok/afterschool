@@ -540,7 +540,8 @@ input.invalid {
   background: #fff;
 }
 
-.position-section {
+.position-section,
+.word-section {
   overflow-x: auto;
 }
 
@@ -575,6 +576,11 @@ input.invalid {
   min-width: 980px;
 }
 
+.word-section .stage-entries {
+  grid-template-columns: repeat(10, minmax(118px, 1fr));
+  min-width: 1220px;
+}
+
 .entry-row {
   display: grid;
   grid-template-columns: minmax(120px, 0.9fr) minmax(110px, 0.6fr) minmax(116px, 0.65fr) minmax(130px, 0.7fr);
@@ -584,7 +590,8 @@ input.invalid {
   border-bottom: 1px solid #edf1f6;
 }
 
-.position-section .entry-row {
+.position-section .entry-row,
+.word-section .entry-row {
   grid-template-columns: 1fr;
   align-items: stretch;
   min-width: 118px;
@@ -593,7 +600,8 @@ input.invalid {
   border-bottom: 0;
 }
 
-.position-section .entry-row:last-child {
+.position-section .entry-row:last-child,
+.word-section .entry-row:last-child {
   border-right: 0;
 }
 
@@ -646,7 +654,8 @@ input.invalid {
   min-height: 40px;
 }
 
-.position-section .entry-name {
+.position-section .entry-name,
+.word-section .entry-name {
   min-height: 32px;
 }
 
@@ -671,12 +680,14 @@ input.invalid {
   display: none;
 }
 
-.position-section label {
+.position-section label,
+.word-section label {
   gap: 5px;
   font-size: 12px;
 }
 
-.position-section input {
+.position-section input,
+.word-section input {
   padding: 0 8px;
 }
 
