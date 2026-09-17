@@ -1,8 +1,16 @@
 function ensureSheets_() {
   const students = getSheet_(SHEETS.STUDENTS, STUDENT_HEADERS);
   const records = getSheet_(SHEETS.RECORDS, RECORD_HEADERS);
+  const studentRecords = getSheet_(SHEETS.STUDENT_RECORDS, STUDENT_RECORD_HEADERS);
   formatSheet_(students, STUDENT_HEADERS.length);
   formatSheet_(records, RECORD_HEADERS.length);
+  formatSheet_(studentRecords, STUDENT_RECORD_HEADERS.length);
+}
+
+function requireSheet_(name) {
+  const sheet = getSpreadsheet_().getSheetByName(name);
+  if (!sheet) throw new Error(name + " 시트가 없습니다. setup을 먼저 실행해주세요.");
+  return sheet;
 }
 
 function getSheet_(name, headers) {

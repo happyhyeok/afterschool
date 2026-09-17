@@ -4,6 +4,7 @@ const CONFIG = window.TYPING_RECORD_CONFIG || {};
 const API_URL = String(CONFIG.APPS_SCRIPT_URL || "").trim();
 const DEFAULT_YEAR = String(CONFIG.DEFAULT_YEAR || new Date().getFullYear());
 const REQUEST_TIMEOUT_MS = Number(CONFIG.REQUEST_TIMEOUT_MS || 12000);
+const SCHOOLS_CACHE_KEY = "typingRecordBook.data.v2:schools";
 
 const elements = {
   syncBadge: document.querySelector("#syncBadge"),
@@ -24,18 +25,28 @@ async function initialise() {
   }
 
   setSyncState("loading", "학교 목록을 불러오는 중입니다");
+  const cached = readSchoolsCache();
+  if (cached.length) {
+    renderSchoolLinks(cached);
+    setSyncState("loading", "저장된 학교 목록을 표시하고 최신 정보를 확인하는 중입니다");
+  }
   try {
-    const response = await api("bootstrap");
-    renderSchoolLinks(response.data?.students || []);
+    const response = await api("schools");
+    const schools = response.data?.schools || [];
+    renderSchoolLinks(schools);
+    writeSchoolsCache(response.data || { schools });
     setSyncState("ready", "학교별 링크가 준비되었습니다");
   } catch (error) {
-    setSyncState("error", "학교 목록을 불러오지 못했습니다");
-    elements.schoolLinks.innerHTML = `<div class="empty-state">Google Sheets 연결을 확인해주세요.</div>`;
+    if (cached.length) {
+      setSyncState("ready", "저장된 학교 목록을 표시하고 있습니다");
+    } else {
+      setSyncState("error", "학교 목록을 불러오지 못했습니다");
+      elements.schoolLinks.innerHTML = `<div class="empty-state">Google Sheets 연결을 확인해주세요.</div>`;
+    }
   }
 }
 
-function renderSchoolLinks(students) {
-  const schools = uniqueSchoolRows(students);
+function renderSchoolLinks(schools) {
   if (!schools.length) {
     elements.schoolLinks.innerHTML = `<div class="empty-state">등록된 학생이 없습니다.</div>`;
     return;
@@ -66,23 +77,6 @@ function renderSchoolLinks(students) {
 
   elements.schoolLinks.innerHTML = "";
   elements.schoolLinks.append(fragment);
-}
-
-function uniqueSchoolRows(students) {
-  const map = new Map();
-  for (const student of students) {
-    const year = String(student.year || DEFAULT_YEAR).trim();
-    const school = String(student.school || "").trim();
-    if (!year || !school) continue;
-    const key = `${year}::${school}`;
-    const current = map.get(key) || { year, school, count: 0 };
-    current.count += 1;
-    map.set(key, current);
-  }
-  return [...map.values()].sort((a, b) => {
-    if (a.year !== b.year) return Number(b.year) - Number(a.year);
-    return a.school.localeCompare(b.school, "ko-KR");
-  });
 }
 
 function api(action, params = {}) {
@@ -119,6 +113,24 @@ function api(action, params = {}) {
     script.src = url.toString();
     document.head.append(script);
   });
+}
+
+function readSchoolsCache() {
+  try {
+    const raw = localStorage.getItem(SCHOOLS_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed?.schemaVersion === 2 && Array.isArray(parsed.data?.schools) ? parsed.data.schools : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeSchoolsCache(data) {
+  try {
+    localStorage.setItem(SCHOOLS_CACHE_KEY, JSON.stringify({ schemaVersion: 2, savedAt: Date.now(), data }));
+  } catch (error) {
+    // Live data is still usable when browser storage is unavailable.
+  }
 }
 
 function setSyncState(state, text) {

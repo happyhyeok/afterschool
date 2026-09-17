@@ -1,6 +1,7 @@
 "use strict";
 
 const UI_KEY = "typingRecordBook.sheets.ui.v1";
+const DATA_CACHE_PREFIX = "typingRecordBook.data.v2";
 const CONFIG = window.TYPING_RECORD_CONFIG || {};
 const API_URL = String(CONFIG.APPS_SCRIPT_URL || "").trim();
 const DEFAULT_YEAR = String(CONFIG.DEFAULT_YEAR || new Date().getFullYear());
@@ -69,12 +70,17 @@ const elements = {
 };
 
 let uiState = loadUiState();
+let schoolRows = [];
+let gradeRows = [];
 let students = [];
 let records = {};
+let recordsVersion = 0;
 let selectedStudent = null;
 let currentStep = "select";
 let saveTimers = new Map();
 let toastTimer = 0;
+let optionsRequestId = 0;
+let recordsRequestId = 0;
 
 initialise();
 
@@ -118,15 +124,23 @@ function slug(value) {
 }
 
 function bindEvents() {
-  elements.refreshBtn.addEventListener("click", loadBootstrap);
+  elements.refreshBtn.addEventListener("click", () => loadBootstrap(true));
 
-  for (const select of [elements.yearSelect, elements.schoolSelect, elements.gradeSelect]) {
-    select.addEventListener("change", () => {
-      saveSelectionFromControls(false);
-      renderSelectors();
-      prepareSelection();
-    });
-  }
+  elements.yearSelect.addEventListener("change", async () => {
+    saveSelectionFromControls(false);
+    renderSchoolSelect();
+    await loadGrades();
+  });
+
+  elements.schoolSelect.addEventListener("change", async () => {
+    saveSelectionFromControls(false);
+    await loadGrades();
+  });
+
+  elements.gradeSelect.addEventListener("change", async () => {
+    saveSelectionFromControls(false);
+    await loadStudents();
+  });
 
   elements.studentSelect.addEventListener("change", () => {
     saveSelectionFromControls(true);
@@ -145,20 +159,39 @@ function bindEvents() {
 }
 
 async function loadBootstrap() {
-  setSyncState("loading", "학생 명단을 불러오는 중입니다");
+  const requestId = ++optionsRequestId;
+  setSyncState("loading", "학교 정보를 불러오는 중입니다");
   setSelectorsDisabled(true);
 
   try {
-    const response = await api("bootstrap");
-    students = normalizeStudents(response.data?.students || []);
+    if (FIXED_SCHOOL) {
+      schoolRows = [{ year: FIXED_YEAR, school: FIXED_SCHOOL }];
+      renderYearAndSchoolSelectors();
+    } else {
+      const cached = readDataCache("schools");
+      if (cached?.schools?.length) {
+        schoolRows = cached.schools;
+        renderYearAndSchoolSelectors();
+        setSelectorsDisabled(false);
+        setSyncState("loading", "저장된 학교 정보를 표시하고 최신 정보를 확인하는 중입니다");
+      }
+      const response = await api("schools");
+      if (requestId !== optionsRequestId) return;
+      schoolRows = response.data?.schools || [];
+      writeDataCache("schools", response.data || { schools: schoolRows });
+      renderYearAndSchoolSelectors();
+    }
     elements.setupPanel.hidden = true;
-    renderSelectors();
-    setSelectorsDisabled(false);
-    prepareSelection();
-    setSyncState("ready", "Google Sheets에 연결되었습니다");
+    await loadGrades(requestId);
   } catch (error) {
-    setSyncState("error", "Google Sheets 연결을 확인해주세요");
-    showToast(error.message || "학생 명단을 불러오지 못했습니다.");
+    if (schoolRows.length) {
+      renderYearAndSchoolSelectors();
+      await loadGrades(requestId, true);
+      setSyncState("ready", "저장된 정보를 표시하고 있습니다");
+    } else {
+      setSyncState("error", "Google Sheets 연결을 확인해주세요");
+      showToast(error.message || "학교 정보를 불러오지 못했습니다.");
+    }
     setSelectorsDisabled(false);
   }
 }
@@ -177,33 +210,33 @@ function normalizeStudents(rows) {
     .sort(sortStudents);
 }
 
-function renderSelectors() {
-  const years = unique(students.map((student) => student.year)).sort((a, b) => Number(b) - Number(a));
+function renderYearAndSchoolSelectors() {
+  const years = unique(schoolRows.map((item) => String(item.year))).sort((a, b) => Number(b) - Number(a));
   const selectedYear = FIXED_SCHOOL ? pickValue(FIXED_YEAR, years, FIXED_YEAR) : pickValue(uiState.year, years, DEFAULT_YEAR);
   fillSelect(elements.yearSelect, years.length ? years : [DEFAULT_YEAR], selectedYear, "연도 없음");
 
+  renderSchoolSelect();
+}
+
+function renderSchoolSelect() {
   const year = elements.yearSelect.value;
-  const schools = unique(students.filter((student) => student.year === year).map((student) => student.school));
+  const schools = unique(schoolRows.filter((item) => String(item.year) === year).map((item) => String(item.school)));
   const selectedSchool = FIXED_SCHOOL ? pickValue(FIXED_SCHOOL, schools, FIXED_SCHOOL) : pickExactValue(uiState.school, schools);
   fillSelect(elements.schoolSelect, schools.length ? schools : [FIXED_SCHOOL].filter(Boolean), selectedSchool, "학교 선택", (value) => value, {
     placeholder: !FIXED_SCHOOL,
   });
+}
 
-  const school = elements.schoolSelect.value;
-  const grades = unique(
-    students
-      .filter((student) => student.year === year && student.school === school)
-      .map((student) => student.grade),
-  ).sort((a, b) => Number(a) - Number(b));
+function renderGradeSelect() {
+  const grades = gradeRows.map((item) => String(item.grade));
   const selectedGrade = pickExactValue(uiState.grade, grades);
   fillSelect(elements.gradeSelect, grades, selectedGrade, "학년 선택", (value) => `${value}학년`, {
     placeholder: true,
   });
+}
 
-  const grade = elements.gradeSelect.value;
-  const visibleStudents = students.filter(
-    (student) => student.year === year && student.school === school && student.grade === grade,
-  );
+function renderStudentSelect() {
+  const visibleStudents = students;
   const selectedStudentId = pickExactValue(
     uiState.studentId,
     visibleStudents.map((student) => student.studentId),
@@ -220,7 +253,75 @@ function renderSelectors() {
     { placeholder: true },
   );
 
-  saveSelectionFromControls(true);
+}
+
+async function loadGrades(parentRequestId = optionsRequestId, cacheOnly = false) {
+  const year = elements.yearSelect.value;
+  const school = FIXED_SCHOOL || elements.schoolSelect.value;
+  students = [];
+  gradeRows = [];
+  renderGradeSelect();
+  renderStudentSelect();
+  prepareSelection();
+  if (!year || !school) {
+    setSelectorsDisabled(false);
+    setSyncState("ready", "학교를 선택해주세요");
+    return;
+  }
+
+  const cacheKey = `grades:${year}:${school}`;
+  const cached = readDataCache(cacheKey);
+  if (cached?.grades) {
+    gradeRows = cached.grades;
+    renderGradeSelect();
+    setSelectorsDisabled(false);
+    if (elements.gradeSelect.value) {
+      await loadStudents(parentRequestId, true);
+      setSyncState("loading", "저장된 정보를 표시하고 최신 정보를 확인하는 중입니다");
+    }
+  }
+  if (!cacheOnly) {
+    const response = await api("grades", { year, school });
+    if (parentRequestId !== optionsRequestId || year !== elements.yearSelect.value || school !== (FIXED_SCHOOL || elements.schoolSelect.value)) return;
+    gradeRows = response.data?.grades || [];
+    writeDataCache(cacheKey, response.data || { grades: gradeRows });
+    renderGradeSelect();
+  }
+  setSelectorsDisabled(false);
+  if (elements.gradeSelect.value) await loadStudents(parentRequestId, cacheOnly);
+  else setSyncState("ready", "학년을 선택해주세요");
+}
+
+async function loadStudents(parentRequestId = optionsRequestId, cacheOnly = false) {
+  const year = elements.yearSelect.value;
+  const school = FIXED_SCHOOL || elements.schoolSelect.value;
+  const grade = elements.gradeSelect.value;
+  students = [];
+  renderStudentSelect();
+  prepareSelection();
+  if (!year || !school || !grade) {
+    setSyncState("ready", "학년을 선택해주세요");
+    return;
+  }
+
+  const cacheKey = `students:${year}:${school}:${grade}`;
+  const cached = readDataCache(cacheKey);
+  if (cached?.students) {
+    students = normalizeStudents(cached.students.map((student) => ({ ...student, year, school, grade })));
+    renderStudentSelect();
+    prepareSelection();
+    setSyncState("loading", "저장된 학생 명단을 표시하고 최신 정보를 확인하는 중입니다");
+  }
+  if (!cacheOnly) {
+    const response = await api("students", { year, school, grade });
+    if (parentRequestId !== optionsRequestId || year !== elements.yearSelect.value || school !== (FIXED_SCHOOL || elements.schoolSelect.value) || grade !== elements.gradeSelect.value) return;
+    const scoped = response.data?.students || [];
+    writeDataCache(cacheKey, { students: scoped });
+    students = normalizeStudents(scoped.map((student) => ({ ...student, year, school, grade })));
+    renderStudentSelect();
+  }
+  prepareSelection();
+  setSyncState("ready", cacheOnly ? "저장된 정보를 표시하고 있습니다" : "Google Sheets와 동기화되었습니다");
 }
 
 function prepareSelection() {
@@ -282,12 +383,17 @@ function saveSelectionFromControls(includeStudent) {
     grade: elements.gradeSelect.value,
     studentId: includeStudent ? elements.studentSelect.value : "",
   };
-  localStorage.setItem(UI_KEY, JSON.stringify(uiState));
+  try {
+    localStorage.setItem(UI_KEY, JSON.stringify(uiState));
+  } catch (error) {
+    // Selection still works when browser storage is unavailable.
+  }
 }
 
 async function loadSelectedStudentRecords() {
   selectedStudent = getSelectedStudent();
   records = {};
+  recordsVersion = 0;
   renderEntries();
 
   if (!selectedStudent) {
@@ -295,20 +401,40 @@ async function loadSelectedStudentRecords() {
     return;
   }
 
-  setSyncState("loading", "기록을 불러오는 중입니다");
+  const requestId = ++recordsRequestId;
+  const cacheKey = recordDataCacheKey(selectedStudent);
+  const cached = readDataCache(cacheKey);
+  if (cached?.records) {
+    records = cached.records;
+    recordsVersion = Number(cached.version || 0);
+    renderEntries();
+    setSyncState("loading", "저장된 기록을 표시하고 최신 기록을 확인하는 중입니다");
+  } else {
+    setSyncState("loading", "기록을 불러오는 중입니다");
+  }
   try {
-    const response = await api("records", {
+    const response = await api("studentRecords", {
       year: selectedStudent.year,
       school: selectedStudent.school,
       grade: selectedStudent.grade,
       studentId: selectedStudent.studentId,
     });
-    records = response.data?.records || {};
+    if (requestId !== recordsRequestId || cacheKey !== recordDataCacheKey(getSelectedStudent())) return;
+    const incomingVersion = Number(response.data?.version || 0);
+    if (incomingVersion >= recordsVersion) {
+      records = response.data?.records || {};
+      recordsVersion = incomingVersion;
+      writeDataCache(cacheKey, { records, version: recordsVersion, updatedAt: response.data?.updatedAt || "" });
+    }
     renderEntries();
     setSyncState("ready", "기록이 동기화되었습니다");
   } catch (error) {
-    setSyncState("error", "기록을 불러오지 못했습니다");
-    showToast(error.message || "기록을 불러오지 못했습니다.");
+    if (cached?.records) {
+      setSyncState("ready", "저장된 기록을 표시하고 있습니다");
+    } else {
+      setSyncState("error", "기록을 불러오지 못했습니다");
+      showToast(error.message || "기록을 불러오지 못했습니다.");
+    }
   }
 }
 
@@ -808,7 +934,7 @@ async function saveRecord(entryId) {
   setSyncState("loading", "기록 저장 중입니다");
 
   try {
-    await api("saveRecord", {
+    const response = await api("saveRecord", {
       payload: {
         ...selectedStudent,
         entryId,
@@ -819,6 +945,13 @@ async function saveRecord(entryId) {
         duration: normalizeDuration(record.duration) || record.duration || "",
       },
     });
+    const responseVersion = Number(response.data?.record?.version || recordsVersion + 1);
+    const serverRecords = response.data?.record?.records;
+    if (responseVersion >= recordsVersion) {
+      recordsVersion = responseVersion;
+      if (serverRecords) records = serverRecords;
+    }
+    writeCurrentRecordsCache();
     row?.classList.remove("save-error");
     row?.classList.add("saved");
     updateRowState(row, records[entryId]);
@@ -840,6 +973,7 @@ async function clearRecord(entryId, row) {
     return;
   }
 
+  const previousRecord = records[entryId] ? { ...records[entryId] } : null;
   delete records[entryId];
   for (const input of row.querySelectorAll("[data-field]")) {
     input.value = "";
@@ -850,15 +984,23 @@ async function clearRecord(entryId, row) {
 
   setSyncState("loading", "기록을 비우는 중입니다");
   try {
-    await api("clearRecord", {
+    const response = await api("clearRecord", {
       year: selectedStudent.year,
       school: selectedStudent.school,
       grade: selectedStudent.grade,
       studentId: selectedStudent.studentId,
       entryId,
     });
+    const responseVersion = Number(response.data?.version || recordsVersion + 1);
+    if (responseVersion >= recordsVersion) {
+      recordsVersion = responseVersion;
+      if (response.data?.records) records = response.data.records;
+    }
+    writeCurrentRecordsCache();
     setSyncState("ready", "기록을 비웠습니다");
   } catch (error) {
+    if (previousRecord) records[entryId] = previousRecord;
+    renderEntries();
     row.classList.add("save-error");
     setSyncState("error", "기록을 비우지 못했습니다");
     showToast(error.message || "기록을 비우지 못했습니다.");
@@ -1137,10 +1279,52 @@ function loadUiState() {
   try {
     const raw = localStorage.getItem(UI_KEY);
     const parsed = raw ? JSON.parse(raw) : {};
-    return FIXED_SCHOOL ? { year: FIXED_YEAR } : { year: parsed.year || "" };
+    return {
+      year: FIXED_SCHOOL ? FIXED_YEAR : String(parsed.year || ""),
+      school: FIXED_SCHOOL ? "" : String(parsed.school || ""),
+      grade: String(parsed.grade || ""),
+      studentId: String(parsed.studentId || ""),
+    };
   } catch (error) {
     return {};
   }
+}
+
+function dataCacheStorageKey(key) {
+  return `${DATA_CACHE_PREFIX}:${key}`;
+}
+
+function readDataCache(key) {
+  try {
+    const raw = localStorage.getItem(dataCacheStorageKey(key));
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed?.schemaVersion === 2 ? parsed.data : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeDataCache(key, data) {
+  try {
+    localStorage.setItem(
+      dataCacheStorageKey(key),
+      JSON.stringify({ schemaVersion: 2, savedAt: Date.now(), data }),
+    );
+  } catch (error) {
+    // Storage may be unavailable or full; live API data still works.
+  }
+}
+
+function recordDataCacheKey(student) {
+  if (!student) return "";
+  return ["records", student.year, student.school, student.grade, student.studentId]
+    .map((value) => encodeURIComponent(String(value || "")))
+    .join(":");
+}
+
+function writeCurrentRecordsCache() {
+  const key = recordDataCacheKey(selectedStudent);
+  if (key) writeDataCache(key, { records, version: recordsVersion });
 }
 
 function showToast(message) {
