@@ -308,6 +308,9 @@ function bindEvents() {
   });
 
   document.querySelectorAll("[data-match-result]").forEach((button) => button.addEventListener("click", () => selectMatchResult(button.dataset.matchResult)));
+  document.querySelectorAll("[data-stage-nav]").forEach((button) => button.addEventListener("click", () => showStage(Number(button.dataset.stageNav))));
+  bindClick("helpToggleButton", toggleHelpPanel);
+  bindClick("helpCloseButton", closeHelpPanel);
 }
 
 function configureSurveyLink() {
@@ -481,7 +484,7 @@ async function selectStudentBySlot(participantName) {
     updateSelectedStudentDisplay();
     setStudentStatus(`탐사대 ${selectedSlotNumber} 출발 준비가 되었어요.`);
     scheduleSave();
-    showStage(2);
+    showStage(3);
     return true;
   } catch (error) {
     setStudentStatus(error.message || "학생 정보를 찾을 수 없어요.", true);
@@ -600,10 +603,45 @@ function updateBuddyPrompt() {
 }
 
 function showStage(stage) {
-  currentStage = Math.min(4, Math.max(1, Number(stage) || 1));
+  currentStage = Math.min(5, Math.max(1, Number(stage) || 1));
   document.querySelectorAll(".stage-section").forEach((section) => { section.hidden = Number(section.dataset.stage) !== currentStage; });
-  document.querySelectorAll("[data-stage-indicator]").forEach((indicator) => indicator.classList.toggle("active", Number(indicator.dataset.stageIndicator) === currentStage));
+  document.querySelectorAll("[data-stage-indicator]").forEach((indicator) => {
+    const active = Number(indicator.dataset.stageIndicator) === currentStage;
+    indicator.classList.toggle("active", active);
+    indicator.setAttribute("aria-current", active ? "step" : "false");
+  });
+  updateStageAccessNotice();
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateStageAccessNotice() {
+  const notice = document.getElementById("stageAccessNotice");
+  if (!notice) return;
+  const lesson = currentLesson();
+  let message = "";
+  if ([3, 4, 5].includes(currentStage) && !state.studentInfo.participantName) {
+    message = "출발 탭에서 탐사대 번호와 이름을 먼저 정해 주세요.";
+  } else if (currentStage === 5 && !BUDDY_FIELDS.every((field) => lesson.buddy[field])) {
+    message = "AI 친구를 먼저 만들어 주세요.";
+  }
+  notice.textContent = message;
+  notice.hidden = !message;
+}
+
+function toggleHelpPanel() {
+  const panel = document.getElementById("helpPanel");
+  const button = document.getElementById("helpToggleButton");
+  if (!panel || !button) return;
+  const willOpen = panel.hidden;
+  panel.hidden = !willOpen;
+  button.setAttribute("aria-expanded", String(willOpen));
+}
+
+function closeHelpPanel() {
+  const panel = document.getElementById("helpPanel");
+  const button = document.getElementById("helpToggleButton");
+  if (panel) panel.hidden = true;
+  if (button) button.setAttribute("aria-expanded", "false");
 }
 
 function showBuddyStep(step) {
