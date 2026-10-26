@@ -35,7 +35,14 @@ const PRACTICE_GROUPS = [
     entries: Array.from({ length: 10 }, (_, index) => makeEntry("낱말연습", index + 1)),
   },
   {
+    title: "단문연습",
+    subtitle: "10회차",
+    layout: "word",
+    entries: Array.from({ length: 10 }, (_, index) => makeEntry("단문연습", index + 1)),
+  },
+  {
     title: "장문연습",
+    layout: "word",
     subtitle: "10회차",
     entries: Array.from({ length: 10 }, (_, index) => makeEntry("장문연습", index + 1)),
   },
@@ -118,6 +125,7 @@ function slug(value) {
     숫자자리: "number",
     전체자리: "all",
     낱말연습: "word",
+    단문연습: "short",
     장문연습: "long",
   };
   return map[value] || value;
