@@ -1,4 +1,4 @@
-// Rebuild the six SVG files from the playable point data; no external image dependency.
+// Rebuild SVG files from the playable point data; no external image dependency.
 import fs from 'node:fs';
 import vm from 'node:vm';
 import path from 'node:path';

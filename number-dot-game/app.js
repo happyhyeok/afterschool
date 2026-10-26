@@ -312,7 +312,7 @@ function renderGame() {
 
   const numberedPoints = getNumberedPoints(picture);
   renderDetails(picture);
-  const labels = placeLabels(numberedPoints);
+  const labels = placeLabels(numberedPoints, picture.labelPositions);
 
   numberedPoints.forEach(({ point: [x, y] }, index) => {
     const nearest = Math.min(...numberedPoints.filter((_, j) => j !== index).map(({point}) => Math.hypot(point[0] - x, point[1] - y)));
@@ -476,12 +476,16 @@ function renderDetails(picture) {
   })));
 }
 
-function placeLabels(points) {
-  const placed = [];
+function placeLabels(points, overrides = {}) {
+  const placed = Object.entries(overrides).map(([number, [x, y]]) => {
+    const width = String(number).length * 22 + 12;
+    return { x: x - width / 2, y: y - 24, w: width, h: 48 };
+  });
   return points.map(({point: [x, y]}, index) => {
+    if (overrides[index + 1]) return overrides[index + 1];
     const width = String(index + 1).length * 22 + 12;
     let best = null;
-    for (const radius of [34, 50, 66, 82]) {
+    for (const radius of [34, 50, 66, 82, 98, 114, 130]) {
       for (let i = 0; i < 16; i++) {
         const angle = -Math.PI / 2 + i * Math.PI / 8;
         const cx = x + radius * Math.cos(angle), cy = y + radius * Math.sin(angle);
@@ -492,7 +496,7 @@ function placeLabels(points) {
           if (box.x < other.x + other.w + 5 && box.x + box.w + 5 > other.x && box.y < other.y + other.h + 5 && box.y + box.h + 5 > other.y) penalty += 1000;
         }
         for (const {point: [px, py]} of points) {
-          if (px > box.x - 12 && px < box.x + box.w + 12 && py > box.y - 12 && py < box.y + box.h + 12) penalty += 200;
+          if (px > box.x - 12 && px < box.x + box.w + 12 && py > box.y - 12 && py < box.y + box.h + 12) penalty += 10000;
         }
         if (!best || penalty < best.penalty) best = {box, cx, cy, penalty};
       }
