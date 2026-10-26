@@ -1061,3 +1061,18 @@ h1 {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Drawing points remain small; transparent targets provide space to click. */
+.svg-wrap { background: #fff; }
+.connection-line, .picture-detail {
+  fill: none; stroke: #26344a; stroke-width: 7;
+  stroke-linecap: round; stroke-linejoin: round; filter: none;
+}
+.picture-detail { pointer-events: none; }
+.dot-circle { stroke-width: 3; fill: #26344a; stroke: #fff; }
+.dot-label { font-size: 28px; paint-order: stroke; stroke: #fff; stroke-width: 7; stroke-linejoin: round; }
+.point-group.is-current .dot-circle { stroke-width: 4; }
+.point-group.is-done { visibility: hidden; pointer-events: none; }
+
+.dot-label { pointer-events: all; cursor: pointer; }

@@ -1,5 +1,5 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
-const STORAGE_KEY = "dotGameCompletedPictures";
+const STORAGE_KEY = "dotGameCompletedPictures.v2";
 const levels = window.DOT_GAME_LEVELS;
 const allPictures = levels.flatMap((level) =>
   level.pictures.map((picture) => ({
@@ -135,27 +135,11 @@ function getSourceStrokes(picture) {
     return picture.strokes;
   }
   if (picture.sketch && Array.isArray(picture.points)) {
-    return splitSketchPointsIntoStrokes(picture.points, picture.closePath !== false);
+    return [{ closed: picture.closePath !== false, points: picture.points }];
   }
   return [{ closed: picture.closePath !== false, points: picture.points }];
 }
 
-function splitSketchPointsIntoStrokes(points, closeFirstStroke) {
-  const distanceLimit = 210;
-  const strokes = [{ name: "외곽선", closed: closeFirstStroke, points: [] }];
-
-  points.forEach((point) => {
-    const currentStroke = strokes[strokes.length - 1];
-    const previous = currentStroke.points[currentStroke.points.length - 1];
-    const distance = previous ? Math.hypot(previous[0] - point[0], previous[1] - point[1]) : 0;
-    if (previous && distance > distanceLimit) {
-      strokes.push({ name: `선 ${strokes.length + 1}`, closed: false, points: [] });
-    }
-    strokes[strokes.length - 1].points.push(point);
-  });
-
-  return strokes.filter((stroke) => stroke.points.length > 0);
-}
 
 function getNumberedPoints(picture) {
   return getDisplayStrokes(picture).flatMap((stroke, strokeIndex) =>
@@ -210,7 +194,7 @@ function updateProgress() {
   } else if (nextLockedLevel) {
     const previous = levels[nextLockedLevel.order - 2];
     const done = previous.pictures.filter((picture) => completedIds.has(picture.id)).length;
-    unlockMessage.textContent = `${previous.name} ${done}/4 완료 · 4개를 모두 하면 ${nextLockedLevel.name}이 열려요!`;
+    unlockMessage.textContent = `${previous.name} ${done}/${previous.pictures.length} 완료 · 모두 완성하면 ${nextLockedLevel.name} 단계가 열려요!`;
   } else {
     unlockMessage.textContent = "모든 단계가 열렸어요. 마음껏 골라요!";
   }
@@ -236,7 +220,7 @@ function renderSelection() {
           <p>${unlocked ? level.description : "앞 단계를 먼저 완성해요."}</p>
         </div>
       </div>
-      <strong class="level-count">${unlocked ? `${completedCount}/4` : "🔒 잠김"}</strong>
+      <strong class="level-count">${unlocked ? `${completedCount}/${level.pictures.length}` : "🔒 잠김"}</strong>
     `;
 
     const grid = document.createElement("div");
@@ -277,7 +261,7 @@ function showSelection() {
   numberPanel.hidden = true;
   progressPanel.hidden = false;
   renderSelection();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 function startPicture(pictureId) {
@@ -293,7 +277,7 @@ function startPicture(pictureId) {
   numberPanel.hidden = false;
   progressPanel.hidden = false;
   renderGame();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 function renderGame() {
@@ -327,9 +311,11 @@ function renderGame() {
   habitCoach.textContent = "";
 
   const numberedPoints = getNumberedPoints(picture);
-  renderSketch(picture, false);
+  renderDetails(picture);
+  const labels = placeLabels(numberedPoints);
 
   numberedPoints.forEach(({ point: [x, y] }, index) => {
+    const nearest = Math.min(...numberedPoints.filter((_, j) => j !== index).map(({point}) => Math.hypot(point[0] - x, point[1] - y)));
     const group = makeSvgElement("g", {
       class: `point-group${index === 0 ? " is-current" : ""}`,
       "data-index": index
@@ -338,7 +324,7 @@ function renderGame() {
       class: "dot-hit",
       cx: x,
       cy: y,
-      r: 44,
+      r: Math.min(30, nearest * 0.45),
       tabindex: "0",
       role: "button",
       "aria-label": `${index + 1}번 점`
@@ -347,16 +333,16 @@ function renderGame() {
       class: "dot-circle",
       cx: x,
       cy: y,
-      r: 27
+      r: 8
     });
     const label = makeSvgElement("text", {
       class: "dot-label",
-      x,
-      y: y + 1
+      x: labels[index][0],
+      y: labels[index][1]
     });
     label.textContent = index + 1;
 
-    hitArea.addEventListener("click", () => handlePointClick(index));
+    group.addEventListener("click", () => handlePointClick(index));
     hitArea.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -416,6 +402,7 @@ function handlePointClick(clickedIndex) {
   const currentGroup = getPointGroup(nextPointIndex);
   currentGroup.classList.remove("is-current");
   currentGroup.classList.add("is-done");
+  currentGroup.querySelector(".dot-hit").setAttribute("tabindex", "-1");
 
   if (nextPointIndex > 0) {
     const previous = numberedPoints[nextPointIndex - 1];
@@ -423,6 +410,11 @@ function handlePointClick(clickedIndex) {
     if (previous.strokeIndex === current.strokeIndex) {
       drawLine(previous.point, current.point);
     }
+  }
+
+  const finishedPoint = numberedPoints[nextPointIndex];
+  if (finishedPoint.pointIndex === finishedPoint.stroke.points.length - 1 && finishedPoint.stroke.closed) {
+    drawLine(finishedPoint.point, finishedPoint.stroke.points[0]);
   }
 
   nextPointIndex += 1;
@@ -435,7 +427,10 @@ function handlePointClick(clickedIndex) {
 
   const nextGroup = bringPointToFront(nextPointIndex);
   nextGroup.classList.add("is-current");
-  message.textContent = `좋아요! 다음은 ${nextPointIndex + 1}번이에요.`;
+  const next = numberedPoints[nextPointIndex];
+  message.textContent = next.pointIndex === 0
+    ? `다음은 ${next.stroke.name} 연결이에요. ${nextPointIndex + 1}번부터!`
+    : `좋아요! 다음은 ${nextPointIndex + 1}번이에요.`;
   message.className = "message";
 }
 
@@ -475,49 +470,36 @@ function updateStatus() {
   wrongCountElement.textContent = wrongCount;
 }
 
-function createCompletedShape(picture) {
-  const group = makeSvgElement("g", { class: "complete-shape" });
-  const points = getDisplayPoints(picture);
-  const polygon = makeSvgElement("polygon", {
-    points: points.map(([x, y]) => `${x},${y}`).join(" "),
-    fill: picture.color,
-    stroke: shadeColor(picture.color, -28),
-    "stroke-width": 11,
-    "stroke-linejoin": "round"
-  });
-  const label = makeSvgElement("text", {
-    x: 500,
-    y: 520,
-    class: "complete-emoji",
-    "text-anchor": "middle"
-  });
-  label.textContent = picture.icon;
-  group.append(polygon, label);
-  completeLayer.append(group);
+function renderDetails(picture) {
+  (picture.details || []).forEach((d) => sketchLayer.append(makeSvgElement("path", {
+    d, class: "picture-detail"
+  })));
 }
 
-function renderSketch(picture, visible) {
-  if (!picture.sketch) {
-    return;
-  }
-  const image = makeSvgElement("image", {
-    href: picture.sketch,
-    x: 0,
-    y: 0,
-    width: 1000,
-    height: 1000,
-    preserveAspectRatio: "xMidYMid meet",
-    class: `sketch-image${visible ? " is-visible" : ""}`
+function placeLabels(points) {
+  const placed = [];
+  return points.map(({point: [x, y]}, index) => {
+    const width = String(index + 1).length * 22 + 12;
+    let best = null;
+    for (const radius of [34, 50, 66, 82]) {
+      for (let i = 0; i < 16; i++) {
+        const angle = -Math.PI / 2 + i * Math.PI / 8;
+        const cx = x + radius * Math.cos(angle), cy = y + radius * Math.sin(angle);
+        const box = {x: cx - width / 2, y: cy - 24, w: width, h: 48};
+        let penalty = radius * 0.04;
+        if (box.x < 20 || box.x + box.w > 980 || box.y < 20 || box.y + box.h > 980) penalty += 10000;
+        for (const other of placed) {
+          if (box.x < other.x + other.w + 5 && box.x + box.w + 5 > other.x && box.y < other.y + other.h + 5 && box.y + box.h + 5 > other.y) penalty += 1000;
+        }
+        for (const {point: [px, py]} of points) {
+          if (px > box.x - 12 && px < box.x + box.w + 12 && py > box.y - 12 && py < box.y + box.h + 12) penalty += 200;
+        }
+        if (!best || penalty < best.penalty) best = {box, cx, cy, penalty};
+      }
+    }
+    placed.push(best.box);
+    return [Math.round(best.cx), Math.round(best.cy)];
   });
-  sketchLayer.append(image);
-}
-
-function shadeColor(hex, amount) {
-  const value = Number.parseInt(hex.slice(1), 16);
-  const r = Math.max(0, Math.min(255, (value >> 16) + amount));
-  const g = Math.max(0, Math.min(255, ((value >> 8) & 0xff) + amount));
-  const b = Math.max(0, Math.min(255, (value & 0xff) + amount));
-  return `rgb(${r}, ${g}, ${b})`;
 }
 
 function getResultEvaluation() {
@@ -557,25 +539,13 @@ function renderResult(picture) {
 function completePicture() {
   const picture = getPicture();
   const level = getLevel(picture.levelId);
-  const strokes = getDisplayStrokes(picture);
   const levelWasComplete = isLevelComplete(level);
   const wasAlreadyComplete = completedIds.has(picture.id);
   isComplete = true;
 
-  strokes.forEach((stroke) => {
-    if (stroke.closed && stroke.points.length > 2) {
-      drawLine(stroke.points[stroke.points.length - 1], stroke.points[0]);
-    }
-  });
-  window.setTimeout(() => {
-    if (picture.sketch) {
-      sketchLayer.querySelector(".sketch-image")?.classList.add("is-visible");
-    } else {
-      createCompletedShape(picture);
-    }
-    pointLayer.style.opacity = "0.2";
-    lineLayer.style.opacity = "0.28";
-  }, 330);
+  // Keep the exact paths the child drew; never replace them with another image.
+  pointLayer.style.opacity = "0";
+  lineLayer.style.opacity = "1";
 
   if (!wasAlreadyComplete) {
     completedIds.add(picture.id);
@@ -684,3 +654,6 @@ finishDialog.addEventListener("click", (event) => {
 });
 
 showSelection();
+
+
+document.querySelector("#finishViewButton").addEventListener("click", () => { finishDialog.hidden = true; nextButton.focus(); });

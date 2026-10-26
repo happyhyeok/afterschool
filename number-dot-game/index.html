@@ -24,7 +24,7 @@
         <div id="progressPanel" class="progress-panel" aria-label="전체 진행률">
           <div>
             <span>나의 그림</span>
-            <strong id="progressText">0/12 완료</strong>
+            <strong id="progressText">0/6 완료</strong>
           </div>
           <div class="progress-track" aria-hidden="true">
             <span id="progressBar"></span>
@@ -39,7 +39,7 @@
           <p class="section-kicker">어떤 그림을 찾아볼까요?</p>
           <h2>그림을 골라요!</h2>
         </div>
-        <p id="unlockMessage" class="unlock-message">쉬움 그림 4개를 완성해 보세요.</p>
+        <p id="unlockMessage" class="unlock-message">처음 그림 2개를 완성해 보세요.</p>
       </div>
       <div id="levelList" class="level-list"></div>
     </section>
@@ -119,6 +119,7 @@
       <p class="result-title-line">오늘의 칭호 <strong id="resultTitle"></strong></p>
       <p id="unlockNotice" class="dialog-unlock" hidden></p>
       <div class="finish-actions">
+        <button id="finishViewButton" class="control-button hint" type="button">그림 보기</button>
         <button id="finishRestartButton" class="control-button restart" type="button">다시 하기</button>
         <button id="finishNextButton" class="control-button next" type="button">다음 그림</button>
       </div>
@@ -129,3 +130,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
