@@ -7,9 +7,9 @@ const ctx = {window:{}};
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'data.js'),'utf8'),ctx);
 const pictures=ctx.window.DOT_GAME_LEVELS.flatMap(l=>l.pictures);
-assert.equal(pictures.length,18);
-assert.deepEqual(Array.from(ctx.window.DOT_GAME_LEVELS, level => level.pictures.length), [5,8,5]);
-assert.equal(new Set(pictures.map(p=>p.id)).size,18);
+assert.equal(pictures.length,21);
+assert.deepEqual(Array.from(ctx.window.DOT_GAME_LEVELS, level => level.pictures.length), [5,8,8]);
+assert.equal(new Set(pictures.map(p=>p.id)).size,21);
 const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
 for(const p of pictures){
  const paths=[];

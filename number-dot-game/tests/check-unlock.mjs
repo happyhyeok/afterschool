@@ -9,10 +9,10 @@ const helpers=source.slice(source.indexOf('function completedCount('),source.ind
 assert(helpers.includes('function isLevelUnlocked('));
 const levels=data.window.DOT_GAME_LEVELS;
 function statuses(ids){const ctx={levels,completedIds:new Set(ids)};vm.createContext(ctx);return vm.runInContext(`${helpers}\n[0,1,2].map(isLevelUnlocked)`,ctx);}
-assert.deepEqual(Array.from(statuses([])),[true,true,false]);
+assert.deepEqual(Array.from(statuses([])),[true,true,true]);
 const old=levels[1].pictures.slice(0,5).map(p=>p.id);
-assert.deepEqual(Array.from(statuses(old.slice(0,4))),[true,true,false]);
+assert.deepEqual(Array.from(statuses(old.slice(0,4))),[true,true,true]);
 assert.deepEqual(Array.from(statuses(old)),[true,true,true]);
 const mixed=levels[1].pictures.slice(3,8).map(p=>p.id);
 assert.deepEqual(Array.from(statuses(mixed)),[true,true,true]);
-console.log('PASS: fresh students can open medium; hard unlocks after any 5 medium drawings; existing progress remains unlocked.');
+console.log('PASS: all three stages are open with zero or existing completion records.');
