@@ -7,9 +7,15 @@ const ctx = {window:{}};
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(root,'data.js'),'utf8'),ctx);
 const pictures=ctx.window.DOT_GAME_LEVELS.flatMap(l=>l.pictures);
-assert.equal(pictures.length,21);
-assert.deepEqual(Array.from(ctx.window.DOT_GAME_LEVELS, level => level.pictures.length), [5,8,8]);
-assert.equal(new Set(pictures.map(p=>p.id)).size,21);
+assert.equal(pictures.length,29);
+assert.deepEqual(Array.from(ctx.window.DOT_GAME_LEVELS, level => level.pictures.length), [5,8,8,8]);
+assert.equal(new Set(pictures.map(p=>p.id)).size,29);
+const adventure=ctx.window.DOT_GAME_LEVELS.find(l=>l.id==='adventure');
+assert.equal(adventure.availableFromStart,true);
+assert(adventure.pictures.every(p=>{
+ const points=p.strokes.flatMap(s=>s.points.map(point=>point.join(',')));
+ return points.length>=46&&points.length<=55&&new Set(points).size===points.length;
+}),'adventure point count or duplicate coordinates');
 const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
 for(const p of pictures){
  const paths=[];
