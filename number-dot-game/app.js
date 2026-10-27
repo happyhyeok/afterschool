@@ -172,15 +172,19 @@ function bringPointToFront(index) {
   return group;
 }
 
-function isLevelUnlocked(levelIndex) {
-  if (levelIndex === 0) {
-    return true;
-  }
-  return levels[levelIndex - 1].pictures.every((picture) => completedIds.has(picture.id));
+function completedCount(level) {
+  return level.pictures.filter((picture) => completedIds.has(picture.id)).length;
 }
 
-function isLevelComplete(level) {
-  return level.pictures.every((picture) => completedIds.has(picture.id));
+function unlockRequirement(level) {
+  return Math.min(level.pictures.length, level.unlockAfter ?? level.pictures.length);
+}
+
+function isLevelUnlocked(levelIndex) {
+  if (levelIndex < 0 || !levels[levelIndex]) return false;
+  if (levelIndex === 0 || levels[levelIndex].availableFromStart) return true;
+  const previous = levels[levelIndex - 1];
+  return completedCount(previous) >= unlockRequirement(previous);
 }
 
 function updateProgress() {
@@ -188,13 +192,14 @@ function updateProgress() {
   progressText.textContent = `${count}/${allPictures.length} 완료`;
   progressBar.style.width = `${(count / allPictures.length) * 100}%`;
 
-  const nextLockedLevel = levels.find((level, index) => !isLevelUnlocked(index));
+  const nextLockedIndex = levels.findIndex((level, index) => !isLevelUnlocked(index));
   if (count === allPictures.length) {
     unlockMessage.textContent = "모든 그림을 완성했어요! 최고예요!";
-  } else if (nextLockedLevel) {
-    const previous = levels[nextLockedLevel.order - 2];
-    const done = previous.pictures.filter((picture) => completedIds.has(picture.id)).length;
-    unlockMessage.textContent = `${previous.name} ${done}/${previous.pictures.length} 완료 · 모두 완성하면 ${nextLockedLevel.name} 단계가 열려요!`;
+  } else if (nextLockedIndex > 0) {
+    const previous = levels[nextLockedIndex - 1];
+    const required = unlockRequirement(previous);
+    const done = Math.min(completedCount(previous), required);
+    unlockMessage.textContent = `${previous.name} ${done}/${required}개 완료 · ${required}개를 완성하면 ${levels[nextLockedIndex].name} 단계가 열려요!`;
   } else {
     unlockMessage.textContent = "모든 단계가 열렸어요. 마음껏 골라요!";
   }
@@ -543,7 +548,8 @@ function renderResult(picture) {
 function completePicture() {
   const picture = getPicture();
   const level = getLevel(picture.levelId);
-  const levelWasComplete = isLevelComplete(level);
+  const levelIndex = levels.findIndex((item) => item.id === level.id);
+  const nextLevelWasUnlocked = isLevelUnlocked(levelIndex + 1);
   const wasAlreadyComplete = completedIds.has(picture.id);
   isComplete = true;
 
@@ -562,9 +568,7 @@ function completePicture() {
   currentNumber.textContent = "✓";
   makeConfetti();
 
-  const levelNowComplete = isLevelComplete(level);
-  const levelIndex = levels.findIndex((item) => item.id === level.id);
-  const newlyUnlocked = !levelWasComplete && levelNowComplete && levels[levelIndex + 1];
+  const newlyUnlocked = levels[levelIndex + 1] && !nextLevelWasUnlocked && isLevelUnlocked(levelIndex + 1);
 
   renderResult(picture);
   if (newlyUnlocked) {
